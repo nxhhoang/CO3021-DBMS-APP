@@ -1,1 +1,38 @@
-\subsection{Concurrency}
+\subsection{Concurrency Control}
+\subsubsection{Cơ sở lý thuyết}
+Khả năng điều khiển đồng thời (Concurrency Control) quyết định hiệu suất và tính đúng đắn của dữ liệu trong môi trường đa người dùng.
+
+\begin{itemize}[label=$\circ$]
+    \item \textbf{PostgreSQL (MVCC):} PostgreSQL giải quyết bài toán đồng thời bằng cơ chế \textit{Multi-Version Concurrency Control} (MVCC). Thay vì khóa dữ liệu khi đọc, hệ thống cung cấp cho mỗi transaction một bản chụp (snapshot) dữ liệu tại thời điểm truy vấn. Nguyên tắc cốt lõi là ``Readers don't block writers, and writers don't block readers'' (Người đọc không chặn người ghi và ngược lại). PostgreSQL hỗ trợ đầy đủ các mức cô lập giao dịch chuẩn SQL và cung cấp khóa tường minh (\texttt{Explicit Locking}) cho các trường hợp cần kiểm soát tranh chấp gay gắt \cite{postgresql_mvcc}.
+    
+    \item \textbf{MongoDB (Document-Level Locking):} MongoDB sử dụng cơ chế khóa đa mức độ (\textit{Multiple-granularity locking}). Với storage engine mặc định là \textbf{WiredTiger}, MongoDB hỗ trợ khóa ở cấp độ tài liệu (\textit{Document-level locking}). Điều này có nghĩa là nhiều thao tác ghi có thể diễn ra đồng thời trên cùng một Collection miễn là chúng tác động vào các tài liệu khác nhau. MongoDB cũng sử dụng các khóa ý định (\textit{Intent Locks}) để tối ưu hóa việc quản lý tài nguyên \cite{mongodb_concurrency}.
+\end{itemize}
+
+\subsubsection{Kịch bản thử nghiệm (Test Scenario)}
+Nhóm thiết lập kịch bản \textbf{Flash Sale} để kiểm tra tính nhất quán dữ liệu (Data Consistency):
+\begin{itemize}[label=$\circ$]
+    \item \textbf{Tài nguyên:} Sản phẩm có \texttt{Stock = 1}.
+    \item \textbf{Tải (Load):} 100 yêu cầu mua hàng (Request) được gửi đồng thời.
+    \item \textbf{Điều kiện đạt:} Chỉ 1 đơn hàng thành công, tồn kho về 0, không có hiện tượng \textit{Race Condition}.
+\end{itemize}
+
+\subsubsection{Giải pháp và Đánh giá}
+
+\paragraph{PostgreSQL (Pessimistic Locking)}
+Để đảm bảo tính đúng đắn, nhóm sử dụng câu lệnh \texttt{SELECT ... FOR UPDATE}.
+\begin{itemize}[label=$\circ$]
+    \item \textbf{Cơ chế:} Transaction đầu tiên sẽ khóa dòng dữ liệu trong bảng \texttt{Inventory}. 99 transaction còn lại sẽ bị đưa vào trạng thái chờ (Wait Queue) cho đến khi transaction đầu tiên Commit hoặc Rollback.
+    \item \textbf{Ưu điểm:} Đảm bảo tính nhất quán tuyệt đối (Strong Consistency), ngăn chặn hoàn toàn hiện tượng \textit{Lost Update}.
+    \item \textbf{Nhược điểm:} Thông lượng (Throughput) giảm do tắc nghẽn khóa (Lock contention).
+\end{itemize}
+
+\paragraph{MongoDB (Atomic Operations)}
+Nhóm sử dụng tính năng cập nhật nguyên tử trên document.
+\begin{itemize}[label=$\circ$]
+    \item \textbf{Cơ chế:} Sử dụng toán tử \texttt{findOneAndUpdate} với điều kiện \texttt{\{ \$gt: 0 \}}. WiredTiger engine sẽ thực hiện khóa document, kiểm tra điều kiện và cập nhật giá trị trong một thao tác duy nhất (Atomic).
+    \item \textbf{Ưu điểm:} Hiệu năng xử lý cao nhờ cơ chế khóa mịn (Fine-grained locking) của WiredTiger.
+    \item \textbf{Nhược điểm:} Khó khăn hơn trong việc quản lý giao dịch phức tạp liên quan đến nhiều Collection so với RDBMS (dù đã có hỗ trợ Multi-document Transactions từ v4.0).
+\end{itemize}
+
+\subsubsection{Kết luận}
+Kiến trúc Hybrid là sự lựa chọn tối ưu: sử dụng \textbf{PostgreSQL} cho các giao dịch tài chính/tồn kho cần sự an toàn tuyệt đối của MVCC và Locking; sử dụng \textbf{MongoDB} cho các luồng dữ liệu log/review cần tận dụng tốc độ của Document-level locking.

@@ -1,2 +1,39 @@
 \clearpage
 \section{KIẾN TRÚC ỨNG DỤNG}
+
+\subsection{Mô hình tổng quát}
+Hệ thống Sàn Thương mại điện tử được xây dựng dựa trên mô hình kiến trúc \textbf{Client-Server (3-tier architecture)}. Việc áp dụng mô hình này giúp tách biệt rõ ràng giữa giao diện người dùng (Presentation Layer), xử lý logic nghiệp vụ (Business Logic Layer) và lưu trữ dữ liệu (Data Access Layer), tạo điều kiện thuận lợi cho việc bảo trì và mở rộng hệ thống trong tương lai.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.75\linewidth]{images/kienTrucUngDung.png}
+    \caption{Sơ đồ kiến trúc tổng quan của hệ thống E-commerce}
+    \label{fig:architecture}
+\end{figure}
+
+\subsection{Các công nghệ sử dụng}
+Dựa trên các tiêu chuẩn phát triển web hiện đại và yêu cầu của đề tài, nhóm đề xuất bộ công nghệ (Tech stack) như sau:
+\begin{itemize}[label=$\circ$]
+    \item \textbf{Frontend:} Sử dụng thư viện \textbf{ReactJS} kết hợp với ngôn ngữ \textbf{TypeScript} để đảm bảo tính chặt chẽ, dễ kiểm soát lỗi của mã nguồn. Giao diện được thiết kế sử dụng \textbf{TailwindCSS} giúp tăng tốc độ phát triển và tối ưu trải nghiệm người dùng.
+    \item \textbf{Backend:} Hệ thống Backend được xây dựng trên nền tảng \textbf{NodeJS} với framework \textbf{ExpressJS}. Đây là lựa chọn phù hợp cho kiến trúc hướng sự kiện (event-driven), xử lý tốt các tác vụ I/O non-blocking, đặc biệt hiệu quả cho các ứng dụng thương mại điện tử có lượng truy cập đồng thời lớn.
+    \item \textbf{Database:} Áp dụng kiến trúc lai (Hybrid) với sự kết hợp giữa \textbf{PostgreSQL} và \textbf{MongoDB}.
+\end{itemize}
+
+\subsection{Thiết kế Cơ sở dữ liệu lai (Hybrid Database Design)}
+Để tận dụng tối đa ưu điểm của cả hai dòng cơ sở dữ liệu SQL và NoSQL, nhóm áp dụng chiến lược \textbf{Polyglot Persistence} với sự phân chia trách nhiệm dữ liệu cụ thể như sau:
+
+\subsubsection{PostgreSQL (RDBMS - SQL)}
+PostgreSQL đóng vai trò là kho lưu trữ chính cho các dữ liệu quan trọng (Core Data), yêu cầu tính cấu trúc cao, toàn vẹn tham chiếu và tuân thủ chặt chẽ các thuộc tính ACID.
+\begin{itemize}
+    \item \textbf{Users \& Authentication:} Lưu trữ thông tin tài khoản, mật khẩu và phân quyền (Role-based access control).
+    \item \textbf{Orders \& Transactions:} Quản lý đơn hàng, chi tiết đơn hàng và lịch sử thanh toán. Đây là dữ liệu không được phép sai sót hay mất mát.
+    \item \textbf{Inventory:} Quản lý tồn kho. Cơ chế Transaction và Locking của PostgreSQL giúp giải quyết triệt để bài toán cạnh tranh (Race condition) khi nhiều người dùng cùng đặt mua một sản phẩm cuối cùng.
+\end{itemize}
+
+\subsubsection{MongoDB (NoSQL - Document Store)}
+MongoDB được sử dụng để lưu trữ các dữ liệu có cấu trúc linh động (Schema-less), yêu cầu tốc độ đọc ghi nhanh và khả năng mở rộng chiều ngang (Scaling out).
+\begin{itemize}
+    \item \textbf{Products (Catalog):} Do tính chất đa dạng của các mặt hàng (ví dụ: Laptop có cấu hình CPU/RAM, Quần áo có Size/Màu sắc), việc sử dụng cấu trúc Document (JSON/BSON) cho phép lưu trữ linh hoạt mà không cần chuẩn hóa dữ liệu phức tạp như RDBMS.
+    \item \textbf{Reviews \& Comments:} Dữ liệu đánh giá thường có khối lượng lớn và phi cấu trúc. MongoDB cho phép truy xuất nhanh nội dung này để hiển thị mà không cần thực hiện các phép JOIN tốn kém.
+    \item \textbf{Logs:} Lưu trữ lịch sử hoạt động, hành vi người dùng (User behavior) để phục vụ phân tích dữ liệu và gợi ý sản phẩm (Recommendation).
+\end{itemize}

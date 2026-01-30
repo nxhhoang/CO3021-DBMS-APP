@@ -1,1 +1,122 @@
 \subsection{Indexing}
+\subsubsection{Cơ sở lý thuyết}
+Indexing (đánh chỉ mục) là một kỹ thuật tổ chức dữ liệu nhằm tối ưu hóa tốc độ truy xuất dữ liệu từ database bằng cách giảm số lượng bản ghi cần phải quét thay vì phải quét toàn bộ bảng hoặc Collection (Full Table Scan). Tuy nhiên, việc xây dựng và duy trì indexing cũng kéo theo phát sinh thêm chi phí về bộ nhớ và thời gian xử lý các thao tác.
+\paragraph{PostgreSQL}
+PostgreSQL hỗ trợ đa dạng các loại indexng khác nhau, cho phép tối ưu hóa hiệu quả cho nhiều kiểu dữ liệu và mô hình truy vấn.
+\begin{itemize}[label=$\circ$]
+    \item \textbf{B-tree:} Là loại indexing mặc định và phổ biến nhất. B-tree lưu trữ các khóa theo thứ tự tăng dần trong một cấu trúc cây cân bằng (\texttt{balanced tree}). Từ đó cho phép thực hiện hiệu quả các phép tìm kiếm bằng (\texttt{=}), so sánh (\texttt{<, >, BETWEEN}) và sắp xếp (\texttt{ORDER BY}) với độ phức tạp $O(log n)$. 
+    \item Bên cạnh đó, PostgreSQL còn hỗ trợ các loại chỉ mục nâng cao giúp tối ưu cho từng kiểu dữ liệu và truy vấn đặc thù:
+    \begin{itemize}[label=$\bullet$]
+        \item \textbf{Hash:} Lưu Hash value của dữ liệu, từ đó tăng tốc độ truy vấn so sánh bằng (\texttt{=})
+        \item \textbf{GIN (Generalized Inverted Index):} GIN ánh xạ từng phần tử con bên trong dữ liệu tới các bản ghi chứa nó. Phù hợp cho các trường dữ liệu chứa nhiều giá trị như Array, JSONB hoặc khi thực hiện full-text search.
+        \item \textbf{GiST (Generalized Search Tree):} Là một framework index tổng quát cho phép xây dựng các cấu trúc cây tùy chỉnh, linh hoạt. Thường được sử dụng cho dữ liệu hình học, tọa độ không gian hoặc các bài toán tìm kiếm phức tạp.
+        \item \textbf{BRIN (Block Range Index):} Thay vì in dex từng dòng, BRIN lưu giá trịMin/Max của từng khối dữ liệu (block), giúp tiết kiệm dung lượng đĩa gấp hàng trăm lần so với B-tree. Đây là một loại index đặc biệt dành cho dữ liệu cực lớn (Big Data) có tính thứ tự tự nhiên (ví dụ: cột \texttt{created\_at}). 
+    \end{itemize}
+\end{itemize}
+
+\paragraph{MongoDB}
+MongoDB sử dụng cơ chế chỉ mục dựa trên cấu trúc \textbf{B-tree} nhằm tăng tốc độ truy vấn trên các Collection. Mỗi index lưu trữ giá trị của một hoặc nhiều trường (field) và con trỏ trực tiếp đến document tương ứng trong Collection. Theo mặc định, MongoDB tự động tạo index trên trường \texttt{\_id} để đảm bảo tính duy nhất và hiệu quả truy xuất dữ liệu.
+
+MongoDB hỗ trợ nhiều loại cơ chế index khác nhau, phù hợp với mô hình dữ liệu dạng document và các kiểu truy vấn phổ biến:
+
+\begin{itemize}[label=$\circ$]
+    \item \textbf{Single Field Index:} Index được tạo trên một field duy nhất của document, phù hợp cho các truy vấn lọc hoặc so sánh một thuộc tính cụ thể.
+    
+    \item \textbf{Compound Index:} Index được xây dựng trên nhiều field theo một thứ tự xác định, đặc biệt hiệu quả với các truy vấn kết hợp nhiều điều kiện lọc và sắp xếp (\texttt{sort}), tuân theo nguyên tắc tiền tố (prefix rule).
+    
+    \item \textbf{Multikey Index:} Áp dụng khi trường được đánh index là một mảng (array). MongoDB sẽ tự động tạo index cho từng phần tử trong mảng, cho phép truy vấn hiệu quả các document chứa giá trị cần tìm.
+    
+    \item \textbf{Text Index:} Hỗ trợ tìm kiếm toàn văn (full-text search) trên các field kiểu chuỗi. MongoDB thực hiện phân tách từ (tokenization), loại bỏ stop words và cho phép gán trọng số (weight) cho các field để cải thiện độ chính xác của kết quả tìm kiếm.
+    
+    \item \textbf{Hashed Index:} Sử dụng giá trị băm của field thay vì giá trị gốc, chỉ tối ưu cho các truy vấn so sánh bằng (\texttt{=}) và thường được sử dụng trong các hệ thống phân mảnh dữ liệu (sharding) để đảm bảo phân bố dữ liệu đồng đều.
+    
+    \item \textbf{TTL Index (Time-To-Live):} Cho phép tự động xóa document sau một khoảng thời gian nhất định dựa trên field kiểu \texttt{Date}, thường được áp dụng cho các dữ liệu tạm thời như session, log hoặc cache.
+\end{itemize}
+
+
+\subsubsection{Kịch bản thử nghiệm (Test Scenario)}
+Nhóm thiết lập kịch bản mô phỏng các thao tác các truy vấn phổ biến như tìm kiếm, lọc và sắp xếp sản phẩm
+\begin{itemize}[label=$\circ$]
+    \item \textbf{Dữ liệu:}
+    \begin{itemize}[label=$\bullet$]
+        \item Bảng / Collection \texttt{Products} chứa 1.000.000 sản phẩm.
+        \item Mỗi sản phẩm có các thuộc tính chính: \texttt{id}, \texttt{category}, \texttt{price}, \texttt{name}, \texttt{createdAt}.
+    \end{itemize}
+    
+    \item \textbf{Truy vấn phổ biến:}
+    \begin{itemize}[label=$\bullet$]
+        \item Tìm kiếm sản phẩm theo \texttt{category}.
+        \item Lọc sản phẩm theo khoảng giá (\texttt{price BETWEEN x AND y}).
+        \item Sắp xếp sản phẩm theo thời gian tạo (\texttt{createdAt}) mới nhất.
+        \item Tìm kiếm sản phẩm theo \texttt{keyword} trong \texttt{name}.
+    \end{itemize}
+
+    \item \textbf{Tiêu chí đánh giá:}
+    \begin{itemize}[label=$\bullet$]
+        \item Thời gian thực thi truy vấn.
+        \item Số lượng bản ghi được quét.
+        \item Chi phí ghi dữ liệu.
+    \end{itemize}
+\end{itemize}
+
+\subsubsection{Giải pháp và Đánh giá}
+
+\paragraph{PostgreSQL}
+
+Nhóm sử dụng các cơ chế chỉ mục B-tree và GIN để tối ưu truy vấn trên bảng \texttt{Products}.
+
+\begin{itemize}[label=$\circ$]
+    \item \textbf{Giải pháp:}
+    \begin{itemize}[label=$\bullet$]
+        \item Tạo \textbf{B-tree index} trên các cột \texttt{category} và \texttt{price} nhằm tăng tốc các truy vấn lọc và so sánh.
+        \item Sử dụng \textbf{Multi-column B-tree index} trên (\texttt{category}, \texttt{createdAt}) để tối ưu truy vấn lọc theo danh mục và sắp xếp theo thời gian.
+        \item Sử dụng \textbf{GIN index} kết hợp với \texttt{tsvector} cho trường \texttt{name} nhằm hỗ trợ tìm kiếm từ khóa trong văn bản hiệu quả.
+    \end{itemize}
+    
+    \item \textbf{Đánh giá:}
+    \begin{itemize}[label=$\bullet$]
+        \item \textbf{Ưu điểm:}
+        \begin{itemize}
+            \item Hỗ trợ đa dạng loại index tối ưu truy vấn mạnh cho nhiều kiểu truy vấn phức tạp và nghiệp vụ logic cao.
+            \item Hiệu quả cao với các truy vấn kết hợp nhiều điều kiện và \texttt{JOIN}.
+        \end{itemize}
+        
+        \item \textbf{Nhược điểm:}
+        \begin{itemize}
+            \item Chi phí ghi cao do phải cập nhật nhiều index.
+            \item Việc thiết kế index đòi hỏi hiểu rõ quy trình, tránh gây dư thừa.
+        \end{itemize}
+    \end{itemize}
+\end{itemize}
+
+\paragraph{MongoDB}
+Nhóm áp dụng các cơ chế indexing phù hợp với mô hình document trên Collection \texttt{Products}.
+
+\begin{itemize}[label=$\circ$]
+    \item \textbf{Giải pháp:}
+    \begin{itemize}
+        \item Tạo \textbf{Single Field Index} trên \texttt{category} để tăng tốc truy vấn lọc theo danh mục.
+        \item Sử dụng \textbf{Compound Index} trên (\texttt{category}, \texttt{createdAt}) nhằm tối ưu truy vấn lọc kết hợp sắp xếp.
+        \item Sử dụng \textbf{Text Index} cho trường \texttt{name} để hỗ trợ tìm kiếm sản phẩm theo từ khóa.
+    \end{itemize}
+    
+    \item \textbf{Đánh giá:}
+    \begin{itemize}
+        \item \textbf{Ưu điểm:}
+        \begin{itemize}
+            \item Tạo và sử dụng index đơn giản, phù hợp với các truy vấn đọc có tần suất cao.
+            \item Hiệu năng tốt với các truy vấn tập trung trên một Collection.
+            \item Linh hoạt với dữ liệu không có schema cố định.
+        \end{itemize}
+        
+        \item \textbf{Nhược điểm:}
+        \begin{itemize}
+            \item cơ chế index ít đa dạng hơn so với PostgreSQL, dẫn đến hạn chế với các truy vấn phức tạp.
+            \item Hiệu quả giảm khi cần xử lý các logic truy vấn phức tạp hoặc các Collection có nhiều quan hệ.
+        \end{itemize}
+    \end{itemize}
+\end{itemize}
+
+\subsubsection{Kết luận}
+
+PostgreSQL thể hiện ưu thế trong các truy vấn phức tạp nhờ đa dạng cơ chế index và bộ tối ưu truy vấn mạnh, phù hợp với các nghiệp vụ yêu cầu tính chính xác và logic xử lý cao. Ngược lại, MongoDB phù hợp hơn với các truy vấn đọc đơn giản, tần suất lớn trên một Collection nhờ mô hình document linh hoạt. Việc kết hợp PostgreSQL và MongoDB trong một kiến trúc Hybrid giúp tận dụng ưu điểm của cả hai hệ quản trị, đáp ứng hiệu quả các yêu cầu phức tạp.

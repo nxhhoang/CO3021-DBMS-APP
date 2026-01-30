@@ -1,1 +1,66 @@
-\subsection{Data Storage \& Management}
+\subsection{Lưu trữ và Quản lý Dữ liệu (Data Storage \& Management)}
+
+\subsubsection{Mô hình dữ liệu và Cấu trúc logic (Logical Data Model)}
+
+Sự khác biệt trong cấu trúc tổ chức dữ liệu giữa hai hệ thống dẫn đến những phương thức tiếp cận khác nhau trong việc quản lý tính nhất quán và khả năng thay đổi cấu trúc dữ liệu theo thời gian:
+
+\begin{itemize} [label=$\circ$]
+    \item PostgreSQL sử dụng mô hình dữ liệu quan hệ (Relational Model) truyền thống. Dữ liệu được tổ chức theo cấu trúc phân cấp \textit{Database} $\rightarrow$ \textit{Schema} $\rightarrow$ \textit{Table} $\rightarrow$ \textit{Row} $\rightarrow$ \textit{Column}. Tính nhất quán được đảm bảo thông qua việc định nghĩa lược đồ (Schema) cố định; mọi thay đổi về cấu trúc bảng đều cần các câu lệnh DDL (Data Definition Language).
+    \item MongoDB sử dụng mô hình hướng tài liệu (Document Model). Dữ liệu được tổ chức theo cấp độ: \textit{Database} $\rightarrow$ \textit{Collection} $\rightarrow$ \textit{Document}. MongoDB không yêu cầu định nghĩa lược đồ trước (Schema-less), cho phép mỗi Document trong cùng một Collection có số lượng trường và kiểu dữ liệu khác nhau, giúp tăng tốc độ phát triển ứng dụng khi yêu cầu thay đổi liên tục.
+\end{itemize}
+
+Về phương diện biểu diễn dữ liệu, hai hệ thống sử dụng các định dạng lưu trữ khác nhau để tối ưu hóa khả năng tương thích và không gian đĩa:
+
+\begin{itemize} [label=$\circ$]
+    \item PostgreSQL cung cấp hệ thống kiểu dữ liệu phong phú và nghiêm ngặt (Integer, Numeric, String, Boolean, Date...). Đặc biệt, PostgreSQL hỗ trợ các kiểu dữ liệu nâng cao như Array, Range, và các kiểu hình học. Đối với dữ liệu bán cấu trúc, PostgreSQL sử dụng \textbf{JSONB} (dạng nhị phân của JSON), cho phép lưu trữ và truy vấn hiệu quả các thuộc tính động bên trong một cột quan hệ.
+    \item MongoDB sử dụng định dạng \textbf{BSON} (Binary JSON) để lưu trữ. So với JSON thông thường, BSON mở rộng thêm các kiểu dữ liệu đặc thù như \texttt{Timestamp}, \texttt{BinData}, \texttt{ObjectId}, và \texttt{Decimal128}. Việc lưu trữ dưới dạng nhị phân giúp MongoDB tối ưu hóa không gian đĩa và tốc độ duyệt (scan) qua các Document mà không cần thực hiện thao tác phân tách văn bản (parse).
+\end{itemize}
+
+Khi kích thước bản ghi vượt quá giới hạn trang vật lý tiêu chuẩn, mỗi hệ quản trị áp dụng một cơ chế riêng để quản lý các đối tượng dữ liệu lớn mà không làm ảnh hưởng đến hiệu năng chung:
+
+\begin{itemize} [label=$\circ$]
+    \item PostgreSQL sử dụng cơ chế \textbf{TOAST} (\textit{The Oversized-Attribute Storage Technique}). Khi một hàng vượt quá kích thước trang (thường là 8KB), hệ thống sẽ tự động nén hoặc di chuyển dữ liệu lớn sang bảng lưu trữ phụ, chỉ để lại một con trỏ (Pointer) ở bảng chính, giúp duy trì tốc độ quét bảng (Sequence Scan).
+    \item MongoDB sử dụng cơ chế \textbf{GridFS} để quản lý các tệp vượt quá giới hạn 16MB của một Document. GridFS chia nhỏ dữ liệu lớn thành các phần (chunks) lưu trữ trong các Collection riêng biệt, cho phép truy cập ngẫu nhiên vào một phần của tệp mà không cần nạp toàn bộ dữ liệu vào bộ nhớ đệm.
+\end{itemize}
+
+Đối với việc thiết lập mối liên hệ giữa các thực thể, hai hệ thống đại diện cho hai triết lý đối lập giữa việc phân rã để tối ưu bộ nhớ và tích hợp để tối ưu tốc độ truy xuất:
+
+\begin{itemize} [label=$\circ$]
+    \item PostgreSQL ưu tiên phương pháp \textbf{Normalization} (Chuẩn hóa). Dữ liệu được chia nhỏ vào nhiều bảng để tránh dư thừa; các mối quan hệ được thiết lập thông qua khóa ngoại (Foreign Keys) và được kết hợp lại khi cần thiết bằng các phép JOIN.
+    \item MongoDB ưu tiên phương pháp \textbf{Embedding} (Nhúng) hoặc \textbf{Linking} (Liên kết). Dữ liệu liên quan thường được gom nhóm trực tiếp vào trong một tài liệu duy nhất (Denormalization), giúp giảm thiểu các truy vấn chéo và tối ưu hóa hiệu suất đọc cho các đối tượng dữ liệu phức tạp.
+\end{itemize}
+
+
+
+\subsubsection{Kiến trúc lưu trữ vật lý (Physical Storage Architecture)}
+
+Cách thức tổ chức các đơn vị lưu trữ vật lý phản ánh sự khác biệt trong việc tối ưu hóa tài nguyên phần cứng và quản lý I/O giữa hai hệ quản trị:
+
+\begin{itemize} [label=$\circ$]
+    \item PostgreSQL tổ chức dữ liệu dưới dạng các \textbf{Pages} cố định (mặc định 8KB). Khi cập nhật dữ liệu, Postgres áp dụng cơ chế \textit{Copy-on-write}, tạo ra phiên bản mới của dòng thay vì ghi đè. Điều này đảm bảo an toàn dữ liệu nhưng gây ra hiện tượng phân mảnh (Bloat), đòi hỏi tiến trình \textit{Vacuum} thường xuyên để dọn dẹp không gian đĩa.
+    \item MongoDB (với Storage Engine \textbf{WiredTiger}) quản lý dữ liệu linh hoạt hơn qua cơ chế \textbf{Block Manager}. WiredTiger sử dụng các đơn vị lưu trữ biến thiên và hỗ trợ nén dữ liệu gốc (Native Compression), giúp giảm dung lượng đĩa và tối ưu băng thông I/O thông qua việc ghi dữ liệu theo các điểm kiểm tra (\textit{Checkpoints}).
+\end{itemize}
+
+Phương thức quản trị việc ghi dữ liệu và phục hồi sau sự cố cũng được triển khai dựa trên các cơ chế nhật ký đặc thù:
+
+\begin{itemize} [label=$\circ$]
+    \item PostgreSQL sử dụng \textbf{Write-Ahead Log (WAL)} và \textbf{Free Space Map (FSM)}. WAL ghi lại mọi thay đổi vật lý trước khi áp dụng vào tệp chính để đảm bảo khả năng phục hồi, trong khi FSM theo dõi các khoảng trống trong Pages để tái sử dụng hiệu quả cho dữ liệu mới.
+    \item MongoDB sử dụng cơ chế \textbf{Journaling} kết hợp với quản lý vùng nhớ linh hoạt. Journaling bảo vệ tính toàn vẹn của dữ liệu tương tự WAL, nhưng WiredTiger cho phép tái sử dụng không gian trống ngay lập tức sau khi xóa dữ liệu mà không cần các tiến trình dọn dẹp nặng nề như Postgres.
+\end{itemize}
+
+
+\subsubsection{Quản trị lược đồ và Sự thay đổi dữ liệu (Schema Management \& Data Evolution)}
+
+Cách thức quản lý sự thay đổi cấu trúc dữ liệu theo thời gian phản ánh triết lý khác nhau về tính linh hoạt và tính kiểm soát:
+
+\begin{itemize} [label=$\circ$]
+    \item PostgreSQL tuân thủ phương pháp \textbf{Schema-on-write}. Cấu trúc dữ liệu phải được xác lập chặt chẽ trước khi lưu trữ; mọi thay đổi (\texttt{ALTER TABLE}) đều được kiểm soát bởi hệ thống. Điều này đảm bảo dữ liệu luôn sạch và đồng nhất nhưng có thể gây chậm trễ trong quy trình phát triển nhanh (Agile).
+    \item MongoDB áp dụng phương pháp \textbf{Schema-on-read}. Hệ thống không bắt buộc cấu trúc cố định, cho phép ứng dụng tự định nghĩa trường mới trực tiếp khi ghi. Điều này mang lại sự linh hoạt tối đa cho các hệ thống có cấu trúc thay đổi thường xuyên, giúp loại bỏ các thao tác di cư dữ liệu (Migration) phức tạp.
+\end{itemize}
+
+Cơ chế duy trì các ràng buộc và quy tắc quản trị dữ liệu được triển khai nhằm đảm bảo tính toàn vẹn thông tin theo các cấp độ khác nhau:
+
+\begin{itemize} [label=$\circ$]
+    \item PostgreSQL cung cấp hệ thống ràng buộc (\textbf{Constraints}) nội tại mạnh mẽ như \texttt{NOT NULL}, \texttt{UNIQUE}, \texttt{FOREIGN KEY}. Các quy tắc này được thực thi ở mức nhân cơ sở dữ liệu, đảm bảo không có dữ liệu sai cấu trúc nào có thể được ghi vào hệ thống.
+    \item MongoDB quản lý tính nhất quán thông qua \textbf{JSON Schema Validation}. Thay vì khóa chặt cấu trúc, người quản trị định nghĩa các quy tắc kiểm tra tại mức Collection. Phương pháp này cho phép MongoDB vừa duy trì tính linh hoạt của NoSQL, vừa đảm bảo chất lượng dữ liệu tương đương với hệ quản trị quan hệ khi cần thiết.
+\end{itemize}

@@ -61,23 +61,19 @@ Các chức năng chính bao gồm: quản lý người dùng, quản lý sản 
 Cơ sở dữ liệu của hệ thống E-commerce quản lý thông tin về người dùng, vai trò, sản phẩm, đơn hàng, kho hàng, thanh toán, đánh giá và các hoạt động liên quan.
 
 \begin{itemize}[label=$\circ$]
-    \item Thực thể \texttt{User} (Người dùng): Mỗi người dùng có các thuộc tính: \texttt{userId} (định danh duy nhất), \texttt{email} (duy nhất), \texttt{password}, \texttt{fullName}, \texttt{phoneNum}, \texttt{createdAt}. Mỗi người dùng thuộc về đúng một vai trò (role). Mỗi người dùng có thể có nhiều địa chỉ giao hàng. Mỗi người dùng có thể tạo nhiều đơn hàng. Mỗi người dùng có thể có nhiều token đăng nhập (\texttt{refresh token}) để quản lý phiên làm việc.
+    \item Thực thể \texttt{User} (Người dùng - PostgreSQL): Mỗi người dùng có các thuộc tính: \texttt{userId} (định danh duy nhất), \texttt{email} (duy nhất), \texttt{password}, \texttt{fullName}, \texttt{phoneNum}, \texttt{createdAt}, \texttt{role}. Mỗi người dùng có thể có nhiều địa chỉ giao hàng. Mỗi người dùng có thể tạo nhiều đơn hàng. Mỗi người dùng có thể có nhiều token đăng nhập (\texttt{refresh token}) để quản lý phiên làm việc.
     
-    \item Thực thể \texttt{Role} (Vai trò). Mỗi vai trò có: \texttt{ID} duy nhất, \texttt{name} (\texttt{CUSTOMER}, \texttt{ADMIN}). Một vai trò có thể được gán cho nhiều người dùng.
+    \item Thực thể \texttt{Address} (Địa chỉ người dùng - PostgreSQL). Mỗi địa chỉ gồm: \texttt{addressID} duy nhất, \texttt{addressLine}, \texttt{city}, \texttt{district}, \texttt{isDefault}. Mỗi người dùng có thể có nhiều địa chỉ giao hàng.
     
-    \item Thực thể \texttt{UserAddress}. Mỗi địa chỉ gồm: \texttt{addressID} duy nhất, \texttt{addressLine}, \texttt{city}, \texttt{district}, \texttt{isDefault}. Mỗi người dùng có thể có nhiều địa chỉ giao hàng.
-    
-    \item Thực thể \texttt{AuthToken} (Phiên đăng nhập). Mỗi bản token gồm: \texttt{tokenID} duy nhất, \texttt{refreshToken}, \texttt{userAgent}, \texttt{expiresAt}, \texttt{isRevoked}. Mỗi \texttt{token} thuộc về đúng một người dùng, cho phép quản lý đăng nhập từ nhiều thiết bị. 
-    
-    \item Thực thể \texttt{Product} (Hàng hoá - \texttt{MongoDB}). Mỗi sản phẩm có: \texttt{productID} duy nhất, \texttt{name}, \texttt{slug}, \texttt{category}, \texttt{basePrice}, \texttt{description}, \texttt{images}, \texttt{attributes} (thuộc tính động như \texttt{RAM}, màu sắc, kích thước, cấu hình...), \texttt{isActive}, \texttt{createdAt}. Một sản phẩm có thể nhận nhiều đánh giá (review). Sản phẩm không lưu trực tiếp số lượng tồn kho mà được tham chiếu logic sang \texttt{PostgreSQL}.
+    \item Thực thể \texttt{AuthToken} (Phiên đăng nhập - PostgreSQL). Mỗi bản token gồm: \texttt{tokenID} duy nhất, \texttt{refreshToken}, \texttt{userAgent}, \texttt{expiresAt}, \texttt{isRevoked}. Mỗi \texttt{token} thuộc về đúng một người dùng, cho phép quản lý đăng nhập từ nhiều thiết bị. 
     
     \item Thực thể \texttt{Inventory} (Kho hàng). Mỗi bản ghi của kho gồm: \texttt{inventoryID} duy nhất, \texttt{productID} (tham chiếu logic tới MongoDB), \texttt{sku} duy nhất, \texttt{stockQuantity}, \texttt{lastUpdated}. Mỗi sản phẩm có thể có nhiều biến thể kho (SKU khác nhau).
 
-    \item Thực thể \texttt{Order} (Đơn hàng). Mỗi đơn hàng có: \texttt{orderID} duy nhất, \texttt{status} (\texttt{PENDING}, \texttt{PROCESSING}, \texttt{SHIPPED}, \texttt{DELIVERED}, \texttt{CANCELLED}), \texttt{totalAmount}, \texttt{shippingAdd} (snapshot), \texttt{createdAt}. Mỗi đơn hàng thuộc về một người dùng. Mỗi đơn hàng gồm nhiều chi tiết đơn hàng (order item). Mỗi đơn hàng có đúng một thanh toán (\texttt{payment}).
+    \item Thực thể \texttt{Order} (Đơn hàng - PostgreSQL). Mỗi đơn hàng có: \texttt{orderID} duy nhất, \texttt{status} (\texttt{PENDING}, \texttt{PROCESSING}, \texttt{SHIPPED}, \texttt{DELIVERED}, \texttt{CANCELLED}), \texttt{totalAmount}, \texttt{shippingAdd} (snapshot), \texttt{createdAt}. Mỗi đơn hàng thuộc về một người dùng. Mỗi đơn hàng gồm nhiều chi tiết đơn hàng (order item). Mỗi đơn hàng có đúng một thanh toán (\texttt{payment}).
     
-    \item Thực thể \texttt{OrderItem} (Chi tiết đơn hàng). Mỗi hàng hoá trong đơn hàng bao gồm: \texttt{itemID} (duy nhất), \texttt{productID}, \texttt{productName} (snapshot), \texttt{quantity}, \texttt{unitPrice}. Mỗi \texttt{OrderItem} thuộc về đúng một đơn hàng.
+    \item Thực thể \texttt{Item} (Chi tiết đơn hàng - PostgreSQL). Mỗi hàng hoá trong đơn hàng bao gồm: \texttt{itemID} (duy nhất), \texttt{productID}, \texttt{productName} (snapshot), \texttt{quantity}, \texttt{unitPrice}. Mỗi \texttt{OrderItem} thuộc về đúng một đơn hàng.
 
-    \item Thực thể \texttt{Payment} (Thanh toán). Mỗi thực thể bao gồm: 
+    \item Thực thể \texttt{Payment} (Thanh toán - PostgreSQL). Mỗi thực thể bao gồm: 
     \texttt{paymentID} (duy nhất), \texttt{method}, \texttt{status}, \texttt{transactionDate}. 
     Mỗi thanh toán gắn với đúng một đơn hàng.
 
@@ -88,13 +84,14 @@ Cơ sở dữ liệu của hệ thống E-commerce quản lý thông tin về ng
     \item Thực thể \texttt{UserActivityLog} (Log hành vi – MongoDB). Mỗi bản log bao gồm: 
     \texttt{logID} (duy nhất), \texttt{userID} (có thể null), \texttt{actionType}, \texttt{targetID}, \texttt{metadata}, \texttt{timestamp}. 
     Hệ thống ghi nhận các hoạt động như xem sản phẩm, tìm kiếm, thêm vào giỏ hàng.
+
+    \item Thực thể \texttt{Product} (Hàng hoá - \texttt{MongoDB}). Mỗi sản phẩm có: \texttt{productID} duy nhất, \texttt{name}, \texttt{slug}, \texttt{category}, \texttt{basePrice}, \texttt{description}, \texttt{images}, \texttt{attributes} (thuộc tính động như \texttt{RAM}, màu sắc, kích thước, cấu hình...), \texttt{isActive}, \texttt{createdAt}. Một sản phẩm có thể nhận nhiều đánh giá (review). Sản phẩm không lưu trực tiếp số lượng tồn kho mà được tham chiếu logic sang \texttt{PostgreSQL}.
 \end{itemize}
 
 \subsubsection{Các ràng buộc ngữ nghĩa không biểu diễn được bằng (E-)ERD}
 
 \begin{itemize}[label=$\circ$]
     \item Email người dùng phải duy nhất và hợp lệ.
-    \item Mỗi người dùng phải thuộc một vai trò hợp lệ trong hệ thống.
     \item Số lượng tồn kho không được âm.
     \item Tổng tiền đơn hàng phải lớn hơn hoặc bằng 0.
     \item Một đơn hàng chỉ có một bản ghi thanh toán.
@@ -107,10 +104,36 @@ Cơ sở dữ liệu của hệ thống E-commerce quản lý thông tin về ng
     \item Dữ liệu liên kết giữa PostgreSQL và MongoDB phải được đồng bộ chính xác thông qua productID và userID.
 \end{itemize}
 
-\subsubsection{Biểu đồ EERD}
+\clearpage
+\subsubsection{Các biểu đồ mô tả}
+\paragraph{Biểu đồ EERD cho SQL database}\text{ }
 \begin{figure}[H]
     \centering
-    \includegraphics[width=\linewidth, angle=90]{images/EERD_temp.png}
-    \caption{Biểu đồ EERD}
-    \label{fig:EERD_temp}
+    \includegraphics[width=0.8\linewidth]{images/EERD.png}
+    \caption{Biểu đồ EERD cho SQL database}
+    \label{fig:EERD_PostgreSQL}
+\end{figure}
+
+\paragraph{Biểu đồ mô tả cho NoSQL database}\text{ }
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{images/mongoDB_EERD.png}
+    \caption{Biểu đồ mô tả cho NoSQL database}
+    \label{fig:EERD_mongoDB}
+\end{figure}
+
+\paragraph{Biểu đồ mô tả các quan hệ logic giữa PostgreSQL và mongoDB}\text{ }
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\linewidth]{images/logicRelationSQLAndNoSQL.png}
+    \caption{Biểu đồ mô tả các quan hệ logic giữa NoSQL database và SQL database}
+    \label{fig:EERD_mongoDB}
+\end{figure}
+
+\subsection{Ánh xạ các lược đồ Cơ sở dữ liệu}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\linewidth]{images/mapping.png}
+    \caption{Lược đồ Cơ sở dữ liệu}
+    \label{fig:EERD_mongoDB}
 \end{figure}

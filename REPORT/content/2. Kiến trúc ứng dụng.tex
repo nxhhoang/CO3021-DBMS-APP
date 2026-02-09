@@ -122,7 +122,7 @@ Cơ sở dữ liệu của hệ thống E-commerce quản lý thông tin về ng
     \label{fig:EERD_mongoDB}
 \end{figure}
 
-\paragraph{Biểu đồ mô tả các quan hệ logic giữa PostgreSQL và mongoDB}\text{ }
+\paragraph{Biểu đồ mô tả các quan hệ logic giữa SQL và NoSQL}\text{ }
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.6\linewidth]{images/logicRelationSQLAndNoSQL.png}
@@ -131,9 +131,52 @@ Cơ sở dữ liệu của hệ thống E-commerce quản lý thông tin về ng
 \end{figure}
 
 \subsection{Ánh xạ các lược đồ Cơ sở dữ liệu}
+\subsubsection{Ánh xạ mô hình dữ liệu của SQL}
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.8\linewidth]{images/mapping.png}
     \caption{Lược đồ Cơ sở dữ liệu}
     \label{fig:EERD_mongoDB}
 \end{figure}
+
+\subsubsection{Ánh xạ bộ sưu tập dữ liệu của NoSQL}
+\begin{itemize}[label=$\circ$]
+    \item Sản phẩm (Products) - Ảnh (images):
+    \begin{itemize}[label=\textbullet]
+        \item Quan hệ: 1 - Ít (Mỗi sản phẩm chỉ khoảng 5-10 ảnh).
+        \item Quyết định: Embed. Lưu trực tiếp mảng URL ảnh trong document sản phẩm để lấy ra ngay lập tức.
+    \end{itemize}
+    \item Sản phẩm (Products) - Thuộc tính (attributes):
+    \begin{itemize}[label=\textbullet]
+        \item Quan hệ: 1 - 1 (Mỗi sản phẩm có 1 bộ thông số).
+        \item Quyết định: Embed. Dữ liệu này luôn đi kèm sản phẩm và thay đổi cấu trúc tùy loại hàng (Polymorphic Pattern).
+    \end{itemize}
+    \item Sản phẩm - Đánh giá (reviews):
+    \begin{itemize}[label=\textbullet]
+        \item Quan hệ: 1 - Rất nhiều (Một sản phẩm có thể có hàng nghìn review).
+        \item Quyết định: Reference. Nếu lồng review vào sản phẩm sẽ dễ bị tràn giới hạn 16MB của MongoDB. Do đó, tách Review ra collection riêng và tham chiếu bằng product\_id.
+    \end{itemize}
+\end{itemize}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\linewidth]{images/NoSQLCollections.drawio.png}
+    \caption{Bộ sưu tập dữ liệu}
+    \label{fig:EERD_mongoDB}
+\end{figure}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

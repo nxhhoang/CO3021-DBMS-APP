@@ -1,0 +1,230 @@
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Sử dụng access token để xác thực.
+
+  schemas:
+    User:
+      type: object
+      properties:
+        _id:
+          type: string
+          example: "653d6b3f7f8a9b0c1d2e3f4g"
+        name:
+          type: string
+          example: "Nguyễn Văn A"
+        email:
+          type: string
+          format: email
+          example: "nguyenvana@example.com"
+        date_of_birth:
+          type: string
+          format: date-time
+          example: "1990-01-01T00:00:00.000Z"
+        iso_code:
+          type: string
+          example: "VN"
+        phone_number:
+          type: string
+          example: "0987654321"
+        verify:
+          type: integer
+          enum: [0, 1, 2] # Giả sử: 0=Unverified, 1=Verified, 2=Banned
+          example: 1
+        bio:
+          type: string
+          example: "Khách hàng mua sắm online"
+        location:
+          type: string
+          example: "Hà Nội, Việt Nam"
+        website:
+          type: string
+          example: "https://nguyenvana.com"
+        username:
+          type: string
+          example: "nguyenvana90"
+        avatar:
+          type: string
+          example: "https://example.com/avatar.jpg"
+        cover_photo:
+          type: string
+          example: "https://example.com/cover.jpg"
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+    # ==========================================
+    # Request Body Schemas (Dữ liệu đầu vào)
+    # ==========================================
+    LoginBody:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+          format: email
+          example: "client@example.com"
+        password:
+          type: string
+          format: password
+          example: "Password123@"
+
+    RegisterBody:
+      type: object
+      required:
+        - name
+        - email
+        - password
+        - confirm_password
+      properties:
+        name:
+          type: string
+          example: "Client Mới"
+        email:
+          type: string
+          format: email
+          example: "newclient@example.com"
+        password:
+          type: string
+          format: password
+          example: "Password123@"
+        confirm_password:
+          type: string
+          format: password
+          example: "Password123@"
+        date_of_birth:
+          type: string
+          format: date
+          example: "2000-05-20"
+        iso_code:
+          type: string
+          example: "VN"
+        phone_number:
+          type: string
+          example: "0123456789"
+
+    RefreshTokenBody:
+      type: object
+      required:
+        - refresh_token
+      properties:
+        refresh_token:
+          type: string
+          description: Token dùng để cấp lại access token mới
+
+    VerifyEmailBody:
+      type: object
+      required:
+        - email_verify_token
+      properties:
+        email_verify_token:
+          type: string
+          description: Token nhận được qua email để xác thực tài khoản
+
+    ForgotPasswordBody:
+      type: object
+      required:
+        - email
+      properties:
+        email:
+          type: string
+          format: email
+          description: Email của người dùng bị quên mật khẩu
+
+    VerifyForgotPasswordTokenBody:
+      type: object
+      required:
+        - forgot_password_token
+      properties:
+        forgot_password_token:
+          type: string
+          description: Token xác minh quyền đặt lại mật khẩu
+
+    ResetPasswordBody:
+      type: object
+      required:
+        - password
+        - confirm_password
+        - forgot_password_token
+      properties:
+        password:
+          type: string
+          format: password
+          description: Mật khẩu mới
+        confirm_password:
+          type: string
+          format: password
+          description: Nhập lại mật khẩu mới
+        forgot_password_token:
+          type: string
+          description: Token kèm theo để xác thực yêu cầu reset
+
+    UpdateProfileBody:
+      type: object
+      description: Cho phép cập nhật một phần thông tin user
+      properties:
+        name:
+          type: string
+        date_of_birth:
+          type: string
+          format: date-time
+        bio:
+          type: string
+        location:
+          type: string
+        website:
+          type: string
+        avatar:
+          type: string
+        cover_photo:
+          type: string
+
+    # ==========================================
+    # Response Schemas (Dữ liệu đầu ra thường gặp)
+    # ==========================================
+    AuthResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "Đăng nhập thành công"
+        result:
+          type: object
+          properties:
+            access_token:
+              type: string
+            refresh_token:
+              type: string
+
+    UserResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "Lấy thông tin người dùng thành công"
+        result:
+          $ref: '#/components/schemas/User'
+
+    SuccessResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "Thao tác thành công"
+
+    ErrorResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "Lỗi xác thực"
+        error_info:
+          type: object
+          additionalProperties: true

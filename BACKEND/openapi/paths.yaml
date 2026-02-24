@@ -1,0 +1,250 @@
+paths:
+  /users/login:
+    post:
+      tags: [Users]
+      summary: Đăng nhập
+      description: Đăng nhập bằng email và password, trả về cặp token.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginBody'
+      responses:
+        '200':
+          description: Đăng nhập thành công
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '401':
+          description: Email hoặc mật khẩu không đúng
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /users/register:
+    post:
+      tags: [Users]
+      summary: Đăng ký tài khoản mới
+      description: Tạo tài khoản người dùng mới và trả về cặp token.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterBody'
+      responses:
+        '200':
+          description: Đăng ký thành công
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '422':
+          description: Lỗi validate dữ liệu đầu vào (ví dụ: email đã tồn tại)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /users/logout:
+    post:
+      tags: [Users]
+      summary: Đăng xuất
+      description: Xóa refresh token khỏi database. Yêu cầu access token ở header và refresh token ở body.
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RefreshTokenBody'
+      responses:
+        '200':
+          description: Đăng xuất thành công
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '401':
+          description: Unauthorized (Token không hợp lệ hoặc hết hạn)
+
+  /users/refresh-token:
+    post:
+      tags: [Users]
+      summary: Cấp lại token mới
+      description: Sử dụng refresh token để lấy cặp access token và refresh token mới.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RefreshTokenBody'
+      responses:
+        '200':
+          description: Cấp token mới thành công
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '401':
+          description: Refresh token không hợp lệ hoặc đã hết hạn
+
+  /users/verify-email:
+    post:
+      tags: [Users]
+      summary: Xác thực email
+      description: Xác thực tài khoản người dùng bằng token được gửi qua email.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VerifyEmailBody'
+      responses:
+        '200':
+          description: Xác thực email thành công
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse' # Thường verify xong sẽ cho login luôn
+        '400':
+          description: Token không hợp lệ
+
+  /users/resend-verify-email:
+    post:
+      tags: [Users]
+      summary: Gửi lại email xác thực
+      description: Yêu cầu gửi lại email xác thực cho người dùng đang đăng nhập.
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Gửi lại email thành công
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '401':
+          description: Unauthorized
+
+  /users/forgot-password:
+    post:
+      tags: [Users]
+      summary: Yêu cầu quên mật khẩu
+      description: Gửi email chứa token để đặt lại mật khẩu.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ForgotPasswordBody'
+      responses:
+        '200':
+          description: Gửi yêu cầu thành công, kiểm tra email
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '404':
+          description: Không tìm thấy người dùng với email này
+
+  /users/verify-forgot-password:
+    post:
+      tags: [Users]
+      summary: Kiểm tra token quên mật khẩu
+      description: Kiểm tra xem token đặt lại mật khẩu có hợp lệ hay không trước khi cho phép user nhập pass mới.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VerifyForgotPasswordTokenBody'
+      responses:
+        '200':
+          description: Token hợp lệ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          description: Token không hợp lệ hoặc đã hết hạn
+
+  /users/reset-password:
+    post:
+      tags: [Users]
+      summary: Đặt lại mật khẩu mới
+      description: Thực hiện đổi mật khẩu mới sử dụng token đã được cấp.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResetPasswordBody'
+      responses:
+        '200':
+          description: Đặt lại mật khẩu thành công
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+
+  /users/me:
+    get:
+      tags: [Users]
+      summary: Lấy thông tin cá nhân (Profile)
+      description: Lấy thông tin của người dùng đang đăng nhập.
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Lấy thông tin thành công
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+        '401':
+          description: Unauthorized
+    patch:
+      tags: [Users]
+      summary: Cập nhật thông tin cá nhân
+      description: Cập nhật các trường thông tin cho phép của người dùng hiện tại.
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateProfileBody'
+      responses:
+        '200':
+          description: Cập nhật thành công, trả về thông tin mới
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+
+  /users/{username}:
+    get:
+      tags: [Users]
+      summary: Lấy thông tin người dùng công khai theo username
+      parameters:
+        - in: path
+          name: username
+          required: true
+          schema:
+            type: string
+          description: Username của người dùng cần tìm
+      responses:
+        '200':
+          description: Tìm thấy người dùng
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+        '404':
+          description: Không tìm thấy người dùng

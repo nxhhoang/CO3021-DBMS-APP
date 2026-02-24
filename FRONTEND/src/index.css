@@ -1,0 +1,19 @@
+@import "tailwindcss";
+
+@theme {
+  --color-blue: #1a73e8;
+  --color-orange: #ee4d2d; 
+  --color-secondary: #00FF00;
+  --color-my-brand-blue: #1a73e8;
+  --color-lms-blue: #008196;
+}
+
+html {
+  height: 100%;
+  line-height: 1.2;
+}
+
+body {
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-weight: 400;
+}

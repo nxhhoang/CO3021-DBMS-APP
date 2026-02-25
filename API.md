@@ -66,7 +66,7 @@ Chức năng: Đăng ký, Đăng nhập, Quản lý Token
 ```
 
 #### Refresh Token (rotation)
-- Endpoint: POST /auth/refresh-token
+- Endpoint: `POST /auth/refresh-token`
 - Request Body:
 ```json
 {

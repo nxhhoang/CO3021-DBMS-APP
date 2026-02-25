@@ -4,227 +4,206 @@ components:
       type: http
       scheme: bearer
       bearerFormat: JWT
-      description: Sử dụng access token để xác thực.
+      description: "Sử dụng access token để xác thực. Gửi kèm trong header: Authorization: Bearer <token>"
 
   schemas:
-    User:
-      type: object
-      properties:
-        _id:
-          type: string
-          example: "653d6b3f7f8a9b0c1d2e3f4g"
-        name:
-          type: string
-          example: "Nguyễn Văn A"
-        email:
-          type: string
-          format: email
-          example: "nguyenvana@example.com"
-        date_of_birth:
-          type: string
-          format: date-time
-          example: "1990-01-01T00:00:00.000Z"
-        iso_code:
-          type: string
-          example: "VN"
-        phone_number:
-          type: string
-          example: "0987654321"
-        verify:
-          type: integer
-          enum: [0, 1, 2] # Giả sử: 0=Unverified, 1=Verified, 2=Banned
-          example: 1
-        bio:
-          type: string
-          example: "Khách hàng mua sắm online"
-        location:
-          type: string
-          example: "Hà Nội, Việt Nam"
-        website:
-          type: string
-          example: "https://nguyenvana.com"
-        username:
-          type: string
-          example: "nguyenvana90"
-        avatar:
-          type: string
-          example: "https://example.com/avatar.jpg"
-        cover_photo:
-          type: string
-          example: "https://example.com/cover.jpg"
-        created_at:
-          type: string
-          format: date-time
-        updated_at:
-          type: string
-          format: date-time
-    # ==========================================
-    # Request Body Schemas (Dữ liệu đầu vào)
-    # ==========================================
-    LoginBody:
-      type: object
-      required:
-        - email
-        - password
-      properties:
-        email:
-          type: string
-          format: email
-          example: "client@example.com"
-        password:
-          type: string
-          format: password
-          example: "Password123@"
-
     RegisterBody:
       type: object
-      required:
-        - name
-        - email
-        - password
-        - confirm_password
+      required: [email, password, fullName, phoneNum]
       properties:
-        name:
-          type: string
-          example: "Client Mới"
         email:
           type: string
           format: email
-          example: "newclient@example.com"
+          example: "user@example.com"
         password:
           type: string
           format: password
-          example: "Password123@"
-        confirm_password:
+          example: "securePassword123"
+        fullName:
+          type: string
+          example: "Nguyen Van A"
+        phoneNum:
+          type: string
+          example: "0909123456"
+
+    LoginBody:
+      type: object
+      required: [email, password]
+      properties:
+        email:
+          type: string
+          format: email
+          example: "user@example.com"
+        password:
           type: string
           format: password
-          example: "Password123@"
-        date_of_birth:
+          example: "securePassword123"
+        userAgent:
           type: string
-          format: date
-          example: "2000-05-20"
-        iso_code:
-          type: string
-          example: "VN"
-        phone_number:
-          type: string
-          example: "0123456789"
+          example: "Mozilla/5.0..."
 
     RefreshTokenBody:
       type: object
-      required:
-        - refresh_token
+      required: [refreshToken]
       properties:
-        refresh_token:
+        refreshToken:
           type: string
-          description: Token dùng để cấp lại access token mới
-
-    VerifyEmailBody:
-      type: object
-      required:
-        - email_verify_token
-      properties:
-        email_verify_token:
-          type: string
-          description: Token nhận được qua email để xác thực tài khoản
-
-    ForgotPasswordBody:
-      type: object
-      required:
-        - email
-      properties:
-        email:
-          type: string
-          format: email
-          description: Email của người dùng bị quên mật khẩu
-
-    VerifyForgotPasswordTokenBody:
-      type: object
-      required:
-        - forgot_password_token
-      properties:
-        forgot_password_token:
-          type: string
-          description: Token xác minh quyền đặt lại mật khẩu
-
-    ResetPasswordBody:
-      type: object
-      required:
-        - password
-        - confirm_password
-        - forgot_password_token
-      properties:
-        password:
-          type: string
-          format: password
-          description: Mật khẩu mới
-        confirm_password:
-          type: string
-          format: password
-          description: Nhập lại mật khẩu mới
-        forgot_password_token:
-          type: string
-          description: Token kèm theo để xác thực yêu cầu reset
+          example: "random-string-db-stored"
 
     UpdateProfileBody:
       type: object
-      description: Cho phép cập nhật một phần thông tin user
+      properties:
+        fullName:
+          type: string
+          example: "Nguyen Van B"
+        phoneNum:
+          type: string
+          example: "0987654321"
+        avatar:
+          type: string
+          example: "url_moi"
+
+    AddressBody:
+      type: object
+      required: [addressLine, city, district, isDefault]
+      properties:
+        addressLine:
+          type: string
+          example: "123 Ly Thuong Kiet"
+        city:
+          type: string
+          example: "HCM"
+        district:
+          type: string
+          example: "District 10"
+        isDefault:
+          type: boolean
+          example: true
+
+    AdminProductBody:
+      type: object
+      required: [name, category, base_price, attributes]
       properties:
         name:
           type: string
-        date_of_birth:
+          example: "Ao thun"
+        category:
           type: string
-          format: date-time
-        bio:
-          type: string
-        location:
-          type: string
-        website:
-          type: string
-        avatar:
-          type: string
-        cover_photo:
-          type: string
-
-    # ==========================================
-    # Response Schemas (Dữ liệu đầu ra thường gặp)
-    # ==========================================
-    AuthResponse:
-      type: object
-      properties:
-        message:
-          type: string
-          example: "Đăng nhập thành công"
-        result:
+          example: "Clothing"
+        base_price:
+          type: number
+          example: 200
+        attributes:
           type: object
-          properties:
-            access_token:
-              type: string
-            refresh_token:
-              type: string
+          example: { "size": "L", "material": "Cotton" }
 
-    UserResponse:
+    CartSyncBody:
+      type: object
+      required: [items]
+      properties:
+        items:
+          type: array
+          items:
+            type: object
+            properties:
+              productId:
+                type: string
+                example: "mongo_id_1"
+              sku:
+                type: string
+                example: "SKU_A"
+              quantity:
+                type: integer
+                example: 2
+
+    OrderBody:
+      type: object
+      required: [shippingAddressId, paymentMethod, items]
+      properties:
+        shippingAddressId:
+          type: integer
+          example: 1
+        paymentMethod:
+          type: string
+          example: "COD"
+        items:
+          type: array
+          items:
+            type: object
+            properties:
+              productId:
+                type: string
+                example: "mongo_id_1"
+              productName:
+                type: string
+                example: "MacBook Pro"
+              sku:
+                type: string
+                example: "M3-16-512"
+              quantity:
+                type: integer
+                example: 1
+              unitPrice:
+                type: number
+                example: 2000
+
+    PaymentBody:
+      type: object
+      required: [orderID, paymentMethod]
+      properties:
+        orderID:
+          type: integer
+          example: 1001
+        paymentMethod:
+          type: string
+          example: "BANKING"
+
+    ReviewBody:
+      type: object
+      required: [rating, comment]
+      properties:
+        rating:
+          type: integer
+          example: 5
+        comment:
+          type: string
+          example: "Sản phẩm tốt"
+        images:
+          type: array
+          items:
+            type: string
+
+    LogBody:
+      type: object
+      required: [action_type, target_id]
+      properties:
+        action_type:
+          type: string
+          example: "VIEW_PRODUCT"
+        target_id:
+          type: string
+          example: "mongo_product_id"
+        metadata:
+          type: object
+          example: { "search_keyword": "Laptop gaming", "device": "Mobile" }
+
+    GenericResponse:
       type: object
       properties:
         message:
           type: string
-          example: "Lấy thông tin người dùng thành công"
-        result:
-          $ref: '#/components/schemas/User'
-
-    SuccessResponse:
-      type: object
-      properties:
-        message:
-          type: string
-          example: "Thao tác thành công"
+          example: "Thành công"
+        data:
+          type: object
+          additionalProperties: true
+          nullable: true
 
     ErrorResponse:
       type: object
       properties:
         message:
           type: string
-          example: "Lỗi xác thực"
-        error_info:
+          example: "Đã xảy ra lỗi"
+        data:
           type: object
-          additionalProperties: true
+          nullable: true

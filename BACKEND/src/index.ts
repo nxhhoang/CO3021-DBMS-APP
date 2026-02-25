@@ -11,6 +11,7 @@ import YAML from 'yaml'
 import swaggerUi from 'swagger-ui-express'
 import swaggerJsdoc from 'swagger-jsdoc'
 import { envConfig, isProduction } from '~/constants/config'
+import sampleRouter from '~/routes/sample.routes'
 // const file = fs.readFileSync(path.resolve('twitter-swagger.yaml'), 'utf8')
 // const swaggerDocument = YAML.parse(file)
 
@@ -18,7 +19,7 @@ const options: swaggerJsdoc.Options = {
   definition: {
     openapi: '3.0.0',
     info: {
-      title: 'X clone (Twitter API)',
+      title: 'E-commerce API',
       version: '1.0.0'
     },
     components: {
@@ -48,6 +49,7 @@ const openapiSpecification = swaggerJsdoc(options)
 //   databaseService.indexFollowers()
 //   databaseService.indexTweets()
 // })
+
 const app = express()
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
@@ -68,6 +70,7 @@ const port = envConfig.port
 
 app.use(express.json())
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(openapiSpecification))
+app.use('/api/v1/samples', sampleRouter)
 app.use(defaultErrorHandler)
 
 initSocket(httpServer)

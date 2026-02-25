@@ -1,13 +1,13 @@
 import { ObjectId } from 'mongodb'
 import { verifyAccessToken } from '~/utils/commons'
-import { TokenPayload } from '~/models/requests/User.requests'
+import { TokenPayload } from '~/models/requests/Auth.requests'
 import { UserVerifyStatus } from '~/constants/enums'
 import { ErrorWithStatus } from '~/models/Errors'
 import { USERS_MESSAGES } from '~/constants/messages'
 import HTTP_STATUS from '~/constants/httpStatus'
 import { Server } from 'socket.io'
-import Conversation from '~/models/schemas/Conversations.schema'
-import databaseService from '~/services/database.services'
+// import Conversation from '~/models/schemas/Conversations.schema'
+// import databaseService from '~/services/database.services'
 import { Server as ServerHttp } from 'http'
 
 const initSocket = (httpServer: ServerHttp) => {
@@ -65,25 +65,6 @@ const initSocket = (httpServer: ServerHttp) => {
     socket.on('error', (error) => {
       if (error.message === 'Unauthorized') {
         socket.disconnect()
-      }
-    })
-    socket.on('send_message', async (data) => {
-      const { receiver_id, sender_id, content } = data.payload
-      const receiver_socket_id = users[receiver_id]?.socket_id
-      const conversation = new Conversation({
-        sender_id: new ObjectId(sender_id),
-        receiver_id: new ObjectId(receiver_id),
-        content: content
-      })
-      const result = await databaseService.conversations.insertOne(conversation)
-      conversation._id = result.insertedId
-      socket.emit('send_message_success', {
-        payload: conversation
-      })
-      if (receiver_socket_id) {
-        socket.to(receiver_socket_id).emit('receive_message', {
-          payload: conversation
-        })
       }
     })
     socket.on('disconnect', () => {

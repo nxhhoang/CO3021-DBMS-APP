@@ -1,7 +1,7 @@
 import * as React from "react";
 import { cn } from "@/lib/utils";
 
-export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {}
+export interface CardProps extends React.HTMLAttributes<HTMLDivElement> { }
 
 const Card = React.forwardRef<HTMLDivElement, CardProps>(
     ({ className, ...props }, ref) => (
@@ -88,20 +88,20 @@ const CardFooter = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDiv
 CardFooter.displayName = "CardFooter";
 
 export interface CardMediaProps extends React.ImgHTMLAttributes<HTMLImageElement> {
-  containerClassName?: string;
+    containerClassName?: string;
 }
 
 const CardMedia = React.forwardRef<HTMLImageElement, CardMediaProps>(
-  ({ className, containerClassName, alt = "Card image", ...props }, ref) => (
-    <div className={cn("relative w-full h-48 overflow-hidden", containerClassName)}>
-      <img
-        ref={ref}
-        alt={alt}
-        className={cn("h-full w-full object-cover transition-all hover:scale-105", className)}
-        {...props}
-      />
-    </div>
-  )
+    ({ className, containerClassName, alt = "Card image", ...props }, ref) => (
+        <div className={cn("relative w-full h-48 overflow-hidden", containerClassName)}>
+            <img
+                ref={ref}
+                alt={alt}
+                className={cn("h-full w-full object-cover transition-all hover:scale-105", className)}
+                {...props}
+            />
+        </div>
+    )
 );
 CardMedia.displayName = "CardMedia";
 

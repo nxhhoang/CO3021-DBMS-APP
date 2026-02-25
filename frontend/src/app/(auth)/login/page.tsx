@@ -10,7 +10,7 @@ const Login = () => {
     <div className="flex flex-col items-center justify-center min-h-screen gap-6">
       <h1 className="text-3xl font-bold">Login Page</h1>
 
-      <Button onClick={() => alert("Clicked")}>
+      <Button variant="outline" onClick={() => alert("Clicked")}>
         Click me
       </Button>
 

@@ -3,6 +3,8 @@
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { Card, CardHeader, CardContent, CardFooter, CardMedia, CardDescription, CardTitle } from "@/components/ui/card";
+import { Placeholder } from "@/components/ui/placeholder";
+import { subtle } from "crypto";
 
 
 const Login = () => {
@@ -10,21 +12,21 @@ const Login = () => {
     <div className="flex flex-col items-center justify-center min-h-screen gap-6">
       <h1 className="text-3xl font-bold">Login Page</h1>
 
-      <Button variant="outline" onClick={() => alert("Clicked")}>
+      <Button variant="link" onClick={() => alert("Clicked")}>
         Click me
       </Button>
 
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-            <Button>Open Menu</Button>
+          <Button>Open Menu</Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent>
-            <DropdownMenuItem onSelect={() => alert("Option 1")}>Option 1</DropdownMenuItem>
-            <DropdownMenuItem onSelect={() => alert("Option 2")}>Option 2</DropdownMenuItem>
-            <DropdownMenuItem onSelect={() => alert("Option 3")}>Option 3</DropdownMenuItem>
+          <DropdownMenuItem onSelect={() => alert("Option 1")}>Option 1</DropdownMenuItem>
+          <DropdownMenuItem onSelect={() => alert("Option 2")}>Option 2</DropdownMenuItem>
+          <DropdownMenuItem onSelect={() => alert("Option 3")}>Option 3</DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
-      <Card className="p-4">
+      {/* <Card className="p-4">
         <CardMedia
           src=""
           alt="Products"
@@ -38,7 +40,8 @@ const Login = () => {
         <CardDescription>
           <p>This is a card component.</p>
         </CardDescription>
-      </Card>
+      </Card> */}
+      <Placeholder label="Chart Area" size="lg" />
     </div>
   );
 };

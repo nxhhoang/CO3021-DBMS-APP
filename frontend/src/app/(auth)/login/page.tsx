@@ -1,15 +1,27 @@
-"use client";
+'use client';
 
-import { Button } from "@/components/ui/button";
-import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu";
-import { Card, CardHeader, CardContent, CardFooter, CardMedia, CardDescription, CardTitle } from "@/components/ui/card";
-import { Placeholder } from "@/components/ui/placeholder";
-import { Wireframe } from "@/components/ui/wireframe";
+import { Button } from '@/components/ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+} from '@/components/ui/dropdown-menu';
+import {
+  Card,
+  CardHeader,
+  CardContent,
+  CardFooter,
+  CardDescription,
+  CardTitle,
+} from '@/components/ui/card';
+import { Placeholder } from '@/components/ui/placeholder';
+import { Wireframe } from '@/components/ui/wireframe';
 
 const Login = () => {
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen gap-6">
-      <h1 className="text-3xl font-bold">Login Page</h1>
+    <div className="flex min-h-screen flex-col items-center justify-center gap-6">
+      {/* <h1 className="text-3xl font-bold">Login Page</h1> */}
 
       {/* <Button variant="link" onClick={() => alert("Clicked")}>
         Click me
@@ -26,10 +38,6 @@ const Login = () => {
         </DropdownMenuContent>
       </DropdownMenu> */}
       {/* <Card className="p-4">
-        <CardMedia
-          src=""
-          alt="Products"
-        />
         <CardHeader>
           <h2 className="text-xl font-semibold">Card Header</h2>
         </CardHeader>
@@ -40,8 +48,11 @@ const Login = () => {
           <p>This is a card component.</p>
         </CardDescription>
       </Card> */}
-      <Wireframe label="Login Form">
-        <div className="space-y-4">
+      <Wireframe
+        label="Login Form"
+        className="flex h-auto w-3xl justify-center"
+      >
+        <div className="flex w-full flex-col justify-between gap-4">
           <Placeholder label="Email Input" size="sm" />
           <Placeholder label="Password Input" size="sm" />
           <Placeholder label="Submit Button" size="sm" />

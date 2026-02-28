@@ -37,7 +37,7 @@ export function Wireframe({
   return (
     <div className={cn(wireframeVariants({ tone }), className)} {...props}>
       {label && (
-        <div className="border-muted-foreground/40 bg-muted font-md text-muted-foreground absolute -top-3 left-3 rounded-sm border-1 px-2 text-xs">
+        <div className="border-muted-foreground/40 bg-muted font-md text-muted-foreground absolute -top-3 left-3 rounded-sm border px-2 text-xs">
           {label}
         </div>
       )}

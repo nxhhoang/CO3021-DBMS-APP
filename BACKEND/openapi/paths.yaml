@@ -1,0 +1,435 @@
+paths:
+  # ================= AUTHENTICATION =================
+  /auth/register:
+    post:
+      tags: [Auth]
+      summary: Đăng ký tài khoản mới
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterBody'
+      responses:
+        '200':
+          description: "Đăng ký thành công"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericResponse'
+
+  /auth/login:
+    post:
+      tags: [Auth]
+      summary: Đăng nhập
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginBody'
+      responses:
+        '200':
+          description: "Đăng nhập thành công"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericResponse'
+
+  /auth/refresh-token:
+    post:
+      tags: [Auth]
+      summary: Cấp lại token mới (Refresh Token Rotation)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RefreshTokenBody'
+      responses:
+        '200':
+          description: "Cấp lại token thành công"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericResponse'
+
+  # ================= USERS & PROFILE =================
+  /users/profile:
+    get:
+      tags: [Users]
+      summary: Lấy thông tin cá nhân
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: "Lấy thông tin thành công"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericResponse'
+    put:
+      tags: [Users]
+      summary: Cập nhật thông tin cá nhân
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateProfileBody'
+      responses:
+        '200':
+          description: "Cập nhật hồ sơ thành công"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericResponse'
+
+  # ================= ADDRESSES =================
+  /users/addresses:
+    get:
+      tags: [Addresses]
+      summary: Danh sách địa chỉ giao hàng
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: "Lấy danh sách địa chỉ thành công"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericResponse'
+    post:
+      tags: [Addresses]
+      summary: Thêm địa chỉ mới
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddressBody'
+      responses:
+        '200':
+          description: "Thêm địa chỉ thành công"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericResponse'
+
+  /users/addresses/{addressID}:
+    put:
+      tags: [Addresses]
+      summary: Cập nhật một địa chỉ cụ thể
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: addressID
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddressBody'
+      responses:
+        '200':
+          description: "Cập nhật địa chỉ thành công"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericResponse'
+    delete:
+      tags: [Addresses]
+      summary: Xóa địa chỉ
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: addressID
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: "Đã xóa địa chỉ"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericResponse'
+
+  /users/addresses/{addressID}/set-default:
+    patch:
+      tags: [Addresses]
+      summary: Thiết lập địa chỉ mặc định
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: addressID
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: "Đã đặt làm địa chỉ mặc định"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericResponse'
+
+  # ================= PRODUCTS =================
+  /products:
+    get:
+      tags: [Products]
+      summary: Tìm kiếm & Lọc sản phẩm
+      parameters:
+        - in: query
+          name: keyword
+          schema:
+            type: string
+        - in: query
+          name: category
+          schema:
+            type: string
+        - in: query
+          name: price_min
+          schema:
+            type: number
+        - in: query
+          name: page
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: "Tìm thấy sản phẩm"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericResponse'
+
+  /products/{id}:
+    get:
+      tags: [Products]
+      summary: Chi tiết sản phẩm (kèm tồn kho)
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: "Lấy chi tiết sản phẩm thành công"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericResponse'
+
+  /admin/products:
+    post:
+      tags: [Admin]
+      summary: Admin Thêm sản phẩm
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdminProductBody'
+      responses:
+        '200':
+          description: "Tạo sản phẩm thành công"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericResponse'
+
+  # ================= CART & ORDERS =================
+  /cart/sync:
+    post:
+      tags: [Cart]
+      summary: Đồng bộ giỏ hàng
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CartSyncBody'
+      responses:
+        '200':
+          description: "Đồng bộ giỏ hàng thành công"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericResponse'
+
+  /orders:
+    post:
+      tags: [Orders]
+      summary: Tạo đơn hàng (Checkout)
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrderBody'
+      responses:
+        '200':
+          description: "Đặt hàng thành công"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericResponse'
+    get:
+      tags: [Orders]
+      summary: Lịch sử đơn hàng
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: "Danh sách đơn hàng"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericResponse'
+
+  /orders/{orderId}:
+    get:
+      tags: [Orders]
+      summary: Chi tiết đơn hàng
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: orderId
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: "Chi tiết đơn hàng"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericResponse'
+
+  # ================= PAYMENTS =================
+  /payments/process:
+    post:
+      tags: [Payments]
+      summary: Thực hiện thanh toán
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PaymentBody'
+      responses:
+        '200':
+          description: "Thanh toán thành công"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericResponse'
+
+  # ================= REVIEWS =================
+  /products/{productId}/reviews:
+    get:
+      tags: [Reviews]
+      summary: Lấy danh sách Review
+      parameters:
+        - in: path
+          name: productId
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: "Danh sách đánh giá"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericResponse'
+    post:
+      tags: [Reviews]
+      summary: Gửi đánh giá mới
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: productId
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReviewBody'
+      responses:
+        '200':
+          description: "Gửi đánh giá thành công"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericResponse'
+
+  # ================= SYSTEM LOGGING =================
+  /logs:
+    post:
+      tags: [Logs]
+      summary: Ghi Log (User Tracking)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LogBody'
+      responses:
+        '200':
+          description: "Đã ghi log"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericResponse'
+
+  # ================= STATISTICS =================
+  /admin/stats/revenue:
+    get:
+      tags: [Admin]
+      summary: Thống kê doanh thu
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: query
+          name: startDate
+          schema:
+            type: string
+        - in: query
+          name: endDate
+          schema:
+            type: string
+        - in: query
+          name: type
+          schema:
+            type: string
+      responses:
+        '200':
+          description: "Thống kê doanh thu"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericResponse'

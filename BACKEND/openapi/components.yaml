@@ -1,0 +1,209 @@
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: "Sử dụng access token để xác thực. Gửi kèm trong header: Authorization: Bearer <token>"
+
+  schemas:
+    RegisterBody:
+      type: object
+      required: [email, password, fullName, phoneNum]
+      properties:
+        email:
+          type: string
+          format: email
+          example: "user@example.com"
+        password:
+          type: string
+          format: password
+          example: "securePassword123"
+        fullName:
+          type: string
+          example: "Nguyen Van A"
+        phoneNum:
+          type: string
+          example: "0909123456"
+
+    LoginBody:
+      type: object
+      required: [email, password]
+      properties:
+        email:
+          type: string
+          format: email
+          example: "user@example.com"
+        password:
+          type: string
+          format: password
+          example: "securePassword123"
+        userAgent:
+          type: string
+          example: "Mozilla/5.0..."
+
+    RefreshTokenBody:
+      type: object
+      required: [refreshToken]
+      properties:
+        refreshToken:
+          type: string
+          example: "random-string-db-stored"
+
+    UpdateProfileBody:
+      type: object
+      properties:
+        fullName:
+          type: string
+          example: "Nguyen Van B"
+        phoneNum:
+          type: string
+          example: "0987654321"
+        avatar:
+          type: string
+          example: "url_moi"
+
+    AddressBody:
+      type: object
+      required: [addressLine, city, district, isDefault]
+      properties:
+        addressLine:
+          type: string
+          example: "123 Ly Thuong Kiet"
+        city:
+          type: string
+          example: "HCM"
+        district:
+          type: string
+          example: "District 10"
+        isDefault:
+          type: boolean
+          example: true
+
+    AdminProductBody:
+      type: object
+      required: [name, category, base_price, attributes]
+      properties:
+        name:
+          type: string
+          example: "Ao thun"
+        category:
+          type: string
+          example: "Clothing"
+        base_price:
+          type: number
+          example: 200
+        attributes:
+          type: object
+          example: { "size": "L", "material": "Cotton" }
+
+    CartSyncBody:
+      type: object
+      required: [items]
+      properties:
+        items:
+          type: array
+          items:
+            type: object
+            properties:
+              productId:
+                type: string
+                example: "mongo_id_1"
+              sku:
+                type: string
+                example: "SKU_A"
+              quantity:
+                type: integer
+                example: 2
+
+    OrderBody:
+      type: object
+      required: [shippingAddressId, paymentMethod, items]
+      properties:
+        shippingAddressId:
+          type: integer
+          example: 1
+        paymentMethod:
+          type: string
+          example: "COD"
+        items:
+          type: array
+          items:
+            type: object
+            properties:
+              productId:
+                type: string
+                example: "mongo_id_1"
+              productName:
+                type: string
+                example: "MacBook Pro"
+              sku:
+                type: string
+                example: "M3-16-512"
+              quantity:
+                type: integer
+                example: 1
+              unitPrice:
+                type: number
+                example: 2000
+
+    PaymentBody:
+      type: object
+      required: [orderID, paymentMethod]
+      properties:
+        orderID:
+          type: integer
+          example: 1001
+        paymentMethod:
+          type: string
+          example: "BANKING"
+
+    ReviewBody:
+      type: object
+      required: [rating, comment]
+      properties:
+        rating:
+          type: integer
+          example: 5
+        comment:
+          type: string
+          example: "Sản phẩm tốt"
+        images:
+          type: array
+          items:
+            type: string
+
+    LogBody:
+      type: object
+      required: [action_type, target_id]
+      properties:
+        action_type:
+          type: string
+          example: "VIEW_PRODUCT"
+        target_id:
+          type: string
+          example: "mongo_product_id"
+        metadata:
+          type: object
+          example: { "search_keyword": "Laptop gaming", "device": "Mobile" }
+
+    GenericResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "Thành công"
+        data:
+          type: object
+          additionalProperties: true
+          nullable: true
+
+    ErrorResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "Đã xảy ra lỗi"
+        data:
+          type: object
+          nullable: true

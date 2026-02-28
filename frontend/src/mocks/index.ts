@@ -1,5 +1,5 @@
 export async function enableMocking() {
-  if (process.env.NEXT_PUBLIC_API_MOCKING !== 'enabled') {
+  if (process.env.NEXT_PUBLIC_API_MOCKING !== 'true') {
     return;
   }
 

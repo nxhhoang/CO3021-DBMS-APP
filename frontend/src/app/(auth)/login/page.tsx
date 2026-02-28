@@ -11,7 +11,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { login } from '@/lib/api/auth';
+import { login } from '@/services/auth.service';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');

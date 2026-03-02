@@ -3,6 +3,7 @@
 import { Button } from '@/components/ui/button';
 // import { Checkbox } from '@/components/ui/checkbox';
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import {
   Card,
   CardHeader,
@@ -14,29 +15,35 @@ import {
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { authService } from '@/services/auth.service';
+import Link from 'next/link';
+import { useForm } from '@/hooks/useForm';
 // import { Phone } from 'lucide-react';
 
 const RegisterPage = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [fullName, setFullName] = useState('');
-  const [phoneNum, setPhoneNum] = useState('');
+  const router = useRouter();
   const [loading, setLoading] = useState(false);
+
+  // Gom tất cả useState cũ vào 1 Hook duy nhất
+  const { values, handleChange } = useForm({
+    email: '',
+    password: '',
+    confirmPassword: '',
+    fullName: '',
+    phoneNum: '',
+  });
+
   const handleRegister = async () => {
-    if (password !== confirmPassword) {
+    // Truy cập giá trị qua object 'values'
+    if (values.password !== values.confirmPassword) {
       alert('Passwords do not match');
       return;
     }
+
     try {
       setLoading(true);
-      const result = await authService.register({
-        email,
-        password,
-        fullName,
-        phoneNum,
-      });
-      alert(result.message || 'Register success');
+      await authService.register(values); // Truyền thẳng object values vào service
+      alert('Register success');
+      router.push('/login');
     } catch (err: any) {
       alert(err?.response?.data?.message || 'Register failed');
     } finally {
@@ -58,8 +65,8 @@ const RegisterPage = () => {
             id="email"
             type="email"
             placeholder="name@example.com"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            value={values.email}
+            onChange={handleChange}
           />
         </div>
 
@@ -69,18 +76,18 @@ const RegisterPage = () => {
           <Input
             id="password"
             type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            value={values.password}
+            onChange={handleChange}
           />
         </div>
 
         <div className="grid gap-2">
           <Label htmlFor="password-confirm">Confirm Password</Label>
           <Input
-            id="password-confirm"
+            id="confirmPassword"
             type="password"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
+            value={values.confirmPassword}
+            onChange={handleChange}
           />
         </div>
 
@@ -89,8 +96,8 @@ const RegisterPage = () => {
           <Label htmlFor="fullName">Full name</Label>
           <Input
             id="fullName"
-            value={fullName}
-            onChange={(e) => setFullName(e.target.value)}
+            value={values.fullName}
+            onChange={handleChange}
           />
         </div>
 
@@ -99,8 +106,8 @@ const RegisterPage = () => {
           <Label htmlFor="phoneNum">Phone number</Label>
           <Input
             id="phoneNum"
-            value={phoneNum}
-            onChange={(e) => setPhoneNum(e.target.value)}
+            value={values.phoneNum}
+            onChange={handleChange}
           />
         </div>
       </CardContent>
@@ -111,7 +118,13 @@ const RegisterPage = () => {
         </Button>
 
         <p className="text-muted-foreground text-center text-sm">
-          Already have an account? Sign in
+          Already have an account?{' '}
+          <Link
+            href="/login"
+            className="text-primary font-medium hover:underline"
+          >
+            Sign in
+          </Link>
         </p>
       </CardFooter>
     </Card>

@@ -1,6 +1,12 @@
 import axios from 'axios';
 import { BASE_URL } from '@/constants/api';
 
+declare global {
+  interface Window {
+    api: any;
+  }
+}
+
 export const api = axios.create({
   baseURL: BASE_URL,
 });
@@ -9,15 +15,36 @@ if (typeof window !== 'undefined') {
   (window as any).api = api;
 }
 
-// 1. Request Interceptor: Tự động thêm Bearer Token vào Header
+const AUTH_PATHNAMES = [
+  '/api/v1/auth/login',
+  '/api/v1/auth/register',
+  '/api/v1/auth/refresh-token',
+];
+
+const GUEST_PAGES = [
+  '/login',
+  '/register',
+  '/forgot-password',
+  '/reset-password',
+];
+
+// Helper kiểm tra route an toàn
+const isAuthRequest = (url?: string) => {
+  if (!url) return false;
+  // Xử lý để lấy ra pathname sạch (loại bỏ domain và query params)
+  // Ví dụ: http://localhost:3000/api/v1/auth/login?abc=1 => /api/v1/auth/login
+  const path = url.replace(BASE_URL, '').split('?')[0];
+  return AUTH_PATHNAMES.some((authPath) => path.endsWith(authPath));
+};
+
 api.interceptors.request.use(
   (config) => {
-    // Lấy token từ localStorage (hoặc cookie/state tùy bạn)
+    if (isAuthRequest(config.url)) return config;
+
     const token =
       typeof window !== 'undefined'
         ? localStorage.getItem('accessToken')
         : null;
-
     if (token && config.headers) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -26,40 +53,46 @@ api.interceptors.request.use(
   (error) => Promise.reject(error),
 );
 
-// 2. Response Interceptor: Xử lý Refresh Token Rotation
 api.interceptors.response.use(
-  (response) => response, // Trả về dữ liệu nếu request thành công
+  (response) => response,
   async (error) => {
     const originalRequest = error.config;
 
-    // Nếu lỗi 401 (Unauthorized) và chưa thử refresh lần nào (_retry)
-    if (error.response?.status === 401 && !originalRequest._retry) {
+    // Nếu không có response (lỗi mạng) hoặc request không tồn tại
+    if (!error.response || !originalRequest) return Promise.reject(error);
+
+    // KIỂM TRA CHÍNH XÁC: Nếu là 401 từ trang Login/Register thì DỪNG LUÔN
+    if (isAuthRequest(originalRequest.url)) {
+      return Promise.reject(error);
+    }
+
+    // Chỉ refresh nếu là lỗi 401 và chưa retry
+    if (error.response.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
 
       try {
         const refreshToken = localStorage.getItem('refreshToken');
+        if (!refreshToken) throw new Error('No refresh token');
 
-        // Gọi API refresh token (đã có handler MSW xử lý)
+        // Dùng axios instance mới hoàn toàn để không dính interceptor cũ
         const res = await axios.post(`${BASE_URL}/auth/refresh-token`, {
           refreshToken,
         });
 
-        // Theo Specs của bạn: data nằm trong res.data.data
         const { accessToken, refreshToken: newRefreshToken } = res.data.data;
-
-        // Lưu cặp token mới vào máy khách
         localStorage.setItem('accessToken', accessToken);
         localStorage.setItem('refreshToken', newRefreshToken);
 
-        // Cập nhật lại header cho request cũ và thực hiện lại
         originalRequest.headers.Authorization = `Bearer ${accessToken}`;
         return api(originalRequest);
       } catch (refreshError) {
-        // Nếu refresh cũng lỗi (hết hạn hoàn toàn) -> Xóa sạch và logout
-        localStorage.removeItem('accessToken');
-        localStorage.removeItem('refreshToken');
+        localStorage.clear(); // Xóa sạch để bảo mật
+
         if (typeof window !== 'undefined') {
-          window.location.href = '/login';
+          const isAtGuestPage = GUEST_PAGES.some((path) =>
+            window.location.pathname.includes(path),
+          );
+          if (!isAtGuestPage) window.location.href = '/login';
         }
         return Promise.reject(refreshError);
       }

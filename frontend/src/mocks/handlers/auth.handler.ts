@@ -8,9 +8,9 @@ export const authHandlers = [
   http.post(`${BASE_URL}/auth/register`, async ({ request }) => {
     const newUser = (await request.json()) as any;
 
-    const exitstingUser = MOCK_USERS.find((u) => u.email === newUser.email);
+    const existingUser = MOCK_USERS.find((u) => u.email === newUser.email);
 
-    if (exitstingUser) {
+    if (existingUser) {
       return HttpResponse.json(
         { message: 'Email đã tồn tại', data: null },
         { status: 400 },

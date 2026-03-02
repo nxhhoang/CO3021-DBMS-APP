@@ -24,7 +24,7 @@ const Header = () => {
           className="flex items-center gap-2 text-xl font-bold tracking-tight"
         >
           <Store className="text-primary h-6 w-6" />
-          <span>SHOP.IO</span>
+          <span>((BRAND))</span>
         </Link>
 
         {/* ===== CENTER: Search (Desktop) ===== */}
@@ -61,7 +61,10 @@ const Header = () => {
               <DropdownMenuLabel>Tài khoản</DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuItem asChild>
-                <Link href="/profile">Trang cá nhân</Link>
+                <Link href="/user/profile">Trang cá nhân</Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link href="/user/addresses">Sổ địa chỉ</Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
                 <Link href="/orders">Đơn hàng</Link>

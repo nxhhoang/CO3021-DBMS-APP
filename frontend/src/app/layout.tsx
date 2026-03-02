@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { Inter, Roboto_Mono } from 'next/font/google';
 import './globals.css';
-import MockProvider from '@/components/ui/layout/MockProvider';
+import MockProvider from '@/components/layout/MockProvider';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { ShoppingCart, User, Search, Store } from 'lucide-react';

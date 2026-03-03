@@ -11,6 +11,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Separator } from '@/components/ui/separator';
+import { userAgent } from 'next/server';
 
 export default function ProfilePage() {
   // Giả định dữ liệu fetch từ API GET /users/profile
@@ -18,7 +19,7 @@ export default function ProfilePage() {
     fullName: 'Nguyen Van B',
     email: 'vanb@example.com',
     phoneNum: '0987654321',
-    avatar: '', // URL trống để test fallback
+    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Nguyen Van B',
   };
 
   return (

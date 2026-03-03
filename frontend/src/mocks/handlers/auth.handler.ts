@@ -135,4 +135,14 @@ export const authHandlers = [
     // Mặc định trả về 401 nếu token không đúng hoặc là token cũ
     return new HttpResponse(null, { status: 401 });
   }),
+  // 5. Mock Đăng xuất (POST /auth/logout)
+  http.post(`${BASE_URL}/auth/logout`, () => {
+    // Khi logout, mình sẽ "xóa" refresh token trên "DB" bằng cách đặt lại giá trị giả lập
+    currentRefreshToken = 'mock-refresh-token'; // Reset về giá trị ban đầu hoặc có thể đặt thành null/undefined tùy ý
+
+    return HttpResponse.json(
+      { message: 'Đăng xuất thành công' },
+      { status: 200 },
+    );
+  }),
 ];

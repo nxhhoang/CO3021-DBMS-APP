@@ -30,7 +30,6 @@ export const authService = {
   },
 
   async logout() {
-    const res = await api.post(`auth/logout`);
-    return res.data;
+    return api.post(`auth/logout`);
   },
 };

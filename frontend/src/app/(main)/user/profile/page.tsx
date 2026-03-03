@@ -9,30 +9,52 @@ import {
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 
 export default function ProfilePage() {
-  // Giả định dữ liệu fetch từ API GET /users/profile
   const user = {
     fullName: 'Nguyen Van B',
     email: 'vanb@example.com',
     phoneNum: '0987654321',
+    role: 'ADMIN',
   };
 
+  const initials = user.fullName
+    .split(' ')
+    .map((word) => word[0])
+    .join('')
+    .toUpperCase();
+
   return (
-    <div className="space-y-6">
-      <Card>
+    <div className="grid gap-6 md:grid-cols-3">
+      {/* LEFT SIDE - Profile Summary */}
+      <Card className="md:col-span-1">
+        <CardContent className="flex flex-col items-center gap-4 pt-6">
+          <Avatar className="h-24 w-24 text-2xl">
+            <AvatarFallback>{initials}</AvatarFallback>
+          </Avatar>
+
+          <div className="text-center">
+            <p className="text-lg font-semibold">{user.fullName}</p>
+            <p className="text-muted-foreground text-sm">{user.email}</p>
+            <p className="bg-muted mt-2 inline-block rounded-full px-3 py-1 text-xs">
+              {user.role}
+            </p>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* RIGHT SIDE - Edit Form */}
+      <Card className="md:col-span-2">
         <CardHeader>
           <CardTitle>Thông tin cá nhân</CardTitle>
           <CardDescription>Cập nhật thông tin cơ bản của bạn.</CardDescription>
         </CardHeader>
 
         <CardContent className="space-y-6">
-          <div className="grid gap-4">
-            {/* 1. Đưa Họ và tên lên vị trí đầu tiên */}
+          <div className="grid gap-6">
             <div className="grid gap-2">
-              <Label htmlFor="name" className="font-semibold">
-                Họ và tên
-              </Label>
+              <Label htmlFor="name">Họ và tên</Label>
               <Input
                 id="name"
                 defaultValue={user.fullName}
@@ -40,7 +62,6 @@ export default function ProfilePage() {
               />
             </div>
 
-            {/* 2. Số điện thoại */}
             <div className="grid gap-2">
               <Label htmlFor="phone">Số điện thoại</Label>
               <Input
@@ -50,11 +71,9 @@ export default function ProfilePage() {
               />
             </div>
 
-            {/* 3. Email (Thường để dưới cùng nếu disabled vì ít quan trọng trong việc chỉnh sửa) */}
             <div className="grid gap-2">
-              <Label htmlFor="email">Email (Không thể thay đổi)</Label>
+              <Label>Email (Không thể thay đổi)</Label>
               <Input
-                id="email"
                 value={user.email}
                 disabled
                 className="bg-muted opacity-70"

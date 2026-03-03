@@ -1,0 +1,7 @@
+BACKEND/node_modules
+BACKEND/dist
+BACKEND/package-lock.json
+
+FRONTEND/node_modules
+FRONTEND/dist
+FRONTEND/package-lock.json

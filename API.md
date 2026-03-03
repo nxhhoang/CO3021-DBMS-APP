@@ -200,9 +200,9 @@ Chức năng: Quản lý thông tin cá nhân, Sổ địa chỉ
 Chức năng: Tìm kiếm nâng cao, Xem chi tiết, Quản lý kho
 
 #### Tìm kiếm & Lọc sản phẩm (MongoDB)
-Hỗ trợ tìm kiếm theo tên, category, và attributes động (RAM, Color...)
+Hỗ trợ tìm kiếm theo tên, categoryId, và attributes động (RAM, Color...)
 - Endpoint: `GET /products`
-- Query Params: `?keyword=macbook&category=laptop&price_min=1000&attrs[ram]=16GB&page=1`
+- Query Params: `?keyword=macbook&categoryId=mongo_category_id&price_min=1000&attrs[ram]=16GB&page=1`
 - Response:
 ```json
 {
@@ -212,7 +212,7 @@ Hỗ trợ tìm kiếm theo tên, category, và attributes động (RAM, Color..
       "_id": "mongo_object_id",
       "name": "MacBook Pro M3",
       "base_price": 2000,
-      "category": "Electronics",
+      "categoryId": "mongo_category_id",
       "images": ["url1.jpg"],
       "attributes": { "ram": "16GB", "storage": "512GB" }
     }

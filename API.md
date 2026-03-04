@@ -84,6 +84,30 @@ Chức năng: Đăng ký, Đăng nhập, Quản lý Token
 }
 ```
 
+#### LogOut
+- Endpoint: `POST /auth/logout`
+- Auth: Required (Headers: `Authorization: Bearer <access_token>`)
+- Request Body:
+
+```json
+{
+  "refreshToken": "random-string-db-stored" 
+}
+```
+
+- Logic xử lý Backend:
+  1. Xác thực `accessToken` hợp lệ.
+  2. Tìm bản ghi chứa `refreshToken` này trong bảng `AUTH_TOKENS`.
+  3. Xóa cứng bản ghi đó khỏi cơ sở dữ liệu để ngăn chặn việc dùng token này cấp lại `accessToken` mới.
+- Response:
+
+```json
+{
+  "message": "Đăng xuất thành công",
+  "data": null
+}
+```
+
 ### Users & Profile (PostgreSQL)
 Chức năng: Quản lý thông tin cá nhân, Sổ địa chỉ
 
@@ -176,9 +200,9 @@ Chức năng: Quản lý thông tin cá nhân, Sổ địa chỉ
 Chức năng: Tìm kiếm nâng cao, Xem chi tiết, Quản lý kho
 
 #### Tìm kiếm & Lọc sản phẩm (MongoDB)
-Hỗ trợ tìm kiếm theo tên, category, và attributes động (RAM, Color...)
+Hỗ trợ tìm kiếm theo tên, categoryId, và attributes động (RAM, Color...)
 - Endpoint: `GET /products`
-- Query Params: `?keyword=macbook&category=laptop&price_min=1000&attrs[ram]=16GB&page=1`
+- Query Params: `?keyword=macbook&categoryId=mongo_category_id&price_min=1000&attrs[ram]=16GB&page=1`
 - Response:
 ```json
 {
@@ -188,7 +212,7 @@ Hỗ trợ tìm kiếm theo tên, category, và attributes động (RAM, Color..
       "_id": "mongo_object_id",
       "name": "MacBook Pro M3",
       "base_price": 2000,
-      "category": "Electronics",
+      "categoryId": "mongo_category_id",
       "images": ["url1.jpg"],
       "attributes": { "ram": "16GB", "storage": "512GB" }
     }
@@ -223,7 +247,7 @@ Hỗ trợ tìm kiếm theo tên, category, và attributes động (RAM, Color..
 ```json
 {
   "name": "Ao thun",
-  "category": "Clothing",
+  "categoryId": "mongo_category_id",
   "base_price": 200,
   "attributes": { "size": "L", "material": "Cotton" }
 }
@@ -423,3 +447,75 @@ Chức năng: Thống kê doanh thu
   ]
 }
 ```
+
+### Categories (MongoDB)
+Chức năng: Lấy danh sách Danh mục (Public)
+
+- Endpoint: `GET /categories`
+- Auth: No
+- Query Params: `?isActive=true`
+- Response:
+  
+```json
+{
+  "message": "Lấy danh sách danh mục thành công",
+  "data": [
+    {
+      "_id": "mongo_category_id",
+      "name": "Laptop",
+      "slug": "laptop",
+      "description": "Máy tính xách tay các loại",
+      "isActive": true,
+      "dynamicAttributes": [
+        { "key": "ram", "label": "Dung lượng RAM", "dataType": "string", "isRequired": true, "options": ["8GB", "16GB"] }
+      ]
+    }
+  ]
+}
+```
+
+Admin: Tạo danh mục mới
+- Endpoint: `POST /admin/categories`
+- Auth: Required (Role: ADMIN)
+- Request Body:
+  
+```json
+{
+  "_id": "ObjectId('...')",
+  "name": "Laptop",
+  "slug": "laptop",
+  "description": "Máy tính xách tay các loại",
+  "isActive": true,
+  "dynamicAttributes": [
+    {
+      "key": "ram",
+      "label": "Dung lượng RAM",
+      "dataType": "string",
+      "isRequired": true,
+      "options": ["8GB", "16GB", "32GB", "64GB"] 
+    },
+    {
+      "key": "cpu",
+      "label": "Vi xử lý (CPU)",
+      "dataType": "string",
+      "isRequired": true,
+      "options": [] 
+    },
+    {
+      "key": "weight",
+      "label": "Trọng lượng (kg)",
+      "dataType": "number",
+      "isRequired": false,
+      "options": []
+    }
+  ]
+}
+```
+- Response:
+```json
+{
+  "message": "Tạo danh mục thành công",
+  "data": { "_id": "new_category_id" }
+}
+```
+

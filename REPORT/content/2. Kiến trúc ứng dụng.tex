@@ -7,6 +7,15 @@ Hệ thống Sàn Thương mại điện tử được xây dựng dựa trên m
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.75\linewidth]{images/kienTrucUngDung.png}
+\clearpage
+\section{KIẾN TRÚC ỨNG DỤNG}
+
+\subsection{Mô hình tổng quát}
+Hệ thống Sàn Thương mại điện tử được xây dựng dựa trên mô hình kiến trúc \textbf{Client-Server (3-tier architecture)}. Việc áp dụng mô hình này giúp tách biệt rõ ràng giữa giao diện người dùng (Presentation Layer), xử lý logic nghiệp vụ (Business Logic Layer) và lưu trữ dữ liệu (Data Access Layer), tạo điều kiện thuận lợi cho việc bảo trì và mở rộng hệ thống trong tương lai.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.75\linewidth]{images/database_design/kienTrucUngDung.png}
     \caption{Sơ đồ kiến trúc tổng quan của hệ thống E-commerce}
     \label{fig:architecture}
 \end{figure}
@@ -85,7 +94,9 @@ Cơ sở dữ liệu của hệ thống E-commerce quản lý thông tin về ng
     \texttt{logID} (duy nhất), \texttt{userID} (có thể null), \texttt{actionType}, \texttt{targetID}, \texttt{metadata}, \texttt{timestamp}. 
     Hệ thống ghi nhận các hoạt động như xem sản phẩm, tìm kiếm, thêm vào giỏ hàng.
 
-    \item Thực thể \texttt{Product} (Hàng hoá - \texttt{MongoDB}). Mỗi sản phẩm có: \texttt{productID} duy nhất, \texttt{name}, \texttt{slug}, \texttt{category}, \texttt{basePrice}, \texttt{description}, \texttt{images}, \texttt{attributes} (thuộc tính động như \texttt{RAM}, màu sắc, kích thước, cấu hình...), \texttt{isActive}, \texttt{createdAt}. Một sản phẩm có thể nhận nhiều đánh giá (review). Sản phẩm không lưu trực tiếp số lượng tồn kho mà được tham chiếu logic sang \texttt{PostgreSQL}.
+    \item Thực thể \texttt{Category} (Danh mục - \texttt{MongoDB}): Mỗi danh mục bao gồm: \texttt{categoryID} (duy nhất), \texttt{name}, \texttt{slug} (duy nhất), \texttt{description}, \texttt{isActive}, và một mảng thuộc tính \texttt{dynamicAttributes}. Trong đó, \texttt{dynamicAttributes} lưu trữ cấu trúc các thuộc tính động cho phép của danh mục (bao gồm \texttt{key}, \texttt{label}, \texttt{dataType}, \texttt{isRequired}, \texttt{options}). Mỗi danh mục có thể chứa nhiều sản phẩm.
+
+    \item Thực thể \texttt{Product} (Hàng hoá - \texttt{MongoDB}). Mỗi sản phẩm có: \texttt{productID} duy nhất, \texttt{name}, \texttt{slug}, \texttt{categoryId} (tham chiếu logic tới thực thể Category), \texttt{basePrice}, \texttt{description}, \texttt{images}, \texttt{attributes} (thuộc tính động như \texttt{RAM}, màu sắc, kích thước, cấu hình...), \texttt{isActive}, \texttt{createdAt}. Một sản phẩm có thể nhận nhiều đánh giá (\texttt{review}). Sản phẩm không lưu trực tiếp số lượng tồn kho mà được tham chiếu \texttt{logic} sang \texttt{PostgreSQL}.
 \end{itemize}
 
 \subsubsection{Các ràng buộc ngữ nghĩa không biểu diễn được bằng (E-)ERD}
@@ -109,7 +120,7 @@ Cơ sở dữ liệu của hệ thống E-commerce quản lý thông tin về ng
 \paragraph{Biểu đồ EERD cho SQL database}\text{ }
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.8\linewidth]{images/EERD.png}
+    \includegraphics[width=0.8\linewidth]{images/database_design/EERD.png}
     \caption{Biểu đồ EERD cho SQL database}
     \label{fig:EERD_PostgreSQL}
 \end{figure}
@@ -117,49 +128,54 @@ Cơ sở dữ liệu của hệ thống E-commerce quản lý thông tin về ng
 \paragraph{Biểu đồ mô tả cho NoSQL database}\text{ }
 \begin{figure}[H]
     \centering
-    \includegraphics[width=\linewidth]{images/mongoDB_EERD.png}
+    \includegraphics[width=\linewidth]{images/database_design/mongoDB_EERD.png}
     \caption{Biểu đồ mô tả cho NoSQL database}
-    \label{fig:EERD_mongoDB}
+    \label{fig:mongoDB_EERD}
 \end{figure}
 
 \paragraph{Biểu đồ mô tả các quan hệ logic giữa SQL và NoSQL}\text{ }
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.6\linewidth]{images/logicRelationSQLAndNoSQL.png}
+    \includegraphics[width=0.6\linewidth]{images/database_design/logicRelationSQLAndNoSQL.png}
     \caption{Biểu đồ mô tả các quan hệ logic giữa NoSQL database và SQL database}
-    \label{fig:EERD_mongoDB}
+    \label{fig:logicRelationSQLAndNoSQL}
 \end{figure}
 
 \subsection{Ánh xạ các lược đồ Cơ sở dữ liệu}
 \subsubsection{Ánh xạ mô hình dữ liệu của SQL}
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.8\linewidth]{images/mapping.png}
+    \includegraphics[width=0.8\linewidth]{images/database_design/mapping.png}
     \caption{Lược đồ Cơ sở dữ liệu}
-    \label{fig:EERD_mongoDB}
+    \label{fig:mapping}
 \end{figure}
 
 \subsubsection{Ánh xạ bộ sưu tập dữ liệu của NoSQL}
 \begin{itemize}[label=$\circ$]
-    \item Sản phẩm (Products) - Ảnh (images):
+    \item Sản phẩm (\texttt{Products}) - Ảnh (\texttt{images}):
     \begin{itemize}[label=\textbullet]
         \item Quan hệ: 1 - Ít (Mỗi sản phẩm chỉ khoảng 5-10 ảnh).
-        \item Quyết định: Embed. Lưu trực tiếp mảng URL ảnh trong document sản phẩm để lấy ra ngay lập tức.
+        \item Quyết định: \texttt{Embed}. Lưu trực tiếp mảng \texttt{URL} ảnh trong \texttt{document} sản phẩm để lấy ra ngay lập tức.
     \end{itemize}
-    \item Sản phẩm (Products) - Thuộc tính (attributes):
+    \item Sản phẩm (\texttt{Products}) - Thuộc tính (\texttt{attributes}):
     \begin{itemize}[label=\textbullet]
         \item Quan hệ: 1 - 1 (Mỗi sản phẩm có 1 bộ thông số).
-        \item Quyết định: Embed. Dữ liệu này luôn đi kèm sản phẩm và thay đổi cấu trúc tùy loại hàng (Polymorphic Pattern).
+        \item Quyết định: \texttt{Embed}. Dữ liệu này luôn đi kèm sản phẩm và thay đổi cấu trúc tùy loại hàng (\texttt{Polymorphic Pattern}).
     \end{itemize}
     \item Sản phẩm - Đánh giá (reviews):
     \begin{itemize}[label=\textbullet]
-        \item Quan hệ: 1 - Rất nhiều (Một sản phẩm có thể có hàng nghìn review).
-        \item Quyết định: Reference. Nếu lồng review vào sản phẩm sẽ dễ bị tràn giới hạn 16MB của MongoDB. Do đó, tách Review ra collection riêng và tham chiếu bằng product\_id.
+        \item Quan hệ: 1 - Rất nhiều (Một sản phẩm có thể có hàng nghìn \texttt{review}).
+        \item Quyết định: \texttt{Reference}. Nếu lồng \texttt{review} vào sản phẩm sẽ dễ bị tràn giới hạn \texttt{16MB} của \texttt{MongoDB}. Do đó, tách \texttt{Review} ra \texttt{collection} riêng và tham chiếu bằng \texttt{product\_id}.
+    \end{itemize}
+    \item Sản phẩm (\texttt{Products}) - Danh mục (\texttt{Category}):
+    \begin{itemize}[label=\textbullet]
+        \item Quan hệ: 1 - Nhiều (Một danh mục chứa rất nhiều sản phẩm, một sản phẩm thuộc một danh mục).
+        \item Quyết định: \texttt{Reference} (Tham chiếu). Tách \texttt{Category} thành một \texttt{Collection} độc lập và tham chiếu qua \texttt{categoryId} trong \texttt{Product}. Lý do: \texttt{Category} đóng vai trò là danh mục gốc, được sử dụng chung cho nhiều sản phẩm và đóng vai trò lưu trữ khuôn mẫu cho các \texttt{dynamicAttributes}. Nếu \texttt{Embed} trực tiếp \texttt{Category} vào từng \texttt{Product} sẽ gây dư thừa dữ liệu khổng lồ và cực kỳ khó khăn khi cần cập nhật tên Danh mục hay cấu trúc thuộc tính động.
     \end{itemize}
 \end{itemize}
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.6\linewidth]{images/NoSQLCollections.drawio.png}
+    \includegraphics[width=0.8\linewidth]{images/database_design/NoSQLCollections.drawio.png}
     \caption{Bộ sưu tập dữ liệu}
     \label{fig:EERD_mongoDB}
 \end{figure}

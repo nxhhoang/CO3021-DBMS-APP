@@ -6,6 +6,7 @@ import {
   UpdateProfileRequest,
   UpdateProfileResponse,
 } from '@/types/user.types';
+import { api } from '@/lib/axios';
 
 export const userHandlers = [
   // GET /users/profile
@@ -66,49 +67,81 @@ export const userHandlers = [
   ),
 
   // PUT /users/profile
-  http.put<{}, UpdateProfileRequest, UpdateProfileResponse>(
+  http.put<{}, UpdateProfileRequest, any>(
     `${BASE_URL}/users/profile`,
     async ({ request }) => {
       // 1. Lấy Token từ Header
       const authHeader = request.headers.get('Authorization');
-      const token = authHeader?.split(' ')[1]; // Cắt bỏ chữ "Bearer "
+      const token = authHeader?.split(' ')[1];
 
-      // 2. Giả lập logic kiểm tra Token
-      if (!token || token === 'expired-token') {
+      // 2. Kiểm tra token có tồn tại trong "Bảng Sessions" không
+      const session = MOCK_SESSIONS.find((s) => s.accessToken === token);
+
+      if (!session || token === 'expired-token') {
         return HttpResponse.json(
-          {
-            message: 'Phiên đăng nhập hết hạn hoặc không hợp lệ',
-            data: null,
-          },
+          { message: 'Phiên đăng nhập hết hạn hoặc không hợp lệ', data: null },
           { status: 401 },
         );
       }
 
-      // 3. Giả lập việc "Giải mã" Token để tìm User
-      // Trong thực tế bạn dùng JWT, ở đây ta giả định token 'user-123-token' thuộc về user có id '123'
-      const userId = token === 'admin-token' ? 'admin-id' : 'user-123';
-
-      const body = await request.json();
-      const user = MOCK_USERS.find((u) => u.userId === userId);
+      // 3. Tìm User dựa trên userId từ session vừa tìm được
+      const userIndex = MOCK_USERS.findIndex(
+        (u) => u.userId === session.userId,
+      );
+      const user = MOCK_USERS[userIndex];
 
       if (!user) {
         return HttpResponse.json(
-          {
-            message: 'Người dùng không tồn tại',
-            data: null,
-          },
+          { message: 'Người dùng không tồn tại', data: null },
           { status: 404 },
         );
       }
 
       // 4. Update logic
-      user.fullName = body.fullName || user.fullName;
-      // ... update các field khác
+      const body = await request.json();
+
+      // Cập nhật vào mảng mock (lưu ý: cách này chỉ lưu vào bộ nhớ tạm của trình duyệt)
+      MOCK_USERS[userIndex] = {
+        ...user,
+        fullName: body.fullName ?? user.fullName,
+        phoneNum: body.phoneNum ?? user.phoneNum,
+      };
 
       return HttpResponse.json({
         message: 'Cập nhật thành công',
-        data: { userId: user.userId, fullName: user.fullName },
+        data: {
+          userId: MOCK_USERS[userIndex].userId,
+          fullName: MOCK_USERS[userIndex].fullName,
+        },
       });
     },
   ),
 ];
+
+// Example for GET /users/profile
+// fetch('http://localhost:3000/api/users/profile', {
+//   method: 'GET',
+//   headers: {
+//     'Content-Type': 'application/json',
+//     Authorization: 'Bearer user-123-token', // Thay bằng token hợp lệ
+//   },
+// })
+//   .then((response) => response.json())
+//   .then((data) => console.log(data))
+//   .catch((error) => console.error('Error:', error));
+
+//Example for PUT /users/profile
+// fetch('http://localhost:3000/api/v1/users/profile', {
+//   method: 'PUT',
+//   headers: {
+//     'Content-Type': 'application/json',
+//     Authorization: 'Bearer access-token-admin', // Thay bằng token hợp lệ
+//   },
+//   body: JSON.stringify({
+//     fullName: 'Nguyen Van B',
+//     phoneNum: '0987654321',
+//   }),
+// })
+//   .then((response) => response.json())
+//   .then((data) => console.log(data))
+//   .catch((error) => console.error('Error:', error));

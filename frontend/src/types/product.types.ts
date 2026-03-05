@@ -27,7 +27,13 @@ export type GetProductsRequest = {
   limit?: number;
 };
 
-export type GetProductsResponse = ApiResponse<Product[]>;
+export interface PaginatedProducts {
+  products: Product[];
+  totalPages: number;
+  currentPage: number;
+}
+
+export type GetProductsResponse = ApiResponse<PaginatedProducts>;
 
 //GET /products/:id
 export type GetProductDetailRequest = { id: string };

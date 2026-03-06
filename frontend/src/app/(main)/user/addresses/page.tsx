@@ -1,3 +1,6 @@
+'use client';
+
+import { useEffect, useMemo, useState } from 'react';
 import { Plus, MapPin, MoreVertical, Trash2, Edit2, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -14,25 +17,40 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { addressService } from '@/services/address.service';
+import { GetAddressesResponse } from '@/types';
+
+type Address = NonNullable<GetAddressesResponse['data']>[number];
+type AddressList = Address[];
 
 export default function AddressesPage() {
-  // Giả lập dữ liệu từ GET /users/addresses
-  const addresses = [
-    {
-      addressID: 1,
-      addressLine: '123 Lý Thường Kiệt',
-      city: 'HCM',
-      district: 'Quận 10',
-      isDefault: true,
-    },
-    {
-      addressID: 2,
-      addressLine: 'Số 1, Đại Cồ Việt',
-      city: 'Hà Nội',
-      district: 'Hai Bà Trưng',
-      isDefault: false,
-    },
-  ];
+  const [addresses, setAddresses] = useState<Address[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchAddresses = async () => {
+      setIsLoading(true);
+      setErrorMessage(null);
+
+      try {
+        const response = await addressService.getAddresses();
+
+        if (!response.data) {
+          setErrorMessage('Không tìm thấy dữ liệu địa chỉ.');
+          return;
+        }
+
+        setAddresses(response.data);
+      } catch {
+        setErrorMessage('Không thể tải thông tin địa chỉ. Vui lòng thử lại.');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchAddresses();
+  }, []);
 
   return (
     <div className="space-y-6">

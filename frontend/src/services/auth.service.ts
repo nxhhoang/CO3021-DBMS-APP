@@ -1,35 +1,28 @@
-import { api } from '@/lib/axios';
-
-export interface LoginPayload {
-  email: string;
-  password: string;
-  userAgent: string;
-}
-
-export interface RegisterPayload {
-  email: string;
-  password: string;
-  fullName: string;
-  phoneNum: string;
-}
+import { api, privateApi } from '@/lib/axios';
+import { LoginRequest, RegisterRequest } from '@/types';
 
 export const authService = {
-  async login(payload: LoginPayload) {
+  async login(payload: LoginRequest) {
     const res = await api.post(`auth/login`, payload);
     return res.data;
   },
 
-  async register(payload: RegisterPayload) {
+  async register(payload: RegisterRequest) {
     const res = await api.post(`auth/register`, payload);
     return res.data;
   },
 
   async refresh() {
-    const res = await api.post(`auth/refresh`);
+    const res = await api.post(`auth/refresh-token`);
     return res.data;
   },
 
   async logout() {
-    return api.post(`auth/logout`);
+    return privateApi.post(`auth/logout`);
   },
 };
+
+// api.post('auth/login', { email: 'customer@example.com', password: '123' });
+// api.post('auth/register', { fullName: 'New User', email: 'newuser@example.com', phoneNum: '0922222222', password: '123' });
+// api.post('auth/refresh-token', { refreshToken: 'refresh-token-customer' });
+// privateApi.post('auth/logout');

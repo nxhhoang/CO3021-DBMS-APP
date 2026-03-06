@@ -100,7 +100,7 @@ export const productHandlers = [
       MOCK_PRODUCT_DETAILS[newProduct._id] = newProduct;
 
       return HttpResponse.json(
-        { message: 'Sản phẩm mới đã được tạo', data: newProduct },
+        { message: 'Tạo sản phẩm thành công', data: newProduct },
         { status: 201 },
       );
     },
@@ -114,5 +114,20 @@ export const productHandlers = [
 
 // Example for GET /products/:id using fetch API
 // fetch('http://localhost:3000/api/v1/products/1')
+//   .then((res) => res.json())
+//   .then((data) => console.log(data));
+
+// Example for POST /admin/products using fetch API
+
+// fetch('http://localhost:3000/api/v1/admin/products', {
+//   method: 'POST',
+//   headers: { 'Content-Type': 'application/json' },
+//   body: JSON.stringify({
+//     name: 'Jordan air force 1',
+//     categoryId: 'clothing',
+//     base_price: 200,
+//     attributes: { size: 'L', material: 'Cotton' },
+//   }),
+// })
 //   .then((res) => res.json())
 //   .then((data) => console.log(data));

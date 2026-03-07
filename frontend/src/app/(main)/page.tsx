@@ -21,7 +21,7 @@ import {
   Search,
 } from 'lucide-react';
 
-import { SearchBar } from '@/components/Shared/SearchBar';
+import { SearchBar } from '@/components/common/SearchBar';
 
 // add a category list with 6 categories, each category has a name, an icon, and a description.
 const categories = [

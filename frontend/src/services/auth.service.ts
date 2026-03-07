@@ -1,5 +1,5 @@
 import { api, privateApi } from '@/lib/axios';
-import { LoginRequest, RegisterRequest } from '@/types';
+import { LoginRequest, RegisterRequest, LogoutRequest } from '@/types';
 
 export const authService = {
   async login(payload: LoginRequest) {
@@ -17,12 +17,14 @@ export const authService = {
     return res.data;
   },
 
-  async logout() {
-    return privateApi.post(`auth/logout`);
+  async logout({ refreshToken }: LogoutRequest) {
+    return privateApi.post(`auth/logout`, {
+      refreshToken,
+    });
   },
 };
 
 // api.post('auth/login', { email: 'customer@example.com', password: '123' });
 // api.post('auth/register', { fullName: 'New User', email: 'newuser@example.com', phoneNum: '0922222222', password: '123' });
 // api.post('auth/refresh-token', { refreshToken: 'refresh-token-customer' });
-// privateApi.post('auth/logout');
+// privateApi.post('auth/logout', { refreshToken: 'refresh-token-customer' });

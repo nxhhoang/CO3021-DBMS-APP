@@ -23,7 +23,10 @@ import {
   SheetTitle,
 } from '@/components/ui/sheet';
 import { authService } from '@/services/auth.service';
-import Logo from './Logo';
+import Logo from '../../Shared/Logo';
+import { SearchBar } from '@/components/Shared/SearchBar';
+import { useState } from 'react';
+import type { FormEvent } from 'react';
 
 const NAV_ITEMS = [
   { label: 'Profile', href: '/user/profile' },
@@ -32,6 +35,7 @@ const NAV_ITEMS = [
 ];
 
 const Header = () => {
+  const [query, setQuery] = useState('');
   const router = useRouter();
 
   const handleLogout = async () => {
@@ -63,18 +67,11 @@ const Header = () => {
         {/* Logo */}
         <Logo />
         {/* Search (Desktop) */}
-        <form
-          onSubmit={onSearchSubmit}
-          className="relative hidden w-full max-w-md items-center md:flex"
-        >
-          <Search className="text-muted-foreground absolute left-3 h-4 w-4" />
-          <Input
-            name="q"
-            type="search"
-            placeholder="Tìm sản phẩm..."
-            className="focus-visible:ring-primary pl-9"
-          />
-        </form>
+        <SearchBar
+          value={query}
+          onChange={setQuery}
+          onSubmit={(value) => console.log('Search:', value)}
+        />
 
         <div className="flex items-center gap-2">
           {/* Cart */}

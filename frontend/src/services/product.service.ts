@@ -26,3 +26,5 @@ export const productService = {
     return res.data;
   },
 };
+
+// api.get('products', { params: { keyword: 'macbook',  page: 1 } });

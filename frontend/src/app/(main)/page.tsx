@@ -18,7 +18,10 @@ import {
   Shapes,
   Volleyball,
   Shirt,
+  Search,
 } from 'lucide-react';
+
+import { SearchBar } from '@/components/common/SearchBar';
 
 // add a category list with 6 categories, each category has a name, an icon, and a description.
 const categories = [
@@ -63,29 +66,6 @@ export default function HomePage() {
         <p className="text-muted-foreground mb-6 text-lg">
           Tìm kiếm sản phẩm yêu thích của bạn ngay bây giờ!
         </p>
-
-        {/* Search Bar */}
-        <form className="relative mx-auto w-full max-w-2xl">
-          <input
-            type="text"
-            placeholder="Tìm kiếm sản phẩm..."
-            className="focus:border-primary focus:ring-primary w-full rounded-full border border-gray-300 bg-white px-4 py-2 pl-10 focus:ring-2 focus:ring-offset-2"
-          />
-          <svg
-            className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2"
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-            />
-          </svg>
-        </form>
       </div>
 
       {/* Categories Section */}

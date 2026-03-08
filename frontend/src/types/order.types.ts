@@ -40,7 +40,6 @@ export type CreateOrderResponse = ApiResponse<{
 }>;
 
 // GET /orders
-export type GetOrdersRequest = void;
 export type GetOrdersResponse = ApiResponse<Order[]>;
 
 // GET /orders/:orderId

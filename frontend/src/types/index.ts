@@ -6,3 +6,6 @@ export * from './order.types';
 export * from './review.types';
 export * from './stats.types';
 export * from './log.types';
+export * from './user.types';
+export * from './address.types';
+export * from './payment.types';

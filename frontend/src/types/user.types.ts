@@ -10,8 +10,11 @@ export interface User {
   role: keyof typeof ROLE;
 }
 
+export interface UserWithCredentials extends User {
+  password: string; // Tên rõ ràng để tránh nhầm lẫn với plain text
+}
+
 //GET /users/profile
-export type GetProfileRequest = void;
 export type GetProfileResponse = ApiResponse<Omit<User, 'role'>>;
 
 //PUT /users/profile

@@ -11,15 +11,18 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { login } from '@/services/auth.service';
+import { authService } from '@/services/auth.service';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const router = useRouter();
 
   const handleLogin = async () => {
     try {
-      const result = await login({
+      const result = await authService.login({
         email,
         password,
         userAgent: navigator.userAgent,
@@ -31,6 +34,7 @@ export default function LoginPage() {
       localStorage.setItem('refreshToken', refreshToken);
 
       alert('Login success');
+      router.push('/');
     } catch (err) {
       alert('Login failed');
     }
@@ -74,7 +78,13 @@ export default function LoginPage() {
         </Button>
 
         <p className="text-muted-foreground text-center text-sm">
-          Don’t have an account? Sign up
+          Don’t have an account?{' '}
+          <Link
+            href="/register"
+            className="text-primary font-medium hover:underline"
+          >
+            Sign up
+          </Link>
         </p>
       </CardFooter>
     </Card>

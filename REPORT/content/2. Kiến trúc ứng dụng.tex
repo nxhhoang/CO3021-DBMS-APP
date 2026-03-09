@@ -6,15 +6,6 @@ Hệ thống Sàn Thương mại điện tử được xây dựng dựa trên m
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.75\linewidth]{images/kienTrucUngDung.png}
-\clearpage
-\section{KIẾN TRÚC ỨNG DỤNG}
-
-\subsection{Mô hình tổng quát}
-Hệ thống Sàn Thương mại điện tử được xây dựng dựa trên mô hình kiến trúc \textbf{Client-Server (3-tier architecture)}. Việc áp dụng mô hình này giúp tách biệt rõ ràng giữa giao diện người dùng (Presentation Layer), xử lý logic nghiệp vụ (Business Logic Layer) và lưu trữ dữ liệu (Data Access Layer), tạo điều kiện thuận lợi cho việc bảo trì và mở rộng hệ thống trong tương lai.
-
-\begin{figure}[H]
-    \centering
     \includegraphics[width=0.75\linewidth]{images/database_design/kienTrucUngDung.png}
     \caption{Sơ đồ kiến trúc tổng quan của hệ thống E-commerce}
     \label{fig:architecture}
@@ -72,7 +63,7 @@ Cơ sở dữ liệu của hệ thống E-commerce quản lý thông tin về ng
 \begin{itemize}[label=$\circ$]
     \item Thực thể \texttt{User} (Người dùng - PostgreSQL): Mỗi người dùng có các thuộc tính: \texttt{userId} (định danh duy nhất), \texttt{email} (duy nhất), \texttt{password}, \texttt{fullName}, \texttt{phoneNum}, \texttt{createdAt}, \texttt{role}. Mỗi người dùng có thể có nhiều địa chỉ giao hàng. Mỗi người dùng có thể tạo nhiều đơn hàng. Mỗi người dùng có thể có nhiều token đăng nhập (\texttt{refresh token}) để quản lý phiên làm việc.
     
-    \item Thực thể \texttt{Address} (Địa chỉ người dùng - PostgreSQL). Mỗi địa chỉ gồm: \texttt{addressID} duy nhất, \texttt{addressLine}, \texttt{city}, \texttt{district}, \texttt{isDefault}. Mỗi người dùng có thể có nhiều địa chỉ giao hàng.
+    \item Thực thể \texttt{Address} (Địa chỉ người dùng - PostgreSQL). Mỗi địa chỉ gồm: \texttt{addressID} duy nhất, \texttt{addressLine}, \texttt{addressName}, \texttt{city}, \texttt{district}, \texttt{isDefault}. Mỗi người dùng có thể có nhiều địa chỉ giao hàng.
     
     \item Thực thể \texttt{AuthToken} (Phiên đăng nhập - PostgreSQL). Mỗi bản token gồm: \texttt{tokenID} duy nhất, \texttt{refreshToken}, \texttt{userAgent}, \texttt{expiresAt}, \texttt{isRevoked}. Mỗi \texttt{token} thuộc về đúng một người dùng, cho phép quản lý đăng nhập từ nhiều thiết bị. 
     
@@ -83,7 +74,7 @@ Cơ sở dữ liệu của hệ thống E-commerce quản lý thông tin về ng
     \item Thực thể \texttt{Item} (Chi tiết đơn hàng - PostgreSQL). Mỗi hàng hoá trong đơn hàng bao gồm: \texttt{itemID} (duy nhất), \texttt{productID}, \texttt{productName} (snapshot), \texttt{quantity}, \texttt{unitPrice}. Mỗi \texttt{OrderItem} thuộc về đúng một đơn hàng.
 
     \item Thực thể \texttt{Payment} (Thanh toán - PostgreSQL). Mỗi thực thể bao gồm: 
-    \texttt{paymentID} (duy nhất), \texttt{method}, \texttt{status}, \texttt{transactionDate}. 
+    \texttt{paymentID} (duy nhất), \texttt{method} (\texttt{COD}, \texttt{BANKING}, \texttt{E\_WALLET}), \texttt{status} (\texttt{PENDING}, \texttt{COMPLETED}, \texttt{FAILED}, \texttt{REFUNDED}), \texttt{transactionDate}. 
     Mỗi thanh toán gắn với đúng một đơn hàng.
 
     \item Thực thể \texttt{Review} (Đánh giá – MongoDB). Mỗi đánh giá bao gồm:
@@ -96,7 +87,7 @@ Cơ sở dữ liệu của hệ thống E-commerce quản lý thông tin về ng
 
     \item Thực thể \texttt{Category} (Danh mục - \texttt{MongoDB}): Mỗi danh mục bao gồm: \texttt{categoryID} (duy nhất), \texttt{name}, \texttt{slug} (duy nhất), \texttt{description}, \texttt{isActive}, và một mảng thuộc tính \texttt{dynamicAttributes}. Trong đó, \texttt{dynamicAttributes} lưu trữ cấu trúc các thuộc tính động cho phép của danh mục (bao gồm \texttt{key}, \texttt{label}, \texttt{dataType}, \texttt{isRequired}, \texttt{options}). Mỗi danh mục có thể chứa nhiều sản phẩm.
 
-    \item Thực thể \texttt{Product} (Hàng hoá - \texttt{MongoDB}). Mỗi sản phẩm có: \texttt{productID} duy nhất, \texttt{name}, \texttt{slug}, \texttt{categoryId} (tham chiếu logic tới thực thể Category), \texttt{basePrice}, \texttt{description}, \texttt{images}, \texttt{attributes} (thuộc tính động như \texttt{RAM}, màu sắc, kích thước, cấu hình...), \texttt{isActive}, \texttt{createdAt}. Một sản phẩm có thể nhận nhiều đánh giá (\texttt{review}). Sản phẩm không lưu trực tiếp số lượng tồn kho mà được tham chiếu \texttt{logic} sang \texttt{PostgreSQL}.
+    \item Thực thể \texttt{Product} (Hàng hoá - \texttt{MongoDB}). Mỗi sản phẩm có: \texttt{productID} duy nhất, \texttt{name}, \texttt{slug}, \texttt{categoryId} (tham chiếu logic tới thực thể Category), \texttt{basePrice}, \texttt{description}, \texttt{images}, \texttt{attributes} (thuộc tính động như \texttt{RAM}, màu sắc, kích thước, cấu hình...), \texttt{avg\_rating} (điểm đánh giá trung bình), \texttt{total\_reviews} (tổng số lượt đánh giá), \texttt{total\_sold} (tổng số lượng đã bán), \texttt{isActive}, \texttt{createdAt}. Một sản phẩm có thể nhận nhiều đánh giá (\texttt{review}). Sản phẩm không lưu trực tiếp số lượng tồn kho mà được tham chiếu \texttt{logic} sang \texttt{PostgreSQL}.
 \end{itemize}
 
 \subsubsection{Các ràng buộc ngữ nghĩa không biểu diễn được bằng (E-)ERD}

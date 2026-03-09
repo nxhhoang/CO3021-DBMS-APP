@@ -12,8 +12,8 @@ export const ROLE = {
 } as const;
 
 export const PAYMENT_METHOD = {
-  CREDIT_CARD: 'CREDIT_CARD',
-  PAYPAL: 'PAYPAL',
+  E_WALLET: 'E_WALLET',
+  BANKING: 'BANKING',
   COD: 'COD',
 } as const;
 
@@ -21,6 +21,7 @@ export const PAYMENT_STATUS = {
   PENDING: 'PENDING',
   COMPLETED: 'COMPLETED',
   FAILED: 'FAILED',
+  REFUNDED: 'REFUNDED',
 } as const;
 
 export const ACTION_TYPE = {

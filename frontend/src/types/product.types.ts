@@ -7,6 +7,9 @@ export interface Product {
   categoryId: string;
   images: string[];
   attributes: Record<string, string | number | boolean>;
+  avg_rating: number;
+  total_reviews: number;
+  total_sold: number;
 }
 
 export interface ProductDetail extends Product {
@@ -50,3 +53,6 @@ export type CreateProductResponse = ApiResponse<Product>;
 //PUT /admin/products/:id
 export type UpdateProductRequest = Partial<CreateProductRequest>;
 export type UpdateProductResponse = ApiResponse<Product>;
+
+//DELETE /admin/products/:id
+export type DeleteProductResponse = ApiResponse<null>;

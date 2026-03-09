@@ -5,3 +5,7 @@ BACKEND/package-lock.json
 FRONTEND/node_modules
 FRONTEND/dist
 FRONTEND/package-lock.json
+
+#macOS
+.DS_Store
+

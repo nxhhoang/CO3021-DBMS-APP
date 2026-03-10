@@ -29,6 +29,7 @@ const options: swaggerJsdoc.Options = {
   definition: {
     openapi: '3.0.0',
     info: { title: 'E-commerce API', version: '1.0.0' },
+    servers: [{ url: '/api/v1', description: 'API v1' }],
     components: {
       securitySchemes: {
         BearerAuth: { type: 'http', scheme: 'bearer', bearerFormat: 'JWT' }
@@ -82,12 +83,11 @@ app.use(`${BASE}/users`, userRouter)
 app.use(`${BASE}/orders`, orderRouter)
 app.use(`${BASE}/payments`, paymentRouter)
 app.use(`${BASE}/admin`, adminRouter)
+app.use(`${BASE}/categories`, categoryRouter)
+app.use(`${BASE}/products`, productRouter)
+app.use(`${BASE}/logs`, logRouter)
 
 //  Error Handler
-app.use('/api/v1/samples', sampleRouter)
-app.use('/api/v1/categories', categoryRouter)
-app.use('/api/v1/products', productRouter)
-app.use('/api/v1/logs', logRouter)
 app.use(defaultErrorHandler)
 
 //  Start

@@ -89,3 +89,42 @@ export const LIKE_MESSAGES = {
   LIKE_SUCCESSFULLY: 'Like successfully',
   UNLIKE_SUCCESSFULLY: 'Unlike successfully'
 }
+
+export const CATEGORY_MESSAGES = {
+  CATEGORIES_FETCHED: 'Get categories successfully',
+  CATEGORY_FETCHED: 'Get category successfully',
+  CATEGORY_CREATED: 'Category created successfully',
+  CATEGORY_UPDATED: 'Category updated successfully',
+  CATEGORY_DELETED: 'Category deleted successfully (hidden)',
+  CATEGORY_NOT_FOUND: 'Category not found',
+  CATEGORY_SLUG_ALREADY_EXISTS: 'Category slug already exists',
+  CATEGORY_ID_INVALID: 'Category id is invalid'
+} as const
+
+export const PRODUCT_MESSAGES = {
+  PRODUCTS_FETCHED: 'Get products successfully',
+  PRODUCT_FETCHED: 'Get product detail successfully',
+  PRODUCT_CREATED: 'Product created successfully',
+  PRODUCT_UPDATED: 'Product updated successfully',
+  PRODUCT_DELETED: 'Product deleted successfully (inactive)',
+  PRODUCT_NOT_FOUND: 'Product not found',
+  PRODUCT_ID_INVALID: 'Product id is invalid',
+  CATEGORY_NOT_ACTIVE: 'Category does not exist or is inactive'
+} as const
+
+export const REVIEW_MESSAGES = {
+  REVIEWS_FETCHED: 'Get reviews successfully',
+  REVIEW_CREATED: 'Review submitted successfully',
+  REVIEW_RATING_INVALID: 'Rating must be an integer between 1 and 5',
+  REVIEW_COMMENT_REQUIRED: 'Comment is required'
+} as const
+
+export const LOG_MESSAGES = {
+  LOG_CREATED: 'Log recorded',
+  LOG_ACTION_TYPE_INVALID: 'action_type is invalid'
+} as const
+
+export const INVENTORY_MESSAGES = {
+  INSUFFICIENT_STOCK: 'Insufficient stock for the requested item',
+  INVENTORY_NOT_FOUND: 'Inventory record not found'
+} as const

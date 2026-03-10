@@ -12,6 +12,9 @@ import swaggerUi from 'swagger-ui-express'
 import swaggerJsdoc from 'swagger-jsdoc'
 import { envConfig, isProduction } from '~/constants/config'
 import sampleRouter from '~/routes/sample.routes'
+import categoryRouter from '~/routes/category.routes'
+import productRouter from '~/routes/product.routes'
+import logRouter from '~/routes/log.routes'
 // const file = fs.readFileSync(path.resolve('twitter-swagger.yaml'), 'utf8')
 // const swaggerDocument = YAML.parse(file)
 
@@ -22,6 +25,12 @@ const options: swaggerJsdoc.Options = {
       title: 'E-commerce API',
       version: '1.0.0'
     },
+    servers: [
+      {
+        url: '/api/v1',
+        description: 'API v1'
+      }
+    ],
     components: {
       securitySchemes: {
         BearerAuth: {
@@ -71,6 +80,9 @@ const port = envConfig.port
 app.use(express.json())
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(openapiSpecification))
 app.use('/api/v1/samples', sampleRouter)
+app.use('/api/v1/categories', categoryRouter)
+app.use('/api/v1/products', productRouter)
+app.use('/api/v1/logs', logRouter)
 app.use(defaultErrorHandler)
 
 initSocket(httpServer)

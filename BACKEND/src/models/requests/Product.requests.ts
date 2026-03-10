@@ -10,8 +10,8 @@ export interface SearchProductQuery extends PaginationQuery {
   [key: string]: any
 }
 
-export interface ProductIdReqParams extends ParamsDictionary {
-  id: string
+export interface ProductReqParams extends ParamsDictionary {
+  productId: string
 }
 
 export interface CreateProductReqBody {

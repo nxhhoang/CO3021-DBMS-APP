@@ -19,10 +19,11 @@ export const addressHandlers = [
   http.post(`${BASE_URL}/users/addresses`, async ({ request }) => {
     // QUAN TRỌNG: Phải có async/await ở đây
     const body = (await request.json()) as CreateAddressRequest;
-    const { addressLine, city, district, isDefault } = body;
+    const { addressName, addressLine, city, district, isDefault } = body;
 
     const newAddress = {
       addressID: Math.floor(Math.random() * 1000) + 3,
+      addressName,
       addressLine,
       city,
       district,
@@ -37,7 +38,7 @@ export const addressHandlers = [
         data: newAddress,
       },
       { status: 201 },
-    ); // Thêm status 201 cho đúng chuẩn REST khi tạo mới
+    );
   }),
 
   // 3. PUT /users/addresses/:addressID - Cập nhật địa chỉ
@@ -46,7 +47,7 @@ export const addressHandlers = [
     async ({ request, params }) => {
       const { addressID } = params;
       const body = (await request.json()) as CreateAddressRequest;
-      const { addressLine, city, district, isDefault } = body;
+      const { addressName, addressLine, city, district, isDefault } = body;
 
       // 1. Tìm vị trí của địa chỉ trong mảng giả lập
       const addressIndex = MOCK_ADDRESSES.findIndex(
@@ -73,6 +74,7 @@ export const addressHandlers = [
       // 4. Cập nhật dữ liệu mới vào mảng
       const updatedAddress = {
         ...MOCK_ADDRESSES[addressIndex], // Giữ lại các field cũ nếu có (vd: createdAt)
+        addressName,
         addressLine,
         city,
         district,

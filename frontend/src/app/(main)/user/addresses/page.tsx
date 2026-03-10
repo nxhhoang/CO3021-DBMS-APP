@@ -82,7 +82,7 @@ export default function AddressesPage() {
                   <div className="space-y-1">
                     <div className="flex items-center gap-2">
                       <span className="text-sm font-semibold">
-                        Địa chỉ {addr.addressID}
+                        {addr.addressName}
                       </span>
                       {addr.isDefault && (
                         <Badge variant="default" className="h-5 text-[10px]">

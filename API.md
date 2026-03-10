@@ -336,6 +336,7 @@ Hỗ trợ tìm kiếm theo tên, categoryId, và attributes động (RAM, Color
 ```
 
 - Response:
+
 ```json
 {
   "message": "Cập nhật sản phẩm thành công",
@@ -349,6 +350,7 @@ Hỗ trợ tìm kiếm theo tên, categoryId, và attributes động (RAM, Color
 - Auth: Required (Role: ADMIN)
 - Mô tả: Hệ thống thực hiện xóa mềm (Soft Delete) bằng cách tự động cập nhật is_active = false. Dữ liệu không bị xóa cứng để đảm bảo toàn vẹn dữ liệu cho các hóa đơn (Order), chi tiết đơn hàng (Item) và lịch sử hoạt động (UserActivityLog) trong quá khứ.
 - Response:
+
 ```json
 {
   "message": "Xóa sản phẩm thành công (Đã ngừng bán)",
@@ -462,20 +464,22 @@ Quan trọng: Đây là nơi thực hiện Transaction trừ kho và tạo đơn
 ```
 
 #### Admin: Cập nhật trạng thái đơn hàng
+
 - Endpoint: `PUT /admin/orders/:orderId/status`
 - Auth: Required (Role: ADMIN)
 - Logic xử lý đặc biệt:
- - Hệ thống cập nhật trạng thái mới cho đơn hàng.
- - Computed Pattern (Quan trọng): Nếu status được chuyển sang DELIVERED (Đã giao), hệ thống sẽ trích xuất danh sách productId và quantity từ chi tiết đơn hàng (Items) hiện tại, sau đó thực hiện gọi sang MongoDB để cộng dồn số lượng quantity này vào trường total_sold của từng document Product tương ứng.
+- Hệ thống cập nhật trạng thái mới cho đơn hàng.
+- Computed Pattern (Quan trọng): Nếu status được chuyển sang DELIVERED (Đã giao), hệ thống sẽ trích xuất danh sách productId và quantity từ chi tiết đơn hàng (Items) hiện tại, sau đó thực hiện gọi sang MongoDB để cộng dồn số lượng quantity này vào trường total_sold của từng document Product tương ứng.
 
 - Request Body:
 
 ```json
 {
-  "status": "DELIVERED" 
+  "status": "DELIVERED"
   // PENDING (Chờ xử lý), PROCESSING (Đang chuẩn bị hàng), SHIPPED (Đang giao), DELIVERED (Đã giao), CANCELLED (Đã hủy).
 }
 ```
+
 - Response:
 
 ```json
@@ -695,8 +699,8 @@ Chức năng: Lấy danh sách Danh mục (Public)
 }
 ```
 
-
 #### Admin: Cập nhật danh mục
+
 - Endpoint: `PUT /admin/categories/:id`
 - Auth: Required (Role: ADMIN)
 - Request Body:
@@ -727,6 +731,7 @@ Chức năng: Lấy danh sách Danh mục (Public)
 ```
 
 - Response:
+
 ```json
 {
   "message": "Cập nhật danh mục thành công",
@@ -735,10 +740,12 @@ Chức năng: Lấy danh sách Danh mục (Public)
 ```
 
 #### Admin: Xóa danh mục (Soft Delete)
+
 - Endpoint: DELETE /admin/categories/:id
 - Auth: Required (Role: ADMIN)
 - Mô tả: Hệ thống thực hiện xóa mềm (Soft Delete) bằng cách tự động cập nhật `isActive = false`. Dữ liệu vẫn tồn tại trong database để tránh ảnh hưởng đến các sản phẩm đang tham chiếu đến danh mục này.
 - Response:
+
 ```json
 {
   "message": "Xóa danh mục thành công (Đã ẩn)",
@@ -746,31 +753,30 @@ Chức năng: Lấy danh sách Danh mục (Public)
 }
 ```
 
-
 ---
 
 ### Question:
 
 - `isActive` của Category dùng để làm gì?
-=> TL: isActive được sử dụng để quyết định xem danh mục đó có đang hoạt động và được phép hiển thị ra ngoài nền tảng cho người dùng hay không. Ngoài ra nếu Admin xoá 1 danh mục thì hệ thống cập nhật là isActive: false, phía người dùng API GET /categories sẽ mặc định truyền với tham số ?isActive=true để chỉ hiển thị các danh mục hoạt động
+  => TL: isActive được sử dụng để quyết định xem danh mục đó có đang hoạt động và được phép hiển thị ra ngoài nền tảng cho người dùng hay không. Ngoài ra nếu Admin xoá 1 danh mục thì hệ thống cập nhật là isActive: false, phía người dùng API GET /categories sẽ mặc định truyền với tham số ?isActive=true để chỉ hiển thị các danh mục hoạt động
 
 - Tại sao `POST /admin/categories` lại cần `_id: ObjectID('...')`?
-=> TL: Do copy từ report ra mà quên xoá
+  => TL: Do copy từ report ra mà quên xoá
 
 - `addressID`, `orderID` là number hay string?
-=> TL: Các ví dụ đưa ra với addressID và orderID trong file api.md đều ở dạng number nên dùng number
+  => TL: Các ví dụ đưa ra với addressID và orderID trong file api.md đều ở dạng number nên dùng number
 
 - Chưa có API "Admin sửa sản phầm" như mô tả
-=> TL: Đã cập nhật
+  => TL: Đã cập nhật
 
 - Chưa có đầy đủ enum của order status, payment status và payment method
-=> TL: Đã cập nhật
+  => TL: Đã cập nhật
 
 - Phần User ngoại trừ Get /users/profile thì các API khác không thấy Auth:Required?
-=> TL: Đã cập nhật
+  => TL: Đã cập nhật
 
 - Có 1 hay nhiều tài khoản admin? Nếu có nhiều tài khoản admin thì Chi tiết sản phầm nên trả thêm `createdBy`
-=> TL: Chỉ có 1 tài khoản admin
+  => TL: Chỉ có 1 tài khoản admin
 
 ### Suggestion:
 
@@ -784,3 +790,82 @@ Chức năng: Lấy danh sách Danh mục (Public)
   - `avg_rating`
   - `total_reviews`
   - Có thể có thêm `total_sold`
+
+---
+
+## `10/3`
+
+[Q] - Question
+[S] - Suggestion
+
+#### **Tìm kiếm & Lọc sản phẩm** `GET /products?...`:
+
+- Query param (`keyword`, `categoryId`, `atrrs`, `price_min`, ...)
+  - [S] Query param nên có thêm `limit` - số sản phẩm tối đa hiển thị trong 1 `page`.
+  - [Q] Các query param có cho phép bỏ trống không và có cho phép bỏ trống **tất cả** không?.
+  - [S] Nên cho phép bỏ trống tất cả query param. Ví dụ `GET /products?page=1&limit=10` chỉ sử dụng `page` và `limit` sẽ lấy tất cả sản phẩm và phân trang bình thường.
+  - [S] Nên có thêm `price_max` nếu chưa có
+  - **[S] Query param `categoryId` nên đổi thành `category` và sử dụng `slug` thay vì `_id` vì sẽ dùng trực tiếp trên thanh URL, dễ đọc và dễ debug hơn.**
+  - [S] Nên có thêm `sort=...` sắp xếp kết quả tìm kiếm `asc` hoặc `desc` dựa trên các tiêu chí: `price`, `avg_rating`, `total_sold` (default), `total_reviews`, ...
+- Response:
+  - [Q] `base_price` là VNĐ hay USD?
+  - [S] Thay vì chỉ trả `categoryID` thì nên trả cả object `category` bao gồm cả `_id`, `name` và `slug` hỗ trợ render thay vì gọi thêm API.
+
+  - **[S] Response nên có thông tin về pagination.**
+  - Ví dụ bổ sung: `GET /products?...category=laptop&sort=price_desc&page=1&limit=10`
+
+```json
+{
+  "message": "Tìm thấy 150 sản phẩm",
+  "data": [
+    {
+      "_id": "mongo_object_id", // productId
+      "name": "MacBook Pro M3",
+      "base_price": 2000,
+      "category": {
+        "_id": "mongo_category_id", // categoryId
+        "name": "Laptop",
+        "slug": "laptop"
+      },
+      "images": ["url1.jpg"],
+      "attributes": { "ram": "16GB", "storage": "512GB" },
+      "avg_rating": 4.8,
+      "total_reviews": 150,
+      "total_sold": 320
+    },
+    ... // 9 other products
+  ],
+  "pagination": {
+    "totalItems": 150,
+    "itemCount": 10, // Number of items in the current page
+    "itemsPerPage": 10, // Number of items per page, == limit
+    "totalPages": 15,
+    "currentPage": 1,
+    "nextPage": 2,
+    "hasPrevPage": false,
+    "hasNextPage": true
+  }
+}
+```
+
+#### Chi tiết sản phẩm `GET /poducts/:id`:
+
+- [Q] Thiếu `base_price`, `base_price` đi kèm theo từng sản phẩm hay từng `sku`?
+- [Q] `sku` được tạo như thế nào? Nếu dựa trên `dynamicAttributes` của `category` thì khi `dynamicAttributes` cập nhật, `sku` hay `inventory` cập nhật như thế nào?
+- [Q] Thiếu thông tin về category. [S] Nên làm giống Tìm kiếm & Lọc sản phẩm: trả về luôn object `category` bao gồm cả `_id`, `name` và `slug` hỗ trợ render thay vì phải gọi thêm API
+
+#### Admin thêm sản phẩm `POST /admin/products`:
+
+- [Q] Thiếu `description` và `images`
+
+#### Admin sửa sản phẩm `PUT /admin/products/:id`:
+
+- [Q] Thiếu `description`, `images` và `categoryId`
+
+#### Admin cập nhật danh mục `PUT /admin/categories/:id`:
+
+- [Q] Nếu `dynamicAttributes` có thay đổi thì các sản phẩm thuộc danh mục có cho phép cập nhật không và cập nhật như thế nào trong các trường hợp:
+  - Xóa 1 `dynamicAttribute` có `isRequired=true`
+  - Xóa 1 `dynamicAttribute` có `isRequired=false`
+  - Xóa 1 `option` trong 1 `dynamicAttribute`
+  - etc.

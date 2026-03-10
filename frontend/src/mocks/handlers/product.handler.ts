@@ -1,7 +1,9 @@
 import { http, HttpResponse } from 'msw';
 import { BASE_URL } from '@/constants/api';
 import { MOCK_PRODUCTS, MOCK_PRODUCT_DETAILS } from '../data/products';
+import { MOCK_CATEGORIES } from '../data/categories';
 import {
+  ProductResponse,
   GetProductsResponse,
   GetProductDetailRequest,
   GetProductDetailResponse,
@@ -14,120 +16,66 @@ import {
 
 export const productHandlers = [
   // GET /products
-  http.get<{}, never, GetProductsResponse>(
-    `${BASE_URL}/products`,
-    ({ request }) => {
-      const url = new URL(request.url);
-      const keyword = url.searchParams.get('keyword') || '';
-      const categoryId = url.searchParams.get('categoryId') || '';
-      const priceMin = parseFloat(url.searchParams.get('price_min') || '0');
-      const page = parseInt(url.searchParams.get('page') || '1', 10);
+  http.get(`${BASE_URL}/products`, (req) => {
+    const url = new URL(req.request.url);
+    const keyword = url.searchParams.get('keyword') || '';
+    const categorySlug = url.searchParams.get('category') || '';
+    const price_min = parseFloat(url.searchParams.get('price_min') || '0');
+    const price_max = parseFloat(
+      url.searchParams.get('price_max') || 'Infinity',
+    );
+    const page = parseInt(url.searchParams.get('page') || '1');
+    const limit = parseInt(url.searchParams.get('limit') || '10');
+    const sort = url.searchParams.get('sort') || '';
 
-      // Lọc sản phẩm dựa trên keyword, categoryId và priceMin
-      let filteredProducts = MOCK_PRODUCTS.filter((product) => {
-        const matchesKeyword =
-          product.name.toLowerCase().includes(keyword.toLowerCase()) ||
-          Object.values(product.attributes).some((attr) =>
-            String(attr).toLowerCase().includes(keyword.toLowerCase()),
-          );
-        const matchesCategory =
-          !categoryId || product.categoryId === categoryId;
-        const matchesPrice = product.base_price >= priceMin;
-
-        return matchesKeyword && matchesCategory && matchesPrice;
-      });
-
-      // Phân trang
-      const pageSize = 10; // Số sản phẩm trên mỗi trang
-      const totalProducts = filteredProducts.length;
-      const totalPages = Math.ceil(totalProducts / pageSize);
-      const paginatedProducts = filteredProducts.slice(
-        (page - 1) * pageSize,
-        page * pageSize,
+    let filteredProducts = MOCK_PRODUCTS.filter((product) => {
+      const categoryObj = MOCK_CATEGORIES.find(
+        (c) => c._id === product.categoryId,
       );
+      return (
+        product.name.toLowerCase().includes(keyword.toLowerCase()) &&
+        (categorySlug ? categoryObj?.slug === categorySlug : true) &&
+        product.base_price >= price_min &&
+        product.base_price <= price_max
+      );
+    });
+    if (sort === 'price_desc')
+      filteredProducts.sort((a, b) => b.base_price - a.base_price);
+    if (sort === 'price_asc')
+      filteredProducts.sort((a, b) => a.base_price - b.base_price);
 
-      return HttpResponse.json({
-        message: `Tìm thấy ${totalProducts} sản phẩm`,
-        data: {
-          products: paginatedProducts,
-          totalPages,
-          currentPage: page,
+    const productData: ProductResponse[] = filteredProducts.map((p) => {
+      const cat = MOCK_CATEGORIES.find((c) => c._id === p.categoryId);
+      const { categoryId, ...rest } = p; // Loại bỏ categoryId, thay bằng object category
+      return {
+        ...rest,
+        category: {
+          _id: cat?._id || '',
+          name: cat?.name || '',
+          slug: cat?.slug || '',
         },
-      });
-    },
-  ),
-
-  // GET /products/:id
-  http.get<GetProductDetailRequest, never, GetProductDetailResponse>(
-    `${BASE_URL}/products/:id`,
-    ({ params }) => {
-      const { id } = params;
-      const productDetail = MOCK_PRODUCT_DETAILS[id];
-
-      if (!productDetail) {
-        return HttpResponse.json(
-          { message: 'Sản phẩm không tồn tại', data: null },
-          { status: 404 },
-        );
-      }
-
-      return HttpResponse.json(
-        { message: 'Lấy chi tiết sản phẩm thành công', data: productDetail },
-        { status: 200 },
-      );
-    },
-  ),
-
-  // POST /admin/products
-  http.post<{}, CreateProductRequest, CreateProductResponse>(
-    `${BASE_URL}/admin/products`,
-    async ({ request }) => {
-      const productData = await request.json();
-      // Logic for creating a new product
-      const newProduct: ProductDetail = {
-        _id: String(Date.now()), // Mock ID generation
-        name: productData.name,
-        base_price: productData.base_price,
-        categoryId: productData.categoryId,
-        images: [], // You can add logic to handle image uploads
-        attributes: productData.attributes,
-        description: '', // You can extend CreateProductRequest to include description
-        inventory: [], // Initial inventory can be empty or you can extend the request to include it
       };
+    });
 
-      // Add the new product to the mock data (in-memory)
-      MOCK_PRODUCTS.push(newProduct);
-      MOCK_PRODUCT_DETAILS[newProduct._id] = newProduct;
+    const totalItems = productData.length;
+    const totalPages = Math.ceil(totalItems / limit);
+    const paginatedData = productData.slice((page - 1) * limit, page * limit);
 
-      return HttpResponse.json(
-        { message: 'Tạo sản phẩm thành công', data: newProduct },
-        { status: 201 },
-      );
-    },
-  ),
+    return HttpResponse.json({
+      message: `Tìm thấy ${totalItems} sản phẩm`,
+      data: paginatedData,
+      pagination: {
+        totalItems,
+        itemCount: paginatedData.length,
+        itemsPerPage: limit,
+        totalPages,
+        currentPage: page,
+        nextPage: page < totalPages ? page + 1 : null,
+        hasPrevPage: page > 1,
+        hasNextPage: page < totalPages,
+      },
+    });
+  }),
 ];
-
-// Example for GET /products using fetch API
-// fetch('http://localhost:3000/api/v1/products?keyword=macbook&categoryId=laptops&price_min=1000&page=1')
-//   .then((res) => res.json())
-//   .then((data) => console.log(data));
-
-// Example for GET /products/:id using fetch API
-// fetch('http://localhost:3000/api/v1/products/1')
-//   .then((res) => res.json())
-//   .then((data) => console.log(data));
-
-// Example for POST /admin/products using fetch API
-
-// fetch('http://localhost:3000/api/v1/admin/products', {
-//   method: 'POST',
-//   headers: { 'Content-Type': 'application/json' },
-//   body: JSON.stringify({
-//     name: 'Jordan air force 1',
-//     categoryId: 'clothing',
-//     base_price: 200,
-//     attributes: { size: 'L', material: 'Cotton' },
-//   }),
-// })
-//   .then((res) => res.json())
-//   .then((data) => console.log(data));
+// Example of GET /products/:id using fetch:
+// fetch('http://localhost:3000/api/v1/products?keyword=mac')

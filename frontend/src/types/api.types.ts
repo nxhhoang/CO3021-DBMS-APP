@@ -6,3 +6,16 @@ export interface ApiResponse<T> {
 export interface MessageResponse {
   message: string;
 }
+
+export interface PaginatedResponse<T> extends ApiResponse<T> {
+  pagination: {
+    totalItems: number;
+    itemCount: number; // Number of items in the current page
+    itemsPerPage: number; // Number of items per page, == limit
+    totalPages: number;
+    currentPage: number;
+    nextPage: number | null;
+    hasPreviousPage: boolean;
+    hasNextPage: boolean;
+  };
+}

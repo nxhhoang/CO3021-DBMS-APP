@@ -11,6 +11,13 @@ export const ROLE = {
   ADMIN: 'ADMIN',
 } as const;
 
+export const SORT_BY = {
+  PRICE_ASC: 'price_asc',
+  PRICE_DESC: 'price_desc',
+  RATING: 'rating_desc',
+  POPULARITY: 'sold_desc',
+} as const;
+
 export const PAYMENT_METHOD = {
   E_WALLET: 'E_WALLET',
   BANKING: 'BANKING',

@@ -793,16 +793,18 @@ Chức năng: Lấy danh sách Danh mục (Public)
 
 ---
 
+## `10/3`
+
 [Q] - Question
 [S] - Suggestion
 
 #### **Tìm kiếm & Lọc sản phẩm** `GET /products?...`:
 
 - Query param (`keyword`, `categoryId`, `atrrs`, `price_min`, ...)
+  - [S] Query param nên có thêm `limit` - số sản phẩm tối đa hiển thị trong 1 `page`.
   - [Q] Các query param có cho phép bỏ trống không và có cho phép bỏ trống **tất cả** không?.
   - [S] Nên cho phép bỏ trống tất cả query param. Ví dụ `GET /products?page=1&limit=10` chỉ sử dụng `page` và `limit` sẽ lấy tất cả sản phẩm và phân trang bình thường.
   - [S] Nên có thêm `price_max` nếu chưa có
-  - [S] Query param nên có thêm `limit` - số sản phẩm tối đa hiển thị trong 1 `page`.
   - **[S] Query param `categoryId` nên đổi thành `category` và sử dụng `slug` thay vì `_id` vì sẽ dùng trực tiếp trên thanh URL, dễ đọc và dễ debug hơn.**
   - [S] Nên có thêm `sort=...` sắp xếp kết quả tìm kiếm `asc` hoặc `desc` dựa trên các tiêu chí: `price`, `avg_rating`, `total_sold` (default), `total_reviews`, ...
 - Response:
@@ -848,7 +850,7 @@ Chức năng: Lấy danh sách Danh mục (Public)
 
 #### Chi tiết sản phẩm `GET /poducts/:id`:
 
-- [Q] Thiếu `base_price`, `base_price` theo từng sản phẩm hay từng `sku`?
+- [Q] Thiếu `base_price`, `base_price` đi kèm theo từng sản phẩm hay từng `sku`?
 - [Q] `sku` được tạo như thế nào? Nếu dựa trên `dynamicAttributes` của `category` thì khi `dynamicAttributes` cập nhật, `sku` hay `inventory` cập nhật như thế nào?
 - [Q] Thiếu thông tin về category. [S] Nên làm giống Tìm kiếm & Lọc sản phẩm: trả về luôn object `category` bao gồm cả `_id`, `name` và `slug` hỗ trợ render thay vì phải gọi thêm API
 

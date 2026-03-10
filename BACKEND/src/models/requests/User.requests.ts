@@ -8,6 +8,7 @@ export interface UpdateProfileReqBody {
 
 export interface CreateAddressReqBody {
   addressLine: string
+  addressName: string
   city: string
   district: string
   isDefault: boolean
@@ -15,6 +16,7 @@ export interface CreateAddressReqBody {
 
 export interface UpdateAddressReqBody {
   addressLine?: string
+  addressName?: string
   city?: string
   district?: string
   isDefault?: boolean

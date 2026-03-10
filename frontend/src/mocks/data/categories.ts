@@ -3,8 +3,8 @@ import { Category } from '@/types/category.types';
 export const MOCK_CATEGORIES: Category[] = [
   {
     _id: 'category-1',
-    name: 'Laptops',
-    slug: 'laptops',
+    name: 'Laptop',
+    slug: 'laptop',
     description: 'Máy tính xách tay các loại',
     isActive: true,
     dynamicAttributes: [
@@ -26,8 +26,8 @@ export const MOCK_CATEGORIES: Category[] = [
   },
   {
     _id: 'category-2',
-    name: 'Smartphones',
-    slug: 'smartphones',
+    name: 'Smartphone',
+    slug: 'smartphone',
     description: 'Điện thoại thông minh các loại',
     isActive: true,
     dynamicAttributes: [

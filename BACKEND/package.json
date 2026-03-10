@@ -12,7 +12,9 @@
     "lint:fix": "eslint . --fix",
     "prettier": "prettier --check .",
     "prettier:fix": "prettier --write .",
-    "build nc": "rimraf ./dist && tsc --noCheck && tsc-alias"
+    "build nc": "rimraf ./dist && tsc --noCheck && tsc-alias",
+    "seed:admin": "tsx src/scripts/seedAdmin.ts"
+
   },
   "keywords": [],
   "author": "",
@@ -37,6 +39,7 @@
   "dependencies": {
     "@types/jsonwebtoken": "^9.0.10",
     "@types/lodash": "^4.17.23",
+    "@types/pg": "^8.18.0",
     "@types/swagger-jsdoc": "^6.0.4",
     "@types/swagger-ui-express": "^4.1.8",
     "cors": "^2.8.6",
@@ -47,6 +50,7 @@
     "helmet": "^8.1.0",
     "jsonwebtoken": "^9.0.3",
     "mongodb": "^7.1.0",
+    "pg": "^8.20.0",
     "socket.io": "^4.8.3",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.1",

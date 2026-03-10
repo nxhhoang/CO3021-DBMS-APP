@@ -4,10 +4,6 @@
 
 ---
 
-## Database Schema
-
-> Full SQL is in `DATABASE/migration.sql`. Run it before starting the server.
-
 ### Enums
 
 | Enum            | Values                                                       |

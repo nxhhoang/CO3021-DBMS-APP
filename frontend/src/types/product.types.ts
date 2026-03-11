@@ -35,6 +35,7 @@ export type GetProductsRequest = {
   page?: number;
   limit?: number;
   sort?: (typeof SORT_BY)[keyof typeof SORT_BY];
+  attrs?: Record<string, string>;
 };
 
 export type GetProductsResponse = PaginatedResponse<ProductResponse[]>;

@@ -93,7 +93,7 @@ export const MOCK_PRODUCTS: Product[] = [
     _id: 'product-9',
     name: 'Leather Boots',
     base_price: 80,
-    categoryId: 'category-3',
+    categoryId: 'category-4',
     images: ['https://picsum.photos/300/200?random=clothing'],
     attributes: { size: '9', color: 'Brown' },
     avg_rating: 4.3,

@@ -8,6 +8,11 @@ type Props = {
 };
 
 const ProductList = ({ products, loading }: Props) => {
+  if (!loading && products.length === 0) {
+    return (
+      <div className="py-20 text-center">Không tìm thấy sản phẩm nào!</div>
+    );
+  }
   return (
     <main className="bg-muted flex-1 rounded-sm p-2 md:p-4">
       {loading ? (

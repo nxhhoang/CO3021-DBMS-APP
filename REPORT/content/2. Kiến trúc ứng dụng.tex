@@ -61,13 +61,13 @@ Các chức năng chính bao gồm: quản lý người dùng, quản lý sản 
 Cơ sở dữ liệu của hệ thống E-commerce quản lý thông tin về người dùng, vai trò, sản phẩm, đơn hàng, kho hàng, thanh toán, đánh giá và các hoạt động liên quan.
 
 \begin{itemize}[label=$\circ$]
-    \item Thực thể \texttt{User} (Người dùng - PostgreSQL): Mỗi người dùng có các thuộc tính: \texttt{userId} (định danh duy nhất), \texttt{email} (duy nhất), \texttt{password}, \texttt{fullName}, \texttt{phoneNum}, \texttt{createdAt}, \texttt{role}. Mỗi người dùng có thể có nhiều địa chỉ giao hàng. Mỗi người dùng có thể tạo nhiều đơn hàng. Mỗi người dùng có thể có nhiều token đăng nhập (\texttt{refresh token}) để quản lý phiên làm việc.
+    \item Thực thể \texttt{User} (Người dùng - PostgreSQL): Mỗi người dùng có các thuộc tính: \texttt{userID} (định danh duy nhất), \texttt{email} (duy nhất), \texttt{password}, \texttt{fullName}, \texttt{phoneNum}, \texttt{createdAt}, \texttt{role}. Mỗi người dùng có thể có nhiều địa chỉ giao hàng. Mỗi người dùng có thể tạo nhiều đơn hàng. Mỗi người dùng có thể có nhiều token đăng nhập (\texttt{refresh token}) để quản lý phiên làm việc.
     
     \item Thực thể \texttt{Address} (Địa chỉ người dùng - PostgreSQL). Mỗi địa chỉ gồm: \texttt{addressID} duy nhất, \texttt{addressLine}, \texttt{addressName}, \texttt{city}, \texttt{district}, \texttt{isDefault}. Mỗi người dùng có thể có nhiều địa chỉ giao hàng.
     
     \item Thực thể \texttt{AuthToken} (Phiên đăng nhập - PostgreSQL). Mỗi bản token gồm: \texttt{tokenID} duy nhất, \texttt{refreshToken}, \texttt{userAgent}, \texttt{expiresAt}, \texttt{isRevoked}. Mỗi \texttt{token} thuộc về đúng một người dùng, cho phép quản lý đăng nhập từ nhiều thiết bị. 
-    
-    \item Thực thể \texttt{Inventory} (Kho hàng). Mỗi bản ghi của kho gồm: \texttt{inventoryID} duy nhất, \texttt{productID} (tham chiếu logic tới MongoDB), \texttt{sku} duy nhất, \texttt{stockQuantity}, \texttt{lastUpdated}. Mỗi sản phẩm có thể có nhiều biến thể kho (SKU khác nhau).
+
+    \item Thực thể \texttt{Inventory} (Kho hàng - PostgreSQL). Mỗi bản ghi của kho gồm: \texttt{inventoryID} (duy nhất), \texttt{productID} (tham chiếu logic tới \texttt{Product} trong MongoDB), \texttt{sku} (tham chiếu logic tới \texttt{SKU} trong MongoDB), \texttt{stockQuantity}, \texttt{lastUpdated}. Một biến thể (\texttt{skuf}) có thể có nhiều bản ghi kho (ví dụ: được phân bổ ở các kho vật lý khác nhau).
 
     \item Thực thể \texttt{Order} (Đơn hàng - PostgreSQL). Mỗi đơn hàng có: \texttt{orderID} duy nhất, \texttt{status} (\texttt{PENDING}, \texttt{PROCESSING}, \texttt{SHIPPED}, \texttt{DELIVERED}, \texttt{CANCELLED}), \texttt{totalAmount}, \texttt{shippingAdd} (snapshot), \texttt{createdAt}. Mỗi đơn hàng thuộc về một người dùng. Mỗi đơn hàng gồm nhiều chi tiết đơn hàng (order item). Mỗi đơn hàng có đúng một thanh toán (\texttt{payment}).
     
@@ -85,9 +85,11 @@ Cơ sở dữ liệu của hệ thống E-commerce quản lý thông tin về ng
     \texttt{logID} (duy nhất), \texttt{userID} (có thể null), \texttt{actionType}, \texttt{targetID}, \texttt{metadata}, \texttt{timestamp}. 
     Hệ thống ghi nhận các hoạt động như xem sản phẩm, tìm kiếm, thêm vào giỏ hàng.
 
-    \item Thực thể \texttt{Category} (Danh mục - \texttt{MongoDB}): Mỗi danh mục bao gồm: \texttt{categoryID} (duy nhất), \texttt{name}, \texttt{slug} (duy nhất), \texttt{description}, \texttt{isActive}, và một mảng thuộc tính \texttt{dynamicAttributes}. Trong đó, \texttt{dynamicAttributes} lưu trữ cấu trúc các thuộc tính động cho phép của danh mục (bao gồm \texttt{key}, \texttt{label}, \texttt{dataType}, \texttt{isRequired}, \texttt{options}). Mỗi danh mục có thể chứa nhiều sản phẩm.
+    \item Thực thể \texttt{Category} (Danh mục - \texttt{MongoDB}): Mỗi danh mục bao gồm: \texttt{categoryID} (duy nhất), \texttt{name}, \texttt{slug} (duy nhất), \texttt{description}, \texttt{isActive}, và hai mảng bao gồm \texttt{dynamicAttributes} và \texttt{variantAttributes}. Trong đó, \texttt{dynamicAttributes} và \texttt{variantAttributes} lưu trữ cấu trúc các thuộc tính động cho phép của danh mục (bao gồm \texttt{key}, \texttt{label}, \texttt{dataType}, \texttt{options}). Mỗi danh mục có thể chứa nhiều sản phẩm.
 
-    \item Thực thể \texttt{Product} (Hàng hoá - \texttt{MongoDB}). Mỗi sản phẩm có: \texttt{productID} duy nhất, \texttt{name}, \texttt{slug}, \texttt{categoryId} (tham chiếu logic tới thực thể Category), \texttt{basePrice}, \texttt{description}, \texttt{images}, \texttt{attributes} (thuộc tính động như \texttt{RAM}, màu sắc, kích thước, cấu hình...), \texttt{avg\_rating} (điểm đánh giá trung bình), \texttt{total\_reviews} (tổng số lượt đánh giá), \texttt{total\_sold} (tổng số lượng đã bán), \texttt{isActive}, \texttt{createdAt}. Một sản phẩm có thể nhận nhiều đánh giá (\texttt{review}). Sản phẩm không lưu trực tiếp số lượng tồn kho mà được tham chiếu \texttt{logic} sang \texttt{PostgreSQL}.
+    \item Thực thể \texttt{Product} (Hàng hoá - \texttt{MongoDB}). Mỗi sản phẩm có: \texttt{productID} duy nhất, \texttt{name}, \texttt{slug}, \texttt{categoryId} (tham chiếu logic tới thực thể Category), \texttt{basePrice}, \texttt{description}, \texttt{images}, \texttt{attributes} (dựa trên \texttt{dynamicAttributes} bao gồm các giá trị động ứng với \texttt{Category} mà \texttt{Product} thuộc về, \texttt{avg\_rating} (điểm đánh giá trung bình), \texttt{total\_reviews} (tổng số lượt đánh giá), \texttt{total\_sold} (tổng số lượng đã bán), \texttt{isActive}, \texttt{createdAt}. Một sản phẩm có thể nhận nhiều đánh giá (\texttt{review}). Sản phẩm không lưu trực tiếp số lượng tồn kho mà được tham chiếu \texttt{logic} sang \texttt{PostgreSQL}.
+
+    \item Thực thể \texttt{sku} (Biến thể sản phẩm - MongoDB). Mỗi biến thể bao gồm: \texttt{sku} (duy nhất), \texttt{productID} (tham chiếu logic tới thực thể \texttt{Product}), \texttt{attributes} (các giá trị thuộc tính biến thể cụ thể, dựa trên \texttt{variantAttributes} của \texttt{Category}), \texttt{skuPrice} (giá của biến thể). Một sản phẩm có thể có nhiều biến thể (\texttt{SKU}) và một \texttt{SKU} có thể được tham chiếu bởi nhiều bản ghi kho (\texttt{Inventory}) trong PostgreSQL.
 \end{itemize}
 
 \subsubsection{Các ràng buộc ngữ nghĩa không biểu diễn được bằng (E-)ERD}
@@ -162,6 +164,11 @@ Cơ sở dữ liệu của hệ thống E-commerce quản lý thông tin về ng
     \begin{itemize}[label=\textbullet]
         \item Quan hệ: 1 - Nhiều (Một danh mục chứa rất nhiều sản phẩm, một sản phẩm thuộc một danh mục).
         \item Quyết định: \texttt{Reference} (Tham chiếu). Tách \texttt{Category} thành một \texttt{Collection} độc lập và tham chiếu qua \texttt{categoryId} trong \texttt{Product}. Lý do: \texttt{Category} đóng vai trò là danh mục gốc, được sử dụng chung cho nhiều sản phẩm và đóng vai trò lưu trữ khuôn mẫu cho các \texttt{dynamicAttributes}. Nếu \texttt{Embed} trực tiếp \texttt{Category} vào từng \texttt{Product} sẽ gây dư thừa dữ liệu khổng lồ và cực kỳ khó khăn khi cần cập nhật tên Danh mục hay cấu trúc thuộc tính động.
+    \end{itemize}
+    \item Sản phẩm (\texttt{Products}) - Biến thể (\texttt{SKUs}):
+    \begin{itemize}[label=\textbullet]
+        \item Quan hệ: 1 - Nhiều (Một sản phẩm có thể có nhiều biến thể khác nhau dựa trên các thuộc tính như dung lượng, màu sắc, kích thước,...).
+        \item Quyết định: \texttt{Reference} (Tham chiếu). Tách \texttt{SKU} thành một \texttt{collection} độc lập và tham chiếu ngược lại \texttt{Product} thông qua \texttt{productID}. Lý do: Việc tách riêng giúp quản lý linh hoạt giá bán (\texttt{skuPrice}) và cấu hình thuộc tính riêng (\texttt{attributes}) của từng biến thể. Quan trọng hơn, thiết kế này giúp tối ưu việc tham chiếu logic với bảng \texttt{Inventory} dưới \texttt{PostgreSQL} để kiểm soát tồn kho cho từng mã SKU cụ thể mà không làm phình to \texttt{document} của sản phẩm gốc.
     \end{itemize}
 \end{itemize}
 \begin{figure}[H]

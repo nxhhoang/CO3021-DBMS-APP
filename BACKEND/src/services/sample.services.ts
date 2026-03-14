@@ -1,7 +1,7 @@
 import { CreateSampleReqBody } from '~/models/requests/Sample.requests'
 import { signToken } from '~/utils/jwt'
 import { envConfig } from '~/constants/config'
-import { TokenType, UserVerifyStatus } from '~/constants/enums'
+import { TokenType, UserRole } from '~/constants/enums'
 
 class SampleService {
   async getSamples() {
@@ -25,7 +25,7 @@ class SampleService {
     const payload = {
       user_id: 'fake-user-id-123456',
       token_type: TokenType.AccessToken,
-      verify: UserVerifyStatus.Verified,
+      role: UserRole.CUSTOMER,
       exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24 // Hết hạn sau 1 ngày
     }
 

@@ -1,5 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+const jwt_1 = require("../utils/jwt");
+const config_1 = require("../constants/config");
+const enums_1 = require("../constants/enums");
 class SampleService {
     async getSamples() {
         return [
@@ -14,6 +17,21 @@ class SampleService {
             created_at: new Date()
         };
         return newSample;
+    }
+    async generateMockToken() {
+        // Tạo một payload giả định thay vì lấy từ Database
+        const payload = {
+            user_id: 'fake-user-id-123456',
+            token_type: enums_1.TokenType.AccessToken,
+            verify: enums_1.UserVerifyStatus.Verified,
+            exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24 // Hết hạn sau 1 ngày
+        };
+        const access_token = await (0, jwt_1.signToken)({
+            payload,
+            privateKey: config_1.envConfig.jwtSecretAccessToken,
+            options: { algorithm: 'HS256' } // Bỏ expiresIn vì đã set trực tiếp exp trong payload
+        });
+        return access_token;
     }
 }
 const sampleService = new SampleService();

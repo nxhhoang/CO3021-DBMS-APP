@@ -4,7 +4,7 @@ components:
       type: http
       scheme: bearer
       bearerFormat: JWT
-      description: "Sử dụng access token để xác thực. Gửi kèm trong header: Authorization: Bearer <token>"
+      description: 'Sử dụng access token để xác thực. Gửi kèm trong header: Authorization: Bearer <token>'
 
   schemas:
     RegisterBody:
@@ -14,17 +14,17 @@ components:
         email:
           type: string
           format: email
-          example: "user@example.com"
+          example: 'user@example.com'
         password:
           type: string
           format: password
-          example: "securePassword123"
+          example: 'securePassword123'
         fullName:
           type: string
-          example: "Nguyen Van A"
+          example: 'Nguyen Van A'
         phoneNum:
           type: string
-          example: "0909123456"
+          example: '0909123456'
 
     LoginBody:
       type: object
@@ -33,14 +33,14 @@ components:
         email:
           type: string
           format: email
-          example: "user@example.com"
+          example: 'user@example.com'
         password:
           type: string
           format: password
-          example: "securePassword123"
+          example: 'securePassword123'
         userAgent:
           type: string
-          example: "Mozilla/5.0..."
+          example: 'Mozilla/5.0...'
 
     RefreshTokenBody:
       type: object
@@ -48,20 +48,20 @@ components:
       properties:
         refreshToken:
           type: string
-          example: "random-string-db-stored"
+          example: 'random-string-db-stored'
 
     UpdateProfileBody:
       type: object
       properties:
         fullName:
           type: string
-          example: "Nguyen Van B"
+          example: 'Nguyen Van B'
         phoneNum:
           type: string
-          example: "0987654321"
+          example: '0987654321'
         avatar:
           type: string
-          example: "url_moi"
+          example: 'url_moi'
 
     AddressBody:
       type: object
@@ -69,13 +69,13 @@ components:
       properties:
         addressLine:
           type: string
-          example: "123 Ly Thuong Kiet"
+          example: '123 Ly Thuong Kiet'
         city:
           type: string
-          example: "HCM"
+          example: 'HCM'
         district:
           type: string
-          example: "District 10"
+          example: 'District 10'
         isDefault:
           type: boolean
           example: true
@@ -86,16 +86,16 @@ components:
       properties:
         name:
           type: string
-          example: "Ao thun"
+          example: 'Ao thun'
         category:
           type: string
-          example: "Clothing"
+          example: 'Clothing'
         base_price:
           type: number
           example: 200
         attributes:
           type: object
-          example: { "size": "L", "material": "Cotton" }
+          example: { 'size': 'L', 'material': 'Cotton' }
 
     CartSyncBody:
       type: object
@@ -108,10 +108,10 @@ components:
             properties:
               productId:
                 type: string
-                example: "mongo_id_1"
+                example: 'mongo_id_1'
               sku:
                 type: string
-                example: "SKU_A"
+                example: 'SKU_A'
               quantity:
                 type: integer
                 example: 2
@@ -125,7 +125,7 @@ components:
           example: 1
         paymentMethod:
           type: string
-          example: "COD"
+          example: 'COD'
         items:
           type: array
           items:
@@ -133,13 +133,13 @@ components:
             properties:
               productId:
                 type: string
-                example: "mongo_id_1"
+                example: 'mongo_id_1'
               productName:
                 type: string
-                example: "MacBook Pro"
+                example: 'MacBook Pro'
               sku:
                 type: string
-                example: "M3-16-512"
+                example: 'M3-16-512'
               quantity:
                 type: integer
                 example: 1
@@ -156,7 +156,7 @@ components:
           example: 1001
         paymentMethod:
           type: string
-          example: "BANKING"
+          example: 'BANKING'
 
     ReviewBody:
       type: object
@@ -167,7 +167,7 @@ components:
           example: 5
         comment:
           type: string
-          example: "Sản phẩm tốt"
+          example: 'Sản phẩm tốt'
         images:
           type: array
           items:
@@ -179,20 +179,20 @@ components:
       properties:
         action_type:
           type: string
-          example: "VIEW_PRODUCT"
+          example: 'VIEW_PRODUCT'
         target_id:
           type: string
-          example: "mongo_product_id"
+          example: 'mongo_product_id'
         metadata:
           type: object
-          example: { "search_keyword": "Laptop gaming", "device": "Mobile" }
+          example: { 'search_keyword': 'Laptop gaming', 'device': 'Mobile' }
 
     GenericResponse:
       type: object
       properties:
         message:
           type: string
-          example: "Thành công"
+          example: 'Thành công'
         data:
           type: object
           additionalProperties: true
@@ -203,7 +203,7 @@ components:
       properties:
         message:
           type: string
-          example: "Đã xảy ra lỗi"
+          example: 'Đã xảy ra lỗi'
         data:
           type: object
           nullable: true

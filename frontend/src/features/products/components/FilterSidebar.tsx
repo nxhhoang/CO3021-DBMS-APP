@@ -10,7 +10,7 @@ import { useSearchParams } from 'next/navigation';
 import CategorySelect from './CategorySelect';
 import PriceRangeSlider from './PriceRangeSlider';
 import SortSelect from './SortSelect';
-import AttributeFilters from './AttributeSelect';
+import AttributeSelect from './AttributeSelect';
 
 import { useProductFilterNavigation } from '../hooks/useProductFilterNavigation';
 
@@ -86,22 +86,12 @@ const FilterSidebar = ({
       </div>
 
       {/* Dynamic Attributes */}
-      <Separator />
 
-      <div className="space-y-4">
-        <div className="text-muted-foreground flex items-center gap-2">
-          <Settings2 className="h-4 w-4" />
-          <h3 className="text-primary text-sm font-semibold uppercase">
-            Thông số
-          </h3>
-        </div>
-
-        <AttributeFilters
-          category={selectedCategoryData}
-          localAttrs={localAttrs}
-          setLocalAttrs={setLocalAttrs}
-        />
-      </div>
+      <AttributeSelect
+        category={selectedCategoryData}
+        localAttrs={localAttrs}
+        setLocalAttrs={setLocalAttrs}
+      />
 
       <Separator />
 

@@ -126,8 +126,8 @@ export const MOCK_PRODUCT_DETAILS: Record<string, ProductDetail> = {
     total_sold: 50,
     description: 'Apple MacBook Pro with M3 chip',
     inventory: [
-      { sku: 'MBP-M3-16-512', stockQuantity: 50 },
-      { sku: 'MBP-M3-32-1TB', stockQuantity: 10 },
+      { sku: 'MBP-M3-16-512', stockQuantity: 50, sku_price: 16000000 },
+      { sku: 'MBP-M3-32-1TB', stockQuantity: 10, sku_price: 20000000 },
     ],
   },
 
@@ -143,8 +143,8 @@ export const MOCK_PRODUCT_DETAILS: Record<string, ProductDetail> = {
     total_sold: 150,
     description: 'Apple iPhone 14 Pro smartphone',
     inventory: [
-      { sku: 'IP14P-128-SILVER', stockQuantity: 30 },
-      { sku: 'IP14P-256-BLACK', stockQuantity: 20 },
+      { sku: 'IP14P-128-SILVER', stockQuantity: 30, sku_price: 28000000 },
+      { sku: 'IP14P-256-BLACK', stockQuantity: 20, sku_price: 1099000 },
     ],
   },
 };

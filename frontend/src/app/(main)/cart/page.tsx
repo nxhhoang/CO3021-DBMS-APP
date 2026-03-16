@@ -1,71 +1,75 @@
+'use client';
+
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Trash } from 'lucide-react';
+import { Loader2, ShoppingBag } from 'lucide-react';
+import { useCart } from '@/features/cart/hooks/useCart';
+import Link from 'next/link';
+import ItemsList from '@/features/cart/components/ItemList/ItemsList';
+import formatVND from '@/features/cart/utils/formatVND';
+import OrderSummary from '@/features/cart/components/OrderSummary/OrderSummary';
 
 export default function CartPage() {
-  const mockCart = [1, 2, 3];
+  const {
+    items,
+    selectedItems,
+    selectedSkus,
+    toggleItemSelection,
+    loading,
+    updateQuantity,
+    removeItem,
+    totalPrice,
+  } = useCart();
+
+  const totalItems = items.reduce((sum, i) => sum + i.quantity, 0);
+
+  if (loading) {
+    return (
+      <div className="flex h-[60vh] flex-col items-center justify-center gap-4">
+        <Loader2 className="text-primary h-10 w-10 animate-spin" />
+        <p className="text-muted-foreground animate-pulse">
+          Đang tải giỏ hàng...
+        </p>
+      </div>
+    );
+  }
 
   return (
-    <div className="container mx-auto py-12">
-      <h1 className="mb-10 text-4xl font-bold">Giỏ hàng của bạn</h1>
-
-      <div className="grid gap-10 lg:grid-cols-3">
-        {/* ================= LEFT: CART ITEMS ================= */}
-        <div className="space-y-6 lg:col-span-2">
-          {mockCart.map((i) => (
-            <Card key={i}>
-              <CardContent className="flex flex-col gap-6 p-6 md:flex-row md:items-center">
-                {/* Product Image */}
-                <div className="h-24 w-24 shrink-0 rounded bg-gray-200" />
-
-                {/* Product Info */}
-                <div className="flex flex-1 flex-col gap-2">
-                  <h2 className="text-lg font-semibold">Sản phẩm {i}</h2>
-                  <p className="text-muted-foreground">
-                    ${(i * 100).toFixed(2)}
-                  </p>
-                </div>
-
-                {/* Quantity */}
-                <div className="flex items-center gap-4">
-                  <Input
-                    type="number"
-                    min={1}
-                    defaultValue={1}
-                    className="w-20"
-                  />
-
-                  <Button variant="destructive" size="icon">
-                    <Trash className="h-4 w-4" />
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-
-        {/* ================= RIGHT: SUMMARY ================= */}
-        <div className="lg:sticky lg:top-24">
-          <Card>
-            <CardContent className="space-y-6 p-6">
-              <div className="flex justify-between text-lg">
-                <span>Tạm tính</span>
-                <span>$300.00</span>
-              </div>
-
-              <div className="flex justify-between text-lg font-semibold">
-                <span>Tổng cộng</span>
-                <span>$300.00</span>
-              </div>
-
-              <Button size="lg" className="w-full">
-                Thanh toán
-              </Button>
-            </CardContent>
-          </Card>
-        </div>
+    <div className="container mx-auto max-w-6xl px-4 py-10">
+      <div className="mb-8 flex items-end gap-3">
+        <h1 className="text-3xl font-bold tracking-tight">Giỏ hàng</h1>
+        <span className="text-muted-foreground mb-1 text-lg">
+          ({totalItems} sản phẩm)
+        </span>
       </div>
+
+      {items.length === 0 ? (
+        <Card className="flex flex-col items-center justify-center border-dashed py-20">
+          <div className="bg-secondary mb-4 flex h-20 w-20 items-center justify-center rounded-full">
+            <ShoppingBag className="text-muted-foreground h-10 w-10" />
+          </div>
+          <p className="text-muted-foreground text-lg">
+            Giỏ hàng của bạn đang trống.
+          </p>
+          <Button asChild className="mt-6">
+            <Link href="/products">Tiếp tục mua sắm</Link>
+          </Button>
+        </Card>
+      ) : (
+        <div className="grid gap-8 lg:grid-cols-3">
+          {/* LEFT: DANH SÁCH SẢN PHẨM */}
+          <ItemsList
+            items={items}
+            selectedSkus={selectedSkus}
+            toggleItemSelection={toggleItemSelection}
+            updateQuantity={updateQuantity}
+            removeItem={removeItem}
+          />
+
+          {/* RIGHT: HÓA ĐƠN */}
+          <OrderSummary selectedItems={selectedItems} totalPrice={totalPrice} />
+        </div>
+      )}
     </div>
   );
 }

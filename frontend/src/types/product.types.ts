@@ -23,6 +23,7 @@ export interface ProductDetail extends ProductResponse {
   inventory: {
     sku: string;
     stockQuantity: number;
+    sku_price: number;
   }[];
 }
 

@@ -10,19 +10,19 @@ import {
 
 export const addressService = {
   async getAddresses() {
-    const res = await privateApi.get<GetAddressesResponse>(`users/addresses`);
+    const res = await privateApi.get<GetAddressesResponse>('users/addresses');
     return res.data;
   },
 
   async createAddress(data: CreateAddressRequest) {
     const res = await privateApi.post<CreateAddressResponse>(
-      `users/addresses`,
+      'users/addresses',
       data,
     );
     return res.data;
   },
 
-  async updateAddress(id: string, data: CreateAddressRequest) {
+  async updateAddress(id: number, data: CreateAddressRequest) {
     const res = await privateApi.put<UpdateAddressResponse>(
       `users/addresses/${id}`,
       data,
@@ -30,14 +30,14 @@ export const addressService = {
     return res.data;
   },
 
-  async deleteAddress(id: string) {
+  async deleteAddress(id: number) {
     const res = await privateApi.delete<DeleteAddressResponse>(
       `users/addresses/${id}`,
     );
     return res.data;
   },
 
-  async setDefaultAddress(id: string) {
+  async setDefaultAddress(id: number) {
     const res = await privateApi.patch<SetDefaultAddressResponse>(
       `users/addresses/${id}/set-default`,
     );

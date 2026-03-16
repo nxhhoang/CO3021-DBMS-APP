@@ -1,12 +1,11 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 import { Loader2, ShoppingBag } from 'lucide-react';
 import { useCart } from '@/features/cart/hooks/useCart';
 import Link from 'next/link';
 import ItemsList from '@/features/cart/components/ItemList/ItemsList';
-import formatVND from '@/features/cart/utils/formatVND';
 import OrderSummary from '@/features/cart/components/OrderSummary/OrderSummary';
 
 export default function CartPage() {

@@ -1,11 +1,20 @@
-import axios from 'axios';
+import axios, {
+  AxiosError,
+  AxiosHeaders,
+  InternalAxiosRequestConfig,
+} from 'axios';
 import { BASE_URL } from '@/constants/api';
+import { tokenStorage } from '@/services/tokenStorage';
 
 declare global {
   interface Window {
     api: typeof api;
     privateApi: typeof privateApi;
   }
+}
+
+interface AxiosRequestConfigWithRetry extends InternalAxiosRequestConfig {
+  _retry?: boolean;
 }
 
 export const api = axios.create({
@@ -16,48 +25,78 @@ export const privateApi = axios.create({
   baseURL: BASE_URL,
 });
 
+let refreshPromise: Promise<string> | null = null;
+
 // Thêm interceptor để tự động đính kèm token vào header của privateApi
 privateApi.interceptors.request.use(
-  (config) => {
+  (config: InternalAxiosRequestConfig) => {
     const token =
-      typeof window !== 'undefined'
-        ? window.localStorage.getItem('accessToken')
-        : null;
+      typeof window !== 'undefined' ? tokenStorage.getAccessToken() : null;
     if (token) {
-      config.headers['Authorization'] = `Bearer ${token}`;
+      config.headers = new AxiosHeaders(config.headers);
+      config.headers.set('Authorization', `Bearer ${token}`);
     }
     return config;
   },
-  (error) => {
+  (error: AxiosError) => {
     return Promise.reject(error);
   },
 );
 
-// Để tiện sử dụng trong các file khác mà không cần import lại
-if (typeof window !== 'undefined') {
-  window.api = api;
-  window.privateApi = privateApi;
-}
+privateApi.interceptors.response.use(
+  (response) => response,
+  async (error: AxiosError) => {
+    const originalRequest = error.config as
+      | AxiosRequestConfigWithRetry
+      | undefined;
 
-// privateApi.interceptors.response.use(
-//   (response) => response,
-//   async (error) => {
-//     const originalRequest = error.config;
+    if (error.response?.status !== 401) {
+      return Promise.reject(error);
+    }
 
-//     if (error.response?.status === 401 && !originalRequest._retry) {
-//       originalRequest._retry = true;
+    if (!originalRequest) {
+      return Promise.reject(error);
+    }
 
-//       const res = await api.post('auth/refresh-token');
+    if (originalRequest._retry) {
+      return Promise.reject(error);
+    }
 
-//       const newAccessToken = res.data.data.accessToken;
+    originalRequest._retry = true;
+    try {
+      if (!refreshPromise) {
+        refreshPromise = api
+          .post('auth/refresh-token')
+          .then((res) => {
+            const newAccessToken = res.data.data.accessToken;
+            tokenStorage.setAccessToken(newAccessToken);
 
-//       localStorage.setItem('accessToken', newAccessToken);
+            privateApi.defaults.headers.common.Authorization = `Bearer ${newAccessToken}`;
 
-//       originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+            return newAccessToken;
+          })
+          .catch((refreshError) => {
+            console.error('Error refreshing token:', refreshError);
+            tokenStorage.clear();
+            window.location.href = '/login';
+            throw refreshError;
+          })
+          .finally(() => {
+            refreshPromise = null;
+          });
+      }
 
-//       return privateApi(originalRequest);
-//     }
+      const newAccessToken = await refreshPromise;
 
-//     return Promise.reject(error);
-//   },
-// );
+      originalRequest.headers = new AxiosHeaders(originalRequest.headers);
+      originalRequest.headers.set('Authorization', `Bearer ${newAccessToken}`);
+
+      return privateApi(originalRequest);
+    } catch (refreshError) {
+      console.error('Error refreshing token:', refreshError);
+      tokenStorage.clear();
+      window.location.href = '/login';
+      return Promise.reject(refreshError);
+    }
+  },
+);

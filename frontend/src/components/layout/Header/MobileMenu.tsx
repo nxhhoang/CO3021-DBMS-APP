@@ -10,7 +10,7 @@ import { Input } from '@/components/ui/input';
 import { Search, Menu, LogOut } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { authService } from '@/services/auth.service';
+import { authService } from '@/features/auth/services/auth.service';
 
 const NAV_ITEMS = [
   { label: 'Profile', href: '/user/profile' },

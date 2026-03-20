@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Inter, Roboto_Mono } from 'next/font/google';
 import './globals.css';
 import MockProvider from '@/components/layout/MockProvider';
+import { AuthProvider } from '@/features/auth';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { ShoppingCart, User, Search, Store } from 'lucide-react';
@@ -31,10 +32,12 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <MockProvider>
-          {/* Main Content */}
-          <main className="min-h-screen">{children}</main>
-        </MockProvider>
+        <AuthProvider>
+          <MockProvider>
+            {/* Main Content */}
+            <main className="min-h-screen">{children}</main>
+          </MockProvider>
+        </AuthProvider>
       </body>
     </html>
   );

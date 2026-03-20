@@ -59,6 +59,7 @@ export const userHandlers = [
             fullName: user.fullName,
             email: user.email,
             phoneNum: user.phoneNum,
+            role: user.role,
           },
         },
         { status: 200 },

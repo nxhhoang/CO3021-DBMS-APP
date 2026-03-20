@@ -10,17 +10,14 @@ export interface User {
   role: keyof typeof ROLE;
 }
 
-export interface UserWithCredentials extends User {
-  password: string;
-}
-
 //GET /users/profile
-export type GetProfileResponse = ApiResponse<Omit<User, 'role'>>;
+export type GetProfileResponse = ApiResponse<User>;
 
 //PUT /users/profile
 export type UpdateProfileRequest = Partial<
   Pick<User, 'fullName' | 'phoneNum' | 'avatar'>
 >;
+
 export type UpdateProfileResponse = ApiResponse<
   Pick<User, 'userId' | 'fullName'>
 >;

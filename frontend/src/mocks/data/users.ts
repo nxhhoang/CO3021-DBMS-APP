@@ -1,4 +1,5 @@
-import { UserWithCredentials, TokenPayload } from '@/types';
+import { TokenPayload } from '@/types';
+import { UserWithCredentials } from '@/features/user';
 
 export const MOCK_USERS: UserWithCredentials[] = [
   {

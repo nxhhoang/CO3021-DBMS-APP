@@ -11,8 +11,9 @@ import {
 import { Button } from '@/components/ui/button';
 import { User, LogOut } from 'lucide-react';
 import Link from 'next/link';
-import { authService } from '@/services/auth.service';
+import { authService } from '@/features/auth/services/auth.service';
 import { useRouter } from 'next/navigation';
+import { tokenStorage } from '@/services/tokenStorage';
 
 const NAV_ITEMS = [
   { label: 'Profile', href: '/user/profile' },
@@ -23,7 +24,7 @@ const NAV_ITEMS = [
 export const DropdownProfile = () => {
   const router = useRouter();
   const handleLogout = async () => {
-    const refreshToken = localStorage.getItem('refreshToken');
+    const refreshToken = tokenStorage.getRefreshToken();
 
     if (!refreshToken) {
       router.push('/login');
@@ -35,9 +36,7 @@ export const DropdownProfile = () => {
     } catch (error) {
       console.error(error);
     } finally {
-      localStorage.removeItem('accessToken');
-      localStorage.removeItem('refreshToken');
-
+      tokenStorage.clear();
       router.push('/login');
       router.refresh();
     }

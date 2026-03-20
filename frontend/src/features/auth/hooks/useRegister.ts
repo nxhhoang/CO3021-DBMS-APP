@@ -1,6 +1,7 @@
 'use client';
 import { authService } from '../services/auth.service';
-import type { RegisterRequest, RegisterResponse } from '@/types';
+import type { RegisterRequest } from '@/types';
+import { getErrorMessage } from '@/lib/utils';
 
 export const useRegister = () => {
 
@@ -8,9 +9,7 @@ export const useRegister = () => {
     try{
     return await authService.register(payload);
     } catch (error: unknown) {
-      const message =
-        error instanceof Error ? error.message : 'Register failed';
-      throw new Error(message);
+      throw new Error(getErrorMessage(error, 'Registration failed'));
     }
   };
 

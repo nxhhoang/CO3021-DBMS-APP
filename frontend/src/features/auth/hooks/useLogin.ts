@@ -1,9 +1,10 @@
 'use client';
 
 import { authService } from '../services/auth.service';
-import { LoginRequest } from '../../../types/auth.types';
+import { LoginRequest } from '@/types';
 import { tokenStorage } from '@/services/tokenStorage';
 import { useAuthContext } from '../context/AuthProvider';
+import { getErrorMessage } from '@/lib/utils';
 
 export const useLogin = () => {
   const { setUser } = useAuthContext();
@@ -25,9 +26,7 @@ export const useLogin = () => {
       tokenStorage.setAccessToken(accessToken);
       tokenStorage.setRefreshToken(refreshToken);
     } catch (error: unknown) {
-      const message =
-        error instanceof Error ? error.message : 'Invalid email or password';
-      throw new Error(message);
+      throw new Error(getErrorMessage(error, 'Invalid email or password'));
     }
   };
 

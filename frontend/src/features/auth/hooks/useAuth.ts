@@ -10,8 +10,7 @@ export const useAuth = () => {
   const [user, setUser] = useState<Pick<User, "userId" | "role"> | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
-  const token = tokenStorage.getAccessToken();
-  const isAuthenticated = !!token;
+  const isAuthenticated = !!user;
 
   useEffect(() => {
     const fetchProfile = async () => {

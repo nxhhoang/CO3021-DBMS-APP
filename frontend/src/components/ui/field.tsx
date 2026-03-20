@@ -226,7 +226,12 @@ function FieldError({
     <div
       role="alert"
       data-slot="field-error"
-      className={cn('text-destructive text-sm font-normal', className)}
+      className={cn(
+        `text-destructive overflow-hidden text-sm font-normal transition-all duration-200 ${
+          children ? 'max-h-20 opacity-100' : `max-h-0 opacity-0`
+        }`,
+        className,
+      )}
       {...props}
     >
       {content}

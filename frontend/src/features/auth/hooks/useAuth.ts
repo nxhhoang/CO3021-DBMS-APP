@@ -25,8 +25,6 @@ export const useAuth = () => {
         setUser(res);
       } catch (error) {
         console.error('Error fetching user profile:', error);
-
-        tokenStorage.clear();
         setUser(null);
       } finally {
         setIsLoading(false);

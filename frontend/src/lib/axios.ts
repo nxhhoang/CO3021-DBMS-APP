@@ -32,6 +32,8 @@ privateApi.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
     const token =
       typeof window !== 'undefined' ? tokenStorage.getAccessToken() : null;
+
+    console.log('Attaching token to request:', token);
     if (token) {
       config.headers = new AxiosHeaders(config.headers);
       config.headers.set('Authorization', `Bearer ${token}`);
@@ -75,11 +77,14 @@ privateApi.interceptors.response.use(
 
             return newAccessToken;
           })
-          .catch((refreshError) => {
-            console.error('Error refreshing token:', refreshError);
-            tokenStorage.clear();
-            window.location.href = '/login';
-            throw refreshError;
+          .catch((error) => {
+            console.error('Error refreshing token:', error);
+            if (error.response?.status === 401) {
+              alert('Your session has expired. Please log in again.');
+              tokenStorage.clear();
+              window.location.href = '/login';
+            }
+            throw error;
           })
           .finally(() => {
             refreshPromise = null;
@@ -94,6 +99,7 @@ privateApi.interceptors.response.use(
       return privateApi(originalRequest);
     } catch (refreshError) {
       console.error('Error refreshing token:', refreshError);
+      alert('Your session has expired. Please log in again.');
       tokenStorage.clear();
       window.location.href = '/login';
       return Promise.reject(refreshError);

@@ -32,12 +32,12 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <AuthProvider>
-          <MockProvider>
+        <MockProvider>
+          <AuthProvider>
             {/* Main Content */}
             <main className="min-h-screen">{children}</main>
-          </MockProvider>
-        </AuthProvider>
+          </AuthProvider>
+        </MockProvider>
       </body>
     </html>
   );

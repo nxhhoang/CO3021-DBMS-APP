@@ -8,18 +8,11 @@ export default function MockProvider({
 }: {
   children: React.ReactNode;
 }) {
-  const [isReady, setIsReady] = useState(false);
+  const [isReady, setIsReady] = useState<boolean>(false);
 
   useEffect(() => {
-    const init = async () => {
-      await enableMocking();
-      setIsReady(true);
-    };
-
-    if (!isReady) {
-      init();
-    }
-  }, [isReady]);
+    enableMocking().then(() => setIsReady(true));
+  }, []);
 
   // Trong khi chờ MSW khởi động, không render con để tránh gọi API hụt
   if (!isReady && process.env.NEXT_PUBLIC_API_MOCKING === 'true') {

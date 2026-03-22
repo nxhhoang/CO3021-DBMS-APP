@@ -2,15 +2,24 @@
 
 import Logo from '../../common/Logo';
 import { SearchBar } from '@/components/common/SearchBar';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { DropdownProfile } from './DropdownProfile';
 import { CartButton } from './CartButton';
-import { GetProductsRequest } from '@/types';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 const Header = () => {
   const [query, setQuery] = useState('');
   const router = useRouter();
+  const searchParams = useSearchParams(); // Hook để lấy params từ URL
+
+  // Lấy keyword từ URL
+  const urlKeyword = searchParams.get('keyword') || '';
+
+  // BẤT CỨ KHI NÀO urlKeyword thay đổi (nhấn Back/Forward/Search mới),
+  // cập nhật lại ô input
+  useEffect(() => {
+    setQuery(urlKeyword);
+  }, [urlKeyword]);
 
   return (
     <header className="bg-background/95 sticky top-0 z-50 w-full border-b backdrop-blur">
@@ -22,19 +31,15 @@ const Header = () => {
           value={query}
           onChange={setQuery}
           onSubmit={(value: string) => {
-            const params: GetProductsRequest = {
-              keyword: value.trim() || undefined,
-            };
-            const searchString = new URLSearchParams(
-              Object.entries(params).reduce(
-                (acc, [key, val]) => {
-                  if (val !== undefined) acc[key] = String(val);
-                  return acc;
-                },
-                {} as Record<string, string>,
-              ),
-            ).toString();
-            router.push(`/products?${searchString}`);
+            const keyword = value.trim();
+
+            if (!keyword) return;
+            if (document.activeElement instanceof HTMLElement) {
+              document.activeElement.blur();
+            }
+            const params = new URLSearchParams();
+            params.set('keyword', keyword);
+            router.push(`/products?${params.toString()}`);
           }}
         />
         <div className="flex items-center gap-2">

@@ -11,7 +11,7 @@ export interface User {
 }
 
 export interface UserWithCredentials extends User {
-  password: string; // Tên rõ ràng để tránh nhầm lẫn với plain text
+  password: string;
 }
 
 //GET /users/profile

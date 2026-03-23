@@ -23,6 +23,7 @@ import { accessTokenValidator } from '~/middlewares/sample.middlewares'
 import { wrapRequestHandler } from '~/utils/handlers'
 
 const productRouter = Router()
+const adminProductRouter = Router()
 
 /**
  * Description: Search & filter products (public)
@@ -34,23 +35,23 @@ productRouter.get('/', searchProductValidator, wrapRequestHandler(searchProducts
 
 /**
  * Description: Admin — Create a new product
- * Path: /admin
+ * Path: /admin/products
  * Method: POST
  * Header: Authorization: Bearer <access_token>
  * Body: CreateProductReqBody
  */
-productRouter.post('/admin', accessTokenValidator, createProductValidator, wrapRequestHandler(createProductController))
+adminProductRouter.post('/', accessTokenValidator, createProductValidator, wrapRequestHandler(createProductController))
 
 /**
  * Description: Admin — Update a product
- * Path: /admin/:productId
+ * Path: /admin/products/:productId
  * Method: PUT
  * Header: Authorization: Bearer <access_token>
  * Params: productId (MongoDB ObjectId)
  * Body: UpdateProductReqBody
  */
-productRouter.put(
-  '/admin/:productId',
+adminProductRouter.put(
+  '/:productId',
   accessTokenValidator,
   productIdParamValidator,
   updateProductValidator,
@@ -59,13 +60,13 @@ productRouter.put(
 
 /**
  * Description: Admin — Soft delete a product (set is_active = false)
- * Path: /admin/:productId
+ * Path: /admin/products/:productId
  * Method: DELETE
  * Header: Authorization: Bearer <access_token>
  * Params: productId (MongoDB ObjectId)
  */
-productRouter.delete(
-  '/admin/:productId',
+adminProductRouter.delete(
+  '/:productId',
   accessTokenValidator,
   productIdParamValidator,
   wrapRequestHandler(deleteProductController)
@@ -103,4 +104,4 @@ productRouter.post(
   wrapRequestHandler(createReviewController)
 )
 
-export default productRouter
+export { productRouter, adminProductRouter }

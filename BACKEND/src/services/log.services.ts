@@ -1,29 +1,28 @@
 import UserActivityLog from '~/models/schemas/UserActivityLog.schema'
 import { CreateLogReqBody } from '~/models/requests/Log.requests'
+import { getMongoDB } from '~/utils/mongodb'
 
 class LogService {
-  // In-memory store — thay bằng MongoDB collection với TTL index khi kết nối thật
-  private logs: UserActivityLog[] = []
-
-  // Fire-and-forget: không async, không block caller
-  createLog(body: CreateLogReqBody, userId?: string | null): void {
-    try {
-      const newLog = new UserActivityLog({
-        user_id: userId || null,
-        action_type: body.action_type,
-        target_id: body.target_id,
-        metadata: body.metadata || {}
-      })
-      this.logs.push(newLog)
-    } catch (err) {
-      // Logging không được phép làm hỏng luồng chính
-      console.error('[LogService] Failed to create log:', err)
-    }
+  private get collection() {
+    return getMongoDB().collection<UserActivityLog>('user_activity_logs')
   }
 
-  // Helper để đọc logs (debugging/admin)
-  getLogs(): UserActivityLog[] {
-    return this.logs
+  // Fire-and-forget
+  createLog(body: CreateLogReqBody, userId?: string | null): void {
+    const newLog = new UserActivityLog({
+      user_id: userId || null,
+      action_type: body.actionType,
+      target_id: body.targetID,
+      metadata: body.metadata || {}
+    })
+
+    this.collection.insertOne(newLog).catch((err) => {
+      console.error('[LogService] Failed to create log in DB:', err)
+    })
+  }
+
+  async getLogs(): Promise<UserActivityLog[]> {
+    return this.collection.find({}).toArray()
   }
 }
 

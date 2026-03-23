@@ -224,6 +224,132 @@ curl "http://localhost:4000/api/v1/admin/stats/revenue?startDate=2026-01-01&endD
 
 ---
 
+# BE2 — Source Code Documentation
+
+> **Role**: BE 2 (MongoDB + PostgreSQL) — Products, Categories, Reviews, System Logging
+
+---
+
+## API Reference
+
+All routes are prefixed with `/api/v1`. Use `Authorization: Bearer <access_token>` where required.
+
+### Categories (`/categories`)
+
+| Method | Path                  | Body                                      | Auth   |
+| ------ | --------------------- | ----------------------------------------- | ------ |
+| GET    | `/categories`         | — (Query: `?isActive=true|false`)          | None   |
+| POST   | `/admin/categories`   | `{ name, slug, description, isActive, dynamicAttributes }` | Bearer (ADMIN) |
+| PUT    | `/admin/categories/:id` | `{ name, slug, description, isActive, dynamicAttributes }` | Bearer (ADMIN) |
+| DELETE | `/admin/categories/:id` | —                                           | Bearer (ADMIN) |
+
+### Products (`/products`)
+
+| Method | Path                  | Body                                      | Auth   |
+| ------ | --------------------- | ----------------------------------------- | ------ |
+| GET    | `/products`           | — (Query: `keyword, category, attrs, priceMin, page, sort`)| None   |
+| GET    | `/products/:productId`| —                                         | None   |
+| POST   | `/admin/products`     | `{ name, categoryID, basePrice, slug, description, images, attributes }`| Bearer (ADMIN) |
+| PUT    | `/admin/products/:productId` | `{ name, basePrice, attributes }` | Bearer (ADMIN) |
+| DELETE | `/admin/products/:productId` | —                                   | Bearer (ADMIN) |
+
+### Reviews (`/products/:productId/reviews`)
+
+| Method | Path                  | Body                                      | Auth   |
+| ------ | --------------------- | ----------------------------------------- | ------ |
+| GET    | `/products/:productId/reviews` | —                                 | None   |
+| POST   | `/products/:productId/reviews` | `{ rating, comment, images }`       | Bearer |
+
+### System Logging (`/logs`)
+
+| Method | Path                  | Body                                      | Auth   |
+| ------ | --------------------- | ----------------------------------------- | ------ |
+| POST   | `/logs`               | `{ actionType, targetID, metadata }`      | Optional Bearer |
+
+---
+
+## Testing Scenarios for BE2
+
+### Scenario 1: Category Management
+
+```bash
+# Get categories (active only by default)
+curl "http://localhost:4000/api/v1/categories?isActive=true"
+
+# Admin: Create category
+curl -X POST http://localhost:4000/api/v1/admin/categories \
+  -H "Authorization: Bearer <admin_accessToken>" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Laptop",
+    "slug": "laptop",
+    "description": "Máy tính xách tay",
+    "isActive": true,
+    "dynamicAttributes": [
+      { "key": "ram", "label": "RAM", "dataType": "string", "isRequired": true, "options": ["8GB", "16GB"] }
+    ]
+  }'
+```
+
+### Scenario 2: Product Management
+
+```bash
+# Admin: Create product
+curl -X POST http://localhost:4000/api/v1/admin/products \
+  -H "Authorization: Bearer <admin_accessToken>" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "MacBook Pro M3",
+    "categoryID": "<mongo_category_id>",
+    "basePrice": 20000000,
+    "slug": "macbook-pro-m3",
+    "description": "Apple MacBook Pro M3",
+    "images": ["url1"],
+    "attributes": { "ram": "16GB" }
+  }'
+
+# Search products (by Keyword)
+curl "http://localhost:4000/api/v1/products?keyword=MacBook&limit=10&page=1"
+
+# Search products (by Category Slug and Filtering)
+curl "http://localhost:4000/api/v1/products?category=laptop&priceMin=10000&limit=10&page=1"
+
+# Get product detail
+curl "http://localhost:4000/api/v1/products/<mongo_product_id>"
+```
+
+### Scenario 3: Reviews
+
+```bash
+# Create review
+curl -X POST http://localhost:4000/api/v1/products/<mongo_product_id>/reviews \
+  -H "Authorization: Bearer <accessToken>" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "rating": 5,
+    "comment": "Sản phẩm tuyệt vời",
+    "images": []
+  }'
+
+# Get reviews
+curl "http://localhost:4000/api/v1/products/<mongo_product_id>/reviews"
+```
+
+### Scenario 4: User Activity Log
+
+```bash
+# Create log element
+curl -X POST http://localhost:4000/api/v1/logs \
+  -H "Content-Type: application/json" \
+  -d '{
+    "action_type": "VIEW_PRODUCT",
+    "target_id": "<mongo_product_id>",
+    "metadata": { "device": "Mobile" }
+  }'
+```
+
+---
+
 ## For BE2 — Inventory Helper
 
 use `getStockByMongoId` from `~/utils/inventory.helper` to fetch inventory data for the **Hybrid Product Detail API** (`GET /products/:id`):

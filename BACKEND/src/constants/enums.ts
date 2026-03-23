@@ -35,23 +35,3 @@ export enum ActionType {
   ADD_TO_CART = 'ADD_TO_CART'
 }
 
-export enum OrderStatus {
-  PENDING = 'PENDING',
-  PROCESSING = 'PROCESSING',
-  SHIPPED = 'SHIPPED',
-  DELIVERED = 'DELIVERED',
-  CANCELLED = 'CANCELLED'
-}
-
-export enum PaymentStatus {
-  PENDING = 'PENDING',
-  PAID = 'PAID',
-  FAILED = 'FAILED',
-  REFUNDED = 'REFUNDED'
-}
-
-export enum PaymentMethod {
-  COD = 'COD',
-  BANKING = 'BANKING',
-  E_WALLET = 'E_WALLET'
-}

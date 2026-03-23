@@ -16,7 +16,7 @@ export const searchProductsController = async (
 ) => {
   const result = await productService.searchProducts(req.query)
   res.status(HTTP_STATUS.OK).json({
-    message: `${PRODUCT_MESSAGES.PRODUCTS_FETCHED} (${result.pagination.total})`,
+    message: `${PRODUCT_MESSAGES.PRODUCTS_FETCHED} (${result.pagination.totalItems})`,
     data: result
   })
 }

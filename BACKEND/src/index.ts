@@ -12,14 +12,15 @@ import swaggerUi from 'swagger-ui-express'
 import swaggerJsdoc from 'swagger-jsdoc'
 import { envConfig, isProduction } from '~/constants/config'
 import { connectPostgres } from '~/utils/postgres'
+import { connectMongo } from '~/utils/mongodb'
 
 //  Routers
 import sampleRouter from '~/routes/sample.routes'
 import authRouter from '~/routes/auth.routes'
 import userRouter from '~/routes/user.routes'
 import { orderRouter, paymentRouter, adminRouter } from '~/routes/order.routes'
-import categoryRouter from '~/routes/category.routes'
-import productRouter from '~/routes/product.routes'
+import { categoryRouter, adminCategoryRouter } from '~/routes/category.routes'
+import { productRouter, adminProductRouter } from '~/routes/product.routes'
 import logRouter from '~/routes/log.routes'
 // const file = fs.readFileSync(path.resolve('twitter-swagger.yaml'), 'utf8')
 // const swaggerDocument = YAML.parse(file)
@@ -83,6 +84,8 @@ app.use(`${BASE}/users`, userRouter)
 app.use(`${BASE}/orders`, orderRouter)
 app.use(`${BASE}/payments`, paymentRouter)
 app.use(`${BASE}/admin`, adminRouter)
+app.use(`${BASE}/admin/categories`, adminCategoryRouter)
+app.use(`${BASE}/admin/products`, adminProductRouter)
 app.use(`${BASE}/categories`, categoryRouter)
 app.use(`${BASE}/products`, productRouter)
 app.use(`${BASE}/logs`, logRouter)
@@ -93,13 +96,13 @@ app.use(defaultErrorHandler)
 //  Start
 const port = envConfig.port
 
-connectPostgres()
+Promise.all([connectPostgres(), connectMongo()])
   .then(() => {
     httpServer.listen(port, () => {
       console.log(`Server running on port ${port}`)
     })
   })
   .catch((err) => {
-    console.error('Failed to connect to PostgreSQL:', err)
+    console.error('Database connection failed:', err)
     process.exit(1)
   })

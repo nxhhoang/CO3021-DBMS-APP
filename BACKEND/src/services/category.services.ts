@@ -1,24 +1,23 @@
 import { ObjectId } from 'mongodb'
 import { CATEGORY_MESSAGES } from '~/constants/messages'
 import Category from '~/models/schemas/Category.schema'
-import mockCategories from '~/models/data/categories.data'
 import { CreateCategoryReqBody, UpdateCategoryReqBody } from '~/models/requests/Category.requests'
 import { ErrorWithStatus } from '~/models/Errors'
 import HTTP_STATUS from '~/constants/httpStatus'
+import { getMongoDB } from '~/utils/mongodb'
 
 class CategoryService {
-  // In-memory store — thay bằng MongoDB collection khi kết nối thật
-  private categories: Category[] = mockCategories
+  private get collection() {
+    return getMongoDB().collection<Category>('categories')
+  }
 
   async getCategories(isActive?: boolean) {
-    if (isActive === undefined) {
-      return this.categories
-    }
-    return this.categories.filter((cat) => cat.isActive === isActive)
+    const filter = isActive !== undefined ? { isActive } : {}
+    return await this.collection.find(filter).toArray()
   }
 
   async getCategoryById(id: string) {
-    const category = this.categories.find((cat) => cat._id.toHexString() === id)
+    const category = await this.collection.findOne({ _id: new ObjectId(id) })
     if (!category) {
       throw new ErrorWithStatus({
         message: CATEGORY_MESSAGES.CATEGORY_NOT_FOUND,
@@ -29,8 +28,7 @@ class CategoryService {
   }
 
   async createCategory(body: CreateCategoryReqBody) {
-    // Kiểm tra slug đã tồn tại chưa
-    const existingSlug = this.categories.find((cat) => cat.slug === body.slug)
+    const existingSlug = await this.collection.findOne({ slug: body.slug })
     if (existingSlug) {
       throw new ErrorWithStatus({
         message: CATEGORY_MESSAGES.CATEGORY_SLUG_ALREADY_EXISTS,
@@ -46,24 +44,19 @@ class CategoryService {
       }))
     })
 
-    this.categories.push(newCategory)
-    return { _id: newCategory._id }
+    const result = await this.collection.insertOne(newCategory)
+    return { _id: result.insertedId }
   }
 
   async updateCategory(id: string, body: UpdateCategoryReqBody) {
-    const index = this.categories.findIndex((cat) => cat._id.toHexString() === id)
-    if (index === -1) {
-      throw new ErrorWithStatus({
-        message: CATEGORY_MESSAGES.CATEGORY_NOT_FOUND,
-        status: HTTP_STATUS.NOT_FOUND
-      })
-    }
+    // Check if category exists
+    const existing = await this.getCategoryById(id)
 
-    // Kiểm tra slug mới có trùng với category khác không
-    if (body.slug) {
-      const slugConflict = this.categories.find(
-        (cat) => cat.slug === body.slug && cat._id.toHexString() !== id
-      )
+    if (body.slug && body.slug !== existing.slug) {
+      const slugConflict = await this.collection.findOne({
+        slug: body.slug,
+        _id: { $ne: new ObjectId(id) }
+      })
       if (slugConflict) {
         throw new ErrorWithStatus({
           message: CATEGORY_MESSAGES.CATEGORY_SLUG_ALREADY_EXISTS,
@@ -72,43 +65,57 @@ class CategoryService {
       }
     }
 
-    const existing = this.categories[index]
-    const updated = new Category({
-      _id: existing._id,
-      name: body.name ?? existing.name,
-      slug: body.slug ?? existing.slug,
-      description: body.description ?? existing.description,
-      isActive: body.isActive ?? existing.isActive,
-      dynamicAttributes:
-        body.dynamicAttributes !== undefined
-          ? body.dynamicAttributes.map((attr) => ({ ...attr, options: attr.options ?? [] }))
-          : existing.dynamicAttributes,
-      created_at: existing.created_at,
+    const updateData: Partial<Category> = {
       updated_at: new Date()
-    })
+    }
 
-    this.categories[index] = updated
-    return { _id: updated._id, name: updated.name, isActive: updated.isActive }
-  }
+    if (body.name !== undefined) updateData.name = body.name
+    if (body.slug !== undefined) updateData.slug = body.slug
+    if (body.description !== undefined) updateData.description = body.description
+    if (body.isActive !== undefined) updateData.isActive = body.isActive
+    if (body.dynamicAttributes !== undefined) {
+      updateData.dynamicAttributes = body.dynamicAttributes.map((attr) => ({
+        ...attr,
+        options: attr.options ?? []
+      }))
+    }
 
-  async softDeleteCategory(id: string) {
-    const index = this.categories.findIndex((cat) => cat._id.toHexString() === id)
-    if (index === -1) {
+    const updated = await this.collection.findOneAndUpdate(
+      { _id: new ObjectId(id) },
+      { $set: updateData },
+      { returnDocument: 'after' }
+    )
+
+    if (!updated) {
       throw new ErrorWithStatus({
         message: CATEGORY_MESSAGES.CATEGORY_NOT_FOUND,
         status: HTTP_STATUS.NOT_FOUND
       })
     }
 
-    this.categories[index].isActive = false
-    this.categories[index].updated_at = new Date()
-
-    return { _id: this.categories[index]._id, isActive: false }
+    return { _id: updated._id, name: updated.name, isActive: updated.isActive }
   }
 
-  // Helper dùng nội bộ (ví dụ: product service validate categoryId)
+  async softDeleteCategory(id: string) {
+    const updated = await this.collection.findOneAndUpdate(
+      { _id: new ObjectId(id) },
+      { $set: { isActive: false, updated_at: new Date() } },
+      { returnDocument: 'after' }
+    )
+
+    if (!updated) {
+      throw new ErrorWithStatus({
+        message: CATEGORY_MESSAGES.CATEGORY_NOT_FOUND,
+        status: HTTP_STATUS.NOT_FOUND
+      })
+    }
+
+    return { _id: updated._id, isActive: false }
+  }
+
   async checkCategoryExists(id: string): Promise<boolean> {
-    return this.categories.some((cat) => cat._id.toHexString() === id && cat.isActive)
+    const count = await this.collection.countDocuments({ _id: new ObjectId(id), isActive: true })
+    return count > 0
   }
 }
 

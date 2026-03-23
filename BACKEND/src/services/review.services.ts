@@ -1,16 +1,16 @@
 import { ObjectId } from 'mongodb'
-import { REVIEW_MESSAGES } from '~/constants/messages'
 import Review from '~/models/schemas/Review.schema'
-import mockReviews from '~/models/data/reviews.data'
 import { CreateReviewReqBody } from '~/models/requests/Review.requests'
 import productService from '~/services/product.services'
+import { getMongoDB } from '~/utils/mongodb'
 
 class ReviewService {
-  // In-memory store — thay bằng MongoDB collection khi kết nối thật
-  private reviews: Review[] = mockReviews
+  private get collection() {
+    return getMongoDB().collection<Review>('reviews')
+  }
 
   async getReviews(productId: string) {
-    return this.reviews.filter((r) => r.product_id.toHexString() === productId)
+    return await this.collection.find({ product_id: new ObjectId(productId) }).toArray()
   }
 
   async createReview(productId: string, body: CreateReviewReqBody, userId: string, userName: string) {
@@ -23,19 +23,24 @@ class ReviewService {
       images: body.images || []
     })
 
-    this.reviews.push(newReview)
+    const result = await this.collection.insertOne(newReview)
 
-    // Computed Pattern: cập nhật avg_rating và total_reviews trên product
-    const productReviews = this.reviews.filter((r) => r.product_id.toHexString() === productId)
-    const totalReviews = productReviews.length
-    const avgRating =
-      totalReviews > 0
-        ? Math.round((productReviews.reduce((sum, r) => sum + r.rating, 0) / totalReviews) * 10) / 10
-        : 0
+    // Wait for the query to ensure accurate aggregation
+    const stats = await this.collection.aggregate([
+      { $match: { product_id: new ObjectId(productId) } },
+      { $group: { _id: null, avgRating: { $avg: '$rating' }, totalReviews: { $sum: 1 } } }
+    ]).toArray()
 
-    productService.updateProductRating(productId, avgRating, totalReviews)
+    const totalReviews = stats[0]?.totalReviews || 0
+    let avgRating = stats[0]?.avgRating || 0
+    avgRating = Math.round(avgRating * 10) / 10
 
-    return { _id: newReview._id }
+    // Trigger update asynchronously
+    productService.updateProductRating(productId, avgRating, totalReviews).catch(err => {
+      console.error('[ReviewService] Failed to update product rating:', err)
+    })
+
+    return { _id: result.insertedId }
   }
 }
 

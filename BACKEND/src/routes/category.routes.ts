@@ -14,6 +14,7 @@ import { accessTokenValidator } from '~/middlewares/sample.middlewares'
 import { wrapRequestHandler } from '~/utils/handlers'
 
 const categoryRouter = Router()
+const adminCategoryRouter = Router()
 
 /**
  * Description: Get list of categories (public, default isActive=true)
@@ -25,23 +26,23 @@ categoryRouter.get('/', wrapRequestHandler(getCategoriesController))
 
 /**
  * Description: Admin — Create a new category
- * Path: /admin
+ * Path: /admin/categories
  * Method: POST
  * Header: Authorization: Bearer <access_token>
  * Body: CreateCategoryReqBody
  */
-categoryRouter.post('/admin', accessTokenValidator, createCategoryValidator, wrapRequestHandler(createCategoryController))
+adminCategoryRouter.post('/', accessTokenValidator, createCategoryValidator, wrapRequestHandler(createCategoryController))
 
 /**
  * Description: Admin — Update a category
- * Path: /admin/:id
+ * Path: /admin/categories/:id
  * Method: PUT
  * Header: Authorization: Bearer <access_token>
  * Params: id (MongoDB ObjectId)
  * Body: UpdateCategoryReqBody
  */
-categoryRouter.put(
-  '/admin/:id',
+adminCategoryRouter.put(
+  '/:id',
   accessTokenValidator,
   categoryIdValidator,
   updateCategoryValidator,
@@ -50,16 +51,16 @@ categoryRouter.put(
 
 /**
  * Description: Admin — Soft delete a category (set isActive = false)
- * Path: /admin/:id
+ * Path: /admin/categories/:id
  * Method: DELETE
  * Header: Authorization: Bearer <access_token>
  * Params: id (MongoDB ObjectId)
  */
-categoryRouter.delete(
-  '/admin/:id',
+adminCategoryRouter.delete(
+  '/:id',
   accessTokenValidator,
   categoryIdValidator,
   wrapRequestHandler(deleteCategoryController)
 )
 
-export default categoryRouter
+export { categoryRouter, adminCategoryRouter }

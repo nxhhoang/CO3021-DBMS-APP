@@ -7,21 +7,17 @@ const OBJECT_ID_REGEX = /^[a-fA-F0-9]{24}$/
 export const searchProductValidator = validate(
   checkSchema(
     {
-      categoryId: {
+      category: {
         optional: true,
-        isString: { errorMessage: 'categoryId must be a string' },
-        matches: {
-          options: OBJECT_ID_REGEX,
-          errorMessage: PRODUCT_MESSAGES.PRODUCT_ID_INVALID
-        }
+        isString: { errorMessage: 'category must be a string' }
       },
-      price_min: {
+      priceMin: {
         optional: true,
-        isFloat: { options: { min: 0 }, errorMessage: 'price_min must be a non-negative number' }
+        isFloat: { options: { min: 0 }, errorMessage: 'priceMin must be a non-negative number' }
       },
-      price_max: {
+      priceMax: {
         optional: true,
-        isFloat: { options: { min: 0 }, errorMessage: 'price_max must be a non-negative number' }
+        isFloat: { options: { min: 0 }, errorMessage: 'priceMax must be a non-negative number' }
       },
       page: {
         optional: true,
@@ -75,17 +71,17 @@ export const createProductValidator = validate(
         trim: true,
         isLength: { options: { min: 1, max: 200 }, errorMessage: 'Product name must be 1-200 characters' }
       },
-      categoryId: {
-        notEmpty: { errorMessage: 'categoryId is required' },
-        isString: { errorMessage: 'categoryId must be a string' },
+      categoryID: {
+        notEmpty: { errorMessage: 'categoryID is required' },
+        isString: { errorMessage: 'categoryID must be a string' },
         matches: {
           options: OBJECT_ID_REGEX,
-          errorMessage: 'categoryId must be a valid MongoDB ObjectId'
+          errorMessage: 'categoryID must be a valid MongoDB ObjectId'
         }
       },
-      base_price: {
-        notEmpty: { errorMessage: 'base_price is required' },
-        isFloat: { options: { min: 0 }, errorMessage: 'base_price must be a non-negative number' },
+      basePrice: {
+        notEmpty: { errorMessage: 'basePrice is required' },
+        isFloat: { options: { min: 0 }, errorMessage: 'basePrice must be a non-negative number' },
         toFloat: true
       },
       description: {
@@ -115,17 +111,17 @@ export const updateProductValidator = validate(
         trim: true,
         isLength: { options: { min: 1, max: 200 }, errorMessage: 'Product name must be 1-200 characters' }
       },
-      categoryId: {
+      categoryID: {
         optional: true,
-        isString: { errorMessage: 'categoryId must be a string' },
+        isString: { errorMessage: 'categoryID must be a string' },
         matches: {
           options: OBJECT_ID_REGEX,
-          errorMessage: 'categoryId must be a valid MongoDB ObjectId'
+          errorMessage: 'categoryID must be a valid MongoDB ObjectId'
         }
       },
-      base_price: {
+      basePrice: {
         optional: true,
-        isFloat: { options: { min: 0 }, errorMessage: 'base_price must be a non-negative number' },
+        isFloat: { options: { min: 0 }, errorMessage: 'basePrice must be a non-negative number' },
         toFloat: true
       },
       description: {

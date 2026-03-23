@@ -15,6 +15,7 @@ interface CategoryType {
   description?: string
   isActive?: boolean
   dynamicAttributes?: DynamicAttribute[]
+  variantAttributes?: DynamicAttribute[]
   created_at?: Date
   updated_at?: Date
 }
@@ -26,6 +27,7 @@ export default class Category {
   description: string
   isActive: boolean
   dynamicAttributes: DynamicAttribute[]
+  variantAttributes: DynamicAttribute[]
   created_at: Date
   updated_at: Date
 
@@ -37,6 +39,7 @@ export default class Category {
     this.description = category.description || ''
     this.isActive = category.isActive !== undefined ? category.isActive : true
     this.dynamicAttributes = category.dynamicAttributes || []
+    this.variantAttributes = category.variantAttributes || []
     this.created_at = category.created_at || date
     this.updated_at = category.updated_at || date
   }

@@ -14,7 +14,8 @@
     "prettier:fix": "prettier --write .",
     "build nc": "rimraf ./dist && tsc --noCheck && tsc-alias",
     "seed:admin": "tsx src/scripts/seedAdmin.ts",
-    "seed:mongo": "tsx src/scripts/seedMongo.ts"
+    "seed:mongo": "tsx src/scripts/seedMongo.ts",
+    "seed:postgres": "tsx src/scripts/seedPostgres.ts"
   },
   "keywords": [],
   "author": "",

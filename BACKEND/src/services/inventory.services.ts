@@ -1,90 +1,63 @@
-import mockInventory, { InventoryItem } from '~/models/data/inventory.data'
-import { INVENTORY_MESSAGES } from '~/constants/messages'
+import pool from '~/utils/postgres'
+import { CreateInventoryReqBody } from '~/models/requests/Inventory.requests'
 import { ErrorWithStatus } from '~/models/Errors'
 import HTTP_STATUS from '~/constants/httpStatus'
-
-/**
- * InsufficientStockError — được throw khi kho không đủ hàng.
- * BE1 bắt lỗi này để rollback transaction và trả 400 cho client.
- */
-export class InsufficientStockError extends ErrorWithStatus {
-  sku: string
-  requested: number
-  available: number
-
-  constructor(sku: string, requested: number, available: number) {
-    super({ message: INVENTORY_MESSAGES.INSUFFICIENT_STOCK, status: HTTP_STATUS.BAD_REQUEST })
-    this.sku = sku
-    this.requested = requested
-    this.available = available
-  }
-}
-
-interface OrderItem {
-  sku: string
-  quantity: number
-}
+import { INVENTORY_MESSAGES } from '~/constants/messages'
 
 class InventoryService {
-  // In-memory inventory — thay bằng PostgreSQL query khi kết nối thật
-  private inventory: InventoryItem[] = mockInventory
+  async createInventory(body: CreateInventoryReqBody) {
+    const { product_id, sku, stock_quantity } = body
 
-  private findBySku(sku: string): InventoryItem | undefined {
-    return this.inventory.find((item) => item.sku === sku)
-  }
-
-  getInventoryByProductId(productId: string): InventoryItem[] {
-    return this.inventory.filter((item) => item.product_id === productId)
-  }
-
-  checkStock(items: OrderItem[]): void {
-    for (const { sku, quantity } of items) {
-      const record = this.findBySku(sku)
-      if (!record) {
+    try {
+      const result = await pool.query(
+        `INSERT INTO inventories (product_id, sku, stock_quantity) 
+         VALUES ($1, $2, $3) RETURNING *`,
+        [product_id, sku, stock_quantity]
+      )
+      return result.rows[0]
+    } catch (error: any) {
+      if (error.code === '23505') { // Unique violation Postgres Error Code
         throw new ErrorWithStatus({
-          message: `${INVENTORY_MESSAGES.INVENTORY_NOT_FOUND}: SKU ${sku}`,
-          status: HTTP_STATUS.NOT_FOUND
+          message: INVENTORY_MESSAGES.INVENTORY_SKU_ALREADY_EXISTS,
+          status: HTTP_STATUS.CONFLICT
         })
       }
-      if (record.stock_quantity < quantity) {
-        throw new InsufficientStockError(sku, quantity, record.stock_quantity)
-      }
+      throw error
     }
   }
 
-  /**
-   * checkAndDecreaseStock — hàm nguyên tử được gọi bên trong
-   * PostgreSQL transaction của BE1.
-   *
-   * Trong mock: kiểm tra và trừ kho in-memory.
-   * Trong production: nhận PoolClient từ BE1 và thực hiện
-   *   SELECT ... FOR UPDATE rồi UPDATE trực tiếp trên DB.
-   *
-   * @param items  Danh sách { sku, quantity } cần trừ kho
-   */
-  async checkAndDecreaseStock(items: OrderItem[]): Promise<void> {
-    // Phase 1: kiểm tra tất cả trước khi trừ (tránh partial decrease)
-    this.checkStock(items)
-
-    // Phase 2: thực hiện trừ kho
-    for (const { sku, quantity } of items) {
-      const record = this.findBySku(sku)!
-      record.stock_quantity -= quantity
-      record.updated_at = new Date()
+  async updateInventoryQuantity(inventoryId: string, quantity: number) {
+    const result = await pool.query(
+      `UPDATE inventories 
+       SET stock_quantity = $1, updated_at = NOW() 
+       WHERE inventory_id = $2 RETURNING *`,
+      [quantity, inventoryId]
+    )
+    if (result.rows.length === 0) {
+      throw new ErrorWithStatus({
+        message: INVENTORY_MESSAGES.INVENTORY_NOT_FOUND,
+        status: HTTP_STATUS.NOT_FOUND
+      })
     }
+    return result.rows[0]
   }
 
-  async increaseStock(items: OrderItem[]): Promise<void> {
-    for (const { sku, quantity } of items) {
-      const record = this.findBySku(sku)
-      if (record) {
-        record.stock_quantity += quantity
-        record.updated_at = new Date()
-      }
-    }
+  async getInventoriesByProductId(productId: string) {
+    const result = await pool.query(
+      `SELECT * FROM inventories WHERE product_id = $1`,
+      [productId]
+    )
+    return result.rows
+  }
+
+  async getInventoriesBySku(sku: string) {
+    const result = await pool.query(
+      `SELECT * FROM inventories WHERE sku = $1`,
+      [sku]
+    )
+    return result.rows
   }
 }
 
 const inventoryService = new InventoryService()
-export { inventoryService }
 export default inventoryService

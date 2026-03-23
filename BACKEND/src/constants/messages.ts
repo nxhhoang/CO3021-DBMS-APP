@@ -108,7 +108,8 @@ export const REVIEW_MESSAGES = {
   REVIEWS_FETCHED: 'Get reviews successfully',
   REVIEW_CREATED: 'Review submitted successfully',
   REVIEW_RATING_INVALID: 'Rating must be an integer between 1 and 5',
-  REVIEW_COMMENT_REQUIRED: 'Comment is required'
+  REVIEW_COMMENT_REQUIRED: 'Comment is required',
+  TARGET_ID_REQUIRED: 'Target ID is required'
 } as const
 
 export const LOG_MESSAGES = {
@@ -117,6 +118,17 @@ export const LOG_MESSAGES = {
 } as const
 
 export const INVENTORY_MESSAGES = {
-  INSUFFICIENT_STOCK: 'Insufficient stock for the requested item',
-  INVENTORY_NOT_FOUND: 'Inventory record not found'
+  PRODUCT_ID_IS_REQUIRED: 'Product ID is required',
+  PRODUCT_ID_MUST_BE_A_STRING: 'Product ID must be a string',
+  PRODUCT_ID_IS_INVALID: 'Product ID is invalid',
+  SKU_IS_REQUIRED: 'SKU is required',
+  SKU_MUST_BE_A_STRING: 'SKU must be a string',
+  STOCK_QUANTITY_IS_REQUIRED: 'Stock quantity is required',
+  STOCK_QUANTITY_MUST_BE_A_POSITIVE_INTEGER: 'Stock quantity must be a positive integer',
+  CREATE_INVENTORY_SUCCESS: 'Create inventory successfully',
+  UPDATE_INVENTORY_SUCCESS: 'Update inventory quantity successfully',
+  GET_INVENTORY_SUCCESS: 'Get inventory successfully',
+  INVENTORY_SKU_ALREADY_EXISTS: 'Inventory for this SKU already exists',
+  INVENTORY_NOT_FOUND: 'Inventory record not found',
+  INSUFFICIENT_STOCK: 'Insufficient stock for the requested item'
 } as const

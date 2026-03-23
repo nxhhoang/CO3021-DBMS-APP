@@ -13,7 +13,7 @@ export const getStockByMongoId = async (mongoProductId: string) => {
   const result = await query(
     `SELECT sku, stock_quantity AS "stockQuantity"
      FROM inventories
-     WHERE mongo_product_id = $1`,
+     WHERE product_id = $1`,
     [mongoProductId]
   )
   return result.rows // [{ sku: 'M3-16-512', stockQuantity: 50 }, ...]

@@ -22,6 +22,7 @@ import { orderRouter, paymentRouter, adminRouter } from '~/routes/order.routes'
 import { categoryRouter, adminCategoryRouter } from '~/routes/category.routes'
 import { productRouter, adminProductRouter } from '~/routes/product.routes'
 import logRouter from '~/routes/log.routes'
+import inventoryRouter from '~/routes/inventory.routes'
 // const file = fs.readFileSync(path.resolve('twitter-swagger.yaml'), 'utf8')
 // const swaggerDocument = YAML.parse(file)
 
@@ -89,6 +90,8 @@ app.use(`${BASE}/admin/products`, adminProductRouter)
 app.use(`${BASE}/categories`, categoryRouter)
 app.use(`${BASE}/products`, productRouter)
 app.use(`${BASE}/logs`, logRouter)
+app.use(`${BASE}/admin/inventories`, inventoryRouter)
+app.use(`${BASE}/inventories`, inventoryRouter)
 
 //  Error Handler
 app.use(defaultErrorHandler)

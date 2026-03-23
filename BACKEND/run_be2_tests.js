@@ -258,7 +258,63 @@ async function runTests() {
     // Soft Delete Category
     console.log('\n--- CLEANUP ---')
     res = await apiClient.delete(`/admin/categories/${categoryId}`)
-    console.log(`[TEST ${++testCount}] [DELETE /admin/categories/:id]`, res.data.message) // this technically makes it 31 tests!
+    console.log(`[TEST ${++testCount}] [DELETE /admin/categories/:id]`, res.data.message)
+
+    console.log('\n--- SCENARIO 6: Inventory Management ---')
+    // 32. Create Inventory Successfully
+    const testSku = 'SKU-TEST-' + Date.now()
+    res = await apiClient.post('/admin/inventories', {
+      product_id: productId1,
+      sku: testSku,
+      stock_quantity: 100
+    })
+    console.log(`[TEST ${++testCount}] [POST /admin/inventories]`, res.data.message)
+    const inventoryId = res.data.result.inventory_id
+
+    // 33. Create Inventory - Duplicate SKU (Wait, SKU is unique)
+    await expectError(
+      apiClient.post('/admin/inventories', {
+        product_id: productId1,
+        sku: testSku,
+        stock_quantity: 50
+      }),
+      409,
+      `[TEST ${++testCount}] POST /admin/inventories with duplicate SKU`
+    )
+
+    // 34. Create Inventory - Invalid Product ID
+    await expectError(
+      apiClient.post('/admin/inventories', {
+        product_id: 'invalid-id',
+        sku: 'SKU-FAIL',
+        stock_quantity: 10
+      }),
+      422,
+      `[TEST ${++testCount}] POST /admin/inventories with invalid product_id`
+    )
+
+    // 35. Update Inventory Quantity Successfully
+    res = await apiClient.put(`/admin/inventories/${inventoryId}`, {
+      stock_quantity: 150
+    })
+    console.log(`[TEST ${++testCount}] [PUT /admin/inventories/:id]`, res.data.message)
+
+    // 36. Update Inventory - Negative Quantity
+    await expectError(
+      apiClient.put(`/admin/inventories/${inventoryId}`, {
+        stock_quantity: -10
+      }),
+      422,
+      `[TEST ${++testCount}] PUT /admin/inventories/:id with negative stock_quantity`
+    )
+
+    // 37. Get Inventories by Product ID
+    res = await apiClient.get(`/inventories/product/${productId1}`)
+    console.log(`[TEST ${++testCount}] [GET /inventories/product/:productId]`, res.data.message, `(Count: ${res.data.result.length})`)
+
+    // 38. Get Inventories by SKU
+    res = await apiClient.get(`/inventories/sku/${testSku}`)
+    console.log(`[TEST ${++testCount}] [GET /inventories/sku/:sku]`, res.data.message, `(Count: ${res.data.result.length})`)
 
     console.log(`\n--- All ${testCount} tests finished smoothly ---`)
   } catch (err) {

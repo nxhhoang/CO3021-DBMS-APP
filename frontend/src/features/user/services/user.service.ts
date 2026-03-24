@@ -1,4 +1,4 @@
-import { api, privateApi } from '@/lib/axios';
+import { privateApi } from '@/lib/axios';
 import { GetProfileResponse, UpdateProfileRequest, UpdateProfileResponse } from '@/types/user.types';
 
 export const userService = {

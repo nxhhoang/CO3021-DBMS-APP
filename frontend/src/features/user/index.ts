@@ -1,5 +1,7 @@
 // Hooks
-// export * from './hooks/useProfile';
+export * from './hooks/useProfile';
 
-// Types
-export * from './types/user.types';
+// Components
+export * from './components/ProfileHeader';
+export * from './components/ProfileDetails';
+export * from './components/UserSidebar';

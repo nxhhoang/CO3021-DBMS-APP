@@ -1,5 +1,4 @@
-import { TokenPayload } from '@/types';
-import { UserWithCredentials } from '@/features/user';
+import { TokenPayload, UserWithCredentials } from '@/types';
 
 export const MOCK_USERS: UserWithCredentials[] = [
   {
@@ -8,7 +7,6 @@ export const MOCK_USERS: UserWithCredentials[] = [
     email: 'admin@example.com',
     phoneNum: '0900000000',
     role: 'ADMIN',
-    avatar: '',
     password: '123',
   },
   {
@@ -17,7 +15,6 @@ export const MOCK_USERS: UserWithCredentials[] = [
     email: 'customer@example.com',
     phoneNum: '0911111111',
     role: 'CUSTOMER',
-    avatar: '',
     password: '123',
   },
 ];

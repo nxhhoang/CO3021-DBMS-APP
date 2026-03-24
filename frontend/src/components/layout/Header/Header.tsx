@@ -8,7 +8,7 @@ import { CartButton } from './CartButton';
 import { useRouter, useSearchParams } from 'next/navigation';
 
 const Header = () => {
-  const [query, setQuery] = useState('');
+  const [query, setQuery] = useState<string>('');
   const router = useRouter();
   const searchParams = useSearchParams(); // Hook để lấy params từ URL
 

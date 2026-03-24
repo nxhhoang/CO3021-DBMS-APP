@@ -10,7 +10,7 @@ import { Input } from '@/components/ui/input';
 import { Search, Menu, LogOut } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { authService } from '@/features/auth/services/auth.service';
+import { useAuthContext } from '@/features/auth';
 
 const NAV_ITEMS = [
   { label: 'Profile', href: '/user/profile' },
@@ -23,6 +23,7 @@ const NAV_ITEMS = [
 }
 export const MobileMenu = () => {
   const router = useRouter();
+  const { logout } = useAuthContext();
 
   const onSearchSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -31,26 +32,7 @@ export const MobileMenu = () => {
     if (query) router.push(`/search?q=${encodeURIComponent(query.toString())}`);
   };
 
-  const handleLogout = async () => {
-    const refreshToken = localStorage.getItem('refreshToken');
 
-    if (!refreshToken) {
-      router.push('/login');
-      return;
-    }
-
-    try {
-      await authService.logout({ refreshToken });
-    } catch (error) {
-      console.error(error);
-    } finally {
-      localStorage.removeItem('accessToken');
-      localStorage.removeItem('refreshToken');
-
-      router.push('/login');
-      router.refresh();
-    }
-  };
 
   return (
     <Sheet>
@@ -80,7 +62,7 @@ export const MobileMenu = () => {
             ))}
             <hr className="my-2" />
             <button
-              onClick={handleLogout}
+              onClick={logout}
               className="flex items-center p-2 text-lg font-medium text-red-500 hover:bg-red-50"
             >
               <LogOut className="mr-2 h-5 w-5" />

@@ -11,9 +11,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { User, LogOut } from 'lucide-react';
 import Link from 'next/link';
-import { authService } from '@/features/auth/services/auth.service';
-import { useRouter } from 'next/navigation';
-import { tokenStorage } from '@/services/tokenStorage';
+import { useAuthContext } from '@/features/auth';
 
 const NAV_ITEMS = [
   { label: 'Profile', href: '/user/profile' },
@@ -22,25 +20,8 @@ const NAV_ITEMS = [
 ];
 
 export const DropdownProfile = () => {
-  const router = useRouter();
-  const handleLogout = async () => {
-    const refreshToken = tokenStorage.getRefreshToken();
+  const { logout } = useAuthContext();
 
-    if (!refreshToken) {
-      router.push('/login');
-      return;
-    }
-
-    try {
-      await authService.logout({ refreshToken });
-    } catch (error) {
-      console.error(error);
-    } finally {
-      tokenStorage.clear();
-      router.push('/login');
-      router.refresh();
-    }
-  };
   return (
     <div className="hidden md:block">
       <DropdownMenu>
@@ -59,7 +40,7 @@ export const DropdownProfile = () => {
           ))}
           <DropdownMenuSeparator />
           <DropdownMenuItem
-            onClick={handleLogout}
+            onClick={logout}
             className="cursor-pointer text-red-500 focus:text-red-500"
           >
             <LogOut className="mr-2 h-4 w-4" />

@@ -5,10 +5,12 @@ import { userService } from '../../user/services/user.service';
 import { authService } from '../services/auth.service';
 import { useEffect, useState } from 'react';
 import { tokenStorage } from '@/services/tokenStorage';
+import { useRouter } from 'next/navigation';
 
 export const useAuth = () => {
   const [user, setUser] = useState<Pick<User, "userId" | "role"> | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const router = useRouter();
 
   const isAuthenticated = !!user;
 
@@ -40,11 +42,16 @@ export const useAuth = () => {
       if (refreshToken) {
         await authService.logout({ refreshToken });
       }
+      else {
+        router.push('/login');
+        return;
+      }
     } catch (error) {
       console.error('Error during logout:', error);
     } finally {
       tokenStorage.clear();
       setUser(null);
+      router.push('/login');
     }
   };
 

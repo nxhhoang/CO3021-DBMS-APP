@@ -8,6 +8,7 @@ VALUES (
     '0909123456', 
     'ADMIN'
 ),
+/** password hiện tại giống nhau để dễ thao tác */
 ('user-uuid-001','user1@ecommerce.com','90d985f6b4155b2a5d7390fc25a8fd12bed2d8bc822b4025b961596c59ca9130','Nguyen Van A','0912345678','CUSTOMER'),
 ('user-uuid-002','user2@ecommerce.com','90d985f6b4155b2a5d7390fc25a8fd12bed2d8bc822b4025b961596c59ca9130','Tran Thi B','0987654321','CUSTOMER'),
 ('user-uuid-003','user3@ecommerce.com','90d985f6b4155b2a5d7390fc25a8fd12bed2d8bc822b4025b961596c59ca9130','Le Van C','0909988776','CUSTOMER');

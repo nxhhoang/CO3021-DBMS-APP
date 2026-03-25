@@ -24,7 +24,6 @@ import {
   PaginationLink,
 } from '@/components/ui/pagination';
 import { GetProductsRequest, ProductResponse } from '@/types/product.types';
-import { productService } from '@/services/product.service';
 import { Skeleton } from '@/components/ui/skeleton';
 
 export default function ProductsPage() {
@@ -39,11 +38,11 @@ export default function ProductsPage() {
     category: searchParams.get('category') || undefined,
     page: Number(searchParams.get('page')) || 1,
     limit: Number(searchParams.get('limit')) || 10,
-    price_min: searchParams.get('price_min')
-      ? Number(searchParams.get('price_min'))
+    priceMin: searchParams.get('priceMin')
+      ? Number(searchParams.get('priceMin'))
       : undefined,
-    price_max: searchParams.get('price_max')
-      ? Number(searchParams.get('price_max'))
+    priceMax: searchParams.get('priceMax')
+      ? Number(searchParams.get('priceMax'))
       : undefined,
     sort: searchParams.get('sort') as any,
   };
@@ -97,29 +96,5 @@ export default function ProductsPage() {
         </main>
       </div>
     </div>
-  );
-}
-
-// Component con hiển thị Card
-function ProductCard({ product }: { product: ProductResponse }) {
-  return (
-    <Card className="overflow-hidden rounded-2xl transition-shadow hover:shadow-lg">
-      <img
-        src={product.images[0]}
-        alt={product.name}
-        className="h-48 w-full object-cover"
-      />
-      <CardHeader className="p-4">
-        <h2 className="text-lg font-bold">{product.name}</h2>
-      </CardHeader>
-      <CardContent className="p-4 pt-0">
-        <p className="text-primary text-xl font-bold">
-          {product.base_price.toLocaleString()}đ
-        </p>
-        <p className="text-sm text-gray-600">
-          Đánh giá: {product.avg_rating} ⭐
-        </p>
-      </CardContent>
-    </Card>
   );
 }

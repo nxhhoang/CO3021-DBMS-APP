@@ -21,7 +21,7 @@ BEGIN
     WHERE sku = p_sku FOR UPDATE;
 
     IF v_current_stock IS NULL OR v_current_stock < p_quantity THEN
-        RAISE EXCEPTION 'NOT ENOUGH PRODUCTS', p_sku;
+        RAISE EXCEPTION 'NOT ENOUGH PRODUCTS: %', p_sku;
     END IF;
 
     -- 2. Trừ tồn kho

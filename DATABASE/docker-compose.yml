@@ -1,3 +1,5 @@
+version: "3.9"
+
 services:
   postgres:
     container_name: postgres_db
@@ -17,10 +19,10 @@ services:
     container_name: mongo_db
     image: mongo:7
     restart: always
-    ports:
-      - "27017:27017"
     environment:
       MONGO_INITDB_DATABASE: hybrid_db
+    ports:
+      - "27017:27017"
     volumes:
       - mongo_data:/data/db
       - ./mongo/scripts:/docker-entrypoint-initdb.d

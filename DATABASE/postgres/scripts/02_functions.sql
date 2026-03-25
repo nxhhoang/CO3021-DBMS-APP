@@ -2,7 +2,7 @@
 CREATE OR REPLACE FUNCTION update_last_updated_column()
 RETURNS TRIGGER AS $$
 BEGIN
-    NEW.lasUpdated = NOW();
+    NEW.lastUpdated = NOW();
     RETURN NEW;
 END;
 $$ language 'plpgsql';

@@ -3,6 +3,9 @@ import Review from '~/models/schemas/Review.schema'
 import { CreateReviewReqBody } from '~/models/requests/Review.requests'
 import productService from '~/services/product.services'
 import { getMongoDB } from '~/utils/mongodb'
+import { query } from '~/utils/postgres'
+import { ErrorWithStatus } from '~/models/Errors'
+import HTTP_STATUS from '~/constants/httpStatus'
 
 class ReviewService {
   private get collection() {
@@ -14,6 +17,25 @@ class ReviewService {
   }
 
   async createReview(productId: string, body: CreateReviewReqBody, userId: string, userName: string) {
+    // Verified Purchase check: user must have a DELIVERED order containing this productId
+    const purchaseCheck = await query(
+      `SELECT 1
+       FROM orders o
+       JOIN order_items oi ON oi.order_id = o.order_id
+       WHERE o.user_id = $1
+         AND oi.product_id = $2
+         AND o.status = 'DELIVERED'
+       LIMIT 1`,
+      [userId, productId]
+    )
+
+    if (purchaseCheck.rows.length === 0) {
+      throw new ErrorWithStatus({
+        message: 'You can only review products you have purchased and received.',
+        status: HTTP_STATUS.FORBIDDEN
+      })
+    }
+
     const newReview = new Review({
       product_id: new ObjectId(productId),
       user_id: userId,

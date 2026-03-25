@@ -8,7 +8,7 @@ import {
   getRevenueStatsController
 } from '~/controllers/order.controllers'
 import { accessTokenValidator, verifyRoleMiddleware } from '~/middlewares/auth.middlewares'
-import { checkoutValidator, updateOrderStatusValidator } from '~/middlewares/order.middlewares'
+import { checkoutValidator, updateOrderStatusValidator, revenueStatsValidator } from '~/middlewares/order.middlewares'
 import { wrapRequestHandler } from '~/utils/handlers'
 import { UserRole } from '~/constants/enums'
 
@@ -60,6 +60,7 @@ adminRouter.get(
   '/stats/revenue',
   accessTokenValidator,
   verifyRoleMiddleware(UserRole.ADMIN),
+  revenueStatsValidator,
   wrapRequestHandler(getRevenueStatsController)
 )
 

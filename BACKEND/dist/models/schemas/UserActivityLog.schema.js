@@ -6,7 +6,7 @@ class UserActivityLog {
     user_id;
     action_type;
     target_id;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     metadata;
     timestamp;
     constructor(log) {

@@ -9,7 +9,7 @@ class Product {
     base_price;
     description;
     images;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     attributes;
     is_active;
     created_at;

@@ -16,3 +16,16 @@ export function getErrorMessage(error: unknown, defaultMessage : string = 'An er
   }
   return defaultMessage;
 }
+
+export function formatPrice(price: number): string {
+  return price.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
+}
+
+export function formatDate(dateString: string): string {
+  const date = new Date(dateString);
+  return date.toLocaleDateString('vi-VN', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+  });
+}

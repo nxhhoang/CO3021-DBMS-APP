@@ -2,7 +2,7 @@ import { ApiResponse } from './api.types';
 
 export interface Review {
   _id: string;
-  user_name: string;
+  userName: string;
   rating: number;
   comment: string;
   images: string[];

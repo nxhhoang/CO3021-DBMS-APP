@@ -9,7 +9,7 @@ export interface MessageResponse {
 
 export interface PaginatedResponse<T> extends ApiResponse<T> {
   pagination: {
-    totalItems: number;
+    totalItems: number; // Total number of items across all pages
     itemCount: number; // Number of items in the current page
     itemsPerPage: number; // Number of items per page, == limit
     totalPages: number;

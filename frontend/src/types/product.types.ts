@@ -5,13 +5,13 @@ import { SORT_BY } from '@/constants/enum';
 export interface Product {
   _id: string;
   name: string;
-  base_price: number;
+  basePrice: number;
   categoryId: string;
   images: string[];
   attributes: Record<string, string | number | boolean>;
-  avg_rating: number;
-  total_reviews: number;
-  total_sold: number;
+  avgRating: number;
+  totalReviews: number;
+  totalSold: number;
 }
 
 export interface ProductResponse extends Omit<Product, 'categoryId'> {
@@ -26,15 +26,18 @@ export interface ProductDetail extends ProductResponse {
   }[];
 }
 
+export type AttributesRequest = Record<string, string>;
+
 //GET /products
 export type GetProductsRequest = {
   keyword?: string;
   category?: string; //slug
-  price_min?: number;
-  price_max?: number;
+  priceMin?: number;
+  priceMax?: number;
   page?: number;
   limit?: number;
   sort?: (typeof SORT_BY)[keyof typeof SORT_BY];
+  attributes?: AttributesRequest;
 };
 
 export type GetProductsResponse = PaginatedResponse<ProductResponse[]>;
@@ -46,7 +49,7 @@ export type GetProductDetailResponse = ApiResponse<ProductDetail>;
 //POST /admin/products
 export type CreateProductRequest = Pick<
   Product,
-  'name' | 'base_price' | 'categoryId' | 'attributes'
+  'name' | 'basePrice' | 'categoryId' | 'attributes'
 >;
 
 export type CreateProductResponse = ApiResponse<ProductResponse>;

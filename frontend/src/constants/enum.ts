@@ -12,10 +12,12 @@ export const ROLE = {
 } as const;
 
 export const SORT_BY = {
-  PRICE_ASC: 'price_asc',
-  PRICE_DESC: 'price_desc',
-  RATING: 'rating_desc',
-  POPULARITY: 'sold_desc',
+  PRICE_ASC: 'priceASC',
+  PRICE_DESC: 'priceDESC',
+  RATING_ASC: 'ratingASC',
+  RATING_DESC: 'ratingDESC',
+  SOLD_ASC: 'soldASC',
+  SOLD_DESC: 'soldDESC',
 } as const;
 
 export const PAYMENT_METHOD = {

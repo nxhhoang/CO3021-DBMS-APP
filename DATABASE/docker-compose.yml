@@ -1,0 +1,30 @@
+services:
+  postgres:
+    container_name: postgres_db
+    image: postgres:16
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: admin123
+      POSTGRES_DB: hybrid_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./postgres/scripts:/docker-entrypoint-initdb.d
+
+  mongo:
+    container_name: mongo_db
+    image: mongo:7
+    restart: always
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_DATABASE: hybrid_db
+    volumes:
+      - mongo_data:/data/db
+      - ./mongo/scripts:/docker-entrypoint-initdb.d
+
+volumes:
+  postgres_data:
+  mongo_data:

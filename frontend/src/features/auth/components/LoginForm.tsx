@@ -55,7 +55,7 @@ export function LoginForm() {
       className="flex flex-1 items-center justify-center"
     >
       <Card className="w-full max-w-md flex-col gap-2">
-        <CardHeader className="space-y-1 mb-2">
+        <CardHeader className="mb-2 space-y-1">
           <CardTitle className="text-2xl">Login</CardTitle>
           <CardDescription>
             Enter your email below to login to your account
@@ -95,7 +95,7 @@ export function LoginForm() {
             {loading ? 'Signing in...' : 'Sign in'}
           </Button>
 
-          <p className="text-muted-foreground text-center text-sm mt-2">
+          <p className="text-muted-foreground mt-2 text-center text-sm">
             Don’t have an account?{' '}
             <Link
               href="/register"

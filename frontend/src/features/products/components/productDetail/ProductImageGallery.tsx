@@ -1,10 +1,10 @@
 'use client';
 
-import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { ProductImage } from "../ProductImage";
-import { Button } from "@/components/ui/button";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { ProductImage } from '../ProductImage';
+import { Button } from '@/components/ui/button';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 export function ProductImageGallery({ images }: { images: string[] }) {
   const [index, setIndex] = useState<number>(0);
@@ -25,7 +25,7 @@ export function ProductImageGallery({ images }: { images: string[] }) {
   };
 
   return (
-    <div className="relative w-full aspect-square overflow-hidden rounded-xl border">
+    <div className="relative aspect-square w-full overflow-hidden rounded-xl border">
       {/* Image */}
       <AnimatePresence mode="wait">
         <motion.div
@@ -36,10 +36,7 @@ export function ProductImageGallery({ images }: { images: string[] }) {
           transition={{ duration: 0.3 }}
           className="absolute inset-0"
         >
-          <ProductImage
-            src={images[index]}
-            className="h-full w-full"
-          />
+          <ProductImage src={images[index]} className="h-full w-full" />
         </motion.div>
       </AnimatePresence>
 
@@ -48,7 +45,7 @@ export function ProductImageGallery({ images }: { images: string[] }) {
         variant="secondary"
         size="icon"
         onClick={() => paginate(-1)}
-        className="absolute left-2 top-1/2 -translate-y-1/2 rounded-full"
+        className="absolute top-1/2 left-2 -translate-y-1/2 rounded-full"
       >
         <ChevronLeft className="h-4 w-4" />
       </Button>
@@ -58,7 +55,7 @@ export function ProductImageGallery({ images }: { images: string[] }) {
         variant="secondary"
         size="icon"
         onClick={() => paginate(1)}
-        className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full"
+        className="absolute top-1/2 right-2 -translate-y-1/2 rounded-full"
       >
         <ChevronRight className="h-4 w-4" />
       </Button>

@@ -1,5 +1,9 @@
 import { privateApi } from '@/lib/axios';
-import { GetProfileResponse, UpdateProfileRequest, UpdateProfileResponse } from '@/types/user.types';
+import {
+  GetProfileResponse,
+  UpdateProfileRequest,
+  UpdateProfileResponse,
+} from '@/types/user.types';
 
 export const userService = {
   async getProfile() {
@@ -10,7 +14,7 @@ export const userService = {
   async updateProfile(payload: UpdateProfileRequest) {
     const { data } = await privateApi.put<UpdateProfileResponse>(
       `users/profile`,
-      payload
+      payload,
     );
     return data.data;
   },

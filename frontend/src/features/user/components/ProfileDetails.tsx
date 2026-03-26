@@ -7,7 +7,7 @@ import { UpdateProfileRequest, User } from '@/types';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Input } from '@/components/ui/input';
 
-const PROFILE_FIELDS : readonly {
+const PROFILE_FIELDS: readonly {
   key: keyof User;
   label: string;
   editable: boolean;
@@ -58,7 +58,6 @@ function ProfileEditForm({
   useEffect(() => {
     setForm(initialData);
   }, [initialData]);
-
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();

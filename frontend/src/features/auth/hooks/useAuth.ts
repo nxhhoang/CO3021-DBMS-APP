@@ -8,7 +8,7 @@ import { tokenStorage } from '@/services/tokenStorage';
 import { useRouter } from 'next/navigation';
 
 export const useAuth = () => {
-  const [user, setUser] = useState<Pick<User, "userId" | "role"> | null>(null);
+  const [user, setUser] = useState<Pick<User, 'userId' | 'role'> | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const router = useRouter();
 
@@ -41,8 +41,7 @@ export const useAuth = () => {
       const refreshToken = tokenStorage.getRefreshToken();
       if (refreshToken) {
         await authService.logout({ refreshToken });
-      }
-      else {
+      } else {
         router.push('/login');
         return;
       }

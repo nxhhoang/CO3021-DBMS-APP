@@ -1,13 +1,12 @@
 'use client';
 
-import { useEffect, useState } from "react";
-import { categoryService } from "../services/categories.service";
-import { Category } from "@/types";
-
+import { useEffect, useState } from 'react';
+import { categoryService } from '../services/categories.service';
+import { Category } from '@/types';
 
 export const useCategories = () => {
   const [categories, setCategories] = useState<Category[]>([]);
-    const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const fetchCategories = async () => {
     setIsLoading(true);
@@ -15,9 +14,9 @@ export const useCategories = () => {
       const res = await categoryService.getCategories({ isActive: true });
       setCategories(res.data ?? []);
     } catch (error) {
-      console.error("Failed to fetch categories:", error);
+      console.error('Failed to fetch categories:', error);
     } finally {
-    setIsLoading(false);
+      setIsLoading(false);
     }
   };
 
@@ -27,4 +26,3 @@ export const useCategories = () => {
 
   return { categories, isLoading, fetchCategories };
 };
-

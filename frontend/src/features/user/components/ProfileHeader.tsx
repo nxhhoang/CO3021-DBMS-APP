@@ -14,18 +14,18 @@ export function ProfileHeader() {
   const { fullName, email } = profile;
 
   const initials = useMemo(() => {
-      if (!profile.fullName || !profile.fullName.trim()) {
-        return '?';
-      }
-  
-      return profile.fullName
-        .split(' ')
-        .filter(Boolean)
-        .map((word) => word[0])
-        .join('')
-        .toUpperCase()
-        .slice(0, 2); // Chỉ lấy tối đa 2 ký tự
-    }, [profile.fullName]);
+    if (!profile.fullName || !profile.fullName.trim()) {
+      return '?';
+    }
+
+    return profile.fullName
+      .split(' ')
+      .filter(Boolean)
+      .map((word) => word[0])
+      .join('')
+      .toUpperCase()
+      .slice(0, 2); // Chỉ lấy tối đa 2 ký tự
+  }, [profile.fullName]);
 
   return (
     <Card className="from-primary to-secondary text-primary-foreground bg-linear-to-r">

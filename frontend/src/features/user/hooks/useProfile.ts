@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import { UpdateProfileRequest } from '@/types';
 import { userService } from '../services/user.service';
@@ -36,10 +36,13 @@ export const useProfile = () => {
     try {
       await userService.updateProfile(data);
       const res = await getProfile();
-      setProfile((prev) => ({
-        ...prev,
-        ...res,
-      } as User));
+      setProfile(
+        (prev) =>
+          ({
+            ...prev,
+            ...res,
+          }) as User,
+      );
       return res;
     } catch (error) {
       const errorMessage = getErrorMessage(
@@ -49,8 +52,6 @@ export const useProfile = () => {
       throw new Error(errorMessage);
     }
   };
-
-
 
   return { profile, getProfile, updateProfile };
 };

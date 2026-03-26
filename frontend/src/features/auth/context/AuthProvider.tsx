@@ -13,7 +13,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
     setIsHydrated(true);
   }, []);
-  
+
   if (!isHydrated) {
     return <Skeleton className="h-10 w-32 rounded" />;
   }

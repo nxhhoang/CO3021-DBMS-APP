@@ -8,6 +8,7 @@ import {
   normalizeProductParams,
   DEFAULT_QUERY,
 } from '../utils/queryParams';
+import { useCallback } from 'react';
 
 export function useProductsQuery() {
   const { params, setQuery: baseSetQuery } = useQueryState<GetProductsRequest>({
@@ -17,19 +18,44 @@ export function useProductsQuery() {
   });
 
   // wrap lại setQuery để inject normalize và targetPath mặc định
-  const setQuery = (newParams: Partial<GetProductsRequest>) => {
-    const merged = {
-      ...params,
-      ...newParams,
-    };
+  const setQuery = useCallback(
+    (newParams: Partial<GetProductsRequest>) => {
+      const merged = { ...params, ...newParams };
+      const normalized = normalizeProductParams(merged);
+      baseSetQuery(normalized, { targetPath: '/products' });
+    },
+    [params, baseSetQuery],
+  );
 
-    const normalized = normalizeProductParams(merged);
+  const handleSearch = useCallback(
+    (keyword?: string) => {
+      setQuery({
+        keyword: keyword || undefined,
+        category: undefined,
+        attributes: undefined,
+        page: 1,
+      });
+    },
+    [setQuery]
+  );
 
-    baseSetQuery(normalized, { targetPath: '/products' });
-  };
+  const handleCategoryChange = useCallback(
+    (slug: string) => {
+      setQuery({
+        category: slug === 'all' ? undefined : slug,
+        keyword: undefined,
+        attributes: undefined,
+        page: 1,
+      });
+    },
+    [setQuery]
+  );
+
 
   return {
     params,
     setQuery,
+    handleSearch,
+    handleCategoryChange,
   };
 }

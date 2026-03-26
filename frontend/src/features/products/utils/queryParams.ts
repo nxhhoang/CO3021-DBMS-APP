@@ -14,97 +14,76 @@ const parsers = {
   priceMax: Number,
 };
 
+/**
+ * Chỉ cleanup attributes rỗng, không xóa category hay keyword
+ */
 export function normalizeProductParams(
   params: GetProductsRequest,
 ): GetProductsRequest {
   const cleaned: GetProductsRequest = { ...params };
 
-  // keyword overrides everything
-  if (cleaned.keyword) {
-    delete cleaned.category;
-    delete cleaned.attributes;
-    return cleaned;
-  }
-
-  // attributes cleanup
   if (cleaned.attributes) {
     const cleanedAttrs = Object.fromEntries(
       Object.entries(cleaned.attributes).filter(
         ([_, v]) => v != null && v !== '',
       ),
     );
-
-    if (Object.keys(cleanedAttrs).length === 0) {
-      delete cleaned.attributes;
-    } else {
-      cleaned.attributes = cleanedAttrs;
-    }
+    cleaned.attributes = Object.keys(cleanedAttrs).length
+      ? cleanedAttrs
+      : undefined;
   }
 
+  // console.log('normalizeProductParams', params, cleaned);
   return cleaned;
 }
-
+/**
+ * Build URLSearchParams từ object
+ * - Bỏ qua undefined/null
+ * - attributes undefined sẽ không tạo query param
+ */
 export function buildQueryParams(params: GetProductsRequest) {
   const queryParams = new URLSearchParams();
 
-  if (params.keyword) {
-    queryParams.set('keyword', params.keyword);
-  }
+  Object.entries(params).forEach(([key, value]) => {
+    if (value == null) return; // skip undefined/null
 
-  if (params.category) {
-    queryParams.set('category', params.category);
-  }
+    if (key === 'attributes') {
+      Object.entries(value as AttributesRequest).forEach(([k, v]) => {
+        if (v != null) queryParams.set(`attrs[${k}]`, String(v));
+      });
+    } else {
+      queryParams.set(key, String(value));
+    }
+  });
 
-  if (params.priceMin != null) {
-    queryParams.set('priceMin', String(params.priceMin));
-  }
-
-  if (params.priceMax != null) {
-    queryParams.set('priceMax', String(params.priceMax));
-  }
-
-  if (params.page != null) {
-    queryParams.set('page', String(params.page));
-  }
-
-  if (params.limit != null) {
-    queryParams.set('limit', String(params.limit));
-  }
-
-  if (params.sort) {
-    queryParams.set('sort', params.sort);
-  }
-
-  // attributes ONLY serialize
-  if (params.attributes) {
-    Object.entries(params.attributes).forEach(([key, values]) => {
-      queryParams.set(`attrs[${key}]`, String(values));
-    });
-  }
-
-  console.log('buildQueryParams', params, queryParams.toString());
-
+  // console.log('buildQueryParams', params, queryParams.toString());
   return queryParams;
 }
 
-function parseAttributes(searchParams: URLSearchParams) {
+/**
+ * Parse attributes từ URLSearchParams
+ */
+function parseAttributes(searchParams: URLSearchParams): AttributesRequest | undefined {
   const attributes: AttributesRequest = {};
 
   searchParams.forEach((value, key) => {
     if (!key.startsWith('attrs[')) return;
 
     const attrKey = key.slice(6, -1);
-
     if (!attrKey) return;
 
-    // chỉ lấy 1 value (last wins)
     attributes[attrKey] = value;
   });
 
-  return Object.keys(attributes).length > 0 ? attributes : undefined;
+  return Object.keys(attributes).length ? attributes : undefined;
 }
 
-export function parseQueryParams(searchParams: URLSearchParams) {
+/**
+ * Parse URLSearchParams thành GetProductsRequest
+ * - Tất cả keys parse vào object
+ * - URL có thể không có giá trị nào (undefined)
+ */
+export function parseQueryParams(searchParams: URLSearchParams): GetProductsRequest {
   const params: GetProductsRequest = {};
   const attributes = parseAttributes(searchParams);
 
@@ -112,17 +91,13 @@ export function parseQueryParams(searchParams: URLSearchParams) {
     if (key.startsWith('attrs[')) return;
 
     if (key in parsers) {
-      params[key as keyof GetProductsRequest] = parsers[
-        key as keyof typeof parsers
-      ](value) as any;
+      params[key as keyof GetProductsRequest] = parsers[key as keyof typeof parsers](value) as any;
     } else {
       params[key as keyof GetProductsRequest] = value as any;
     }
   });
 
-  if (attributes) {
-    params.attributes = attributes;
-  }
+  if (attributes) params.attributes = attributes;
 
   return params;
 }

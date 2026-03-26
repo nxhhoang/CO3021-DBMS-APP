@@ -15,11 +15,10 @@ import {
 
 import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
-import { Checkbox } from '@/components/ui/checkbox';
 import { AttributesRequest } from '@/types';
 
 export function ProductFilter() {
-  const { params, setQuery } = useProducts();
+  const { params, setQuery, handleCategoryChange } = useProducts();
   const { categories } = useCategories();
 
   const [priceRange, setPriceRange] = useState<[number, number]>([
@@ -42,18 +41,9 @@ export function ProductFilter() {
   }, [params.priceMin, params.priceMax]);
 
   const selectedCategory = useMemo(
-    () => categories?.find((c) => c.slug === params.category),
+    () => categories?.find((c) => c.slug === params.category) || null, // null is allowed for "all" category
     [categories, params.category],
   );
-
-  const handleCategoryChange = (slug: string) => {
-    setQuery({
-      category: slug || undefined,
-      keyword: undefined,
-      attributes: undefined,
-      page: 1,
-    });
-  };
 
   const handlePriceCommit = (value: number[]) => {
     setQuery({
@@ -96,15 +86,15 @@ export function ProductFilter() {
           <Label>Category</Label>
 
           <Select
-            value={params.category || ''}
+            value={params.category || "all"}
             onValueChange={handleCategoryChange}
           >
             <SelectTrigger>
               <SelectValue placeholder="All categories" />
             </SelectTrigger>
 
-            <SelectContent>
-              <SelectItem value="__all__">All categories</SelectItem>
+            <SelectContent position="popper">
+              <SelectItem value="all">All categories</SelectItem>
               {categories?.map((c) => (
                 <SelectItem key={c._id} value={c.slug}>
                   {c.name}

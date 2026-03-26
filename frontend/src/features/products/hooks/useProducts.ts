@@ -7,7 +7,7 @@ import { useProductsQuery } from './useProductsQuery';
 import { getErrorMessage } from '@/lib/utils';
 
 export const useProducts = () => {
-  const { params, setQuery } = useProductsQuery();
+  const { params, setQuery, handleCategoryChange, handleSearch } = useProductsQuery();
   const [error, setError] = useState<string>('');
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -64,5 +64,7 @@ export const useProducts = () => {
     error,
     setPagination,
     setQuery,
+    handleCategoryChange,
+    handleSearch,
   };
 };

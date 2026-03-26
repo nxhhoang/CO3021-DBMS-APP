@@ -64,10 +64,14 @@ export const productHandlers = [
     // 2. CATEGORY FILTER
     // =========================
     if (categorySlug) {
-      filtered = filtered.filter((p) => {
-        const cat = MOCK_CATEGORIES.find((c) => c._id === p.categoryId);
-        return cat?.slug === categorySlug;
-      });
+      if (categorySlug === undefined) {
+        // no category filter
+      } else {
+        filtered = filtered.filter((p) => {
+          const cat = MOCK_CATEGORIES.find((c) => c._id === p.categoryId);
+          return cat?.slug === categorySlug;
+        });
+      }
     }
 
     // =========================

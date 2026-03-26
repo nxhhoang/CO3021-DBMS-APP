@@ -7,7 +7,7 @@ import { useProductsQuery } from '../hooks/useProductsQuery';
 import { Button } from '@/components/ui/button';
 
 export function ProductSearch() {
-  const { params, setQuery } = useProductsQuery();
+  const { params, handleSearch: baseHandleSearch } = useProductsQuery();
   const [keyword, setKeyword] = useState<string>(params.keyword || '');
 
   useEffect(() => {
@@ -16,13 +16,7 @@ export function ProductSearch() {
 
   const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
-    setQuery({
-      keyword: keyword || undefined,
-      category: undefined, // rule: keyword thì bỏ category
-      attributes: undefined,
-      page: 1,
-    });
+    baseHandleSearch(keyword);
   };
 
   return (
@@ -41,7 +35,7 @@ export function ProductSearch() {
         type="submit"
         size="icon-sm"
         variant="ghost"
-        className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full"
+        className="absolute top-1/2 right-3 -translate-y-1/2 rounded-full"
       >
         <Search className="text-muted-foreground" />
       </Button>

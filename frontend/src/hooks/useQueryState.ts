@@ -1,6 +1,7 @@
 'use client';
 
-import { useRouter, useSearchParams } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import path from 'path';
 import { useMemo, useCallback } from 'react';
 
 type UseQueryStateOptions<T> = {
@@ -9,11 +10,16 @@ type UseQueryStateOptions<T> = {
   defaultValues?: Partial<T>;
 };
 
+type SetQueryOptions = {
+  targetPath?: string; // optional target path for navigation
+};
+
 export function useQueryState<T extends Record<string, any>>({
   parse,
   build,
   defaultValues,
 }: UseQueryStateOptions<T>) {
+  const pathname = usePathname();
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -52,7 +58,7 @@ export function useQueryState<T extends Record<string, any>>({
   }, []);
 
   const setQuery = useCallback(
-    (newParams: Partial<T>) => {
+    (newParams: Partial<T>, options?: SetQueryOptions) => {
       const merged = {
         ...params,
         ...newParams,
@@ -61,10 +67,19 @@ export function useQueryState<T extends Record<string, any>>({
       const cleaned = sanitize(merged as T);
       if (cleaned) {
         const query = build(cleaned);
-        router.push(`?${query.toString()}`);
+        const queryString = query.toString();
+        const target = options?.targetPath || pathname;
+
+        const nextUrl = queryString ? `${target}?${queryString}` : target;
+
+        if (target === pathname && queryString === searchParams.toString()) {
+          return;
+        }
+
+        router.push(nextUrl);
       }
     },
-    [params, build, router, sanitize],
+    [params, build, router, sanitize, pathname, searchParams],
   );
 
   return { params, setQuery };

@@ -16,7 +16,7 @@ export function useProductsQuery() {
     defaultValues: DEFAULT_QUERY,
   });
 
-  // wrap lại setQuery để inject normalize
+  // wrap lại setQuery để inject normalize và targetPath mặc định
   const setQuery = (newParams: Partial<GetProductsRequest>) => {
     const merged = {
       ...params,
@@ -25,7 +25,7 @@ export function useProductsQuery() {
 
     const normalized = normalizeProductParams(merged);
 
-    baseSetQuery(normalized);
+    baseSetQuery(normalized, { targetPath: '/products' });
   };
 
   return {

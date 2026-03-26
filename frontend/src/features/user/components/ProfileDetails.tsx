@@ -7,7 +7,7 @@ import { UpdateProfileRequest, User } from '@/types';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Input } from '@/components/ui/input';
 
-const profileFieldConfig : readonly {
+const PROFILE_FIELDS : readonly {
   key: keyof User;
   label: string;
   editable: boolean;
@@ -29,7 +29,7 @@ function ProfileField({ label, value }: { label: string; value: string }) {
 function ProfileInfoView({ data }: { data: User }) {
   return (
     <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-      {profileFieldConfig.map((field) => (
+      {PROFILE_FIELDS.map((field) => (
         <ProfileField
           key={field.key}
           label={field.label}
@@ -75,7 +75,7 @@ function ProfileEditForm({
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-        {profileFieldConfig.map((field) => (
+        {PROFILE_FIELDS.map((field) => (
           <div key={field.key}>
             <p className="text-muted-foreground text-sm">{field.label}</p>
 

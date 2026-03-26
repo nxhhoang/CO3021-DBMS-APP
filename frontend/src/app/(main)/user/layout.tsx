@@ -7,7 +7,11 @@ export default function ProfileLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const sidebarNavItems = [
+  const SIDEBAR_ITEMS: {
+    title: string;
+    href: string;
+    icon: React.ReactNode;
+  }[] = [
     {
       title: 'Hồ sơ cá nhân',
       href: '/user/profile',
@@ -37,7 +41,7 @@ export default function ProfileLayout({
       <div className="flex flex-col space-y-8 lg:flex-row lg:space-y-0 lg:space-x-12">
         <aside className="lg:w-1/5">
           <nav className="flex space-x-2 lg:flex-col lg:space-y-1 lg:space-x-0">
-            {sidebarNavItems.map((item) => (
+            {SIDEBAR_ITEMS.map((item) => (
               <Link
                 key={item.href}
                 href={item.href}

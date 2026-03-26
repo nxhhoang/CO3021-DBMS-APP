@@ -30,6 +30,43 @@ type RegisterFormFields = {
   placeholder?: string;
 };
 
+const REGISTER_FIELDS: RegisterFormFields[] = [
+  {
+    label: 'Email',
+    id: 'email',
+    name: 'email',
+    type: 'email',
+    placeholder: 'name@example.com',
+  },
+  {
+    label: 'Password',
+    id: 'password',
+    name: 'password',
+    type: 'password',
+    placeholder: 'Enter your password',
+  },
+  {
+    label: 'Confirm password',
+    id: 'confirmPassword',
+    name: 'confirmPassword',
+    type: 'password',
+    placeholder: 'Confirm your password',
+  },
+  {
+    label: 'Full name',
+    id: 'fullName',
+    name: 'fullName',
+    type: 'text',
+    placeholder: 'Enter your full name',
+  },
+  {
+    label: 'Phone number',
+    id: 'phoneNum',
+    name: 'phoneNum',
+    type: 'text',
+    placeholder: 'Enter your phone number',
+  },
+];
 export function RegisterForm() {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>('');
@@ -76,44 +113,6 @@ export function RegisterForm() {
     }
   };
 
-  const fieldList: RegisterFormFields[] = [
-    {
-      label: 'Email',
-      id: 'email',
-      name: 'email',
-      type: 'email',
-      placeholder: 'name@example.com',
-    },
-    {
-      label: 'Password',
-      id: 'password',
-      name: 'password',
-      type: 'password',
-      placeholder: 'Enter your password',
-    },
-    {
-      label: 'Confirm password',
-      id: 'confirmPassword',
-      name: 'confirmPassword',
-      type: 'password',
-      placeholder: 'Confirm your password',
-    },
-    {
-      label: 'Full name',
-      id: 'fullName',
-      name: 'fullName',
-      type: 'text',
-      placeholder: 'Enter your full name',
-    },
-    {
-      label: 'Phone number',
-      id: 'phoneNum',
-      name: 'phoneNum',
-      type: 'text',
-      placeholder: 'Enter your phone number',
-    },
-  ];
-
   return (
     <form
       onSubmit={handleRegister}
@@ -126,7 +125,7 @@ export function RegisterForm() {
         </CardHeader>
 
         <CardContent className="grid gap-4">
-          {fieldList.map((field: RegisterFormFields) => (
+          {REGISTER_FIELDS.map((field: RegisterFormFields) => (
             <div className="grid gap-2" key={field.id}>
               <Label htmlFor={field.id}>{field.label}</Label>
               <Input

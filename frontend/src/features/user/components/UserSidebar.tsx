@@ -36,7 +36,7 @@ export function UserSidebar() {
   const pathname = usePathname();
   const { logout } = useAuth();
 
-  const itemList: {
+  const SIDEBAR_ITEMS: {
     icon: React.ReactNode;
     label: string;
     active?: boolean;
@@ -64,7 +64,7 @@ export function UserSidebar() {
   return (
     <Card>
       <CardContent className="space-y-2 p-4">
-        {itemList.map((item, index) => (
+        {SIDEBAR_ITEMS.map((item, index) => (
           <SidebarItem
             key={index}
             icon={item.icon}

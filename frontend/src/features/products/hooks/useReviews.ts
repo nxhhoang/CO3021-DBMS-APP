@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Review } from '@/types';
 import { reviewService } from '../services/reviews.service';
+import { getErrorMessage } from '@/lib/utils';
 
 export const useReviews = (productId: string) => {
   const [reviews, setReviews] = useState<Review[]>([]);
@@ -16,7 +17,7 @@ export const useReviews = (productId: string) => {
       setReviews(response.data ?? []);
     } catch (error) {
       console.error('Error fetching reviews:', error);
-      setError('Failed to fetch reviews.');
+      setError(getErrorMessage(error));
     } finally {
       setLoading(false);
     }

@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { productService } from '../services/products.service';
 import { ProductDetail } from '@/types';
+import { getErrorMessage } from '@/lib/utils';
 
 export const useProductDetail = (id: string) => {
   const [product, setProduct] = useState<ProductDetail | null>(null);
@@ -16,7 +17,7 @@ export const useProductDetail = (id: string) => {
       setProduct(response.data ?? null);
     } catch (error) {
       console.error('Error fetching product:', error);
-      setError('Failed to fetch product details.');
+      setError(getErrorMessage(error));
     } finally {
       setLoading(false);
     }

@@ -9,6 +9,7 @@ export * from './components/productDetail/ProductImageGallery';
 export * from './components/productDetail/ProductDetail';
 export * from './components/productDetail/ProductInfo';
 export * from './components/productDetail/ProductReviews';
+export * from './components/ProductPagination';
 
 // Hooks
 export * from './hooks/useProducts';

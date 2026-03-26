@@ -2,6 +2,7 @@
 
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
+import { useState } from 'react';
 
 export function ProductImage({
   src = null,
@@ -12,7 +13,9 @@ export function ProductImage({
   alt?: string;
   className?: string;
 }) {
-  if (!src) {
+  const [fallBack, setFallBack] = useState<boolean>(false);
+
+  if (fallBack || !src) {
     return (
       <div
         className={cn(
@@ -31,6 +34,7 @@ export function ProductImage({
         fill
         className="rounded-md object-cover"
         sizes="(max-width: 768px) 100vw, 50vw"
+        onError={() => setFallBack(true)}
       />
     </div>
   );

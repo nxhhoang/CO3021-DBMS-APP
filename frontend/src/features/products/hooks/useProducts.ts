@@ -4,21 +4,24 @@ import { Product } from '@/types';
 import { useState, useCallback, useEffect } from 'react';
 import { productService } from '../services/products.service';
 import { useProductsQuery } from './useProductsQuery';
+import { getErrorMessage } from '@/lib/utils';
 
 export const useProducts = () => {
   const { params, setQuery } = useProductsQuery();
-
+  const [error, setError] = useState<string>('');
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [pagination, setPagination] = useState<{
     // For UI render only, not for API request
     page: number;
     limit: number;
-    total: number;
+    totalItems: number;
+    totalPages: number;
   }>({
     page: 1,
     limit: 10,
-    total: 0,
+    totalItems: 0,
+    totalPages: 0,
   });
 
   const fetchProducts = useCallback(async () => {
@@ -38,10 +41,12 @@ export const useProducts = () => {
       setPagination((prev) => ({
         page: res?.pagination.currentPage || prev.page,
         limit: res?.pagination.itemsPerPage || prev.limit,
-        total: res?.pagination.totalItems || prev.total,
+        totalItems: res?.pagination.totalItems || prev.totalItems,
+        totalPages: res?.pagination.totalPages || prev.totalPages,
       }));
     } catch (error) {
       console.error('Failed to fetch products:', error);
+      setError(getErrorMessage(error));
     } finally {
       setLoading(false);
     }
@@ -56,6 +61,7 @@ export const useProducts = () => {
     loading,
     pagination,
     params,
+    error,
     setPagination,
     setQuery,
   };

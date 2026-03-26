@@ -3,116 +3,69 @@
 import { Button } from '@/components/ui/button';
 import { useProducts } from '../hooks/useProducts';
 import { SORT_BY } from '@/constants/enum';
-import { ArrowDown, ArrowUp } from 'lucide-react';
+import { MoveUp, MoveDown } from 'lucide-react';
 
-const SORT_GROUPS: {
-  field: string;
-  options: {
-    order: 'asc' | 'desc';
-    value: (typeof SORT_BY)[keyof typeof SORT_BY];
-  }[];
-}[] = [
+
+const SORT_GROUPS = [
   {
     field: 'sold',
-    options: [
-      { order: 'asc', value: SORT_BY.SOLD_ASC },
-      { order: 'desc', value: SORT_BY.SOLD_DESC },
-    ],
+    label: 'Sold',
+    asc: SORT_BY.SOLD_ASC,
+    desc: SORT_BY.SOLD_DESC,
   },
   {
     field: 'basePrice',
-    options: [
-      { order: 'asc', value: SORT_BY.PRICE_ASC },
-      { order: 'desc', value: SORT_BY.PRICE_DESC },
-    ],
+    label: 'Price',
+    asc: SORT_BY.PRICE_ASC,
+    desc: SORT_BY.PRICE_DESC,
   },
   {
     field: 'rating',
-    options: [
-      { order: 'asc', value: SORT_BY.RATING_ASC },
-      { order: 'desc', value: SORT_BY.RATING_DESC },
-    ],
+    label: 'Rating',
+    asc: SORT_BY.RATING_ASC,
+    desc: SORT_BY.RATING_DESC,
   },
 ];
-
-const SORT_VALUE_TO_GROUP = new Map<
-  string,
-  { field: string; order: 'asc' | 'desc' }
->();
-
-SORT_GROUPS.forEach((group) => {
-  group.options.forEach((opt) => {
-    SORT_VALUE_TO_GROUP.set(opt.value, {
-      field: group.field,
-      order: opt.order,
-    });
-  });
-});
 
 export function ProductSort() {
   const { params, setQuery } = useProducts();
 
-  function toggleSort(current: string | undefined, value: string) {
-    // click again → OFF
-    if (current === value) return undefined;
+  const handleToggle = (group: typeof SORT_GROUPS[number]) => {
+    const current = params.sort;
+    let next: (typeof SORT_BY)[keyof typeof SORT_BY] | undefined;
 
-    return value;
-  }
+    if (current === group.asc) next = group.desc;   // asc → desc
+    else if (current === group.desc) next = undefined; // desc → off
+    else next = group.asc;                           // off → asc
 
-  const handleClick = (value: (typeof SORT_BY)[keyof typeof SORT_BY]) => {
-    setQuery({
-      sort: params.sort === value ? undefined : value,
-      page: 1,
-    });
+    setQuery({ sort: next, page: 1 });
   };
 
-  const getActiveValue = (field: string, order: "asc" | "desc") => {
-    const group = SORT_GROUPS.find((g) => g.field === field);
-    return group?.options.find((o) => o.order === order)?.value;
+  const getState = (group: typeof SORT_GROUPS[number]) => {
+    if (params.sort === group.asc) return 'asc';
+    if (params.sort === group.desc) return 'desc';
+    return 'inactive';
   };
 
   return (
-    <div className="flex flex-col gap-3">
+    <div className="flex gap-3 flex-wrap">
       {SORT_GROUPS.map((group) => {
-        const ascValue = group.options.find((o) => o.order === "asc")?.value;
-        const descValue = group.options.find((o) => o.order === "desc")?.value;
-
-        const isAsc = params.sort === ascValue;
-        const isDesc = params.sort === descValue;
+        const state = getState(group);
 
         return (
-          <div key={group.field} className="flex items-center gap-2">
-            {/* Label */}
-            <span className="w-24 text-sm font-medium capitalize">
-              {group.field}
-            </span>
+          <Button
+            key={group.field}
+            size="sm"
+            variant={state === 'inactive' ? 'ghost' : 'outline'}
+            onClick={() => handleToggle(group)}
+            className="flex items-center gap-1 transition-colors duration-200"
+          >
+            <span>{group.label}</span>
 
-            {/* ASC */}
-            {ascValue && (
-              <Button
-                variant={isAsc ? "default" : "outline"}
-                size="sm"
-                onClick={() => handleClick(ascValue)}
-                className="flex items-center gap-1"
-              >
-                <ArrowUp className="w-4 h-4" />
-                Asc
-              </Button>
-            )}
-
-            {/* DESC */}
-            {descValue && (
-              <Button
-                variant={isDesc ? "default" : "outline"}
-                size="sm"
-                onClick={() => handleClick(descValue)}
-                className="flex items-center gap-1"
-              >
-                <ArrowDown className="w-4 h-4" />
-                Desc
-              </Button>
-            )}
-          </div>
+            {/* Arrow */}
+            {state === 'asc' && <MoveUp className="w-4 h-4 transition-opacity duration-200" />}
+            {state === 'desc' && <MoveDown className="w-4 h-4 transition-opacity duration-200" />}
+          </Button>
         );
       })}
     </div>

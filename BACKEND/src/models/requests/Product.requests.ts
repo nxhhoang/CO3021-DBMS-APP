@@ -4,8 +4,9 @@ import { PaginationQuery } from './Common.requests'
 export interface SearchProductQuery extends PaginationQuery {
   keyword?: string
   category?: string
-  price_min?: string
-  price_max?: string
+  priceMin?: string
+  priceMax?: string
+  sort?: string
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   [key: string]: any
 }
@@ -16,10 +17,22 @@ export interface ProductReqParams extends ParamsDictionary {
 
 export interface CreateProductReqBody {
   name: string
-  category: string
-  base_price: number
+  slug?: string
+  categoryID: string
+  basePrice: number
   description?: string
   images?: string[]
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   attributes: Record<string, any>
+}
+
+export interface UpdateProductReqBody {
+  name?: string
+  slug?: string
+  categoryID?: string
+  basePrice?: number
+  description?: string
+  images?: string[]
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  attributes?: Record<string, any>
 }

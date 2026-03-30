@@ -28,3 +28,10 @@ export enum PaymentMethod {
   BANKING = 'BANKING',
   E_WALLET = 'E_WALLET'
 }
+
+export enum ActionType {
+  VIEW_PRODUCT = 'VIEW_PRODUCT',
+  SEARCH = 'SEARCH',
+  ADD_TO_CART = 'ADD_TO_CART'
+}
+

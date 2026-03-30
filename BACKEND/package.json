@@ -13,7 +13,9 @@
     "prettier": "prettier --check .",
     "prettier:fix": "prettier --write .",
     "build nc": "rimraf ./dist && tsc --noCheck && tsc-alias",
-    "seed:admin": "tsx src/scripts/seedAdmin.ts"
+    "seed:admin": "tsx src/scripts/seedAdmin.ts",
+    "seed:mongo": "tsx src/scripts/seedMongo.ts",
+    "seed:postgres": "tsx src/scripts/seedPostgres.ts"
   },
   "keywords": [],
   "author": "",
@@ -22,6 +24,7 @@
     "@eslint/js": "^10.0.1",
     "@types/express": "^5.0.6",
     "@types/node": "^25.3.3",
+    "@types/pg": "^8.18.0",
     "eslint": "^10.0.2",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.5",
@@ -38,9 +41,9 @@
   "dependencies": {
     "@types/jsonwebtoken": "^9.0.10",
     "@types/lodash": "^4.17.23",
-    "@types/pg": "^8.18.0",
     "@types/swagger-jsdoc": "^6.0.4",
     "@types/swagger-ui-express": "^4.1.8",
+    "axios": "^1.13.6",
     "cors": "^2.8.6",
     "dotenv": "^17.3.1",
     "express": "^5.2.1",

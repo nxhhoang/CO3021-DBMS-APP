@@ -72,3 +72,63 @@ export const USERS_MESSAGES = {
   VALIDATION_ERROR: 'Validation error',
   ACCESS_TOKEN_IS_REQUIRED: 'Access token là bắt buộc'
 } as const
+export const BOOKMARK_MESSAGES = {
+  BOOKMARK_SUCCESSFULLY: 'Bookmark successfully',
+  UNBOOKMARK_SUCCESSFULLY: 'Unbookmark successfully'
+}
+
+export const LIKE_MESSAGES = {
+  LIKE_SUCCESSFULLY: 'Like successfully',
+  UNLIKE_SUCCESSFULLY: 'Unlike successfully'
+}
+
+export const CATEGORY_MESSAGES = {
+  CATEGORIES_FETCHED: 'Get categories successfully',
+  CATEGORY_FETCHED: 'Get category successfully',
+  CATEGORY_CREATED: 'Category created successfully',
+  CATEGORY_UPDATED: 'Category updated successfully',
+  CATEGORY_DELETED: 'Category deleted successfully (hidden)',
+  CATEGORY_NOT_FOUND: 'Category not found',
+  CATEGORY_SLUG_ALREADY_EXISTS: 'Category slug already exists',
+  CATEGORY_ID_INVALID: 'Category id is invalid'
+} as const
+
+export const PRODUCT_MESSAGES = {
+  PRODUCTS_FETCHED: 'Get products successfully',
+  PRODUCT_FETCHED: 'Get product detail successfully',
+  PRODUCT_CREATED: 'Product created successfully',
+  PRODUCT_UPDATED: 'Product updated successfully',
+  PRODUCT_DELETED: 'Product deleted successfully (inactive)',
+  PRODUCT_NOT_FOUND: 'Product not found',
+  PRODUCT_ID_INVALID: 'Product id is invalid',
+  CATEGORY_NOT_ACTIVE: 'Category does not exist or is inactive'
+} as const
+
+export const REVIEW_MESSAGES = {
+  REVIEWS_FETCHED: 'Get reviews successfully',
+  REVIEW_CREATED: 'Review submitted successfully',
+  REVIEW_RATING_INVALID: 'Rating must be an integer between 1 and 5',
+  REVIEW_COMMENT_REQUIRED: 'Comment is required',
+  TARGET_ID_REQUIRED: 'Target ID is required'
+} as const
+
+export const LOG_MESSAGES = {
+  LOG_CREATED: 'Log recorded',
+  LOG_ACTION_TYPE_INVALID: 'action_type is invalid'
+} as const
+
+export const INVENTORY_MESSAGES = {
+  PRODUCT_ID_IS_REQUIRED: 'Product ID is required',
+  PRODUCT_ID_MUST_BE_A_STRING: 'Product ID must be a string',
+  PRODUCT_ID_IS_INVALID: 'Product ID is invalid',
+  SKU_IS_REQUIRED: 'SKU is required',
+  SKU_MUST_BE_A_STRING: 'SKU must be a string',
+  STOCK_QUANTITY_IS_REQUIRED: 'Stock quantity is required',
+  STOCK_QUANTITY_MUST_BE_A_POSITIVE_INTEGER: 'Stock quantity must be a positive integer',
+  CREATE_INVENTORY_SUCCESS: 'Create inventory successfully',
+  UPDATE_INVENTORY_SUCCESS: 'Update inventory quantity successfully',
+  GET_INVENTORY_SUCCESS: 'Get inventory successfully',
+  INVENTORY_SKU_ALREADY_EXISTS: 'Inventory for this SKU already exists',
+  INVENTORY_NOT_FOUND: 'Inventory record not found',
+  INSUFFICIENT_STOCK: 'Insufficient stock for the requested item'
+} as const

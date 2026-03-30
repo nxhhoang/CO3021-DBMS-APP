@@ -6,9 +6,6 @@ FRONTEND/node_modules
 FRONTEND/dist
 FRONTEND/package-lock.json
 
-DATABASE/migration.sql
-DATABASE/seed.sql
-
 #macOS
 .DS_Store
 

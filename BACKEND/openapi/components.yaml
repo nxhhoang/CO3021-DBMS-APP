@@ -7,6 +7,82 @@ components:
       description: 'Sử dụng access token để xác thực. Gửi kèm trong header: Authorization: Bearer <token>'
 
   schemas:
+    CreateCategoryBody:
+      type: object
+      required: [name, slug]
+      properties:
+        name:
+          type: string
+          example: 'Electronics'
+        slug:
+          type: string
+          example: 'electronics'
+        description:
+          type: string
+          example: 'All kinds of electronic devices'
+        isActive:
+          type: boolean
+          example: true
+        dynamicAttributes:
+          type: array
+          items:
+            type: object
+            required: [key, label, dataType, isRequired]
+            properties:
+              key:
+                type: string
+                example: 'brand'
+              label:
+                type: string
+                example: 'Brand'
+              dataType:
+                type: string
+                enum: [string, number, boolean]
+                example: 'string'
+              isRequired:
+                type: boolean
+                example: true
+              options:
+                type: array
+                items:
+                  type: string
+                example: ['Apple', 'Samsung']
+
+    UpdateCategoryBody:
+      type: object
+      properties:
+        name:
+          type: string
+          example: 'Electronics'
+        slug:
+          type: string
+          example: 'electronics'
+        description:
+          type: string
+          example: 'All kinds of electronic devices'
+        isActive:
+          type: boolean
+          example: true
+        dynamicAttributes:
+          type: array
+          items:
+            type: object
+            required: [key, label, dataType, isRequired]
+            properties:
+              key:
+                type: string
+              label:
+                type: string
+              dataType:
+                type: string
+                enum: [string, number, boolean]
+              isRequired:
+                type: boolean
+              options:
+                type: array
+                items:
+                  type: string
+
     RegisterBody:
       type: object
       required: [email, password, fullName, phoneNum]

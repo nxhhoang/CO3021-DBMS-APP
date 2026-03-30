@@ -5,10 +5,11 @@ import {
   CreateProductRequest,
   CreateProductResponse,
   GetProductsResponse,
+  GetProductsRequest,
 } from '@/types';
 
 export const productService = {
-  async getProducts(params?: GetProductsResponse) {
+  async getProducts(params?: GetProductsRequest) {
     const res = await api.get<GetProductsResponse>(`products`, { params });
     return res.data;
   },

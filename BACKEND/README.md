@@ -459,29 +459,186 @@ ORDER BY created_at DESC
 
 ---
 
+## 7. Categories
+
+### 7.1 `getCategories`
+**Route**: `GET /categories` (Public)
+
+```
+Client
+  │
+  └─ [Service] categoryService.getCategories(query)
+        │
+        └─ MongoDB: categories.find({ isActive: true })
+              → Response 200 (Array)
+```
+
+### 7.2 `createCategory` (Admin)
+**Route**: `POST /admin/categories` **Auth**: Admin
+
+```
+Client
+  │
+  ├─ [Middleware] accessTokenValidator + verifyRole(ADMIN)
+  │
+  ├─ [Validator] categoryValidator
+  │     ├─ name, slug: required
+  │     └─ dynamicAttributes: valid schema array
+  │
+  └─ [Service] categoryService.createCategory(payload)
+        │
+        └─ MongoDB: categories.insertOne({ ...payload, isActive: true })
+              → Response 201
+```
+
+---
+
+## 8. Products & Discovery (Hybrid)
+
+### 8.1 `getProducts`
+**Route**: `GET /products` (Public)
+
+```
+Client
+  │
+  ├─ [Validator] pagination & filter validator
+  │
+  └─ [Service] productService.getProducts(filters)
+        │
+        ├─ 1. Build MongoDB query (category, keyword, price range)
+        ├─ 2. If attrs[key] provided → add to nested query
+        └─ 3. MongoDB: products.find(query).sort(sort).limit(limit)
+              → Response 200
+```
+
+### 8.2 `getProductById`
+**Route**: `GET /products/:id` (Public)
+
+```
+Client
+  │
+  └─ [Service] productService.getProductById(productId)
+        │
+        ├─ 1. MongoDB: products.findOne({ _id: productId })
+        │       └─ if not found → throw 404
+        │
+        ├─ 2. PostgreSQL: SELECT sku, stock_quantity, sku_price 
+        │       FROM inventories WHERE product_id = $1
+        │
+        └─ 3. Merge Mongo metadata + Postgres stock array
+              → Response 200
+```
+
+---
+
+## 9. Inventory Management
+
+### 9.1 `createInventory` (Admin)
+**Route**: `POST /admin/inventories` **Auth**: Admin
+
+```
+Admin
+  │
+  ├─ [Validator] inventoryValidator (productId, sku, stock)
+  │
+  └─ [Service] inventoryService.createInventory(payload)
+        │
+        └─ PostgreSQL: INSERT INTO inventories (product_id, sku, stock_quantity)
+              → Response 200/201
+```
+
+---
+
+## 10. Reviews & Ratings
+
+### 10.1 `createReview`
+**Route**: `POST /products/:id/reviews` **Auth**: Bearer
+
+```
+Client
+  │
+  ├─ [Validator] reviewValidator (rating 1-5, comment)
+  │
+  └─ [Service] reviewService.createReview(user_id, productId, payload)
+        │
+        ├─ 1. [Invariant Check] Verified Purchase
+        │     PostgreSQL: SELECT order_id FROM orders 
+        │     JOIN order_items ON ...
+        │     WHERE user_id = $1 AND product_id = $2 AND status = 'DELIVERED'
+        │       └─ if none → throw 403 (Must buy to review)
+        │
+        ├─ 2. MongoDB: reviews.insertOne({ user_id, product_id, ... })
+        │
+        └─ 3. [Computed Pattern] Sync Average Rating
+              MongoDB: products.updateOne({ _id: productId }, {
+                $set: { avgRating: newAvg, totalReviews: newTotal }
+              })
+              → Response 201
+```
+
+---
+
+## 11. System Logging (Event Sourcing Light)
+
+### 11.1 `createLog`
+**Route**: `POST /logs` (Public/Fire-and-forget)
+
+```
+Browser/App
+  │
+  └─ [Service] logService.createLog(payload)
+        │
+        └─ PostgreSQL: INSERT INTO user_activity_logs (user_id?, action_type, target_id, metadata)
+              → Response 200
+```
+
+---
+
+## Testing & Verification
+
+A comprehensive test suite is provided to verify the hybrid architecture and ACID transactions.
+
+### 1. Ensure Environment
+- PostgreSQL and MongoDB are running.
+- `.env` is configured (Secrets must match `init.sql`).
+- Admin seeded: `npx tsx src/scripts/seedAdmin.ts`.
+
+### 2. Run All Tests
+```bash
+cd backend
+node run_be_all_tests.js
+```
+
+**Coverage**:
+- **Auth**: Rotation, Logout revocation.
+- **Transactions**: Stock locking (`FOR UPDATE`) during concurrent checkout.
+- **Hybrid Sync**: MongoDB update-sold and update-rating triggers.
+- **Validation**: Schema-less attribute filtering in Mongo.
+
+---
+
 ## Request/Response Conventions
 
 | Case                             | HTTP Status | Response shape                          |
 | -------------------------------- | ----------- | --------------------------------------- |
-| Success                          | 200 / 201   | `{ message, data }`                     |
-| Validation error                 | 422         | `{ message, errors: [{ field, msg }] }` |
+| Success                          | 200 / 201   | `{ message, data }` (or `{ result }`)   |
+| Validation error                 | 422         | `{ message, errors: { field: { msg } } }`|
 | Unauthorized (no/bad token)      | 401         | `{ message }`                           |
-| Forbidden (wrong role)           | 403         | `{ message }`                           |
+| Forbidden (Verified Purchase)    | 403         | `{ message }`                           |
 | Not found                        | 404         | `{ message }`                           |
 | Business conflict (out of stock) | 409         | `{ message, sku, productId }`           |
-| Server error                     | 500         | `{ message }`                           |
 
 ---
 
 ## Middleware Execution Order
 
-Every protected route runs through this stack:
-
 ```
 Request
-  → accessTokenValidator        (verify JWT, attach decoded_authorization to req)
-  → [verifyRoleMiddleware]       (optional: check role === ADMIN)
-  → [domainValidator]            (express-validator schema check)
+  → rateLimit (Global/Scoped)
+  → accessTokenValidator (verify JWT)
+  → [verifyRoleMiddleware(ADMIN)]
+  → [Validator] (express-validator)
   → wrapRequestHandler(controller)
-  → defaultErrorHandler          (catches all thrown errors)
+  → defaultErrorHandler
 ```
+

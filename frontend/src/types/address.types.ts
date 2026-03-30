@@ -2,6 +2,7 @@ import { ApiResponse } from './api.types';
 
 export interface Address {
   addressID: number;
+  addressName: string;
   addressLine: string;
   city: string;
   district: string;

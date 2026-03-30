@@ -62,3 +62,21 @@ export const updateOrderStatusValidator = validate(
     ['body']
   )
 )
+
+export const revenueStatsValidator = validate(
+  checkSchema(
+    {
+      startDate: {
+        in: ['query'],
+        notEmpty: { errorMessage: 'startDate is required' },
+        isISO8601: { errorMessage: 'startDate must be a valid date (YYYY-MM-DD)' }
+      },
+      endDate: {
+        in: ['query'],
+        notEmpty: { errorMessage: 'endDate is required' },
+        isISO8601: { errorMessage: 'endDate must be a valid date (YYYY-MM-DD)' }
+      }
+    },
+    ['query']
+  )
+)

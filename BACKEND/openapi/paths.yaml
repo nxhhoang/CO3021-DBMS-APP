@@ -184,6 +184,98 @@ paths:
               schema:
                 $ref: '#/components/schemas/GenericResponse'
 
+  /categories:
+    get:
+      tags: [Categories]
+      summary: Get list of categories
+      parameters:
+        - in: query
+          name: isActive
+          schema:
+            type: boolean
+          description: Filter by active status (default true)
+      responses:
+        '200':
+          description: Categories fetched successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericResponse'
+
+  /categories/admin:
+    post:
+      tags: [Categories]
+      summary: Admin — Create a new category
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateCategoryBody'
+      responses:
+        '201':
+          description: Category created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericResponse'
+        '409':
+          description: Slug already exists
+
+  /categories/admin/{id}:
+    put:
+      tags: [Categories]
+      summary: Admin — Update a category
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: MongoDB ObjectId of the category
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateCategoryBody'
+      responses:
+        '200':
+          description: Category updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericResponse'
+        '404':
+          description: Category not found
+        '409':
+          description: Slug already exists
+    delete:
+      tags: [Categories]
+      summary: Admin — Soft delete a category (set isActive = false)
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: MongoDB ObjectId of the category
+      responses:
+        '200':
+          description: Category deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericResponse'
+        '404':
+          description: Category not found
+
   # ================= PRODUCTS =================
   /products:
     get:

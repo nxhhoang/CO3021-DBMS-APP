@@ -1,20 +1,25 @@
 import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { GetProductsRequest } from '@/types/product.types';
+import { DEFAULT_MAX_PRICE } from '@/constants/enum';
 
 export default function useProductFilters(params: GetProductsRequest) {
   const router = useRouter();
   const searchParams = useSearchParams();
 
+
   const [priceRange, setPriceRange] = useState<[number, number]>([
     params.price_min ?? 0,
-    params.price_max ?? 5000,
+    params.price_max ?? DEFAULT_MAX_PRICE,
   ]);
 
   const [sort, setSort] = useState(params.sort ?? '');
 
   useEffect(() => {
-    setPriceRange([params.price_min ?? 0, params.price_max ?? 5000]);
+    setPriceRange([
+      params.price_min ?? 0,
+      params.price_max ?? DEFAULT_MAX_PRICE,
+    ]);
   }, [params.price_min, params.price_max]);
 
   useEffect(() => {

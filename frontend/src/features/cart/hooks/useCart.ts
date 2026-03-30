@@ -3,6 +3,8 @@
 import { useCartStore } from '@/store/cartStore';
 import useInitCart from './useInitCart';
 import useCartSelectors from './useCartSelectors';
+import { toast } from 'sonner';
+import { cartService } from '@/services/cart.service';
 
 export const useCart = () => {
   const items = useCartStore((s) => s.items);
@@ -35,12 +37,29 @@ export const useCart = () => {
     }
   };
 
-  const removeItem = (sku: string) => {
-    removeItemStore(sku);
+  const removeItem = async (sku: string) => {
+    try {
+      if (isLoggedIn) {
+        // CALL API TẠI ĐÂY
+        await cartService.removeCartItem(sku);
+      } else {
+        // Xử lý LocalStorage cho khách
+        const updated = items.filter((i) => i.sku !== sku);
+        localStorage.setItem('cart', JSON.stringify(updated));
+      }
 
-    if (!isLoggedIn) {
-      const updated = items.filter((i) => i.sku !== sku);
-      localStorage.setItem('cart', JSON.stringify(updated));
+      // Cuối cùng luôn cập nhật UI thông qua Store
+      removeItemStore(sku);
+      toast.success('Đã xóa sản phẩm khỏi giỏ hàng');
+    } catch (error) {
+      toast.error('Không thể xóa sản phẩm. Vui lòng thử lại.');
+      // Có thể fetch lại giỏ hàng từ server nếu cần đồng bộ lại
+    }
+  };
+  const removeMultipleItems = async (skus: string[]) => {
+    // Thực hiện xóa đồng loạt trong Store và LocalStorage/API
+    for (const sku of skus) {
+      await removeItem(sku); // Tận dụng hàm removeItem có sẵn của bạn
     }
   };
 
@@ -53,5 +72,6 @@ export const useCart = () => {
     updateQuantity,
     removeItem,
     totalPrice,
+    removeMultipleItems,
   };
 };

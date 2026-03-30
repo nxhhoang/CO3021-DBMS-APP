@@ -41,3 +41,5 @@ export const STATS_PERIOD = {
   DAY: 'day',
   MONTH: 'month',
 } as const;
+
+export const DEFAULT_MAX_PRICE = 100000000;

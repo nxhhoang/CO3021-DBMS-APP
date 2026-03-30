@@ -6,84 +6,68 @@ import { ProductResponse, GetProductsResponse } from '@/types/product.types';
 
 export const productHandlers = [
   // GET /products
-  http.get(`${BASE_URL}/products`, (req) => {
-    const url = new URL(req.request.url);
+  http.get(`${BASE_URL}/products`, ({ request }) => {
+    const url = new URL(request.url);
 
-    // 1. Trích xuất các tham số cơ bản từ URL
-    const keyword = url.searchParams.get('keyword') || '';
-    const categoryId = url.searchParams.get('category') || '';
-    const price_min = parseFloat(url.searchParams.get('price_min') || '0');
-    const price_max = parseFloat(
-      url.searchParams.get('price_max') || 'Infinity',
+    // ===== 1. Params =====
+    const keyword = url.searchParams.get('keyword')?.toLowerCase() || '';
+    const categorySlug = url.searchParams.get('category') || '';
+    const priceMin = Number(url.searchParams.get('price_min') || 0);
+    const priceMax = Number(
+      url.searchParams.get('price_max') || Number.MAX_SAFE_INTEGER,
     );
-    const page = parseInt(url.searchParams.get('page') || '1');
-    const limit = parseInt(url.searchParams.get('limit') || '10');
+    const page = Number(url.searchParams.get('page') || 1);
+    const limit = Number(url.searchParams.get('limit') || 10);
     const sort = url.searchParams.get('sort') || '';
 
-    // 2. Trích xuất Dynamic Attributes: attrs[key]=value
+    // ===== 2. Dynamic attrs =====
     const filterAttrs: Record<string, string> = {};
     url.searchParams.forEach((value, key) => {
       const match = key.match(/^attrs\[(.*)\]$/);
-      if (match && value !== 'all' && value !== '') {
+      if (match && value && value !== 'all') {
         filterAttrs[match[1]] = value;
       }
     });
 
-    // 3. Thực hiện lọc dữ liệu
-    let filteredProducts = MOCK_PRODUCTS.filter((product) => {
-      // Lọc theo từ khóa (tên sản phẩm)
-      const matchesKeyword = product.name
-        .toLowerCase()
-        .includes(keyword.toLowerCase());
+    // ===== 3. Resolve category =====
+    const category = categorySlug
+      ? MOCK_CATEGORIES.find((c) => c.slug === categorySlug)
+      : null;
 
-      // Lọc theo ID danh mục
-      const matchesCategory = categoryId
-        ? (() => {
-            const cat = MOCK_CATEGORIES.find((c) => c.slug === categoryId);
-            return product.categoryId === cat?._id;
-          })()
-        : true;
+    // ===== 4. Filter =====
+    let filtered = MOCK_PRODUCTS.filter((p) => {
+      const matchesKeyword = p.name.toLowerCase().includes(keyword);
 
-      // Lọc theo khoảng giá
-      const matchesPrice =
-        product.base_price >= price_min && product.base_price <= price_max;
+      const matchesCategory = category ? p.categoryID === category._id : true;
 
-      // Lọc theo thuộc tính động (RAM, CPU, v.v.)
-      // Chỉ lọc nếu sản phẩm có chứa field 'attributes'
+      const matchesPrice = p.base_price >= priceMin && p.base_price <= priceMax;
+
       const matchesAttrs = Object.entries(filterAttrs).every(([key, value]) => {
-        return product.attributes && product.attributes[key] === value;
+        if (!p.attributes) return false;
+        return String(p.attributes[key]) === value;
       });
 
       return matchesKeyword && matchesCategory && matchesPrice && matchesAttrs;
-    });
+    }); // ✅ thiếu dấu ; ở đây (đã thêm)
 
-    // 4. Logic Sắp xếp (Sorting)
-    switch (sort) {
-      case 'price_asc':
-        filteredProducts.sort((a, b) => a.base_price - b.base_price);
-        break;
-      case 'price_desc':
-        filteredProducts.sort((a, b) => b.base_price - a.base_price);
-        break;
-      case 'sold_desc':
-        filteredProducts.sort(
-          (a, b) => (b.total_sold || 0) - (a.total_sold || 0),
-        );
-        break;
-      case 'rating_desc':
-        filteredProducts.sort(
-          (a, b) => (b.avg_rating || 0) - (a.avg_rating || 0),
-        );
-        break;
-      default:
-        // Mặc định có thể sắp xếp theo ID hoặc ngày tạo nếu có
-        break;
+    // ===== 5. Sorting =====
+    const sortMap: Record<string, (a: any, b: any) => number> = {
+      price_asc: (a, b) => a.base_price - b.base_price,
+      price_desc: (a, b) => b.base_price - a.base_price,
+      sold_desc: (a, b) => (b.total_sold ?? 0) - (a.total_sold ?? 0),
+      rating_desc: (a, b) => (b.avg_rating ?? 0) - (a.avg_rating ?? 0),
+    };
+
+    if (sortMap[sort]) {
+      filtered = [...filtered].sort(sortMap[sort]);
     }
 
-    // 5. Map dữ liệu sang ProductResponse (thay categoryId bằng object category chi tiết)
-    const productData: ProductResponse[] = filteredProducts.map((p) => {
-      const cat = MOCK_CATEGORIES.find((c) => c._id === p.categoryId);
-      const { categoryId, ...rest } = p;
+    // ===== 6. Map → ProductResponse =====
+    const mapped: ProductResponse[] = filtered.map((p) => {
+      const cat = MOCK_CATEGORIES.find((c) => c._id === p.categoryID);
+
+      const { categoryID, ...rest } = p;
+
       return {
         ...rest,
         category: {
@@ -94,27 +78,35 @@ export const productHandlers = [
       };
     });
 
-    // 6. Phân trang (Pagination)
-    const totalItems = productData.length;
-    const totalPages = Math.ceil(totalItems / limit);
-    const paginatedData = productData.slice((page - 1) * limit, page * limit);
+    // ===== 7. Pagination =====
+    const totalItems = mapped.length;
+    const totalPages = Math.ceil(totalItems / limit) || 1;
+
+    const start = (page - 1) * limit;
+    const end = start + limit;
+
+    const data = mapped.slice(start, end);
+
+    const pagination = {
+      totalItems,
+      itemCount: data.length,
+      itemsPerPage: limit,
+      totalPages,
+      currentPage: page,
+      nextPage: page < totalPages ? page + 1 : null,
+      hasPreviousPage: page > 1,
+      hasNextPage: page < totalPages,
+    };
 
     return HttpResponse.json({
       message:
         totalItems > 0
           ? `Tìm thấy ${totalItems} sản phẩm`
           : 'Không tìm thấy sản phẩm nào',
-      data: paginatedData,
-      pagination: {
-        totalItems,
-        itemCount: paginatedData.length,
-        itemsPerPage: limit,
-        totalPages,
-        currentPage: page,
-        nextPage: page < totalPages ? page + 1 : null,
-        hasPrevPage: page > 1,
-        hasNextPage: page < totalPages,
-      },
-    });
+      data,
+      pagination,
+    } as GetProductsResponse);
   }),
+
+  // Các handler khác như GET /products/:id, POST, PUT, DELETE sẽ được thêm ở đây
 ];

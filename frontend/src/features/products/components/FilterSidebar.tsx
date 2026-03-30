@@ -13,6 +13,7 @@ import SortSelect from './SortSelect';
 import AttributeSelect from './AttributeSelect';
 
 import { useProductFilterNavigation } from '../hooks/useProductFilterNavigation';
+import { DEFAULT_MAX_PRICE } from '@/constants/enum';
 
 interface FilterBarProps {
   priceRange: [number, number];
@@ -105,7 +106,7 @@ const FilterSidebar = ({
           priceRange={priceRange}
           setPriceRange={setPriceRange}
           min={0}
-          max={5000}
+          max={DEFAULT_MAX_PRICE}
         />
       </div>
 

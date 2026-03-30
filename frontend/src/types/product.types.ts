@@ -6,25 +6,32 @@ export interface Product {
   _id: string;
   name: string;
   base_price: number;
-  categoryId: string;
+  categoryID: string;
+  description: string;
   images: string[];
-  attributes: Record<string, string | number | boolean>;
+  attributes: Record<string, string | number | boolean>; // Dynamic attributes
   avg_rating: number;
   total_reviews: number;
   total_sold: number;
 }
 
-export interface ProductResponse extends Omit<Product, 'categoryId'> {
+export interface SKU {
+  sku: string;
+  productID: string;
+  sku_price: number;
+  attributes: Record<string, string | number | boolean>; // Variant attributes
+}
+
+export interface Inventory extends SKU {
+  stockQuantity: number;
+}
+
+export interface ProductResponse extends Omit<Product, 'categoryID'> {
   category: Pick<Category, '_id' | 'name' | 'slug'>;
 }
 
 export interface ProductDetail extends ProductResponse {
-  description: string;
-  inventory: {
-    sku: string;
-    stockQuantity: number;
-    sku_price: number;
-  }[];
+  inventory: Omit<Inventory, 'productID'>[];
 }
 
 //GET /products
@@ -36,7 +43,7 @@ export type GetProductsRequest = {
   page?: number;
   limit?: number;
   sort?: (typeof SORT_BY)[keyof typeof SORT_BY];
-  attrs?: Record<string, string>;
+  attrs?: Record<string, string | number | boolean>;
 };
 
 export type GetProductsResponse = PaginatedResponse<ProductResponse[]>;
@@ -48,7 +55,7 @@ export type GetProductDetailResponse = ApiResponse<ProductDetail>;
 //POST /admin/products
 export type CreateProductRequest = Pick<
   Product,
-  'name' | 'base_price' | 'categoryId' | 'attributes'
+  'name' | 'base_price' | 'categoryID' | 'attributes'
 >;
 
 export type CreateProductResponse = ApiResponse<ProductResponse>;

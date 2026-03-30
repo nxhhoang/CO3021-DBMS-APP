@@ -1,130 +1,108 @@
 'use client';
 
-import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { CartItem } from '@/types/cart.types';
+import { Button } from '@/components/ui/button';
+import { ShoppingBag } from 'lucide-react';
 import formatVND from '@/features/cart/utils/formatVND';
-import { useState } from 'react';
-import { PAYMENT_METHOD } from '@/constants/enum';
-import { PaymentMethod } from '@/types';
-import { Wallet, Landmark, Banknote } from 'lucide-react';
+import { OrderItemsList } from './OrderItemsList';
+import { CheckoutDialogs } from '../Checkout/CheckoutDialog';
+import { useCheckout } from '../../hooks/useCheckout';
+import { CartItem } from '@/types/cart.types';
 
 interface OrderSummaryProps {
   selectedItems: CartItem[];
   totalPrice: number;
 }
 
-const PAYMENT_METHOD_OPTIONS = [
-  {
-    value: PAYMENT_METHOD.E_WALLET,
-    label: 'Ví điện tử',
-    icon: Wallet,
-  },
-  {
-    value: PAYMENT_METHOD.BANKING,
-    label: 'Chuyển khoản',
-    icon: Landmark,
-  },
-  {
-    value: PAYMENT_METHOD.COD,
-    label: 'COD',
-    icon: Banknote,
-  },
-];
-
 const OrderSummary = ({ selectedItems, totalPrice }: OrderSummaryProps) => {
-  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>(
-    PAYMENT_METHOD.COD,
-  );
+  const {
+    paymentMethod,
+    setPaymentMethod,
+    isLoading,
+    isAddressLoading,
+    orderID,
+    setOrderID, // Đảm bảo lấy setOrderID từ useCheckout
+    dialogState,
+    setDialogState,
+    handleCheckout,
+    defaultAddress,
+  } = useCheckout(selectedItems);
 
   const hasItems = selectedItems.length > 0;
 
   return (
     <div className="h-fit lg:sticky lg:top-24">
-      <Card className="border-primary/5 overflow-hidden border-2 shadow-md">
+      <Card className="overflow-hidden border-2 shadow-md transition-all hover:shadow-lg">
         <div className="bg-primary/5 border-b px-6 py-4">
-          <h3 className="text-lg font-bold">Hóa đơn</h3>
+          <h3 className="flex items-center gap-2 text-lg font-bold">
+            <ShoppingBag className="h-5 w-5" /> Hóa đơn
+          </h3>
         </div>
 
         <CardContent className="p-6">
-          <div className="space-y-4">
-            {/* DANH SÁCH SẢN PHẨM */}
-            <div>
-              <p className="mb-2 text-sm font-semibold">Sản phẩm thanh toán:</p>
-
-              {!hasItems ? (
-                <p className="text-muted-foreground text-sm">
-                  Chưa chọn sản phẩm
+          {hasItems ? (
+            <div className="animate-in fade-in space-y-4 duration-500">
+              <div>
+                <p className="text-muted-foreground mb-2 text-sm font-semibold">
+                  Sản phẩm đã chọn ({selectedItems.length})
                 </p>
-              ) : (
-                <div className="space-y-1">
-                  {selectedItems.map((item) => (
-                    <div
-                      key={item.sku}
-                      className="flex justify-between text-sm"
-                    >
-                      <span>
-                        {item.productName} (x{item.quantity})
-                      </span>
-
-                      <span>{formatVND(item.unitPrice * item.quantity)}</span>
-                    </div>
-                  ))}
+                <div className="custom-scrollbar max-h-[300px] overflow-y-auto pr-2">
+                  <OrderItemsList items={selectedItems} />
                 </div>
-              )}
-            </div>
-
-            {/* TỔNG TIỀN */}
-            <div className="border-t pt-4">
-              <div className="flex items-end justify-between">
-                <span className="text-lg font-medium">Tổng cộng</span>
-
-                <p className="text-primary text-2xl leading-none font-bold">
-                  {formatVND(totalPrice)}
-                </p>
               </div>
+
+              <div className="space-y-2 border-t pt-4">
+                <div className="text-muted-foreground flex items-center justify-between italic">
+                  <span className="text-sm">Tạm tính</span>
+                  <span className="text-sm">{formatVND(totalPrice)}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-lg font-bold">Tổng cộng</span>
+                  <p className="text-primary text-2xl font-black tracking-tight">
+                    {formatVND(totalPrice)}
+                  </p>
+                </div>
+              </div>
+
+              <Button
+                size="lg"
+                onClick={() =>
+                  setDialogState((prev) => ({ ...prev, confirm: true }))
+                }
+                className="shadow-primary/20 mt-4 w-full text-base font-bold shadow-lg transition-all hover:scale-[1.02] active:scale-[0.98]"
+              >
+                Tiến hành thanh toán
+              </Button>
             </div>
-          </div>
-
-          {/* PAYMENT METHOD */}
-          <div className="mt-6 flex flex-col gap-3">
-            <p className="text-muted-foreground text-center text-xs">
-              Chọn phương thức thanh toán
-            </p>
-
-            <div className="grid grid-cols-3 gap-3">
-              {PAYMENT_METHOD_OPTIONS.map((method) => {
-                const isSelected = paymentMethod === method.value;
-                const Icon = method.icon;
-
-                return (
-                  <button
-                    key={method.value}
-                    onClick={() => setPaymentMethod(method.value)}
-                    className={`flex flex-col items-center justify-center gap-1 rounded-lg border p-3 text-xs font-medium transition-all ${
-                      isSelected
-                        ? 'border-primary bg-primary/10 text-primary'
-                        : 'hover:border-primary/40'
-                    }`}
-                  >
-                    <Icon className="h-4 w-4" />
-                    {method.label}
-                  </button>
-                );
-              })}
+          ) : (
+            <div className="animate-in zoom-in-95 flex flex-col items-center gap-3 py-10 text-center duration-300">
+              <div className="bg-muted rounded-full p-4">
+                <ShoppingBag className="text-muted-foreground h-8 w-8" />
+              </div>
+              <p className="text-muted-foreground font-medium">
+                {dialogState.success
+                  ? 'Đang chuyển hướng...'
+                  : 'Chưa có sản phẩm nào'}
+              </p>
             </div>
-          </div>
-
-          {/* CHECKOUT BUTTON */}
-          <Button
-            size="lg"
-            disabled={!hasItems}
-            className="text-md shadow-primary/20 mt-8 w-full font-bold shadow-lg transition-all hover:scale-[1.02] active:scale-[0.98]"
-          >
-            Tiến hành thanh toán
-          </Button>
+          )}
         </CardContent>
       </Card>
+
+      <CheckoutDialogs
+        state={dialogState}
+        setState={setDialogState}
+        isLoading={isLoading}
+        isAddressLoading={isAddressLoading}
+        address={defaultAddress}
+        onConfirm={handleCheckout}
+        paymentMethod={paymentMethod}
+        setPaymentMethod={setPaymentMethod}
+        selectedItems={selectedItems}
+        totalPrice={totalPrice}
+        orderID={orderID}
+        setOrderID={setOrderID} // Truyền xuống để Dialog có thể reset trạng thái đơn hàng
+      />
     </div>
   );
 };

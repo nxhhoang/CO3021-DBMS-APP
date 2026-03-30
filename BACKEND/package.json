@@ -14,7 +14,6 @@
     "prettier:fix": "prettier --write .",
     "build nc": "rimraf ./dist && tsc --noCheck && tsc-alias",
     "seed:admin": "tsx src/scripts/seedAdmin.ts"
-
   },
   "keywords": [],
   "author": "",
@@ -49,7 +48,7 @@
     "express-validator": "^7.3.1",
     "helmet": "^8.1.0",
     "jsonwebtoken": "^9.0.3",
-    "mongodb": "^7.1.0",
+    "mongodb": "^7.1.1",
     "pg": "^8.20.0",
     "socket.io": "^4.8.3",
     "swagger-jsdoc": "^6.2.8",

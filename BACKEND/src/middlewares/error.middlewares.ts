@@ -3,29 +3,32 @@ import { omit } from 'lodash'
 import HTTP_STATUS from '~/constants/httpStatus'
 import { ErrorWithStatus } from '~/models/Errors'
 
-export const defaultErrorHandler = (err: any, req: Request, res: Response, next: NextFunction) => {
+export const defaultErrorHandler = (err: unknown, req: Request, res: Response, _next: NextFunction) => {
   try {
     if (err instanceof ErrorWithStatus) {
       return res.status(err.status).json(omit(err, ['status']))
     }
-    const finalError: any = {}
-    Object.getOwnPropertyNames(err).forEach((key) => {
-      if (
-        !Object.getOwnPropertyDescriptor(err, key)?.configurable ||
-        !Object.getOwnPropertyDescriptor(err, key)?.writable
-      ) {
-        return
-      }
-      finalError[key] = err[key]
-    })
+
+    const finalError: Record<string, unknown> = {}
+
+    if (typeof err === 'object' && err !== null) {
+      Object.getOwnPropertyNames(err).forEach((key) => {
+        const descriptor = Object.getOwnPropertyDescriptor(err, key)
+
+        if (!descriptor?.configurable || !descriptor?.writable) return
+
+        finalError[key] = (err as Record<string, unknown>)[key]
+      })
+    }
+
     res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({
-      message: finalError.message,
+      message: (finalError.message as string) || 'Internal server error',
       errorInfo: omit(finalError, ['stack'])
     })
   } catch (error) {
     res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({
       message: 'Internal server error',
-      errorInfo: omit(error as any, ['stack'])
+      errorInfo: omit(error as Record<string, unknown>, ['stack'])
     })
   }
 }

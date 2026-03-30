@@ -60,7 +60,7 @@ import fs from 'fs'
 import path from 'path'
 
 const env = process.env.NODE_ENV || 'development'
-const envFilename = `.env` // Hoặc .env.${env} nếu bạn muốn chia file
+const envFilename = `.env`
 
 if (!fs.existsSync(path.resolve(envFilename))) {
   console.log(`Không tìm thấy file môi trường ${envFilename}`)
@@ -84,13 +84,19 @@ export const envConfig = {
   // dbPassword: process.env.DB_PASSWORD as string,
   // dbName: process.env.DB_NAME as string,
 
+  // PostgreSQL
+  pgHost: (process.env.PG_HOST as string) || 'localhost',
+  pgPort: parseInt(process.env.PG_PORT as string) || 5432,
+  pgUser: (process.env.PG_USER as string) || 'postgres',
+  pgPassword: (process.env.PG_PASSWORD as string) || 'postgres',
+  pgDatabase: (process.env.PG_DATABASE as string) || 'ecommerce_db',
+
+  // Auth
   passwordSecret: process.env.PASSWORD_SECRET as string,
   jwtSecretAccessToken: process.env.JWT_SECRET_ACCESS_TOKEN as string,
   jwtSecretRefreshToken: process.env.JWT_SECRET_REFRESH_TOKEN as string,
-  jwtSecretEmailVerifyToken: process.env.JWT_SECRET_EMAIL_VERIFY_TOKEN as string,
-  jwtSecretForgotPasswordToken: process.env.JWT_SECRET_FORGOT_PASSWORD_TOKEN as string,
-  refreshTokenExpiresIn: process.env.REFRESH_TOKEN_EXPIRES_IN as string,
-  accessTokenExpiresIn: process.env.ACCESS_TOKEN_EXPIRES_IN as string,
+  refreshTokenExpiresIn: (process.env.REFRESH_TOKEN_EXPIRES_IN as string) || '7d',
+  accessTokenExpiresIn: (process.env.ACCESS_TOKEN_EXPIRES_IN as string) || '15m',
 
   clientUrl: process.env.CLIENT_URL as string
 }

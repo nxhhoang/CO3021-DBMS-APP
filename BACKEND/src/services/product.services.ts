@@ -20,7 +20,7 @@ class ProductService {
     const limit = Math.min(100, Math.max(1, parseInt(query.limit as string) || 10))
     const skip = (page - 1) * limit
 
-    const matchQuery: Filter<Product> = { is_active: true }
+    const matchQuery: Filter<Product> = { isActive: true }
 
     // If category slug is provided, we must find the category ID first
     if (query.category) {
@@ -34,7 +34,7 @@ class ProductService {
           }
         }
       }
-      matchQuery.categoryId = cat._id
+      matchQuery.categoryID = cat._id
     }
 
     if (query.keyword) {
@@ -45,9 +45,9 @@ class ProductService {
     }
 
     if (query.priceMin !== undefined || query.priceMax !== undefined) {
-      matchQuery.base_price = {}
-      if (query.priceMin !== undefined) matchQuery.base_price.$gte = parseFloat(query.priceMin as string)
-      if (query.priceMax !== undefined) matchQuery.base_price.$lte = parseFloat(query.priceMax as string)
+      matchQuery.basePrice = {}
+      if (query.priceMin !== undefined) matchQuery.basePrice.$gte = parseFloat(query.priceMin as string)
+      if (query.priceMax !== undefined) matchQuery.basePrice.$lte = parseFloat(query.priceMax as string)
     }
 
     if (query.attrs && typeof query.attrs === 'object') {
@@ -59,29 +59,29 @@ class ProductService {
     const sortObject: any = {}
     if (query.sort) {
       const sortMap: Record<string, any> = {
-        priceASC: { base_price: 1 },
-        priceDESC: { base_price: -1 },
-        ratingASC: { avg_rating: 1 },
-        ratingDESC: { avg_rating: -1 },
-        soldASC: { total_sold: 1 },
-        soldDESC: { total_sold: -1 }
+        priceASC: { basePrice: 1 },
+        priceDESC: { basePrice: -1 },
+        ratingASC: { avgRating: 1 },
+        ratingDESC: { avgRating: -1 },
+        soldASC: { totalSold: 1 },
+        soldDESC: { totalSold: -1 }
       }
-      Object.assign(sortObject, sortMap[query.sort as string] || { total_sold: -1 })
+      Object.assign(sortObject, sortMap[query.sort as string] || { totalSold: -1 })
     } else {
-      sortObject.total_sold = -1
+      sortObject.totalSold = -1
     }
 
     const total = await this.collection.countDocuments(matchQuery)
     const results = await this.collection.find(matchQuery).sort(sortObject).skip(skip).limit(limit).toArray()
 
     // Populate category info
-    const categoryIds = [...new Set(results.map(p => p.categoryId))]
+    const categoryIDs = [...new Set(results.map(p => p.categoryID))]
     const categories = await getMongoDB().collection<Category>('categories')
-      .find({ _id: { $in: categoryIds } }).toArray()
+      .find({ _id: { $in: categoryIDs } }).toArray()
 
     const mappedResults = results.map(p => {
-      const cat = categories.find(c => c._id.toHexString() === p.categoryId.toHexString())
-      const { categoryId, ...rest } = p as any
+      const cat = categories.find(c => c._id.toHexString() === p.categoryID.toHexString())
+      const { categoryID, ...rest } = p as any
       return {
         ...rest,
         category: cat ? { _id: cat._id.toHexString(), name: cat.name, slug: cat.slug } : null
@@ -105,7 +105,7 @@ class ProductService {
   }
 
   async getProductById(id: string) {
-    const product = await this.collection.findOne({ _id: new ObjectId(id), is_active: true })
+    const product = await this.collection.findOne({ _id: new ObjectId(id), isActive: true })
     if (!product) {
       throw new ErrorWithStatus({
         message: PRODUCT_MESSAGES.PRODUCT_NOT_FOUND,
@@ -113,8 +113,8 @@ class ProductService {
       })
     }
 
-    const cat = await getMongoDB().collection<Category>('categories').findOne({ _id: product.categoryId })
-    const { categoryId, ...rest } = product as any
+    const cat = await getMongoDB().collection<Category>('categories').findOne({ _id: product.categoryID })
+    const { categoryID, ...rest } = product as any
     const mappedProduct = {
       ...rest,
       category: cat ? { _id: cat._id.toHexString(), name: cat.name, slug: cat.slug } : null
@@ -122,8 +122,8 @@ class ProductService {
 
     // Hybrid: get inventory from PostgreSQL mock (still keeping this part as it uses an external mock array intentionally for now until BE1 migration)
     const inventory = mockInventory
-      .filter((inv) => inv.product_id === id)
-      .map((inv) => ({ sku: inv.sku, stockQuantity: inv.stock_quantity, sku_price: inv.sku_price }))
+      .filter((inv) => inv.productID === id)
+      .map((inv) => ({ sku: inv.sku, stockQuantity: inv.stockQuantity, sku_price: inv.skuPrice }))
 
     return { ...mappedProduct, inventory }
   }
@@ -134,8 +134,8 @@ class ProductService {
     const newProduct = new Product({
       name: body.name,
       slug: body.slug,
-      categoryId: new ObjectId(body.categoryID as string),
-      base_price: body.basePrice,
+      categoryID: new ObjectId(body.categoryID as string),
+      basePrice: body.basePrice,
       description: body.description,
       images: body.images,
       attributes: body.attributes || {}
@@ -147,12 +147,12 @@ class ProductService {
 
   async updateProduct(id: string, body: UpdateProductReqBody) {
     const updateData: Partial<Product> = {
-      updated_at: new Date()
+      updatedAt: new Date()
     }
 
     if (body.name !== undefined) updateData.name = body.name
-    if (body.categoryID !== undefined) updateData.categoryId = new ObjectId(body.categoryID as string)
-    if (body.basePrice !== undefined) updateData.base_price = body.basePrice
+    if (body.categoryID !== undefined) updateData.categoryID = new ObjectId(body.categoryID as string)
+    if (body.basePrice !== undefined) updateData.basePrice = body.basePrice
     if (body.description !== undefined) updateData.description = body.description
     if (body.images !== undefined) updateData.images = body.images
     if (body.attributes !== undefined) updateData.attributes = body.attributes
@@ -170,13 +170,13 @@ class ProductService {
       })
     }
 
-    return { _id: updated._id, name: updated.name, base_price: updated.base_price }
+    return { _id: updated._id, name: updated.name, basePrice: updated.basePrice }
   }
 
   async softDeleteProduct(id: string) {
     const updated = await this.collection.findOneAndUpdate(
       { _id: new ObjectId(id) },
-      { $set: { is_active: false, updated_at: new Date() } },
+      { $set: { isActive: false, updatedAt: new Date() } },
       { returnDocument: 'after' }
     )
 
@@ -195,7 +195,7 @@ class ProductService {
   async updateProductRating(productId: string, avgRating: number, totalReviews: number) {
     await this.collection.updateOne(
       { _id: new ObjectId(productId) },
-      { $set: { avg_rating: avgRating, total_reviews: totalReviews, updated_at: new Date() } }
+      { $set: { avgRating: avgRating, totalReviews: totalReviews, updatedAt: new Date() } }
     )
   }
 
@@ -204,7 +204,7 @@ class ProductService {
   async updateProductSoldCount(productId: string, quantityDelta: number) {
     await this.collection.updateOne(
       { _id: new ObjectId(productId) },
-      { $inc: { total_sold: quantityDelta }, $set: { updated_at: new Date() } }
+      { $inc: { totalSold: quantityDelta }, $set: { updatedAt: new Date() } }
     )
   }
 

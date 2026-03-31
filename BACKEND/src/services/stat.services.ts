@@ -15,15 +15,15 @@ class StatService {
 
     const result = await query(
       `SELECT
-         TO_CHAR(DATE_TRUNC($1, created_at), $2) AS date,
-         SUM(total_amount)::BIGINT                AS "totalRevenue",
+         TO_CHAR(DATE_TRUNC($1, createdAt), $2) AS date,
+         SUM(totalAmount)::BIGINT                 AS "totalRevenue",
          COUNT(*)::INT                            AS "orderCount"
-       FROM orders
+       FROM ORDERS
        WHERE status = 'DELIVERED'
-         AND created_at >= $3::TIMESTAMPTZ
-         AND created_at <= $4::TIMESTAMPTZ + INTERVAL '1 day'
-       GROUP BY DATE_TRUNC($1, created_at)
-       ORDER BY DATE_TRUNC($1, created_at) ASC`,
+         AND createdAt >= $3::TIMESTAMPTZ
+         AND createdAt <= $4::TIMESTAMPTZ + INTERVAL '1 day'
+       GROUP BY DATE_TRUNC($1, createdAt)
+       ORDER BY DATE_TRUNC($1, createdAt) ASC`,
       [truncUnit, dateFormat, startDate, endDate]
     )
 

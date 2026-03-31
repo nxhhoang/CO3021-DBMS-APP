@@ -7,14 +7,15 @@ import { RegisterReqBody, LoginReqBody } from '~/models/requests/Auth.requests'
 import { ErrorWithStatus } from '~/models/Errors'
 import HTTP_STATUS from '~/constants/httpStatus'
 import { AUTH_MESSAGES } from '~/constants/messages'
+import crypto from 'crypto' // Cần sinh unique ID cho bảng USERS
 
 class AuthService {
   //  Token Helpers
 
-  private async signAccessToken(user_id: string, role: UserRole) {
+  private async signAccessToken(userId: string, role: UserRole) {
     return signToken({
       payload: {
-        user_id,
+        userId,
         role,
         token_type: TokenType.AccessToken
       },
@@ -23,10 +24,10 @@ class AuthService {
     })
   }
 
-  private async signRefreshToken(user_id: string, role: UserRole) {
+  private async signRefreshToken(userId: string, role: UserRole) {
     return signToken({
       payload: {
-        user_id,
+        userId,
         role,
         token_type: TokenType.RefreshToken
       },
@@ -35,10 +36,10 @@ class AuthService {
     })
   }
 
-  private async signTokenPair(user_id: string, role: UserRole) {
+  private async signTokenPair(userId: string, role: UserRole) {
     const [accessToken, refreshToken] = await Promise.all([
-      this.signAccessToken(user_id, role),
-      this.signRefreshToken(user_id, role)
+      this.signAccessToken(userId, role),
+      this.signRefreshToken(userId, role)
     ])
     return { accessToken, refreshToken }
   }
@@ -49,17 +50,18 @@ class AuthService {
     const { email, password, fullName, phoneNum } = payload
 
     // Check duplicate email
-    const existing = await query('SELECT user_id FROM users WHERE email = $1', [email])
+    const existing = await query('SELECT userID FROM USERS WHERE email = $1', [email])
     if (existing.rows.length > 0) {
       throw new ErrorWithStatus({ message: AUTH_MESSAGES.EMAIL_ALREADY_EXISTS, status: HTTP_STATUS.BAD_REQUEST })
     }
 
     const hashedPassword = hashPassword(password)
+    const newUserId = crypto.randomUUID() // Generate ID for Postgres
     const result = await query(
-      `INSERT INTO users (email, password_hash, full_name, phone_num, role)
-       VALUES ($1, $2, $3, $4, 'CUSTOMER')
-       RETURNING user_id, email`,
-      [email, hashedPassword, fullName, phoneNum]
+      `INSERT INTO USERS (userID, email, password, fullName, phoneNum, role)
+       VALUES ($1, $2, $3, $4, $5, 'CUSTOMER')
+       RETURNING userID AS "userId", email`,
+      [newUserId, email, hashedPassword, fullName, phoneNum]
     )
 
     return result.rows[0]
@@ -71,7 +73,7 @@ class AuthService {
     const { email, password } = payload
     const hashedPassword = hashPassword(password)
 
-    const result = await query(`SELECT user_id, email, role FROM users WHERE email = $1 AND password_hash = $2`, [
+    const result = await query(`SELECT userID AS "userId", email, role FROM USERS WHERE email = $1 AND password = $2`, [
       email,
       hashedPassword
     ])
@@ -84,11 +86,11 @@ class AuthService {
     }
 
     const user = result.rows[0]
-    const { accessToken, refreshToken } = await this.signTokenPair(user.user_id, user.role)
+    const { accessToken, refreshToken } = await this.signTokenPair(user.userId, user.role)
 
-    // Store refresh token in auth_tokens table
-    await query(`INSERT INTO auth_tokens (user_id, token, user_agent) VALUES ($1, $2, $3)`, [
-      user.user_id,
+    // Store refresh token in AUTH_TOKENS table. Add expireAt = NOW() + 100 days
+    await query(`INSERT INTO AUTH_TOKENS (userID, refreshToken, userAgent, expireAt) VALUES ($1, $2, $3, NOW() + INTERVAL '100 days')`, [
+      user.userId,
       refreshToken,
       payload.userAgent || null
     ])
@@ -97,7 +99,7 @@ class AuthService {
       accessToken,
       refreshToken,
       user: {
-        userId: user.user_id,
+        userId: user.userId,
         role: user.role
       }
     }
@@ -115,7 +117,7 @@ class AuthService {
     }
 
     // Check it exists in DB (not already used/deleted)
-    const found = await query(`SELECT token_id FROM auth_tokens WHERE token = $1`, [oldRefreshToken])
+    const found = await query(`SELECT tokenID FROM AUTH_TOKENS WHERE refreshToken = $1`, [oldRefreshToken])
     if (found.rows.length === 0) {
       throw new ErrorWithStatus({ message: AUTH_MESSAGES.REFRESH_TOKEN_IS_INVALID, status: HTTP_STATUS.UNAUTHORIZED })
     }
@@ -125,13 +127,13 @@ class AuthService {
       await client.query('BEGIN')
 
       // Delete old token
-      await client.query(`DELETE FROM auth_tokens WHERE token = $1`, [oldRefreshToken])
+      await client.query(`DELETE FROM AUTH_TOKENS WHERE refreshToken = $1`, [oldRefreshToken])
 
       // Issue new pair
-      const { accessToken, refreshToken: newRefreshToken } = await this.signTokenPair(decoded.user_id, decoded.role)
+      const { accessToken, refreshToken: newRefreshToken } = await this.signTokenPair(decoded.userId, decoded.role)
 
       // Store new refresh token
-      await client.query(`INSERT INTO auth_tokens (user_id, token) VALUES ($1, $2)`, [decoded.user_id, newRefreshToken])
+      await client.query(`INSERT INTO AUTH_TOKENS (userID, refreshToken, expireAt) VALUES ($1, $2, NOW() + INTERVAL '100 days')`, [decoded.userId, newRefreshToken])
 
       await client.query('COMMIT')
       return { accessToken, refreshToken: newRefreshToken }
@@ -146,7 +148,7 @@ class AuthService {
   // Logout
 
   async logout(refreshToken: string) {
-    await query(`DELETE FROM auth_tokens WHERE token = $1`, [refreshToken])
+    await query(`DELETE FROM AUTH_TOKENS WHERE refreshToken = $1`, [refreshToken])
   }
 }
 

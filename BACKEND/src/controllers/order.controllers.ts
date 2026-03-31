@@ -13,19 +13,19 @@ import statService from '~/services/stat.services'
 //  Orders
 
 export const checkoutController = async (req: Request<ParamsDictionary, unknown, CheckoutReqBody>, res: Response) => {
-  const userId = req.decoded_authorization!.user_id
+  const userId = req.decoded_authorization!.userId
   const result = await orderService.checkout(userId, req.body)
   res.status(HTTP_STATUS.CREATED).json({ message: ORDER_MESSAGES.CHECKOUT_SUCCESS, data: result })
 }
 
 export const getOrdersController = async (req: Request, res: Response) => {
-  const userId = req.decoded_authorization!.user_id
+  const userId = req.decoded_authorization!.userId
   const result = await orderService.getOrders(userId)
   res.status(HTTP_STATUS.OK).json({ message: ORDER_MESSAGES.GET_ORDERS_SUCCESS, data: result })
 }
 
 export const getOrderByIdController = async (req: Request<OrderReqParams>, res: Response) => {
-  const userId = req.decoded_authorization!.user_id
+  const userId = req.decoded_authorization!.userId
   const orderId = parseInt(req.params.orderId)
   const result = await orderService.getOrderById(orderId, userId)
   res.status(HTTP_STATUS.OK).json({ message: ORDER_MESSAGES.GET_ORDER_DETAIL_SUCCESS, data: result })

@@ -4,36 +4,26 @@ const axios = require('axios')
 dotenv.config()
 
 const BASE_URL = 'http://localhost:4000/api/v1'
-const token = jwt.sign(
-  {
-    user_id: '123e4567-e89b-12d3-a456-426614174000',
-    role: 'ADMIN',
-    exp: Math.floor(Date.now() / 1000) + (60 * 60 * 24)
-  },
-  process.env.JWT_SECRET_ACCESS_TOKEN
-)
 
 const apiClient = axios.create({
   baseURL: BASE_URL,
-  headers: {
-    Authorization: `Bearer ${token}`
-  }
+  validateStatus: () => true
 })
 
 // Helper to catch expected API errors
 async function expectError(promise, expectedStatus, testName) {
   try {
-    await promise
-    console.error(`[FAIL] ${testName} - Expected error ${expectedStatus} but request succeeded.`)
-    return false
-  } catch (err) {
-    if (err.response && err.response.status === expectedStatus) {
+    const res = await promise
+    if (res.status === expectedStatus) {
       console.log(`[PASS] ${testName} - Got expected ${expectedStatus} error.`)
       return true
     } else {
-      console.error(`[FAIL] ${testName} - Expected error ${expectedStatus} but got ${err.response?.status || err.message}`)
+      console.error(`[FAIL] ${testName} - Expected error ${expectedStatus} but got ${res.status}`)
       return false
     }
+  } catch (err) {
+    console.error(`[FAIL] ${testName} - Request failed with technical error: ${err.message}`)
+    return false
   }
 }
 
@@ -41,9 +31,24 @@ async function runTests() {
   try {
     let testCount = 0
 
-    console.log('--- SCENARIO 1: Category Management ---')
+    console.log('--- PRE-REQUISITE: Admin Login ---')
+    // 0. Login as seeded Admin
+    let res = await apiClient.post('/auth/login', {
+      email: process.env.ADMIN_EMAIL,
+      password: process.env.ADMIN_PASSWORD
+    })
+    if (res.status !== 200) {
+      console.error('Failed to login as Admin. Check .env and seedAdmin.ts')
+      return
+    }
+    const accessToken = res.data.data.accessToken
+    const userId = res.data.data.user.userId
+    apiClient.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`
+    console.log(`[SETUP] Logged in as Admin (userId: ${userId})`)
+
+    console.log('\n--- SCENARIO 1: Category Management ---')
     // 1. Get Active Categories
-    let res = await apiClient.get('/categories?isActive=true')
+    res = await apiClient.get('/categories?isActive=true')
     console.log(`[TEST ${++testCount}] [GET /categories]`, res.data.message)
 
     // 2. Get Inactive Categories
@@ -199,9 +204,37 @@ async function runTests() {
       `[TEST ${++testCount}] DELETE /admin/products/:id with non-existent ID`
     )
 
-    // 23. Soft Delete Product Successfully
-    res = await apiClient.delete(`/admin/products/${productId1}`)
-    console.log(`[TEST ${++testCount}] [DELETE /admin/products/:id]`, res.data.message)
+    console.log('\n--- VERIFIED PURCHASE SETUP FOR REVIEWS ---')
+    // S1. Create Address for Admin
+    res = await apiClient.post('/users/addresses', {
+      addressLine: 'Admin HQ', city: 'HCM', district: 'Q1', isDefault: true
+    })
+    console.log(`[SETUP] [POST /users/addresses]`, res.data.message)
+    const addressId = res.data.data.addressID
+
+    // S2. Add Inventory
+    const setupSku = 'SKU-REV-' + Date.now()
+    res = await apiClient.post('/admin/inventories', {
+      productID: productId1,
+      sku: setupSku,
+      stockQuantity: 10
+    })
+    console.log(`[SETUP] [POST /admin/inventories]`, res.data.message)
+
+    // S3. Place Order
+    res = await apiClient.post('/orders', {
+      shippingAddressId: addressId,
+      paymentMethod: 'COD',
+      items: [{ productId: productId1, productName: 'Review Product', sku: setupSku, quantity: 1, unitPrice: 100000 }]
+    })
+    console.log(`[SETUP] [POST /orders]`, res.data.message)
+    const orderId = res.data.data.orderID
+
+    // S4. Transition Order to DELIVERED
+    await apiClient.put(`/admin/orders/${orderId}/status`, { status: 'SHIPPED' })
+    res = await apiClient.put(`/admin/orders/${orderId}/status`, { status: 'DELIVERED' })
+    console.log(`[SETUP] [PUT /admin/orders/:id/status] Order Delivered`)
+
 
     console.log('\n--- SCENARIO 4: Reviews ---')
     
@@ -231,6 +264,7 @@ async function runTests() {
     res = await apiClient.get(`/products/${productId1}/reviews`)
     console.log(`[TEST ${++testCount}] [GET /reviews]`, res.data.message, `(Count: ${res.data.data.length})`)
 
+
     console.log('\n--- SCENARIO 5: User Activity Logs ---')
 
     // 28. Invalid Log Action Type
@@ -255,6 +289,11 @@ async function runTests() {
     })
     console.log(`[TEST ${++testCount}] [POST /logs]`, res.data.message)
 
+    // Move 23. Soft Delete Product Successfully (Move to end of product usage)
+    res = await apiClient.delete(`/admin/products/${productId1}`)
+    console.log(`[TEST ${++testCount}] [DELETE /admin/products/:id] (Final cleanup)`, res.data.message)
+
+
     // Soft Delete Category
     console.log('\n--- CLEANUP ---')
     res = await apiClient.delete(`/admin/categories/${categoryId}`)
@@ -264,19 +303,19 @@ async function runTests() {
     // 32. Create Inventory Successfully
     const testSku = 'SKU-TEST-' + Date.now()
     res = await apiClient.post('/admin/inventories', {
-      product_id: productId1,
+      productID: productId1,
       sku: testSku,
-      stock_quantity: 100
+      stockQuantity: 100
     })
     console.log(`[TEST ${++testCount}] [POST /admin/inventories]`, res.data.message)
-    const inventoryId = res.data.result.inventory_id
+    const inventoryId = res.data.result.inventoryID || res.data.result.inventoryid
 
-    // 33. Create Inventory - Duplicate SKU (Wait, SKU is unique)
+    // 33. Create Inventory - Duplicate SKU
     await expectError(
       apiClient.post('/admin/inventories', {
-        product_id: productId1,
+        productID: productId1,
         sku: testSku,
-        stock_quantity: 50
+        stockQuantity: 50
       }),
       409,
       `[TEST ${++testCount}] POST /admin/inventories with duplicate SKU`
@@ -285,27 +324,27 @@ async function runTests() {
     // 34. Create Inventory - Invalid Product ID
     await expectError(
       apiClient.post('/admin/inventories', {
-        product_id: 'invalid-id',
+        productID: '507f1f77bcf86cd799439011',
         sku: 'SKU-FAIL',
-        stock_quantity: 10
+        stockQuantity: 10
       }),
-      422,
-      `[TEST ${++testCount}] POST /admin/inventories with invalid product_id`
+      404,
+      `[TEST ${++testCount}] POST /admin/inventories with non-existent productID`
     )
 
     // 35. Update Inventory Quantity Successfully
     res = await apiClient.put(`/admin/inventories/${inventoryId}`, {
-      stock_quantity: 150
+      stockQuantity: 150
     })
     console.log(`[TEST ${++testCount}] [PUT /admin/inventories/:id]`, res.data.message)
 
     // 36. Update Inventory - Negative Quantity
     await expectError(
       apiClient.put(`/admin/inventories/${inventoryId}`, {
-        stock_quantity: -10
+        stockQuantity: -10
       }),
       422,
-      `[TEST ${++testCount}] PUT /admin/inventories/:id with negative stock_quantity`
+      `[TEST ${++testCount}] PUT /admin/inventories/:id with negative stockQuantity`
     )
 
     // 37. Get Inventories by Product ID

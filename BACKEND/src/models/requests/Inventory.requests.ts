@@ -13,11 +13,11 @@ export interface SkuInventoryReqParams extends ParamsDictionary {
 }
 
 export interface CreateInventoryReqBody {
-  product_id: string
+  productID: string
   sku: string
-  stock_quantity: number
+  stockQuantity: number
 }
 
 export interface UpdateInventoryReqBody {
-  stock_quantity: number
+  stockQuantity: number
 }

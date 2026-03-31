@@ -2,9 +2,9 @@ import { ObjectId } from 'mongodb'
 
 interface UserActivityLogType {
   _id?: ObjectId
-  user_id?: string | null
-  action_type: string
-  target_id: string
+  userID?: string | null
+  actionType: string
+  targetID: string
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   metadata?: Record<string, any>
   timestamp?: Date
@@ -12,18 +12,18 @@ interface UserActivityLogType {
 
 export default class UserActivityLog {
   _id: ObjectId
-  user_id: string | null
-  action_type: string
-  target_id: string
+  userID: string | null
+  actionType: string
+  targetID: string
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   metadata: Record<string, any>
   timestamp: Date
 
   constructor(log: UserActivityLogType) {
     this._id = log._id || new ObjectId()
-    this.user_id = log.user_id || null
-    this.action_type = log.action_type
-    this.target_id = log.target_id
+    this.userID = log.userID || null
+    this.actionType = log.actionType
+    this.targetID = log.targetID
     this.metadata = log.metadata || {}
     this.timestamp = log.timestamp || new Date()
   }

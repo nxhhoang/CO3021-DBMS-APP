@@ -1,8 +1,8 @@
 const { MongoClient } = require('mongodb');
 const { Client } = require('pg');
 
-const MONGO_URI = 'mongodb://localhost:27017';
-const PG_URI = 'postgresql://postgres:admin123@localhost:5432/hybrid_db';
+const MONGO_URI = 'mongodb://localhost:27018';
+const PG_URI = 'postgresql://postgres:admin123@localhost:5433/hybrid_db';
 
 const inventoryData = [
     // LAPTOP
@@ -12,7 +12,7 @@ const inventoryData = [
     { slug: 'dell-xps-15', sku: 'DXPS-16-512-BLK', qty: 40 },
     { slug: 'dell-xps-15', sku: 'DXPS-32-1TB-BLK', qty: 25 },
     { slug: 'dell-xps-15', sku: 'DXPS-32-1TB-SLV', qty: 20 },
-    
+
     // ĐIỆN THOẠI
     { slug: 'iphone-15-pro', sku: 'IP15P-128-NAT', qty: 100 },
     { slug: 'iphone-15-pro', sku: 'IP15P-256-NAT', qty: 150 },
@@ -100,19 +100,19 @@ async function syncInventory() {
 
         console.log("Query sku list...");
         const products = await productsCollection.find({}, { projection: { _id: 1, slug: 1 } }).toArray();
-        
+
         const productMap = {};
         products.forEach(p => {
             productMap[p.slug] = p._id.toString();
         });
 
         console.log("About to inser data for PostgreSQL...");
-        
+
         let successCount = 0;
-        
+
         for (const item of inventoryData) {
             const productID = productMap[item.slug];
-            
+
             if (!productID) {
                 console.warn(`Skip: Cant find productID for slug '${item.slug}' from Mongo.`);
                 continue;

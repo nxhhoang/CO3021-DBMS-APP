@@ -96,7 +96,7 @@ async function runAllTests() {
     email: testEmail,
     password: 'WrongPassword'
   })
-  logResult('Login Wrong Password (Expected 401)', res, 401) 
+  logResult('Login Wrong Password (Expected 401)', res, 401)
 
   // 7. Get Profile (Success)
   res = await apiClient.get('/users/profile', { headers: { Authorization: `Bearer ${userToken}` } })
@@ -107,7 +107,7 @@ async function runAllTests() {
   logResult('Get Profile No Token (Expected 401)', res, 401)
 
   // 9. Add Address
-  res = await apiClient.post('/users/addresses', 
+  res = await apiClient.post('/users/addresses',
     { addressLine: '123 New St', city: 'HCM', district: 'Q1', isDefault: true },
     { headers: { Authorization: `Bearer ${userToken}` } }
   )
@@ -219,15 +219,15 @@ async function runAllTests() {
   // 26. Create Inventory for Product
   const sku = 'SKU-' + Date.now()
   res = await apiClient.post('/admin/inventories', {
-    product_id: productId,
+    productID: productId,
     sku,
-    stock_quantity: 10
+    stockQuantity: 10
   }, { headers: { Authorization: `Bearer ${adminToken}` } })
   logResult('Admin Add Product to Inventory (Postgres)', res, 200)
-  inventoryId = res.data.result?.inventory_id
+  inventoryId = res.data.result?.inventoryid || res.data.result?.inventoryID // postgres is lowercase without quotes
 
   // 27. Create Inventory Duplicate SKU
-  res = await apiClient.post('/admin/inventories', { product_id: productId, sku, stock_quantity: 5 }, { headers: { Authorization: `Bearer ${adminToken}` } })
+  res = await apiClient.post('/admin/inventories', { productID: productId, sku, stockQuantity: 5 }, { headers: { Authorization: `Bearer ${adminToken}` } })
   logResult('Add Duplicate SKU (Expected 409)', res, 409)
 
   // 28. Checkout Order (Scenario 7)
@@ -241,7 +241,7 @@ async function runAllTests() {
 
   // 29. Verify Stock Deduction
   res = await apiClient.get(`/inventories/sku/${sku}`)
-  const currentStock = res.data.result?.[0]?.stock_quantity
+  const currentStock = res.data.result?.[0]?.stockQuantity
   logResult('Verify Stock Deduction (Postgres Logic)', res, 200)
   if (currentStock !== 8) {
     console.error(`      [FAIL] [LOGIC] Stock deduction failed. Expected 8, got ${currentStock}`)
@@ -253,7 +253,7 @@ async function runAllTests() {
     paymentMethod: 'COD',
     items: [{ productId: productId, productName: 'Check-out Product', sku, quantity: 10, unitPrice: 500000 }]
   }, { headers: { Authorization: `Bearer ${userToken}` } })
-  logResult('Order Checkout Out of Stock (Expected 409)', res, 409) 
+  logResult('Order Checkout Out of Stock (Expected 409)', res, 409)
 
   // 31. Order with Invalid Address
   res = await apiClient.post('/orders', { shippingAddressId: 9999, paymentMethod: 'COD', items: [] }, { headers: { Authorization: `Bearer ${userToken}` } })
@@ -264,7 +264,7 @@ async function runAllTests() {
   logResult('Query Inventory by Product ID', res, 200)
 
   // 33. Update Inventory Quantity Manual
-  res = await apiClient.put(`/admin/inventories/${inventoryId}`, { stock_quantity: 20 }, { headers: { Authorization: `Bearer ${adminToken}` } })
+  res = await apiClient.put(`/admin/inventories/${inventoryId}`, { stockQuantity: 20 }, { headers: { Authorization: `Bearer ${adminToken}` } })
   logResult('Admin Update Inventory Quantity', res, 200)
 
 
@@ -286,6 +286,8 @@ async function runAllTests() {
   logResult('Get Order Detail', res, 200)
 
   // 37. Admin Update Order Status (to DELIVERED)
+  // Transition to SHIPPED first then to DELIVERED to ensure strict flow compliance
+  await apiClient.put(`/admin/orders/${orderId}/status`, { status: 'SHIPPED' }, { headers: { Authorization: `Bearer ${adminToken}` } })
   res = await apiClient.put(`/admin/orders/${orderId}/status`, { status: 'DELIVERED' }, { headers: { Authorization: `Bearer ${adminToken}` } })
   logResult('Admin Set Order to DELIVERED', res, 200)
 

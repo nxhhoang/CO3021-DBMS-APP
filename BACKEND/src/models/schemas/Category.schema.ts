@@ -16,8 +16,8 @@ interface CategoryType {
   isActive?: boolean
   dynamicAttributes?: DynamicAttribute[]
   variantAttributes?: DynamicAttribute[]
-  created_at?: Date
-  updated_at?: Date
+  createdAt?: Date
+  updatedAt?: Date
 }
 
 export default class Category {
@@ -28,8 +28,8 @@ export default class Category {
   isActive: boolean
   dynamicAttributes: DynamicAttribute[]
   variantAttributes: DynamicAttribute[]
-  created_at: Date
-  updated_at: Date
+  createdAt: Date
+  updatedAt: Date
 
   constructor(category: CategoryType) {
     const date = new Date()
@@ -40,7 +40,7 @@ export default class Category {
     this.isActive = category.isActive !== undefined ? category.isActive : true
     this.dynamicAttributes = category.dynamicAttributes || []
     this.variantAttributes = category.variantAttributes || []
-    this.created_at = category.created_at || date
-    this.updated_at = category.updated_at || date
+    this.createdAt = category.createdAt || date
+    this.updatedAt = category.updatedAt || date
   }
 }

@@ -13,17 +13,17 @@ class ReviewService {
   }
 
   async getReviews(productId: string) {
-    return await this.collection.find({ product_id: new ObjectId(productId) }).toArray()
+    return await this.collection.find({ productID: new ObjectId(productId) }).toArray()
   }
 
   async createReview(productId: string, body: CreateReviewReqBody, userId: string, userName: string) {
     // Verified Purchase check: user must have a DELIVERED order containing this productId
     const purchaseCheck = await query(
       `SELECT 1
-       FROM orders o
-       JOIN order_items oi ON oi.order_id = o.order_id
-       WHERE o.user_id = $1
-         AND oi.product_id = $2
+       FROM ORDERS o
+       JOIN ITEMS oi ON oi.orderID = o.orderID
+       WHERE o.userID = $1
+         AND oi.productID = $2
          AND o.status = 'DELIVERED'
        LIMIT 1`,
       [userId, productId]
@@ -37,9 +37,9 @@ class ReviewService {
     }
 
     const newReview = new Review({
-      product_id: new ObjectId(productId),
-      user_id: userId,
-      user_name: userName,
+      productID: new ObjectId(productId),
+      userID: userId,
+      userName: userName,
       rating: body.rating,
       comment: body.comment,
       images: body.images || []
@@ -49,7 +49,7 @@ class ReviewService {
 
     // Wait for the query to ensure accurate aggregation
     const stats = await this.collection.aggregate([
-      { $match: { product_id: new ObjectId(productId) } },
+      { $match: { productID: new ObjectId(productId) } },
       { $group: { _id: null, avgRating: { $avg: '$rating' }, totalReviews: { $sum: 1 } } }
     ]).toArray()
 

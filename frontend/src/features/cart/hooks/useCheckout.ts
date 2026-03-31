@@ -59,9 +59,9 @@ export const useCheckout = (selectedItems: CartItem[]) => {
           productName: item.productName,
           sku: item.sku,
           quantity: item.quantity,
-          unitPrice: item.unitPrice,
+          unitPrice: item.basePrice,
         })),
-      };
+      }
 
       const res = await orderService.createOrder(payload);
 

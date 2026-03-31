@@ -1,17 +1,22 @@
 import { Button } from '@/components/ui/button';
-import { CartItem } from '@/types/cart.types';
+import { CartItem } from '@/types/cart.types'; // Đảm bảo CartItem đã có sku, skuPrice, stockQuantity
 import { Card, CardContent } from '@/components/ui/card';
 import { Trash } from 'lucide-react';
 import formatVND from '@/features/cart/utils/formatVND';
 import QuantitySelector from './QuantitySelector';
 import { Checkbox } from '@/components/ui/checkbox';
 
+// Mở rộng CartItem nếu type global chưa có stockQuantity
+interface CartItemWithStock extends CartItem {
+  stockQuantity: number; 
+}
+
 interface ItemCardProps {
-  item: CartItem;
-  updateQuantity: (sku: string, delta: number) => void;
-  removeItem: (sku: string) => void;
-  isSelected: boolean;
-  onToggle: () => void;
+  item: CartItemWithStock
+  updateQuantity: (sku: string, newQuantity: number) => void
+  removeItem: (sku: string) => void
+  isSelected: boolean
+  onToggle: (checked: boolean) => void // Chuẩn hóa type của onCheckedChange
 }
 
 const ItemCard = ({
@@ -21,18 +26,28 @@ const ItemCard = ({
   isSelected,
   onToggle,
 }: ItemCardProps) => {
+  
+  const handleQuantityChange = (delta: number) => {
+    const newQty = item.quantity + delta
+    if (newQty >= 1 && newQty <= item.stockQuantity) {
+      updateQuantity(item.sku, newQty)
+    }
+  }
+
   return (
     <div className="flex items-start gap-4">
-      {/* Checkbox chọn sản phẩm */}
-      <Checkbox
-        checked={isSelected}
-        onCheckedChange={onToggle}
-        className="mt-6"
-      />
-
       <Card className="group hover:border-primary/20 flex-1 transition-all">
         <CardContent className="p-4">
           <div className="flex gap-4">
+            {/* Checkbox chọn sản phẩm */}
+            <div className="flex items-center">
+              <Checkbox
+                checked={isSelected}
+                onCheckedChange={(checked) => onToggle(!!checked)}
+                id={`select-${item.sku}`}
+              />
+            </div>
+
             {/* Product Image */}
             <div className="bg-secondary relative h-24 w-24 shrink-0 overflow-hidden rounded-lg border">
               {item.image ? (
@@ -65,12 +80,17 @@ const ItemCard = ({
                     <Trash className="h-4 w-4" />
                   </Button>
                 </div>
+                {/* Hiển thị SKU nếu cần */}
+                <p className="text-muted-foreground text-xs uppercase">
+                  SKU: {item.sku}
+                </p>
               </div>
 
               <div className="flex items-end justify-between">
                 <div className="space-y-1">
+                  {/* Sửa từ unitPrice -> skuPrice cho đúng Type hệ thống */}
                   <p className="text-primary text-lg font-bold">
-                    {formatVND(item.unitPrice)}
+                    {formatVND(item.skuPrice)}
                   </p>
 
                   <p
@@ -90,8 +110,8 @@ const ItemCard = ({
                 <QuantitySelector
                   quantity={item.quantity}
                   stockQuantity={item.stockQuantity}
-                  onDecrease={() => updateQuantity(item.sku, -1)}
-                  onIncrease={() => updateQuantity(item.sku, 1)}
+                  onDecrease={() => handleQuantityChange(-1)}
+                  onIncrease={() => handleQuantityChange(1)}
                 />
               </div>
             </div>
@@ -99,7 +119,7 @@ const ItemCard = ({
         </CardContent>
       </Card>
     </div>
-  );
+  )
 };
 
-export default ItemCard;
+export default ItemCard

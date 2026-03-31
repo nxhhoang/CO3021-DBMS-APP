@@ -80,7 +80,7 @@ export const CheckoutDialogs = ({
 
               {isAddressLoading ? (
                 <div className="space-y-2">
-                  <Skeleton className="h-4 w-[150px]" />
+                  <Skeleton className="h-4 w-37.5" />
                   <Skeleton className="h-4 w-full" />
                 </div>
               ) : address ? (
@@ -128,7 +128,7 @@ export const CheckoutDialogs = ({
               Hủy
             </Button>
             <Button
-              className="min-w-[140px]"
+              className="min-w-35"
               disabled={isLoading || !address}
               onClick={onConfirm}
             >

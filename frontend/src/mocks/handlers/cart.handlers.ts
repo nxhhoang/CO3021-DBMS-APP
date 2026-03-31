@@ -3,121 +3,123 @@ import {
   SyncCartRequest,
   SyncCartResponse,
   CartItem,
+  UpdateCartItemRequest,
 } from '@/types/cart.types';
 import { BASE_URL } from '@/constants/api';
 import { MOCK_CART } from '../data/cart';
 import { MOCK_PRODUCTS } from '../data/products';
-import { MOCK_INVENTORY } from '../data/inventory'; // Giả định file inventory chứa MOCK_INVENTORY
+import { MOCK_INVENTORY } from '../data/inventory';
 
 export const cartHandlers = [
-  // POST /cart/sync
+  // 1. POST /cart/sync
   http.post(`${BASE_URL}/cart/sync`, async ({ request }) => {
     const body = (await request.json()) as SyncCartRequest;
 
-    // Tạo bản sao để xử lý merged
+    // Khởi tạo danh sách mới dựa trên dữ liệu hiện có hoặc rỗng tùy logic business
+    // Ở đây tôi giữ lại data cũ và merge thêm data mới từ request
     const merged: CartItem[] = [...MOCK_CART.items];
 
     for (const reqItem of body.items) {
-      // 1. Tìm thông tin sản phẩm (Mongo Logic)
       const product = MOCK_PRODUCTS.find((p) => p._id === reqItem.productID);
-      if (!product) continue;
-
-      // 2. Tìm thông tin tồn kho và giá biến thể (Postgres Logic)
       const inventory = MOCK_INVENTORY.find((inv) => inv.sku === reqItem.sku);
-      if (!inventory) continue;
 
-      const existing = merged.find((i) => i.sku === reqItem.sku);
+      if (!product || !inventory) continue;
 
-      if (existing) {
-        // Cập nhật số lượng và đồng bộ giá mới nhất
-        existing.quantity += reqItem.quantity;
-        existing.unitPrice = inventory.sku_price;
-        existing.stockQuantity = inventory.stockQuantity;
+      const existingIndex = merged.findIndex((i) => i.sku === reqItem.sku);
+
+      if (existingIndex > -1) {
+        // Cập nhật số lượng và giá mới nhất
+        merged[existingIndex].quantity += reqItem.quantity;
+        merged[existingIndex].skuPrice = inventory.sku_price;
       } else {
-        // Thêm mới item vào giỏ hàng
+        // Thêm mới item
         merged.push({
           productID: product._id,
           sku: reqItem.sku,
           quantity: reqItem.quantity,
           productName: product.name,
-          image: product.images[0],
-          stockQuantity: inventory.stockQuantity,
-          unitPrice: inventory.sku_price, // Lấy giá của SKU thay vì basePrice
+          image: product.images[0] || '',
+          basePrice: product.base_price, // Giá gốc từ bảng sản phẩm
+          skuPrice: inventory.sku_price, // Giá biến thể từ kho
         });
       }
     }
 
-    const response: SyncCartResponse = {
-      message: 'Đồng bộ giỏ hàng thành công',
-      data: {
-        cartTotal: merged.reduce(
-          (total, item) => total + item.unitPrice * item.quantity,
-          0,
-        ),
-        items: merged,
-      },
-    };
+    // Tính tổng tiền
+    const cartTotal = merged.reduce(
+      (total, item) => total + item.skuPrice * item.quantity,
+      0,
+    );
 
     MOCK_CART.items = merged;
-    return HttpResponse.json(response);
+    MOCK_CART.cartTotal = cartTotal;
+
+    return HttpResponse.json({
+      message: 'Đồng bộ giỏ hàng thành công',
+      data: {
+        cartTotal,
+        items: merged,
+      },
+    });
   }),
 
-  // PUT /cart/items/:sku
+  // 2. PUT /cart/items/:sku
   http.put(`${BASE_URL}/cart/items/:sku`, async ({ request, params }) => {
     const { sku } = params;
-    const body = (await request.json()) as {
-      quantity?: number;
-      newSku?: string;
-    };
+    const body = (await request.json()) as UpdateCartItemRequest;
 
     const itemIndex = MOCK_CART.items.findIndex((i) => i.sku === sku);
-
     if (itemIndex === -1) {
       return HttpResponse.json(
-        { message: 'Sản phẩm không tồn tại trong giỏ hàng' },
+        { message: 'Sản phẩm không có trong giỏ' },
         { status: 404 },
       );
     }
 
     const item = MOCK_CART.items[itemIndex];
 
-    // Trường hợp đổi sang SKU khác (ví dụ chọn màu khác cho cùng 1 sản phẩm)
+    // Trường hợp đổi SKU (đổi màu sắc/kích thước)
     if (body.newSku && body.newSku !== sku) {
-      const newInventory = MOCK_INVENTORY.find(
-        (inv) => inv.sku === body.newSku,
-      );
-
-      if (!newInventory) {
+      const newInv = MOCK_INVENTORY.find((inv) => inv.sku === body.newSku);
+      if (!newInv) {
         return HttpResponse.json(
           { message: 'Biến thể mới không tồn tại' },
           { status: 400 },
         );
       }
 
-      const existing = MOCK_CART.items.find((i) => i.sku === body.newSku);
+      // Kiểm tra xem SKU mới đã có trong giỏ chưa
+      const existingNewSkuIndex = MOCK_CART.items.findIndex(
+        (i) => i.sku === body.newSku,
+      );
 
-      if (existing) {
-        existing.quantity += body.quantity ?? item.quantity;
+      if (existingNewSkuIndex > -1) {
+        // Nếu đã có, cộng dồn vào SKU đó và xóa SKU cũ
+        MOCK_CART.items[existingNewSkuIndex].quantity +=
+          body.quantity ?? item.quantity;
         MOCK_CART.items.splice(itemIndex, 1);
       } else {
+        // Nếu chưa có, cập nhật thông tin SKU cũ thành mới
         item.sku = body.newSku;
-        item.unitPrice = newInventory.sku_price;
-        item.stockQuantity = newInventory.stockQuantity;
+        item.skuPrice = newInv.sku_price;
         if (body.quantity !== undefined) item.quantity = body.quantity;
       }
     }
-    // Chỉ cập nhật số lượng
+    // Chỉ cập nhật số lượng cho SKU hiện tại
     else if (body.quantity !== undefined) {
       item.quantity = body.quantity;
     }
 
-    return HttpResponse.json({
-      message: 'Cập nhật giỏ hàng thành công',
-      data: null,
-    });
+    // Cập nhật lại tổng tiền sau khi thay đổi
+    MOCK_CART.cartTotal = MOCK_CART.items.reduce(
+      (t, i) => t + i.skuPrice * i.quantity,
+      0,
+    );
+
+    return HttpResponse.json({ message: 'Cập nhật thành công', data: null });
   }),
 
-  // DELETE /cart/items/:sku
+  // 3. DELETE /cart/items/:sku
   http.delete(`${BASE_URL}/cart/items/:sku`, async ({ params }) => {
     const { sku } = params;
     const initialLength = MOCK_CART.items.length;
@@ -126,14 +128,16 @@ export const cartHandlers = [
 
     if (MOCK_CART.items.length === initialLength) {
       return HttpResponse.json(
-        { message: 'Sản phẩm không tồn tại trong giỏ hàng' },
+        { message: 'Sản phẩm không tồn tại' },
         { status: 404 },
       );
     }
 
-    return HttpResponse.json({
-      message: 'Xóa sản phẩm khỏi giỏ hàng thành công',
-      data: null,
-    });
+    MOCK_CART.cartTotal = MOCK_CART.items.reduce(
+      (t, i) => t + i.skuPrice * i.quantity,
+      0,
+    );
+
+    return HttpResponse.json({ message: 'Xóa thành công', data: null });
   }),
 ];

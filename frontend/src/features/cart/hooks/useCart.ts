@@ -22,10 +22,7 @@ export const useCart = () => {
     const item = items.find((i) => i.sku === sku);
     if (!item) return;
 
-    const newQty = Math.max(
-      1,
-      Math.min(item.quantity + delta, item.stockQuantity),
-    );
+    const newQty = Math.max(1, Math.min(item.quantity + delta, 99))
 
     updateQuantityStore(sku, newQty);
 

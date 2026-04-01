@@ -26,7 +26,7 @@ const ProductCard = ({ product }: { product: ProductResponse }) => {
         <h3 className="line-clamp-2 text-sm font-medium">{product.name}</h3>
 
         <p className="text-primary text-sm font-bold">
-          {product.base_price.toLocaleString()}$
+          {product.basePrice.toLocaleString()}$
         </p>
 
         <div className="text-muted-foreground flex items-center gap-1 text-xs">
@@ -44,7 +44,7 @@ const ProductCard = ({ product }: { product: ProductResponse }) => {
         </Button>
       </CardFooter>
     </Card>
-  );
+  )
 };
 
 export default ProductCard;

@@ -46,7 +46,7 @@ const OrderSummary = ({ selectedItems, totalPrice }: OrderSummaryProps) => {
                 <p className="text-muted-foreground mb-2 text-sm font-semibold">
                   Sản phẩm đã chọn ({selectedItems.length})
                 </p>
-                <div className="custom-scrollbar max-h-[300px] overflow-y-auto pr-2">
+                <div className="custom-scrollbar max-h-75 overflow-y-auto pr-2">
                   <OrderItemsList items={selectedItems} />
                 </div>
               </div>
@@ -104,7 +104,7 @@ const OrderSummary = ({ selectedItems, totalPrice }: OrderSummaryProps) => {
         setOrderID={setOrderID} // Truyền xuống để Dialog có thể reset trạng thái đơn hàng
       />
     </div>
-  );
+  )
 };
 
 export default OrderSummary;

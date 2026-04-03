@@ -99,10 +99,10 @@ export default function ImageUrlPreview({
   return (
     <FieldGroup>
       {/* Thay đổi cấu trúc Header ở đây */}
-      <div className="mb-2 flex items-center justify-between">
-        <FieldLabel className="mb-0">Danh sách URL hình ảnh</FieldLabel>
+      <div className="flex items-center justify-between">
+        <FieldLabel>Danh sách URL hình ảnh</FieldLabel>
 
-        {images.length > 0 && (
+        {images.some((url) => url.trim() !== '') && (
           <Button
             type="button"
             variant="ghost"
@@ -122,7 +122,7 @@ export default function ImageUrlPreview({
 
       {/* 🔽 Input */}
       <Input
-        placeholder="Nhập URL ảnh rồi nhấn Enter"
+        placeholder="Nhập URL ảnh"
         value={inputValue}
         onChange={(e) => {
           setInputValue(e.target.value)
@@ -137,8 +137,16 @@ export default function ImageUrlPreview({
         disabled={checking}
       />
 
-      {/* 🔴 Error / trạng thái */}
-      {error && <FieldError>{error}</FieldError>}
+      {/* 🔴 Error / trạng thái - Giữ chỗ cố định */}
+      <div className="h-auto">
+        {error ? (
+          <FieldError className="text-xs leading-none">{error}</FieldError>
+        ) : checking ? (
+          <p className="text-muted-foreground animate-pulse text-xs">
+            Đang kiểm tra ảnh...
+          </p>
+        ) : null}
+      </div>
 
       {/* 🔥 Thumbnail list */}
       <div className="mb-4 flex flex-wrap gap-3">
@@ -176,15 +184,19 @@ export default function ImageUrlPreview({
         )}
       </div>
       {/* 🔥 Preview lớn */}
-      {selectedImage && (
-        <div className="bg-muted mb-4 h-60 w-full overflow-hidden rounded-lg border">
+      <div className="bg-muted mb-4 flex h-80 w-full items-center justify-center overflow-hidden rounded-lg border">
+        {selectedImage ? (
           <img
             src={selectedImage}
             alt="Selected preview"
-            className="h-full w-full object-contain"
+            className="h-full w-full object-contain transition-all"
           />
-        </div>
-      )}
+        ) : (
+          <div className="text-muted-foreground flex flex-col items-center text-sm italic">
+            Chưa có ảnh nào được chọn
+          </div>
+        )}
+      </div>
     </FieldGroup>
   )
 }

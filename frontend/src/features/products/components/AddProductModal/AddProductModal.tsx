@@ -47,9 +47,25 @@ export default function AddProductModal({
     basePrice: 0,
     slug: '',
     description: '',
-    images: [''],
-    attributes: { size: '', material: '' },
+    images: [],
+    attributes: {},
   })
+
+  // Tìm danh mục đang được chọn để lấy dynamicAttributes
+  const selectedCategory = categories.find(
+    (cat) => cat._id === formData.categoryID,
+  )
+
+  // Hàm cập nhật attribute động
+  const handleAttributeChange = (key: string, value: any) => {
+    setFormData((prev) => ({
+      ...prev,
+      attributes: {
+        ...prev.attributes,
+        [key]: value,
+      },
+    }))
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -91,100 +107,179 @@ export default function AddProductModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent>
+      <DialogContent className="max-h-[95vh] overflow-y-auto sm:max-w-175 lg:max-w-250">
         <DialogHeader>
           <DialogTitle>Thêm sản phẩm mới</DialogTitle>
         </DialogHeader>
 
-        <FieldGroup onSubmit={handleSubmit}>
-          <ImageUrlPreview
-            images={formData.images}
-            onChange={(newImages) =>
-              setFormData({ ...formData, images: newImages })
-            }
-          />
-          <div className="grid gap-4 md:grid-cols-2">
-            <Field>
-              <FieldLabel>Tên sản phẩm</FieldLabel>
-              <Input
-                required
-                value={formData.name}
-                onChange={(e) =>
-                  setFormData({ ...formData, name: e.target.value })
+        <form onSubmit={handleSubmit}>
+          <FieldGroup className="grid grid-cols-1 items-start gap-10 lg:grid-cols-2">
+            {/* CỘT TRÁI: Hình ảnh */}
+            <div className="space-y-4">
+              <ImageUrlPreview
+                images={formData.images}
+                onChange={(newImages) =>
+                  setFormData({ ...formData, images: newImages })
                 }
               />
-            </Field>
-            <Field>
-              <FieldLabel>Slug</FieldLabel>
-              <Input
-                required
-                value={formData.slug}
-                onChange={(e) =>
-                  setFormData({ ...formData, slug: e.target.value })
-                }
-              />
-            </Field>
+            </div>
 
-            <Field>
-              <FieldLabel>Giá cơ bản (VNĐ)</FieldLabel>
-              <Input
-                type="number"
-                required
-                value={formData.basePrice}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    basePrice: Number(e.target.value),
-                  })
-                }
-              />
-            </Field>
+            {/* CỘT PHẢI: Thông tin và Thuộc tính */}
+            <div className="space-y-6">
+              <div className="grid gap-4 md:grid-cols-2">
+                <Field>
+                  <FieldLabel>Tên sản phẩm</FieldLabel>
+                  <Input
+                    required
+                    value={formData.name}
+                    onChange={(e) =>
+                      setFormData({ ...formData, name: e.target.value })
+                    }
+                  />
+                </Field>
+                <Field>
+                  <FieldLabel>Slug</FieldLabel>
+                  <Input
+                    required
+                    value={formData.slug}
+                    onChange={(e) =>
+                      setFormData({ ...formData, slug: e.target.value })
+                    }
+                  />
+                </Field>
+              </div>
 
-            <Field>
-              <FieldLabel>Danh mục</FieldLabel>
-              <Select
-                required
-                value={formData.categoryID}
-                onValueChange={(value) =>
-                  setFormData({ ...formData, categoryID: value })
-                }
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Chọn danh mục" />
-                </SelectTrigger>
-                <SelectContent>
-                  {categories.map((cat) => (
-                    <SelectItem key={cat._id} value={cat._id}>
-                      {cat.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </Field>
-          </div>
+              <div className="grid gap-4 md:grid-cols-2">
+                <Field>
+                  <FieldLabel>Giá cơ bản (VNĐ)</FieldLabel>
+                  <Input
+                    type="number"
+                    required
+                    value={formData.basePrice}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        basePrice: Number(e.target.value),
+                      })
+                    }
+                  />
+                </Field>
 
-          <Field>
-            <FieldLabel>Mô tả sản phẩm</FieldLabel>
-            <Textarea
-              value={formData.description}
-              onChange={(e) =>
-                setFormData({ ...formData, description: e.target.value })
-              }
-              className="min-h-25 resize-none"
-            />
-          </Field>
-        </FieldGroup>
-        <DialogFooter>
-          <DialogClose asChild>
-            <Button type="button" variant="outline">
-              Hủy
+                <Field>
+                  <FieldLabel>Danh mục</FieldLabel>
+                  <Select
+                    required
+                    value={formData.categoryID}
+                    onValueChange={(value) =>
+                      setFormData({
+                        ...formData,
+                        categoryID: value,
+                        attributes: {},
+                      })
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Chọn danh mục" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {categories.map((cat) => (
+                        <SelectItem key={cat._id} value={cat._id}>
+                          {cat.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </Field>
+              </div>
+
+              {/* RENDER DYNAMIC ATTRIBUTES KHI CHỌN CATEGORY */}
+              {selectedCategory &&
+                selectedCategory.dynamicAttributes.length > 0 && (
+                  <div className="border-primary/30 bg-primary/5 rounded-lg border border-dashed p-4">
+                    <h3 className="text-primary mb-4 text-xs font-bold tracking-widest uppercase">
+                      Thông số: {selectedCategory.name}
+                    </h3>
+                    <div className="grid gap-4 md:grid-cols-2">
+                      {selectedCategory.dynamicAttributes.map((attr) => (
+                        <Field key={attr.key}>
+                          <FieldLabel className="text-xs">
+                            {attr.label}{' '}
+                            {attr.isRequired && (
+                              <span className="text-destructive">*</span>
+                            )}
+                          </FieldLabel>
+
+                          {attr.options && attr.options.length > 0 ? (
+                            <Select
+                              required={attr.isRequired}
+                              value={String(
+                                formData.attributes[attr.key] || '',
+                              )}
+                              onValueChange={(val) =>
+                                handleAttributeChange(attr.key, val)
+                              }
+                            >
+                              <SelectTrigger className="h-9">
+                                <SelectValue placeholder="Chọn..." />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {attr.options.map((opt) => (
+                                  <SelectItem key={opt} value={opt}>
+                                    {opt}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          ) : (
+                            <Input
+                              className="h-9"
+                              type={
+                                attr.dataType === 'number' ? 'number' : 'text'
+                              }
+                              required={attr.isRequired}
+                              value={String(
+                                formData.attributes[attr.key] ?? '',
+                              )}
+                              onChange={(e) =>
+                                handleAttributeChange(
+                                  attr.key,
+                                  attr.dataType === 'number'
+                                    ? Number(e.target.value)
+                                    : e.target.value,
+                                )
+                              }
+                            />
+                          )}
+                        </Field>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+              <Field>
+                <FieldLabel>Mô tả sản phẩm</FieldLabel>
+                <Textarea
+                  value={formData.description}
+                  onChange={(e) =>
+                    setFormData({ ...formData, description: e.target.value })
+                  }
+                  className="min-h-[120px] resize-none"
+                />
+              </Field>
+            </div>
+          </FieldGroup>
+
+          <DialogFooter className="mt-8">
+            <DialogClose asChild>
+              <Button type="button" variant="outline">
+                Hủy
+              </Button>
+            </DialogClose>
+            <Button type="submit" disabled={loading}>
+              {loading ? 'Đang xử lý...' : 'Xác nhận tạo sản phẩm'}
             </Button>
-          </DialogClose>
-
-          <Button type="submit" disabled={loading} onClick={handleSubmit}>
-            {loading ? 'Đang xử lý...' : 'Xác nhận tạo sản phẩm'}
-          </Button>
-        </DialogFooter>
+          </DialogFooter>
+        </form>
       </DialogContent>
     </Dialog>
   )

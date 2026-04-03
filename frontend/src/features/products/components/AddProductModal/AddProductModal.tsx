@@ -4,11 +4,6 @@ import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
-import {
-  CreateProductRequest,
-  CreateProductResponse,
-} from '@/types/product.types'
-import { Category } from '@/types/category.types'
 import ImageUrlPreview from './ImageUrlPreview'
 
 import {
@@ -19,7 +14,13 @@ import {
   DialogClose,
   DialogFooter,
 } from '@/components/ui/dialog'
-import { Field, FieldGroup, FieldLabel } from '@/components/ui/field'
+
+import {
+  Field,
+  FieldGroup,
+  FieldLabel,
+  FieldError,
+} from '@/components/ui/field'
 import {
   Select,
   SelectContent,
@@ -28,6 +29,18 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 
+import { useForm, Controller } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import * as z from 'zod'
+import { Category } from '@/types/category.types'
+import { productSchema } from './schema'
+import { productService } from '@/services/product.service'
+
+/** ---------- Zod Schema ---------- */
+
+export type ProductFormValues = z.infer<typeof productSchema>
+
+/** ---------- Component ---------- */
 interface AddProductModalProps {
   isOpen: boolean
   onClose: () => void
@@ -41,65 +54,51 @@ export default function AddProductModal({
 }: AddProductModalProps) {
   const [loading, setLoading] = useState(false)
 
-  const [formData, setFormData] = useState<CreateProductRequest>({
-    name: '',
-    categoryID: '',
-    basePrice: 0,
-    slug: '',
-    description: '',
-    images: [],
-    attributes: {},
+  const {
+    register,
+    handleSubmit,
+    control,
+    watch,
+    formState: { errors },
+  } = useForm({
+    resolver: zodResolver(productSchema),
+    defaultValues: {
+      name: '',
+      categoryID: '',
+      basePrice: 0,
+      slug: '',
+      description: '',
+      images: [],
+      attributes: {},
+    },
   })
 
-  // Tìm danh mục đang được chọn để lấy dynamicAttributes
   const selectedCategory = categories.find(
-    (cat) => cat._id === formData.categoryID,
+    (cat) => cat._id === watch('categoryID'),
   )
 
-  // Hàm cập nhật attribute động
-  const handleAttributeChange = (key: string, value: any) => {
-    setFormData((prev) => ({
-      ...prev,
-      attributes: {
-        ...prev.attributes,
-        [key]: value,
-      },
-    }))
-  }
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+  const onSubmit = async (data: ProductFormValues) => {
     setLoading(true)
-
-    const payload = {
-      ...formData,
-      images: formData.images.filter((url) => url.trim() !== ''),
-    }
-
     try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/admin/products`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
-          },
-          body: JSON.stringify(payload),
-        },
-      )
-
-      const result = (await response.json()) as CreateProductResponse
-
-      if (response.ok) {
-        alert(result.message)
-        onClose()
-        window.location.reload()
-      } else {
-        alert(result.message || 'Có lỗi xảy ra')
+      // Chuẩn hóa dữ liệu hình ảnh
+      const payload = {
+        ...data,
+        images: data.images.filter((url) => url.trim() !== ''),
       }
-    } catch (error) {
-      console.error(error)
+
+      // Gọi API qua ProductService
+      const res = await productService.createProduct(payload)
+
+      // Thông báo thành công
+      alert(res.message || 'Tạo sản phẩm thành công!')
+      onClose() // Đóng modal
+      window.location.reload() // Tải lại trang để cập nhật danh sách
+    } catch (error: any) {
+      // Xử lý lỗi
+      const errorMsg =
+        error.response?.data?.message || 'Có lỗi xảy ra khi tạo sản phẩm'
+      alert(errorMsg)
+      console.error('Create Product Error:', error)
     } finally {
       setLoading(false)
     }
@@ -112,16 +111,23 @@ export default function AddProductModal({
           <DialogTitle>Thêm sản phẩm mới</DialogTitle>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit}>
-          <FieldGroup className="grid grid-cols-1 items-start gap-10 lg:grid-cols-2">
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <FieldGroup className="grid grid-cols-1 gap-10 lg:grid-cols-2">
             {/* CỘT TRÁI: Hình ảnh */}
             <div className="space-y-4">
-              <ImageUrlPreview
-                images={formData.images}
-                onChange={(newImages) =>
-                  setFormData({ ...formData, images: newImages })
-                }
+              <Controller
+                control={control}
+                name="images"
+                render={({ field }) => (
+                  <ImageUrlPreview
+                    images={field.value}
+                    onChange={field.onChange}
+                  />
+                )}
               />
+              {errors.images && (
+                <FieldError>{errors.images.message}</FieldError>
+              )}
             </div>
 
             {/* CỘT PHẢI: Thông tin và Thuộc tính */}
@@ -129,70 +135,60 @@ export default function AddProductModal({
               <div className="grid gap-4 md:grid-cols-2">
                 <Field>
                   <FieldLabel>Tên sản phẩm</FieldLabel>
-                  <Input
-                    required
-                    value={formData.name}
-                    onChange={(e) =>
-                      setFormData({ ...formData, name: e.target.value })
-                    }
-                  />
+                  <Input {...register('name')} />
+                  {errors.name && (
+                    <FieldError>{errors.name.message}</FieldError>
+                  )}
                 </Field>
+
                 <Field>
                   <FieldLabel>Slug</FieldLabel>
-                  <Input
-                    required
-                    value={formData.slug}
-                    onChange={(e) =>
-                      setFormData({ ...formData, slug: e.target.value })
-                    }
-                  />
+                  <Input {...register('slug')} />
+                  {errors.slug && (
+                    <FieldError>{errors.slug.message}</FieldError>
+                  )}
                 </Field>
               </div>
 
               <div className="grid gap-4 md:grid-cols-2">
                 <Field>
                   <FieldLabel>Giá cơ bản (VNĐ)</FieldLabel>
-                  <Input
-                    type="number"
-                    required
-                    value={formData.basePrice}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        basePrice: Number(e.target.value),
-                      })
-                    }
-                  />
+                  <Input type="number" {...register('basePrice')} />
+                  {errors.basePrice && (
+                    <FieldError>{errors.basePrice.message}</FieldError>
+                  )}
                 </Field>
 
                 <Field>
                   <FieldLabel>Danh mục</FieldLabel>
-                  <Select
-                    required
-                    value={formData.categoryID}
-                    onValueChange={(value) =>
-                      setFormData({
-                        ...formData,
-                        categoryID: value,
-                        attributes: {},
-                      })
-                    }
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Chọn danh mục" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {categories.map((cat) => (
-                        <SelectItem key={cat._id} value={cat._id}>
-                          {cat.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <Controller
+                    control={control}
+                    name="categoryID"
+                    render={({ field }) => (
+                      <Select
+                        value={field.value}
+                        onValueChange={field.onChange}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Chọn danh mục" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {categories.map((cat) => (
+                            <SelectItem key={cat._id} value={cat._id}>
+                              {cat.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    )}
+                  />
+                  {errors.categoryID && (
+                    <FieldError>{errors.categoryID.message}</FieldError>
+                  )}
                 </Field>
               </div>
 
-              {/* RENDER DYNAMIC ATTRIBUTES KHI CHỌN CATEGORY */}
+              {/* Dynamic attributes */}
               {selectedCategory &&
                 selectedCategory.dynamicAttributes.length > 0 && (
                   <div className="border-primary/30 bg-primary/5 rounded-lg border border-dashed p-4">
@@ -201,56 +197,39 @@ export default function AddProductModal({
                     </h3>
                     <div className="grid gap-4 md:grid-cols-2">
                       {selectedCategory.dynamicAttributes.map((attr) => (
-                        <Field key={attr.key}>
-                          <FieldLabel className="text-xs">
-                            {attr.label}{' '}
-                            {attr.isRequired && (
-                              <span className="text-destructive">*</span>
-                            )}
-                          </FieldLabel>
-
-                          {attr.options && attr.options.length > 0 ? (
-                            <Select
-                              required={attr.isRequired}
-                              value={String(
-                                formData.attributes[attr.key] || '',
-                              )}
-                              onValueChange={(val) =>
-                                handleAttributeChange(attr.key, val)
-                              }
-                            >
-                              <SelectTrigger className="h-9">
-                                <SelectValue placeholder="Chọn..." />
-                              </SelectTrigger>
-                              <SelectContent>
-                                {attr.options.map((opt) => (
-                                  <SelectItem key={opt} value={opt}>
-                                    {opt}
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                          ) : (
-                            <Input
-                              className="h-9"
-                              type={
-                                attr.dataType === 'number' ? 'number' : 'text'
-                              }
-                              required={attr.isRequired}
-                              value={String(
-                                formData.attributes[attr.key] ?? '',
-                              )}
-                              onChange={(e) =>
-                                handleAttributeChange(
-                                  attr.key,
-                                  attr.dataType === 'number'
-                                    ? Number(e.target.value)
-                                    : e.target.value,
-                                )
-                              }
-                            />
-                          )}
-                        </Field>
+                        <Controller
+                          key={attr.key}
+                          control={control}
+                          name={`attributes.${attr.key}`}
+                          render={({ field }) =>
+                            attr.options?.length ? (
+                              <Select
+                                value={field.value || ''}
+                                onValueChange={field.onChange}
+                              >
+                                <SelectTrigger className="h-9">
+                                  <SelectValue placeholder="Chọn..." />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  {attr.options.map((opt) => (
+                                    <SelectItem key={opt} value={opt}>
+                                      {opt}
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                            ) : (
+                              <Input
+                                className="h-9"
+                                type={
+                                  attr.dataType === 'number' ? 'number' : 'text'
+                                }
+                                value={field.value || ''}
+                                onChange={field.onChange}
+                              />
+                            )
+                          }
+                        />
                       ))}
                     </div>
                   </div>
@@ -259,12 +238,12 @@ export default function AddProductModal({
               <Field>
                 <FieldLabel>Mô tả sản phẩm</FieldLabel>
                 <Textarea
-                  value={formData.description}
-                  onChange={(e) =>
-                    setFormData({ ...formData, description: e.target.value })
-                  }
+                  {...register('description')}
                   className="min-h-[120px] resize-none"
                 />
+                {errors.description && (
+                  <FieldError>{errors.description.message}</FieldError>
+                )}
               </Field>
             </div>
           </FieldGroup>

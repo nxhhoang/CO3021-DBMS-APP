@@ -239,7 +239,7 @@ export default function AddProductModal({
                 <FieldLabel>Mô tả sản phẩm</FieldLabel>
                 <Textarea
                   {...register('description')}
-                  className="min-h-[120px] resize-none"
+                  className="min-h-30 resize-none"
                 />
                 {errors.description && (
                   <FieldError>{errors.description.message}</FieldError>

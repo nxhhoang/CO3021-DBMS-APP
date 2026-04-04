@@ -1,92 +1,133 @@
 'use client'
 
-import { GetProductsRequest } from '@/types/product.types'
+import { useState } from 'react'
+import { Plus, FolderPlus, Package } from 'lucide-react'
+
+// Types & Hooks
+import { GetProductsRequest, ProductResponse } from '@/types/product.types'
 import useProducts from '@/features/products/hooks/useProducts'
-import ProductList from '@/features/products/components/ProductList'
-import FilterSidebar from '@/features/products/components/FilterSidebar'
 import useProductQueryParams from '@/features/products/hooks/useProductQueryParams'
 import useProductFilters from '@/features/products/hooks/useProductFilters'
 import useCategories from '@/features/products/hooks/useCategories'
-import { Plus, FolderPlus } from 'lucide-react'
-import { useEffect, useState } from 'react'
+
+// Components
+import ProductTable from '@/features/products/components/ProductTable'
+import FilterSidebar from '@/features/products/components/FilterSidebar'
 import AddProductModal from '@/features/products/components/AddProductModal/AddProductModal'
 import AddCategoryModal from '@/features/products/components/AddCategoryModal/AddCategoryModal'
+import EditProductModal from '@/features/products/components/EditProductModal/EditProductModal'
 
-export default function ProductsPage() {
+// shadcn
+import { Button } from '@/components/ui/button'
+
+export default function AdminProductsPage() {
   const params: GetProductsRequest = useProductQueryParams()
-  const { products, loading, message } = useProducts(params)
-  const { priceRange, setPriceRange, sort, setSort } = useProductFilters(params)
+  const { products, loading, refetch } = useProducts(params)
   const { categories } = useCategories()
+  const { priceRange, setPriceRange, sort, setSort } = useProductFilters(params)
 
-  // 1. Quản lý trạng thái role
-  const [role, setRole] = useState<string | null>(null)
-
-  // Quản lý trạng thái Modal
+  // State cho việc đóng/mở Modals
   const [isProductModalOpen, setIsProductModalOpen] = useState(false)
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false)
 
+  // State quản lý việc sửa sản phẩm
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false)
+  const [selectedProduct, setSelectedProduct] =
+    useState<ProductResponse | null>(null)
+
+  // Handler mở modal sửa và truyền dữ liệu sản phẩm vào
+  const handleEditProduct = (product: ProductResponse) => {
+    setSelectedProduct(product)
+    setIsEditModalOpen(true)
+  }
+
+  // Handler đóng modal sửa và dọn dẹp state
+  const handleCloseEditModal = () => {
+    setIsEditModalOpen(false)
+    setSelectedProduct(null)
+  }
+
   return (
     <div className="container mx-auto min-h-screen px-4 py-6 md:py-10">
-      <div className="mb-8 flex items-center justify-between">
+      {/* Header */}
+      <div className="mb-8 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
-          {params.keyword ? (
-            <>
-              <h1 className="text-2xl font-semibold">
-                {message}{' '}
-                <span className="text-primary italic">"{params.keyword}"</span>
-              </h1>
-              <p className="text-muted-foreground mt-1 text-sm">
-                Tìm thấy {products.length} sản phẩm phù hợp
-              </p>
-            </>
-          ) : (
-            <h1 className="text-2xl font-semibold">Danh sách sản phẩm</h1>
-          )}
+          <h1 className="flex items-center gap-2 text-2xl font-bold">
+            <Package className="text-primary" size={28} />
+            Quản lý kho hàng
+          </h1>
+          <p className="text-muted-foreground mt-1 text-sm">
+            {params.keyword ? (
+              <span>
+                Tìm thấy {products.length} kết quả cho "{params.keyword}"
+              </span>
+            ) : (
+              `Danh sách sản phẩm (${products.length})`
+            )}
+          </p>
         </div>
 
-        {/* Cụm nút điều hướng dành cho Admin */}
         <div className="flex items-center gap-3">
-          <button
+          <Button
+            variant="outline"
+            className="border-emerald-600 text-emerald-600 hover:bg-emerald-50"
             onClick={() => setIsCategoryModalOpen(true)}
-            className="flex items-center gap-2 rounded-lg border border-emerald-600 px-4 py-2 text-emerald-600 transition-colors hover:bg-emerald-50"
           >
-            <FolderPlus size={20} />
+            <FolderPlus className="mr-2 h-4 w-4" />
             <span className="hidden sm:inline">Thêm danh mục</span>
-          </button>
+          </Button>
 
-          <button
-            onClick={() => setIsProductModalOpen(true)}
-            className="bg-primary hover:bg-primary/90 flex items-center gap-2 rounded-lg px-4 py-2 text-white transition-colors"
-          >
-            <Plus size={20} />
-            <span>Thêm sản phẩm</span>
-          </button>
+          <Button onClick={() => setIsProductModalOpen(true)}>
+            <Plus className="mr-2 h-4 w-4" />
+            Thêm sản phẩm
+          </Button>
         </div>
       </div>
 
-      <div className="flex flex-col gap-6 md:flex-row lg:gap-10">
-        <div className="shrink-0">
-          <FilterSidebar
-            priceRange={priceRange}
-            setPriceRange={setPriceRange}
-            sort={sort}
-            setSort={setSort}
-            categories={categories || []}
+      <div className="flex flex-col gap-8 lg:flex-row">
+        {/* Sidebar */}
+        <aside className="w-full shrink-0 lg:w-72">
+          <div className="sticky top-6">
+            <FilterSidebar
+              priceRange={priceRange}
+              setPriceRange={setPriceRange}
+              sort={sort}
+              setSort={setSort}
+              categories={categories || []}
+            />
+          </div>
+        </aside>
+
+        {/* Main Table */}
+        <main className="min-w-0 flex-1">
+          <ProductTable
+            products={products}
+            loading={loading}
+            onRefresh={refetch}
+            onEdit={handleEditProduct} // Truyền handler sửa vào table
           />
-        </div>
-
-        <div className="flex-1">
-          <ProductList products={products} loading={loading} />
-        </div>
+        </main>
       </div>
 
-      {/* Render Modals */}
+      {/* --- Modals Section --- */}
+
+      {/* Thêm mới sản phẩm */}
       <AddProductModal
         isOpen={isProductModalOpen}
         onClose={() => setIsProductModalOpen(false)}
         categories={categories || []}
       />
 
+      {/* Cập nhật sản phẩm */}
+      <EditProductModal
+        isOpen={isEditModalOpen}
+        onClose={handleCloseEditModal}
+        product={selectedProduct}
+        categories={categories || []}
+        onSuccess={refetch} // Load lại danh sách sau khi lưu thành công
+      />
+
+      {/* Thêm mới danh mục */}
       <AddCategoryModal
         isOpen={isCategoryModalOpen}
         onClose={() => setIsCategoryModalOpen(false)}

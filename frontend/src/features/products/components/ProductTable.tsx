@@ -1,0 +1,188 @@
+'use client'
+
+import Image from 'next/image'
+import { Edit2, Trash2, Box, Loader2 } from 'lucide-react'
+
+import { ProductResponse } from '@/types/product.types'
+import { productService } from '@/services/product.service'
+import { toast } from 'sonner'
+
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog'
+
+interface ProductTableProps {
+  products: ProductResponse[]
+  loading: boolean
+  onRefresh: () => void
+  onEdit: (product: ProductResponse) => void
+}
+
+export default function ProductTable({
+  products,
+  loading,
+  onRefresh,
+  onEdit,
+}: ProductTableProps) {
+  const handleDelete = async (id: string) => {
+    try {
+      const response = await productService.deleteProduct({ id })
+      if (response.data) {
+        toast.success('Đã ngừng bán sản phẩm thành công')
+        onRefresh()
+      }
+    } catch (error) {
+      toast.error('Có lỗi xảy ra khi xóa sản phẩm')
+      console.error(error)
+    }
+  }
+
+  if (loading) {
+    return (
+      <Card>
+        <CardContent className="flex h-64 items-center justify-center">
+          <Loader2 className="h-8 w-8 animate-spin" />
+        </CardContent>
+      </Card>
+    )
+  }
+
+  return (
+    <Card>
+      <CardContent className="p-0">
+        {products.length > 0 ? (
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Sản phẩm</TableHead>
+                <TableHead>Danh mục</TableHead>
+                <TableHead>Giá cơ bản</TableHead>
+                <TableHead className="text-center">Đã bán</TableHead>
+                <TableHead className="text-center">Đánh giá</TableHead>
+                <TableHead className="text-right">Thao tác</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {products.map((product) => (
+                <TableRow key={product._id}>
+                  <TableCell>
+                    <div className="flex items-center gap-4">
+                      <div className="relative h-12 w-12 overflow-hidden rounded-lg border">
+                        <Image
+                          src={product.images[0] || '/placeholder-product.png'}
+                          alt={product.name}
+                          fill
+                          className="object-cover"
+                        />
+                      </div>
+                      <div className="max-w-50">
+                        <p
+                          className="truncate font-medium"
+                          title={product.name}
+                        >
+                          {product.name}
+                        </p>
+                        <p className="text-muted-foreground text-xs">
+                          ID: {product._id.slice(-6)}
+                        </p>
+                      </div>
+                    </div>
+                  </TableCell>
+
+                  <TableCell>
+                    <Badge variant="secondary">{product.category.name}</Badge>
+                  </TableCell>
+
+                  <TableCell className="font-semibold">
+                    {product.basePrice.toLocaleString()}đ
+                  </TableCell>
+
+                  <TableCell className="text-center">
+                    {product.total_sold}
+                  </TableCell>
+
+                  <TableCell className="text-center">
+                    <div className="flex items-center justify-center gap-1">
+                      <span>★</span>
+                      <span className="font-medium">
+                        {product.avg_rating}
+                        <span className="text-muted-foreground/60 ml-1 text-sm">
+                          ({product.total_reviews} đánh giá)
+                        </span>
+                      </span>
+                    </div>
+                  </TableCell>
+
+                  <TableCell className="text-right">
+                    <div className="flex justify-end gap-2">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => onEdit(product)}
+                      >
+                        <Edit2 className="h-4 w-4" />
+                      </Button>
+
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button variant="ghost" size="icon">
+                            <Trash2 className="h-4 w-4 text-red-500" />
+                          </Button>
+                        </AlertDialogTrigger>
+
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>
+                              Xác nhận xóa sản phẩm
+                            </AlertDialogTitle>
+                            <AlertDialogDescription>
+                              Bạn có chắc chắn muốn ngừng bán sản phẩm "
+                              {product.name}"?
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Hủy</AlertDialogCancel>
+                            <AlertDialogAction
+                              onClick={() => handleDelete(product._id)}
+                            >
+                              Xóa
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        ) : (
+          <div className="text-muted-foreground flex flex-col items-center justify-center py-20">
+            <Box className="mb-4 h-12 w-12 opacity-30" />
+            <p>Không tìm thấy sản phẩm nào trong kho</p>
+          </div>
+        )}
+      </CardContent>
+    </Card>
+  )
+}

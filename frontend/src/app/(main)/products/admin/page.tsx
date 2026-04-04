@@ -7,34 +7,23 @@ import FilterSidebar from '@/features/products/components/FilterSidebar'
 import useProductQueryParams from '@/features/products/hooks/useProductQueryParams'
 import useProductFilters from '@/features/products/hooks/useProductFilters'
 import useCategories from '@/features/products/hooks/useCategories'
-import { Plus } from 'lucide-react'
+import { Plus, FolderPlus } from 'lucide-react'
 import { useEffect, useState } from 'react'
-import { getUserRole } from '../../../utils/getUserRole'
 import AddProductModal from '@/features/products/components/AddProductModal/AddProductModal'
-import { useRouter } from 'next/navigation'
+import AddCategoryModal from '@/features/products/components/AddCategoryModal/AddCategoryModal'
 
 export default function ProductsPage() {
-  const router = useRouter()
-
   const params: GetProductsRequest = useProductQueryParams()
   const { products, loading, message } = useProducts(params)
   const { priceRange, setPriceRange, sort, setSort } = useProductFilters(params)
   const { categories } = useCategories()
 
+  // 1. Quản lý trạng thái role
   const [role, setRole] = useState<string | null>(null)
-  const [isModalOpen, setIsModalOpen] = useState(false)
 
-  useEffect(() => {
-    const userRole = getUserRole()
-    setRole(userRole)
-
-    // 🔥 Redirect nếu là ADMIN
-    if (userRole === 'ADMIN') {
-      router.replace('/products/admin')
-    }
-  }, [router])
-
-  const isAdmin = role === 'ADMIN'
+  // Quản lý trạng thái Modal
+  const [isProductModalOpen, setIsProductModalOpen] = useState(false)
+  const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false)
 
   return (
     <div className="container mx-auto min-h-screen px-4 py-6 md:py-10">
@@ -54,6 +43,25 @@ export default function ProductsPage() {
             <h1 className="text-2xl font-semibold">Danh sách sản phẩm</h1>
           )}
         </div>
+
+        {/* Cụm nút điều hướng dành cho Admin */}
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => setIsCategoryModalOpen(true)}
+            className="flex items-center gap-2 rounded-lg border border-emerald-600 px-4 py-2 text-emerald-600 transition-colors hover:bg-emerald-50"
+          >
+            <FolderPlus size={20} />
+            <span className="hidden sm:inline">Thêm danh mục</span>
+          </button>
+
+          <button
+            onClick={() => setIsProductModalOpen(true)}
+            className="bg-primary hover:bg-primary/90 flex items-center gap-2 rounded-lg px-4 py-2 text-white transition-colors"
+          >
+            <Plus size={20} />
+            <span>Thêm sản phẩm</span>
+          </button>
+        </div>
       </div>
 
       <div className="flex flex-col gap-6 md:flex-row lg:gap-10">
@@ -72,10 +80,16 @@ export default function ProductsPage() {
         </div>
       </div>
 
+      {/* Render Modals */}
       <AddProductModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
+        isOpen={isProductModalOpen}
+        onClose={() => setIsProductModalOpen(false)}
         categories={categories || []}
+      />
+
+      <AddCategoryModal
+        isOpen={isCategoryModalOpen}
+        onClose={() => setIsCategoryModalOpen(false)}
       />
     </div>
   )

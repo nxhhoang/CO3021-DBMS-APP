@@ -1,22 +1,20 @@
-import { Button } from '@/components/ui/button';
-import { CartItem } from '@/types/cart.types'; // Đảm bảo CartItem đã có sku, skuPrice, stockQuantity
-import { Card, CardContent } from '@/components/ui/card';
-import { Trash } from 'lucide-react';
-import formatVND from '@/features/cart/utils/formatVND';
-import QuantitySelector from './QuantitySelector';
-import { Checkbox } from '@/components/ui/checkbox';
+'use client'
 
-// Mở rộng CartItem nếu type global chưa có stockQuantity
-interface CartItemWithStock extends CartItem {
-  stockQuantity: number; 
-}
+import { Button } from '@/components/ui/button'
+import { CartItem } from '@/types/cart.types'
+import { Card, CardContent } from '@/components/ui/card'
+import { Trash } from 'lucide-react'
+import formatVND from '@/features/cart/utils/formatVND'
+import QuantitySelector from './QuantitySelector'
+import { Checkbox } from '@/components/ui/checkbox'
 
+// Đảm bảo dùng đúng các trường thông tin đã lưu từ Modal
 interface ItemCardProps {
-  item: CartItemWithStock
-  updateQuantity: (sku: string, newQuantity: number) => void
+  item: CartItem & { stockQuantity: number }
+  updateQuantity: (sku: string, delta: number) => void
   removeItem: (sku: string) => void
   isSelected: boolean
-  onToggle: (checked: boolean) => void // Chuẩn hóa type của onCheckedChange
+  onToggle: (checked: boolean) => void
 }
 
 const ItemCard = ({
@@ -26,17 +24,15 @@ const ItemCard = ({
   isSelected,
   onToggle,
 }: ItemCardProps) => {
-  
+  // Ở trang Cart, hàm updateQuantity từ useCart nhận (sku, delta)
+  // nên ta chỉ cần truyền delta vào
   const handleQuantityChange = (delta: number) => {
-    const newQty = item.quantity + delta
-    if (newQty >= 1 && newQty <= item.stockQuantity) {
-      updateQuantity(item.sku, newQty)
-    }
+    updateQuantity(item.sku, delta)
   }
 
   return (
     <div className="flex items-start gap-4">
-      <Card className="group hover:border-primary/20 flex-1 transition-all">
+      <Card className="group hover:border-primary/20 flex-1 shadow-sm transition-all">
         <CardContent className="p-4">
           <div className="flex gap-4">
             {/* Checkbox chọn sản phẩm */}
@@ -49,12 +45,12 @@ const ItemCard = ({
             </div>
 
             {/* Product Image */}
-            <div className="bg-secondary relative h-24 w-24 shrink-0 overflow-hidden rounded-lg border">
+            <div className="bg-muted relative h-24 w-24 shrink-0 overflow-hidden rounded-lg border">
               {item.image ? (
                 <img
                   src={item.image}
                   alt={item.productName}
-                  className="h-full w-full object-cover transition-transform group-hover:scale-110"
+                  className="h-full w-full object-cover transition-transform group-hover:scale-105"
                 />
               ) : (
                 <div className="text-muted-foreground flex h-full w-full items-center justify-center text-[10px]">
@@ -67,41 +63,40 @@ const ItemCard = ({
             <div className="flex flex-1 flex-col justify-between">
               <div>
                 <div className="flex justify-between gap-2">
-                  <h2 className="line-clamp-1 text-lg font-semibold">
+                  <h2 className="line-clamp-1 text-base font-bold">
                     {item.productName}
                   </h2>
 
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="text-muted-foreground hover:text-destructive h-8 w-8"
+                    className="text-muted-foreground hover:text-destructive h-8 w-8 transition-colors"
                     onClick={() => removeItem(item.sku)}
                   >
                     <Trash className="h-4 w-4" />
                   </Button>
                 </div>
-                {/* Hiển thị SKU nếu cần */}
-                <p className="text-muted-foreground text-xs uppercase">
+
+                <p className="text-muted-foreground text-[11px] font-medium tracking-wider uppercase">
                   SKU: {item.sku}
                 </p>
               </div>
 
-              <div className="flex items-end justify-between">
+              <div className="mt-2 flex items-end justify-between">
                 <div className="space-y-1">
-                  {/* Sửa từ unitPrice -> skuPrice cho đúng Type hệ thống */}
-                  <p className="text-primary text-lg font-bold">
+                  <p className="text-primary text-lg font-black">
                     {formatVND(item.skuPrice)}
                   </p>
 
                   <p
-                    className={`text-xs ${
+                    className={`text-[10px] font-bold uppercase ${
                       item.stockQuantity <= 3
-                        ? 'text-destructive font-medium'
+                        ? 'text-destructive'
                         : 'text-muted-foreground'
                     }`}
                   >
                     {item.stockQuantity <= 3
-                      ? `Chỉ còn ${item.stockQuantity} sản phẩm!`
+                      ? `Chỉ còn ${item.stockQuantity} sp!`
                       : `Kho: ${item.stockQuantity}`}
                   </p>
                 </div>
@@ -120,6 +115,6 @@ const ItemCard = ({
       </Card>
     </div>
   )
-};
+}
 
 export default ItemCard

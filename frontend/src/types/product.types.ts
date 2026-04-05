@@ -8,11 +8,11 @@ export interface Product {
   basePrice: number
   categoryID: string
   description: string
-  images: string[]
+  images?: string[]
   attributes: Record<string, string | number | boolean> // Dynamic attributes
-  avg_rating: number
-  total_reviews: number
-  total_sold: number
+  avgRating: number
+  totalReviews: number
+  totalSold: number
   slug: string
   isActive: boolean
 }
@@ -20,7 +20,7 @@ export interface Product {
 export interface SKU {
   sku: string
   productID: string
-  sku_price: number
+  skuPrice: number
   attributes: Record<string, string | number | boolean> // Variant attributes
 }
 
@@ -30,6 +30,8 @@ export interface Inventory extends SKU {
 
 export interface ProductResponse extends Omit<Product, 'categoryID'> {
   category: Pick<Category, '_id' | 'name' | 'slug'>
+  sku?: string // Thêm sku mặc định (tùy chọn)
+  skuPrice?: number // Giá theo SKU, nếu khác basePrice
 }
 
 export interface ProductDetail extends ProductResponse {
@@ -48,7 +50,9 @@ export type GetProductsRequest = {
   attrs?: Record<string, string | number | boolean>
 }
 
-export type GetProductsResponse = PaginatedResponse<ProductResponse[]>
+export type GetProductsResponse = PaginatedResponse<{
+  products: ProductResponse[]
+}>
 
 //GET /products/:id
 export type GetProductDetailRequest = { id: string }

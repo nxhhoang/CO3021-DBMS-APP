@@ -18,7 +18,7 @@ function useProducts(params: GetProductsRequest) {
 
       const response = await productService.getProducts(params);
 
-      setProducts(response.data ?? []);
+      setProducts(response?.data?.products ?? [])
       setPagination(response.pagination ?? null);
       setMessage(response.message ?? '');
     } catch (err) {

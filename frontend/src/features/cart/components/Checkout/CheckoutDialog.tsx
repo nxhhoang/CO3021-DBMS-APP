@@ -21,18 +21,18 @@ import { useRouter } from 'next/navigation';
 import { Address } from '@/types';
 
 interface Props {
-  state: { confirm: boolean; success: boolean };
-  setState: (val: any) => void;
-  isLoading: boolean;
-  isAddressLoading: boolean;
-  address: Address | null;
-  onConfirm: () => void;
-  paymentMethod: any;
-  setPaymentMethod: (val: any) => void;
-  selectedItems: any[];
-  totalPrice: number;
-  orderID: number | null;
-  setOrderID: (id: number | null) => void; // Thêm prop này để reset ID
+  state: { confirm: boolean; success: boolean }
+  setState: (val: any) => void
+  isLoading: boolean
+  isAddressLoading: boolean
+  address: Address | null
+  onConfirm: () => void
+  paymentMethod: any
+  setPaymentMethod: (val: any) => void
+  selectedItems: any[]
+  totalPrice: number
+  orderID: number | null
+  setOrderID: (id: number | null) => void
 }
 
 export const CheckoutDialogs = ({

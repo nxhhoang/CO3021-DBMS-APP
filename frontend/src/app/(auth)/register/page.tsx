@@ -33,23 +33,31 @@ const RegisterPage = () => {
   });
 
   const handleRegister = async () => {
-    // Truy cập giá trị qua object 'values'
     if (values.password !== values.confirmPassword) {
-      alert('Passwords do not match');
-      return;
+      alert('Passwords do not match')
+      return
     }
 
     try {
-      setLoading(true);
-      await authService.register(values); // Truyền thẳng object values vào service
-      alert('Register success');
-      router.push('/login');
+      setLoading(true)
+
+      // Chỉ gửi những field backend yêu cầu
+      const payload = {
+        email: values.email,
+        password: values.password,
+        fullName: values.fullName,
+        phoneNum: values.phoneNum,
+      }
+
+      await authService.register(payload)
+      alert('Register success')
+      router.push('/login')
     } catch (err: any) {
-      alert(err?.response?.data?.message || 'Register failed');
+      alert(err?.response?.data?.message || 'Register failed')
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
   return (
     <Card className="w-full max-w-md">
       <CardHeader className="space-y-1">

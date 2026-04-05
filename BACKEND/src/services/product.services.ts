@@ -7,6 +7,7 @@ import { ErrorWithStatus } from '~/models/Errors'
 import HTTP_STATUS from '~/constants/httpStatus'
 import { getMongoDB } from '~/utils/mongodb'
 import Category from '~/models/schemas/Category.schema'
+import { query } from '~/utils/postgres'
 
 class ProductService {
   private get collection() {
@@ -29,8 +30,14 @@ class ProductService {
         return {
           products: [],
           pagination: {
-            totalItems: 0, itemCount: 0, itemsPerPage: limit, totalPages: 0,
-            currentPage: page, nextPage: null, hasPrevPage: false, hasNextPage: false
+            totalItems: 0,
+            itemCount: 0,
+            itemsPerPage: limit,
+            totalPages: 0,
+            currentPage: page,
+            nextPage: null,
+            hasPrevPage: false,
+            hasNextPage: false
           }
         }
       }
@@ -75,12 +82,14 @@ class ProductService {
     const results = await this.collection.find(matchQuery).sort(sortObject).skip(skip).limit(limit).toArray()
 
     // Populate category info
-    const categoryIDs = [...new Set(results.map(p => p.categoryID))]
-    const categories = await getMongoDB().collection<Category>('categories')
-      .find({ _id: { $in: categoryIDs } }).toArray()
+    const categoryIDs = [...new Set(results.map((p) => p.categoryID))]
+    const categories = await getMongoDB()
+      .collection<Category>('categories')
+      .find({ _id: { $in: categoryIDs } })
+      .toArray()
 
-    const mappedResults = results.map(p => {
-      const cat = categories.find(c => c._id.toHexString() === p.categoryID.toHexString())
+    const mappedResults = results.map((p) => {
+      const cat = categories.find((c) => c._id.toHexString() === p.categoryID.toHexString())
       const { categoryID, ...rest } = p as any
       return {
         ...rest,
@@ -104,6 +113,29 @@ class ProductService {
     }
   }
 
+  // async getProductById(id: string) {
+  //   const product = await this.collection.findOne({ _id: new ObjectId(id), isActive: true })
+  //   if (!product) {
+  //     throw new ErrorWithStatus({
+  //       message: PRODUCT_MESSAGES.PRODUCT_NOT_FOUND,
+  //       status: HTTP_STATUS.NOT_FOUND
+  //     })
+  //   }
+
+  //   const cat = await getMongoDB().collection<Category>('categories').findOne({ _id: product.categoryID })
+  //   const { categoryID, ...rest } = product as any
+  //   const mappedProduct = {
+  //     ...rest,
+  //     category: cat ? { _id: cat._id.toHexString(), name: cat.name, slug: cat.slug } : null
+  //   }
+
+  //   // Hybrid: get inventory from PostgreSQL mock (still keeping this part as it uses an external mock array intentionally for now until BE1 migration)
+  //   const inventory = mockInventory
+  //     .filter((inv) => inv.productID === id)
+  //     .map((inv) => ({ sku: inv.sku, stockQuantity: inv.stockQuantity, sku_price: inv.skuPrice }))
+
+  //   return { ...mappedProduct, inventory }
+  // }
   async getProductById(id: string) {
     const product = await this.collection.findOne({ _id: new ObjectId(id), isActive: true })
     if (!product) {
@@ -120,12 +152,31 @@ class ProductService {
       category: cat ? { _id: cat._id.toHexString(), name: cat.name, slug: cat.slug } : null
     }
 
-    // Hybrid: get inventory from PostgreSQL mock (still keeping this part as it uses an external mock array intentionally for now until BE1 migration)
-    const inventory = mockInventory
-      .filter((inv) => inv.productID === id)
-      .map((inv) => ({ sku: inv.sku, stockQuantity: inv.stockQuantity, sku_price: inv.skuPrice }))
+    const { rows } = await query('SELECT sku, stockQuantity AS "stockQuantity" FROM inventory WHERE productID = $1', [
+      id
+    ])
 
-    return { ...mappedProduct, inventory }
+    const mongoSkus = await getMongoDB()
+      .collection('skus')
+      .find({ productID: product._id }, { projection: { _id: 0, sku: 1, skuPrice: 1 } })
+      .toArray()
+
+    const skuPriceMap = new Map(
+      (Array.isArray(mongoSkus) ? mongoSkus : []).map((mongoSku: any) => [mongoSku.sku, mongoSku.skuPrice])
+    )
+
+    const inventory = rows.map((row: any) => {
+      return {
+        sku: row.sku,
+        skuPrice: skuPriceMap.get(row.sku) ?? null,
+        stockQuantity: Number(row.stockQuantity ?? row.stockquantity ?? 0)
+      }
+    })
+
+    return {
+      ...mappedProduct,
+      inventory
+    }
   }
 
   // ── Admin mutations ───────────────────────────────────────────────────────────

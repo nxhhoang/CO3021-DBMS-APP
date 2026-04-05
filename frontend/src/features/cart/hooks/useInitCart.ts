@@ -4,35 +4,29 @@ import { cartService } from '@/services/cart.service';
 function useInitCart(setItems: any) {
   const [loading, setLoading] = useState(true);
 
-  const isLoggedIn =
-    typeof window !== 'undefined' && !!localStorage.getItem('accessToken');
-
   useEffect(() => {
-    const initCart = async () => {
-      setLoading(true);
-
-      try {
-        const localData = JSON.parse(localStorage.getItem('cart') || '[]');
-
-        if (isLoggedIn) {
-          const response = await cartService.syncCart({ items: localData });
-
-          setItems(response.data?.items ?? []);
-          localStorage.removeItem('cart');
-        } else {
-          setItems(localData);
-        }
-      } catch (error) {
-        console.error('Failed to init cart:', error);
-      } finally {
-        setLoading(false);
+    try {
+      const rawData = sessionStorage.getItem('cart')
+      if (!rawData) {
+        setItems([])
+        return
       }
-    };
 
-    initCart();
-  }, [isLoggedIn, setItems]);
+      const localData = JSON.parse(rawData)
 
-  return { loading, isLoggedIn };
+      // Đồng nhất dữ liệu: luôn lấy mảng
+      const cartItems = Array.isArray(localData)
+        ? localData
+        : localData.items || []
+
+      setItems(cartItems)
+    } catch (error) {
+      console.error('Failed to init cart:', error)
+      setItems([])
+    }
+  }, [setItems])
+
+  return { loading }
 }
 
 export default useInitCart;

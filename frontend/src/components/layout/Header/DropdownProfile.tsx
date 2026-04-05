@@ -37,6 +37,7 @@ export const DropdownProfile = () => {
     } finally {
       localStorage.removeItem('accessToken');
       localStorage.removeItem('refreshToken');
+      localStorage.removeItem('user')
 
       router.push('/login');
       router.refresh();

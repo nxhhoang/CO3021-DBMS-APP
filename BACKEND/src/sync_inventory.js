@@ -1,8 +1,8 @@
 const { MongoClient } = require('mongodb');
 const { Client } = require('pg');
 
-const MONGO_URI = 'mongodb://localhost:27018';
-const PG_URI = 'postgresql://postgres:admin123@localhost:5433/hybrid_db';
+const MONGO_URI = 'mongodb://localhost:27017'
+const PG_URI = 'postgresql://postgres:admin123@localhost:5432/hybrid_db'
 
 const inventoryData = [
     // LAPTOP

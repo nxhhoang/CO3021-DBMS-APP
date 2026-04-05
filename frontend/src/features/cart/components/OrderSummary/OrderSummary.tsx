@@ -21,12 +21,12 @@ const OrderSummary = ({ selectedItems, totalPrice }: OrderSummaryProps) => {
     isLoading,
     isAddressLoading,
     orderID,
-    setOrderID, // Đảm bảo lấy setOrderID từ useCheckout
+    setOrderID,
     dialogState,
     setDialogState,
     handleCheckout,
     defaultAddress,
-  } = useCheckout(selectedItems);
+  } = useCheckout(selectedItems)
 
   const hasItems = selectedItems.length > 0;
 

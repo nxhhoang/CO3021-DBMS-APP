@@ -32,6 +32,7 @@ export default function LoginPage() {
 
       localStorage.setItem('accessToken', accessToken);
       localStorage.setItem('refreshToken', refreshToken);
+      localStorage.setItem('user', JSON.stringify(result.data.user))
 
       alert('Login success');
       router.push('/');

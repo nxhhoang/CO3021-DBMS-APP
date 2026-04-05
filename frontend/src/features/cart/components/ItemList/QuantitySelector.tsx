@@ -8,42 +8,35 @@ interface QuantitySelectorProps {
   onIncrease: () => void;
 }
 
-const btnClass = 'h-8 w-8 rounded-none';
-
 export default function QuantitySelector({
   quantity,
   stockQuantity,
   onDecrease,
   onIncrease,
 }: QuantitySelectorProps) {
-  const disableDecrease = quantity <= 1;
-  const disableIncrease = quantity >= stockQuantity;
-
   return (
-    <div className="bg-background flex items-center rounded-lg border shadow-sm">
+    <div className="flex h-10 items-center overflow-hidden rounded-lg border">
       <Button
         variant="ghost"
         size="icon"
-        className={btnClass}
-        disabled={disableDecrease}
+        className="h-full rounded-none"
+        disabled={quantity <= 1}
         onClick={onDecrease}
       >
-        <Minus className="h-3 w-3" />
+        <Minus className="h-4 w-4" />
       </Button>
 
-      <span className="flex w-8 justify-center text-sm font-semibold">
-        {quantity}
-      </span>
+      <span className="w-12 text-center text-sm font-bold">{quantity}</span>
 
       <Button
         variant="ghost"
         size="icon"
-        className={btnClass}
-        disabled={disableIncrease}
+        className="h-full rounded-none"
+        disabled={quantity >= stockQuantity}
         onClick={onIncrease}
       >
-        <Plus className="h-3 w-3" />
+        <Plus className="h-4 w-4" />
       </Button>
     </div>
-  );
+  )
 }

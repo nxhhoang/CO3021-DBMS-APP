@@ -18,9 +18,10 @@ export default function CartPage() {
     updateQuantity,
     removeItem,
     totalPrice,
-  } = useCart();
+    removeMultipleItems,
+  } = useCart()
 
-  const totalItems = items.reduce((sum, i) => sum + i.quantity, 0);
+  const totalItems = items.reduce((sum, i) => sum + i.quantity, 0)
 
   if (loading) {
     return (
@@ -30,7 +31,7 @@ export default function CartPage() {
           Đang tải giỏ hàng...
         </p>
       </div>
-    );
+    )
   }
 
   return (
@@ -70,5 +71,5 @@ export default function CartPage() {
         </div>
       )}
     </div>
-  );
+  )
 }

@@ -1,6 +1,9 @@
 export const getUserRole = (): string | null => {
   if (typeof window !== 'undefined') {
-    return localStorage.getItem('role')
+    const user = localStorage.getItem('user')
+    if (user) {
+      return JSON.parse(user).role
+    }
   }
   return null
 }

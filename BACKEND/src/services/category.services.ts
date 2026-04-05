@@ -66,7 +66,7 @@ class CategoryService {
     }
 
     const updateData: Partial<Category> = {
-      updated_at: new Date()
+      updatedAt: new Date()
     }
 
     if (body.name !== undefined) updateData.name = body.name

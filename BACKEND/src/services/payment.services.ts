@@ -11,7 +11,7 @@ class PaymentService {
    */
   async processPayment(orderID: number, paymentMethod: string) {
     // Verify order exists and is still PENDING
-    const orderCheck = await query(`SELECT order_id FROM orders WHERE order_id = $1 AND status = $2`, [
+    const orderCheck = await query(`SELECT orderID FROM ORDERS WHERE orderID = $1 AND status = $2`, [
       orderID,
       OrderStatus.PENDING
     ])
@@ -21,10 +21,10 @@ class PaymentService {
 
     // Update payment record
     const payResult = await query(
-      `UPDATE payments
-         SET status = $1, method = $2, transaction_date = NOW()
-       WHERE order_id = $3
-       RETURNING payment_id AS "paymentID", status, transaction_date AS "transactionDate"`,
+      `UPDATE PAYMENTS
+         SET status = $1, method = $2, transactiondate = NOW()
+       WHERE orderID = $3
+       RETURNING paymentID AS "paymentID", status, transactiondate AS "transactionDate"`,
       [PaymentStatus.COMPLETED, paymentMethod, orderID]
     )
 
@@ -33,7 +33,7 @@ class PaymentService {
     }
 
     // Advance order status to PROCESSING
-    await query(`UPDATE orders SET status = $1, updated_at = NOW() WHERE order_id = $2`, [
+    await query(`UPDATE ORDERS SET status = $1 WHERE orderID = $2`, [
       OrderStatus.PROCESSING,
       orderID
     ])

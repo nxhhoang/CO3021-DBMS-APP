@@ -22,7 +22,7 @@ class OrderService {
   //  1. BEGIN
   //  2. For each item: SELECT ... FOR UPDATE on inventories → check stock → deduct
   //  3. INSERT into orders → get order_id
-  //  4. Bulk INSERT into order_items
+  //  4. Bulk INSERT into items
   //  5. INSERT initial payment record
   //  6. COMMIT (or ROLLBACK on any failure)
 
@@ -43,18 +43,18 @@ class OrderService {
 
       //  Step 2: Lock & validate inventory for each item
       for (const item of items) {
-        const invResult = await client.query(`SELECT stock_quantity FROM inventories WHERE sku = $1 FOR UPDATE`, [
+        const invResult = await client.query(`SELECT stockQuantity AS "stockQuantity" FROM INVENTORY WHERE sku = $1 FOR UPDATE`, [
           item.sku
         ])
 
-        if (invResult.rows.length === 0 || invResult.rows[0].stock_quantity < item.quantity) {
+        if (invResult.rows.length === 0 || invResult.rows[0].stockQuantity < item.quantity) {
           await client.query('ROLLBACK')
           throw new OutOfStockError(item.sku, item.productId)
         }
 
         // Deduct stock
         await client.query(
-          `UPDATE inventories SET stock_quantity = stock_quantity - $1, updated_at = NOW() WHERE sku = $2`,
+          `UPDATE INVENTORY SET stockQuantity = stockQuantity - $1, lastUpdated = NOW() WHERE sku = $2`,
           [item.quantity, item.sku]
         )
 
@@ -63,18 +63,22 @@ class OrderService {
       }
 
       //  Step 3: Create order
-      const orderResult = await client.query(
-        `INSERT INTO orders (user_id, shipping_address_id, total_amount, status)
-         VALUES ($1, $2, $3, $4)
-         RETURNING order_id`,
-        [userId, shippingAddressId, totalAmount, OrderStatus.PENDING]
-      )
-      const orderId: number = orderResult.rows[0].order_id
+      //  Assuming the frontend sends a string for shippingAddressId, we will store it inside JSONB if shippingAddr requires JSONB,
+      //  but since pg automatically converts object to JSONB, we wrap it in an object, or just pass it directly if it accepts string
+      const shippingAddrObj = { id: shippingAddressId }
 
-      //  Step 4: Bulk insert order_items
+      const orderResult = await client.query(
+        `INSERT INTO ORDERS (userID, shippingAddr, totalAmount, status)
+         VALUES ($1, $2, $3, $4)
+         RETURNING orderID AS "orderID"`,
+        [userId, shippingAddrObj, totalAmount, OrderStatus.PENDING]
+      )
+      const orderId: number = orderResult.rows[0].orderID
+
+      //  Step 4: Bulk insert items
       for (const item of items) {
         await client.query(
-          `INSERT INTO order_items (order_id, product_id, product_name, sku, quantity, unit_price)
+          `INSERT INTO ITEMS (orderID, productID, productName, sku, quantity, unitPrice)
            VALUES ($1, $2, $3, $4, $5, $6)`,
           [orderId, item.productId, item.productName, item.sku, item.quantity, item.unitPrice]
         )
@@ -82,7 +86,7 @@ class OrderService {
 
       //  Step 5: Create initial payment record
       await client.query(
-        `INSERT INTO payments (order_id, method, status)
+        `INSERT INTO PAYMENTS (orderID, method, status)
          VALUES ($1, $2, $3)`,
         [orderId, paymentMethod, PaymentStatus.PENDING]
       )
@@ -106,10 +110,10 @@ class OrderService {
 
   async getOrders(userId: string) {
     const result = await query(
-      `SELECT order_id AS "orderID", status, total_amount AS "totalAmount", created_at AS "createdAt"
-       FROM orders
-       WHERE user_id = $1
-       ORDER BY created_at DESC`,
+      `SELECT orderID AS "orderID", status, totalAmount AS "totalAmount", createdAt AS "createdAt"
+       FROM ORDERS
+       WHERE userID = $1
+       ORDER BY createdAt DESC`,
       [userId]
     )
     return result.rows
@@ -119,9 +123,9 @@ class OrderService {
 
   async getOrderById(orderId: number, userId: string) {
     const orderResult = await query(
-      `SELECT order_id AS "orderID", status, total_amount AS "totalAmount", created_at AS "createdAt"
-       FROM orders
-       WHERE order_id = $1 AND user_id = $2`,
+      `SELECT orderID AS "orderID", status, totalAmount AS "totalAmount", createdAt AS "createdAt"
+       FROM ORDERS
+       WHERE orderID = $1 AND userID = $2`,
       [orderId, userId]
     )
 
@@ -130,12 +134,12 @@ class OrderService {
     }
 
     const itemsResult = await query(
-      `SELECT product_id AS "productId", product_name AS "productName", sku, quantity, unit_price AS "unitPrice"
-       FROM order_items WHERE order_id = $1`,
+      `SELECT productID AS "productId", productName AS "productName", sku, quantity, unitPrice AS "unitPrice"
+       FROM ITEMS WHERE orderID = $1`,
       [orderId]
     )
 
-    const paymentResult = await query(`SELECT method, status FROM payments WHERE order_id = $1 LIMIT 1`, [orderId])
+    const paymentResult = await query(`SELECT method, status FROM PAYMENTS WHERE orderID = $1 LIMIT 1`, [orderId])
 
     return {
       ...orderResult.rows[0],
@@ -153,9 +157,9 @@ class OrderService {
     }
 
     const result = await query(
-      `UPDATE orders SET status = $1, updated_at = NOW()
-       WHERE order_id = $2
-       RETURNING order_id AS "orderID", status, updated_at AS "updatedAt"`,
+      `UPDATE ORDERS SET status = $1
+       WHERE orderID = $2
+       RETURNING orderID AS "orderID", status`,
       [newStatus, orderId]
     )
 
@@ -175,3 +179,4 @@ class OrderService {
 
 const orderService = new OrderService()
 export default orderService
+

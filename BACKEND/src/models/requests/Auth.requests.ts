@@ -23,8 +23,8 @@ export interface LogoutReqBody {
 }
 
 export interface TokenPayload extends JwtPayload {
-  user_id: string
-  token_type: TokenType
+  userId: string
+  tokenType: TokenType
   role: UserRole
   exp: number
   iat: number

@@ -35,7 +35,7 @@ const seedMongo = async () => {
     console.log('Creating indexes (schema enforcement)...')
     await categoriesCollection.createIndex({ slug: 1 }, { unique: true })
     await productsCollection.createIndex({ slug: 1 }, { unique: true })
-    await productsCollection.createIndex({ categoryId: 1 })
+    await productsCollection.createIndex({ categoryID: 1 })
 
     console.log('Done! Closing connection...')
     await getMongoClient().close()

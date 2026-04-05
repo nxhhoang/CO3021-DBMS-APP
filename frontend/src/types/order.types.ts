@@ -46,6 +46,9 @@ export type GetOrdersResponse = ApiResponse<Order[]>;
 export type GetOrderDetailRequest = { orderId: number };
 export type GetOrderDetailResponse = ApiResponse<OrderDetail>;
 
+// GET /admin/orders
+export type GetAdminOrdersResponse = ApiResponse<Order[]>;
+
 //PUT /admin/orders/:orderId/status
 export type UpdateOrderStatusRequest = { status: OrderStatus };
 export type UpdateOrderStatusResponse = ApiResponse<

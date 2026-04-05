@@ -30,7 +30,7 @@ export default function ProductsPage() {
 
     // 🔥 Redirect nếu là ADMIN
     if (userRole === 'ADMIN') {
-      router.replace('/products/admin')
+      router.replace('/admin/products')
     }
   }, [router])
 

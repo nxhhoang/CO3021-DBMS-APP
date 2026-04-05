@@ -1,4 +1,4 @@
-import { api, privateApi } from '@/lib/axios';
+import { api, privateApi } from '../lib/axios'
 import {
   GetProductDetailRequest,
   GetProductDetailResponse,

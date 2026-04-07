@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { Plus, FolderPlus, Package } from 'lucide-react'
 
 // Types & Hooks
@@ -19,10 +20,23 @@ import EditProductModal from '@/features/products/components/EditProductModal/Ed
 
 // shadcn
 import { Button } from '@/components/ui/button'
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from '@/components/ui/pagination'
 
 export default function AdminProductsPage() {
+  const router = useRouter()
+  const pathname = usePathname()
+  const searchParams = useSearchParams()
+
   const params: GetProductsRequest = useProductQueryParams()
-  const { products, loading, refetch } = useProducts(params)
+  const { products, pagination, loading, refetch } = useProducts(params)
   const { categories } = useCategories()
   const { priceRange, setPriceRange, sort, setSort } = useProductFilters(params)
 
@@ -46,6 +60,48 @@ export default function AdminProductsPage() {
     setIsEditModalOpen(false)
     setSelectedProduct(null)
   }
+
+  const updatePage = (page: number) => {
+    if (!pagination) return
+    if (page < 1 || page > pagination.totalPages) return
+
+    const nextParams = new URLSearchParams(searchParams.toString())
+    nextParams.set('page', String(page))
+    router.push(`${pathname}?${nextParams.toString()}`)
+  }
+
+  const getVisiblePages = () => {
+    if (!pagination) return []
+
+    const totalPages = pagination.totalPages
+    const currentPage = pagination.currentPage
+    const pages: Array<number | 'ellipsis'> = []
+
+    if (totalPages <= 7) {
+      for (let i = 1; i <= totalPages; i++) pages.push(i)
+      return pages
+    }
+
+    pages.push(1)
+
+    if (currentPage > 3) pages.push('ellipsis')
+
+    for (
+      let i = Math.max(2, currentPage - 1);
+      i <= Math.min(totalPages - 1, currentPage + 1);
+      i++
+    ) {
+      pages.push(i)
+    }
+
+    if (currentPage < totalPages - 2) pages.push('ellipsis')
+
+    pages.push(totalPages)
+
+    return pages
+  }
+
+  const visiblePages = getVisiblePages()
 
   return (
     <div className="container mx-auto min-h-screen px-4 py-6 md:py-10">
@@ -106,6 +162,74 @@ export default function AdminProductsPage() {
             onRefresh={refetch}
             onEdit={handleEditProduct} // Truyền handler sửa vào table
           />
+
+          {pagination && pagination.totalPages > 1 && (
+            <div className="mt-6 flex flex-col items-center gap-3">
+              <p className="text-muted-foreground text-sm">
+                Trang {pagination.currentPage}/{pagination.totalPages} - Tổng{' '}
+                {pagination.totalItems} sản phẩm
+              </p>
+
+              <Pagination>
+                <PaginationContent>
+                  <PaginationItem>
+                    <PaginationPrevious
+                      href="#"
+                      onClick={(event) => {
+                        event.preventDefault()
+                        if (pagination.hasPreviousPage) {
+                          updatePage(pagination.currentPage - 1)
+                        }
+                      }}
+                      className={
+                        !pagination.hasPreviousPage
+                          ? 'pointer-events-none opacity-50'
+                          : ''
+                      }
+                    />
+                  </PaginationItem>
+
+                  {visiblePages.map((page, index) =>
+                    page === 'ellipsis' ? (
+                      <PaginationItem key={`ellipsis-${index}`}>
+                        <PaginationEllipsis />
+                      </PaginationItem>
+                    ) : (
+                      <PaginationItem key={page}>
+                        <PaginationLink
+                          href="#"
+                          isActive={page === pagination.currentPage}
+                          onClick={(event) => {
+                            event.preventDefault()
+                            updatePage(page)
+                          }}
+                        >
+                          {page}
+                        </PaginationLink>
+                      </PaginationItem>
+                    ),
+                  )}
+
+                  <PaginationItem>
+                    <PaginationNext
+                      href="#"
+                      onClick={(event) => {
+                        event.preventDefault()
+                        if (pagination.hasNextPage) {
+                          updatePage(pagination.currentPage + 1)
+                        }
+                      }}
+                      className={
+                        !pagination.hasNextPage
+                          ? 'pointer-events-none opacity-50'
+                          : ''
+                      }
+                    />
+                  </PaginationItem>
+                </PaginationContent>
+              </Pagination>
+            </div>
+          )}
         </main>
       </div>
 

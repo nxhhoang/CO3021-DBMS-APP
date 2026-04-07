@@ -1,20 +1,22 @@
 import { ApiResponse } from './api.types';
 
 export interface DynamicAttribute {
-  key: string;
-  label: string;
-  dataType: 'string' | 'number' | 'boolean';
-  isRequired: boolean;
-  options: string[];
+  key: string
+  label: string
+  dataType: 'string' | 'number' | 'boolean'
+  isRequired?: boolean
+  options: string[]
 }
 
 export interface Category {
-  _id: string;
-  name: string;
-  slug: string;
-  description: string;
-  isActive: boolean;
-  dynamicAttributes: DynamicAttribute[];
+  _id: string
+  ID?: string
+  name: string
+  slug: string
+  description: string
+  isActive: boolean
+  dynamicAttributes: DynamicAttribute[]
+  variantAttributes?: DynamicAttribute[]
 }
 
 // GET /categories

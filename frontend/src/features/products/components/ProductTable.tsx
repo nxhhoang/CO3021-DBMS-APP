@@ -88,7 +88,9 @@ export default function ProductTable({
                     <div className="flex items-center gap-4">
                       <div className="relative h-12 w-12 overflow-hidden rounded-lg border">
                         <Image
-                          src={product.images[0] || '/placeholder-product.png'}
+                          src={
+                            product.images?.[0] ?? '/placeholder-product.png'
+                          }
                           alt={product.name}
                           fill
                           className="object-cover"
@@ -117,16 +119,16 @@ export default function ProductTable({
                   </TableCell>
 
                   <TableCell className="text-center">
-                    {product.total_sold}
+                    {product.totalSold}
                   </TableCell>
 
                   <TableCell className="text-center">
                     <div className="flex items-center justify-center gap-1">
                       <span>★</span>
                       <span className="font-medium">
-                        {product.avg_rating}
+                        {product.avgRating}
                         <span className="text-muted-foreground/60 ml-1 text-sm">
-                          ({product.total_reviews} đánh giá)
+                          ({product.totalReviews} đánh giá)
                         </span>
                       </span>
                     </div>

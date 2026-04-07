@@ -16,6 +16,7 @@ import { toast } from 'sonner'
 import { productService } from '@/services/product.service'
 import { ProductDetail, Inventory } from '@/types'
 import formatVND from '@/features/cart/utils/formatVND'
+import { cn } from '@/lib/utils'
 
 interface ProductDetailModalProps {
   productId: string
@@ -121,6 +122,11 @@ export const ProductDetailModal = ({
     return (
       <Dialog open={isOpen} onOpenChange={onClose}>
         <DialogContent className="flex h-72 items-center justify-center">
+          <DialogHeader>
+            <DialogTitle className="text-2xl leading-tight font-bold">
+              Đang tải thông tin sản phẩm
+            </DialogTitle>
+          </DialogHeader>
           <Loader2 className="text-primary h-10 w-10 animate-spin" />
         </DialogContent>
       </Dialog>
@@ -131,7 +137,12 @@ export const ProductDetailModal = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-h-[95vh] max-w-4xl overflow-y-auto p-0 sm:p-6">
+      <DialogContent className="max-w-full sm:max-w-2xl lg:max-w-5xl xl:max-w-[80%]">
+        <DialogHeader>
+          <DialogTitle className="text-2xl leading-tight font-bold">
+            {product.name}
+          </DialogTitle>
+        </DialogHeader>
         <div className="grid gap-8 p-4 md:grid-cols-2">
           {/* Left: Images */}
           <div className="space-y-4">
@@ -164,7 +175,7 @@ export const ProductDetailModal = ({
           {/* Right: Info */}
           <div className="flex flex-col gap-6">
             <div className="space-y-2">
-              <Badge variant="outline" className="text-primary border-primary">
+              <Badge variant="secondary" className="text-primary">
                 {product.category?.name || 'Sản phẩm'}
               </Badge>
 
@@ -184,7 +195,7 @@ export const ProductDetailModal = ({
                     ({product.totalReviews || 0} đánh giá)
                   </span>
                 </div>
-                <div className="bg-border h-4 w-px" />
+                <span>•</span>
                 <span className="text-muted-foreground">
                   Đã bán {product.totalSold || 0}
                 </span>
@@ -201,23 +212,34 @@ export const ProductDetailModal = ({
                 <h4 className="text-muted-foreground text-sm font-bold tracking-wider uppercase">
                   Phiên bản
                 </h4>
-                <div className="flex flex-wrap gap-2">
-                  {product.inventory?.map((item) => (
-                    <Button
-                      key={item.sku}
-                      variant={
-                        selectedSku?.sku === item.sku ? 'default' : 'outline'
-                      }
-                      onClick={() => setSelectedSku(item)}
-                      disabled={item.stockQuantity <= 0}
-                      className="h-auto min-w-25 flex-col items-start gap-1 p-3"
-                    >
-                      <span className="text-sm font-bold">{item.sku}</span>
-                      <span className="text-[10px] opacity-70">
-                        Kho: {item.stockQuantity}
-                      </span>
-                    </Button>
-                  ))}
+                <div className="space-y-2">
+                  <div className="flex flex-wrap gap-3">
+                    {product.inventory?.map((item) => {
+                      const isSelected = selectedSku?.sku === item.sku
+                      const isOutOfStock = item.stockQuantity <= 0
+
+                      return (
+                        <Button
+                          key={item.sku}
+                          variant={isSelected ? 'default' : 'outline'}
+                          onClick={() => setSelectedSku(item)}
+                          disabled={isOutOfStock}
+                          className={cn(
+                            'h-auto flex-col items-start gap-1.5 p-4 transition-all',
+                            isSelected
+                              ? 'border-primary ring-primary/20 ring-2'
+                              : 'hover:border-primary/50',
+                            isOutOfStock && 'opacity-50 grayscale',
+                          )}
+                        >
+                          {/* Hiển thị SKU đã được format */}
+                          <span className="text-sm font-bold uppercase">
+                            {item.sku.split('-').join(' • ')}
+                          </span>
+                        </Button>
+                      )
+                    })}
+                  </div>
                 </div>
               </div>
 
@@ -265,7 +287,7 @@ export const ProductDetailModal = ({
             <div className="mt-auto border-t pt-6">
               <Button
                 size="lg"
-                className="h-12 flex-1 gap-2 font-bold"
+                className="h-12 w-full flex-1 gap-2 font-bold"
                 disabled={!selectedSku || selectedSku.stockQuantity <= 0}
                 onClick={handleAddToCart}
               >

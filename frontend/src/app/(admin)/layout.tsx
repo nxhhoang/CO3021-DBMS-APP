@@ -1,6 +1,6 @@
 'use client'
 
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { getUserRole } from '@/utils/getUserRole'
 import '@/lib/axios'
 
@@ -9,7 +9,15 @@ export default function AdminLayout({
 }: {
   children: React.ReactNode
 }) {
-  const role = getUserRole()
+  const [mounted, setMounted] = useState(false)
+  const [role, setRole] = useState<string | null>(null)
+
+  useEffect(() => {
+    setMounted(true)
+    setRole(getUserRole())
+  }, [])
+
+  if (!mounted) return null
 
   if (role !== 'ADMIN') {
     return <div>Access denied</div>

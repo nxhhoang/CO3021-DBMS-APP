@@ -54,6 +54,14 @@ export default function AddProductModal({
 }: AddProductModalProps) {
   const [loading, setLoading] = useState(false)
 
+  const getCategoryId = (category: Category) =>
+    category._id || category.ID || ''
+
+  const toSelectValue = (value: unknown) => {
+    if (value === undefined || value === null || value === '') return undefined
+    return String(value)
+  }
+
   const {
     register,
     handleSubmit,
@@ -74,7 +82,7 @@ export default function AddProductModal({
   })
 
   const selectedCategory = categories.find(
-    (cat) => cat._id === watch('categoryID'),
+    (cat) => getCategoryId(cat) === watch('categoryID'),
   )
 
   const onSubmit = async (data: ProductFormValues) => {
@@ -174,7 +182,10 @@ export default function AddProductModal({
                         </SelectTrigger>
                         <SelectContent>
                           {categories.map((cat) => (
-                            <SelectItem key={cat._id} value={cat._id}>
+                            <SelectItem
+                              key={getCategoryId(cat)}
+                              value={getCategoryId(cat)}
+                            >
                               {cat.name}
                             </SelectItem>
                           ))}
@@ -192,44 +203,107 @@ export default function AddProductModal({
               {selectedCategory &&
                 selectedCategory.dynamicAttributes.length > 0 && (
                   <div className="border-primary/30 bg-primary/5 rounded-lg border border-dashed p-4">
-                    <h3 className="text-primary mb-4 text-xs font-bold tracking-widest uppercase">
+                    <h3 className="text-primary mb-2 text-xs font-bold tracking-widest uppercase">
                       Thông số: {selectedCategory.name}
                     </h3>
+                    <p className="text-muted-foreground mb-4 text-xs">
+                      Điền các thuộc tính động theo danh mục đã chọn.
+                    </p>
                     <div className="grid gap-4 md:grid-cols-2">
                       {selectedCategory.dynamicAttributes.map((attr) => (
-                        <Controller
-                          key={attr.key}
-                          control={control}
-                          name={`attributes.${attr.key}`}
-                          render={({ field }) =>
-                            attr.options?.length ? (
-                              <Select
-                                value={field.value || ''}
-                                onValueChange={field.onChange}
-                              >
-                                <SelectTrigger className="h-9">
-                                  <SelectValue placeholder="Chọn..." />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  {attr.options.map((opt) => (
-                                    <SelectItem key={opt} value={opt}>
-                                      {opt}
-                                    </SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
-                            ) : (
-                              <Input
-                                className="h-9"
-                                type={
-                                  attr.dataType === 'number' ? 'number' : 'text'
-                                }
-                                value={field.value || ''}
-                                onChange={field.onChange}
-                              />
-                            )
-                          }
-                        />
+                        <Field key={attr.key}>
+                          <FieldLabel>
+                            {attr.label || attr.key}
+                            {attr.isRequired ? ' *' : ''}
+                          </FieldLabel>
+                          <Controller
+                            control={control}
+                            name={`attributes.${attr.key}`}
+                            render={({ field }) => {
+                              if (attr.options?.length) {
+                                return (
+                                  <Select
+                                    value={toSelectValue(field.value)}
+                                    onValueChange={(value) => {
+                                      if (attr.dataType === 'number') {
+                                        field.onChange(Number(value))
+                                        return
+                                      }
+
+                                      if (attr.dataType === 'boolean') {
+                                        field.onChange(value === 'true')
+                                        return
+                                      }
+
+                                      field.onChange(value)
+                                    }}
+                                  >
+                                    <SelectTrigger className="h-9 w-full">
+                                      <SelectValue
+                                        placeholder={`Chọn ${attr.label || attr.key}`}
+                                      />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                      {attr.options.map((opt) => (
+                                        <SelectItem key={opt} value={opt}>
+                                          {opt}
+                                        </SelectItem>
+                                      ))}
+                                    </SelectContent>
+                                  </Select>
+                                )
+                              }
+
+                              if (attr.dataType === 'boolean') {
+                                return (
+                                  <Select
+                                    value={toSelectValue(field.value)}
+                                    onValueChange={(value) => {
+                                      field.onChange(value === 'true')
+                                    }}
+                                  >
+                                    <SelectTrigger className="h-9 w-full">
+                                      <SelectValue
+                                        placeholder={`Chọn ${attr.label || attr.key}`}
+                                      />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                      <SelectItem value="true">Có</SelectItem>
+                                      <SelectItem value="false">
+                                        Không
+                                      </SelectItem>
+                                    </SelectContent>
+                                  </Select>
+                                )
+                              }
+
+                              return (
+                                <Input
+                                  className="h-9"
+                                  type={
+                                    attr.dataType === 'number'
+                                      ? 'number'
+                                      : 'text'
+                                  }
+                                  value={field.value ?? ''}
+                                  placeholder={`Nhập ${attr.label || attr.key}`}
+                                  onChange={(event) => {
+                                    const nextValue = event.target.value
+                                    if (attr.dataType === 'number') {
+                                      field.onChange(
+                                        nextValue === ''
+                                          ? ''
+                                          : Number(nextValue),
+                                      )
+                                      return
+                                    }
+                                    field.onChange(nextValue)
+                                  }}
+                                />
+                              )
+                            }}
+                          />
+                        </Field>
                       ))}
                     </div>
                   </div>

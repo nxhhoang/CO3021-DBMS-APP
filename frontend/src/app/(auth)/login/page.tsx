@@ -57,6 +57,7 @@ export default function LoginPage() {
           <Input
             id="email"
             type="email"
+            value={email}
             placeholder="name@example.com"
             onChange={(e) => setEmail(e.target.value)}
           />
@@ -68,6 +69,7 @@ export default function LoginPage() {
           <Input
             id="password"
             type="password"
+            value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
         </div>
@@ -89,5 +91,5 @@ export default function LoginPage() {
         </p>
       </CardFooter>
     </Card>
-  );
+  )
 }

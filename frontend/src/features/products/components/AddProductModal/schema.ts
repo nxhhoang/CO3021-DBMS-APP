@@ -10,4 +10,5 @@ export const productSchema = z.object({
   attributes: z.record(z.string(), z.any()).default({}),
 })
 
-export type ProductFormValues = z.infer<typeof productSchema>
+export type ProductFormInput = z.input<typeof productSchema>
+export type ProductFormValues = z.output<typeof productSchema>

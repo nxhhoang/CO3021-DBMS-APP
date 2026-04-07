@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import ImageUrlPreview from './ImageUrlPreview'
+import { toast } from 'sonner'
 
 import {
   Dialog,
@@ -29,28 +30,31 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 
-import { useForm, Controller } from 'react-hook-form'
+import { useForm, Controller, SubmitHandler } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import * as z from 'zod'
 import { Category } from '@/types/category.types'
-import { productSchema } from './schema'
+import {
+  productSchema,
+  type ProductFormInput,
+  type ProductFormValues,
+} from './schema'
 import { productService } from '@/services/product.service'
 
-/** ---------- Zod Schema ---------- */
+/** ---------- Types ---------- */
 
-export type ProductFormValues = z.infer<typeof productSchema>
-
-/** ---------- Component ---------- */
 interface AddProductModalProps {
   isOpen: boolean
   onClose: () => void
   categories: Category[]
+  onSuccess: () => void
 }
 
+/** ---------- Component ---------- */
 export default function AddProductModal({
   isOpen,
   onClose,
   categories,
+  onSuccess,
 }: AddProductModalProps) {
   const [loading, setLoading] = useState(false)
 
@@ -62,50 +66,55 @@ export default function AddProductModal({
     return String(value)
   }
 
+  /** Default values typed properly */
+  const defaultValues: ProductFormInput = {
+    name: '',
+    categoryID: '',
+    basePrice: 0,
+    slug: '',
+    description: '',
+    images: [],
+    attributes: {},
+  }
+
+  /** useForm with proper typing */
   const {
     register,
     handleSubmit,
     control,
     watch,
+    reset,
     formState: { errors },
-  } = useForm({
+  } = useForm<ProductFormInput, unknown, ProductFormValues>({
     resolver: zodResolver(productSchema),
-    defaultValues: {
-      name: '',
-      categoryID: '',
-      basePrice: 0,
-      slug: '',
-      description: '',
-      images: [],
-      attributes: {},
-    },
+    defaultValues,
   })
 
   const selectedCategory = categories.find(
     (cat) => getCategoryId(cat) === watch('categoryID'),
   )
 
-  const onSubmit = async (data: ProductFormValues) => {
+  /** Submit handler */
+  const onSubmit: SubmitHandler<ProductFormValues> = async (data) => {
     setLoading(true)
     try {
-      // Chuẩn hóa dữ liệu hình ảnh
       const payload = {
         ...data,
-        images: data.images.filter((url) => url.trim() !== ''),
+        images: (data.images || []).filter((url) => url.trim() !== ''),
       }
 
-      // Gọi API qua ProductService
       const res = await productService.createProduct(payload)
 
-      // Thông báo thành công
-      alert(res.message || 'Tạo sản phẩm thành công!')
-      onClose() // Đóng modal
-      window.location.reload() // Tải lại trang để cập nhật danh sách
+      if (res.data) {
+        toast.success('Tạo sản phẩm thành công!')
+        reset()
+        onSuccess()
+        onClose()
+      }
     } catch (error: any) {
-      // Xử lý lỗi
       const errorMsg =
         error.response?.data?.message || 'Có lỗi xảy ra khi tạo sản phẩm'
-      alert(errorMsg)
+      toast.error(errorMsg)
       console.error('Create Product Error:', error)
     } finally {
       setLoading(false)
@@ -128,7 +137,7 @@ export default function AddProductModal({
                 name="images"
                 render={({ field }) => (
                   <ImageUrlPreview
-                    images={field.value}
+                    images={field.value || []}
                     onChange={field.onChange}
                   />
                 )}
@@ -161,7 +170,10 @@ export default function AddProductModal({
               <div className="grid gap-4 md:grid-cols-2">
                 <Field>
                   <FieldLabel>Giá cơ bản (VNĐ)</FieldLabel>
-                  <Input type="number" {...register('basePrice')} />
+                  <Input
+                    type="number"
+                    {...register('basePrice', { valueAsNumber: true })}
+                  />
                   {errors.basePrice && (
                     <FieldError>{errors.basePrice.message}</FieldError>
                   )}
@@ -201,14 +213,12 @@ export default function AddProductModal({
 
               {/* Dynamic attributes */}
               {selectedCategory &&
+                selectedCategory.dynamicAttributes &&
                 selectedCategory.dynamicAttributes.length > 0 && (
                   <div className="border-primary/30 bg-primary/5 rounded-lg border border-dashed p-4">
                     <h3 className="text-primary mb-2 text-xs font-bold tracking-widest uppercase">
                       Thông số: {selectedCategory.name}
                     </h3>
-                    <p className="text-muted-foreground mb-4 text-xs">
-                      Điền các thuộc tính động theo danh mục đã chọn.
-                    </p>
                     <div className="grid gap-4 md:grid-cols-2">
                       {selectedCategory.dynamicAttributes.map((attr) => (
                         <Field key={attr.key}>
@@ -218,29 +228,27 @@ export default function AddProductModal({
                           </FieldLabel>
                           <Controller
                             control={control}
-                            name={`attributes.${attr.key}`}
+                            name={`attributes.${attr.key}` as any}
                             render={({ field }) => {
                               if (attr.options?.length) {
                                 return (
                                   <Select
                                     value={toSelectValue(field.value)}
                                     onValueChange={(value) => {
-                                      if (attr.dataType === 'number') {
-                                        field.onChange(Number(value))
-                                        return
-                                      }
-
-                                      if (attr.dataType === 'boolean') {
-                                        field.onChange(value === 'true')
-                                        return
-                                      }
-
-                                      field.onChange(value)
+                                      const converted =
+                                        attr.dataType === 'number'
+                                          ? Number(value)
+                                          : attr.dataType === 'boolean'
+                                            ? value === 'true'
+                                            : value
+                                      field.onChange(converted)
                                     }}
                                   >
                                     <SelectTrigger className="h-9 w-full">
                                       <SelectValue
-                                        placeholder={`Chọn ${attr.label || attr.key}`}
+                                        placeholder={`Chọn ${
+                                          attr.label || attr.key
+                                        }`}
                                       />
                                     </SelectTrigger>
                                     <SelectContent>
@@ -253,30 +261,6 @@ export default function AddProductModal({
                                   </Select>
                                 )
                               }
-
-                              if (attr.dataType === 'boolean') {
-                                return (
-                                  <Select
-                                    value={toSelectValue(field.value)}
-                                    onValueChange={(value) => {
-                                      field.onChange(value === 'true')
-                                    }}
-                                  >
-                                    <SelectTrigger className="h-9 w-full">
-                                      <SelectValue
-                                        placeholder={`Chọn ${attr.label || attr.key}`}
-                                      />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                      <SelectItem value="true">Có</SelectItem>
-                                      <SelectItem value="false">
-                                        Không
-                                      </SelectItem>
-                                    </SelectContent>
-                                  </Select>
-                                )
-                              }
-
                               return (
                                 <Input
                                   className="h-9"
@@ -286,18 +270,13 @@ export default function AddProductModal({
                                       : 'text'
                                   }
                                   value={field.value ?? ''}
-                                  placeholder={`Nhập ${attr.label || attr.key}`}
-                                  onChange={(event) => {
-                                    const nextValue = event.target.value
-                                    if (attr.dataType === 'number') {
-                                      field.onChange(
-                                        nextValue === ''
-                                          ? ''
-                                          : Number(nextValue),
-                                      )
-                                      return
-                                    }
-                                    field.onChange(nextValue)
+                                  onChange={(e) => {
+                                    const val = e.target.value
+                                    field.onChange(
+                                      attr.dataType === 'number'
+                                        ? Number(val)
+                                        : val,
+                                    )
                                   }}
                                 />
                               )

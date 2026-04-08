@@ -13,21 +13,26 @@ function useProducts(params: GetProductsRequest) {
 
   const fetchProducts = useCallback(async () => {
     try {
-      setLoading(true);
-      setError(null);
+      setLoading(true)
+      setError(null)
 
-      const response = await productService.getProducts(params);
+      const response = await productService.getProducts(params)
 
-      setProducts(response?.data?.products ?? [])
-      setPagination(response.pagination ?? null);
-      setMessage(response.message ?? '');
+      // Giả sử response trả về là object có cấu trúc { message, data: { products, pagination } }
+      const result = response?.data // Đây là object chứa { products, pagination }
+
+      if (result) {
+        setProducts(result.products ?? [])
+        setPagination(result.pagination ?? null) // Lấy pagination từ trong result (tức là response.data)
+      }
+
+      setMessage(response.message ?? '')
     } catch (err) {
-      console.error('Failed to fetch products:', err);
-      setError('Failed to fetch products');
+      // ... lỗi
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  }, [params]);
+  }, [params])
 
   useEffect(() => {
     fetchProducts();

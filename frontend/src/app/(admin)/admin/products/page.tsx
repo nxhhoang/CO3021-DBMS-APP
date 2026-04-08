@@ -12,9 +12,9 @@ import useCategories from '@/features/products/hooks/useCategories'
 
 // Components
 import ProductTable from '@/features/products/components/ProductTable'
-import AddProductModal from '@/features/products/components/AddProductModal/AddProductModal'
-import AddCategoryModal from '@/features/products/components/AddCategoryModal/AddCategoryModal'
-import EditProductModal from '@/features/products/components/EditProductModal/EditProductModal'
+import AddProductModal from '@/features/adminProduct/components/AddProductModal/AddProductModal'
+import AddCategoryModal from '@/features/adminProduct/components/AddCategoryModal/AddCategoryModal'
+import EditProductModal from '@/features/adminProduct/components/EditProductModal/EditProductModal'
 
 // shadcn
 import { Button } from '@/components/ui/button'
@@ -50,7 +50,7 @@ export default function AdminProductsPage() {
   const handlePageChange = (page: number) => {
     const nextParams = new URLSearchParams(searchParams.toString())
     nextParams.set('page', String(page))
-    router.push(`${pathname}?${nextParams.toString()}`)
+    router.push(`${pathname}?${nextParams.toString()}`, { scroll: false })
   }
 
   return (

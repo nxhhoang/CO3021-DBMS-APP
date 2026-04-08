@@ -70,15 +70,18 @@ export default function ProductTable({
   }
 
   const renderPaginationItems = () => {
-    if (!pagination) return []
+    if (!pagination || pagination.totalPages <= 1) return []
+
     const items = []
     const { currentPage, totalPages } = pagination
+    const delta = 1 // Số trang hiển thị bên trái/phải currentPage
 
     for (let i = 1; i <= totalPages; i++) {
+      // Luôn hiển thị trang đầu, trang cuối, và các trang lân cận currentPage
       if (
         i === 1 ||
         i === totalPages ||
-        (i >= currentPage - 1 && i <= currentPage + 1)
+        (i >= currentPage - delta && i <= currentPage + delta)
       ) {
         items.push(
           <PaginationItem key={i}>
@@ -87,16 +90,18 @@ export default function ProductTable({
               isActive={currentPage === i}
               onClick={(e) => {
                 e.preventDefault()
-                onPageChange(i)
+                if (currentPage !== i) onPageChange(i)
               }}
             >
               {i}
             </PaginationLink>
           </PaginationItem>,
         )
-      } else if (i === currentPage - 2 || i === currentPage + 2) {
+      }
+      // Hiển thị dấu ba chấm nếu có khoảng cách
+      else if (i === currentPage - delta - 1 || i === currentPage + delta + 1) {
         items.push(
-          <PaginationItem key={i}>
+          <PaginationItem key={`ellipsis-${i}`}>
             <PaginationEllipsis />
           </PaginationItem>,
         )
@@ -106,7 +111,7 @@ export default function ProductTable({
   }
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col">
       {/* Loader */}
       {loading && (
         <div className="flex h-64 items-center justify-center">
@@ -144,9 +149,9 @@ export default function ProductTable({
                       <p className="truncate font-medium" title={product.name}>
                         {product.name}
                       </p>
-                      <p className="text-muted-foreground text-xs">
+                      {/* <p className="text-muted-foreground text-xs">
                         ID: {product._id.slice(-6)}
-                      </p>
+                      </p> */}
                     </div>
                   </div>
                 </TableCell>
@@ -231,16 +236,18 @@ export default function ProductTable({
         </p>
         <Pagination className="mx-0 w-auto">
           <PaginationContent>
+            {/* Nút Previous */}
             <PaginationItem>
               <PaginationPrevious
                 href="#"
                 onClick={(e) => {
                   e.preventDefault()
-                  if (pagination?.hasPreviousPage)
-                    onPageChange((pagination.currentPage ?? 1) - 1)
+                  if (pagination && pagination.currentPage > 1) {
+                    onPageChange(pagination.currentPage - 1)
+                  }
                 }}
                 className={
-                  !pagination?.hasPreviousPage
+                  !(pagination && pagination.currentPage > 1)
                     ? 'pointer-events-none opacity-50'
                     : 'cursor-pointer'
                 }

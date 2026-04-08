@@ -37,7 +37,7 @@ import {
   productSchema,
   type ProductFormInput,
   type ProductFormValues,
-} from './schema'
+} from '../schema'
 import { productService } from '@/services/product.service'
 
 /** ---------- Types ---------- */

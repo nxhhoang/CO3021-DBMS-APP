@@ -1,4 +1,4 @@
-import { ApiResponse, PaginatedResponse } from './api.types'
+import { ApiResponse, PaginatedResponse, PaginationParams } from './api.types'
 import { Category } from './category.types'
 import { SORT_BY } from '@/constants/enum'
 
@@ -42,17 +42,20 @@ export interface ProductDetail extends ProductResponse {
 export type GetProductsRequest = {
   keyword?: string
   category?: string //slug
-  price_min?: number
-  price_max?: number
+  priceMin?: number
+  priceMax?: number
   page?: number
   limit?: number
   sort?: (typeof SORT_BY)[keyof typeof SORT_BY]
   attrs?: Record<string, string | number | boolean>
 }
 
-export type GetProductsResponse = PaginatedResponse<{
-  products: ProductResponse[]
-}>
+export interface PaginatedData<T> {
+  products: T[] // Hoặc dùng Generic nếu muốn dùng cho cả Category, Order...
+  pagination: PaginationParams
+}
+
+export type GetProductsResponse = ApiResponse<PaginatedData<ProductResponse>>
 
 //GET /products/:id
 export type GetProductDetailRequest = { id: string }

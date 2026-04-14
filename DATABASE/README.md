@@ -90,6 +90,8 @@ Gõ `exit` để thoát.
     → lấy địa chỉ IP đầu tiên (ví dụ: `172.x.x.x`)
   * Nếu chạy Linux thuần: dùng `localhost` hoặc `127.0.0.1`
 
+![connect to postgre extension](connect_to_postgre_extension.png)
+
 ---
 
 ### MongoDB (Extension chính chủ MongoDB)

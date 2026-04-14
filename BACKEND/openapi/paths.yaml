@@ -12,7 +12,7 @@ paths:
               $ref: '#/components/schemas/RegisterBody'
       responses:
         '200':
-          description: "Đăng ký thành công"
+          description: 'Đăng ký thành công'
           content:
             application/json:
               schema:
@@ -30,7 +30,7 @@ paths:
               $ref: '#/components/schemas/LoginBody'
       responses:
         '200':
-          description: "Đăng nhập thành công"
+          description: 'Đăng nhập thành công'
           content:
             application/json:
               schema:
@@ -48,7 +48,7 @@ paths:
               $ref: '#/components/schemas/RefreshTokenBody'
       responses:
         '200':
-          description: "Cấp lại token thành công"
+          description: 'Cấp lại token thành công'
           content:
             application/json:
               schema:
@@ -63,7 +63,7 @@ paths:
         - BearerAuth: []
       responses:
         '200':
-          description: "Lấy thông tin thành công"
+          description: 'Lấy thông tin thành công'
           content:
             application/json:
               schema:
@@ -81,7 +81,7 @@ paths:
               $ref: '#/components/schemas/UpdateProfileBody'
       responses:
         '200':
-          description: "Cập nhật hồ sơ thành công"
+          description: 'Cập nhật hồ sơ thành công'
           content:
             application/json:
               schema:
@@ -96,7 +96,7 @@ paths:
         - BearerAuth: []
       responses:
         '200':
-          description: "Lấy danh sách địa chỉ thành công"
+          description: 'Lấy danh sách địa chỉ thành công'
           content:
             application/json:
               schema:
@@ -114,7 +114,7 @@ paths:
               $ref: '#/components/schemas/AddressBody'
       responses:
         '200':
-          description: "Thêm địa chỉ thành công"
+          description: 'Thêm địa chỉ thành công'
           content:
             application/json:
               schema:
@@ -140,7 +140,7 @@ paths:
               $ref: '#/components/schemas/AddressBody'
       responses:
         '200':
-          description: "Cập nhật địa chỉ thành công"
+          description: 'Cập nhật địa chỉ thành công'
           content:
             application/json:
               schema:
@@ -158,7 +158,7 @@ paths:
             type: string
       responses:
         '200':
-          description: "Đã xóa địa chỉ"
+          description: 'Đã xóa địa chỉ'
           content:
             application/json:
               schema:
@@ -178,11 +178,103 @@ paths:
             type: string
       responses:
         '200':
-          description: "Đã đặt làm địa chỉ mặc định"
+          description: 'Đã đặt làm địa chỉ mặc định'
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/GenericResponse'
+
+  /categories:
+    get:
+      tags: [Categories]
+      summary: Get list of categories
+      parameters:
+        - in: query
+          name: isActive
+          schema:
+            type: boolean
+          description: Filter by active status (default true)
+      responses:
+        '200':
+          description: Categories fetched successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericResponse'
+
+  /categories/admin:
+    post:
+      tags: [Categories]
+      summary: Admin — Create a new category
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateCategoryBody'
+      responses:
+        '201':
+          description: Category created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericResponse'
+        '409':
+          description: Slug already exists
+
+  /categories/admin/{id}:
+    put:
+      tags: [Categories]
+      summary: Admin — Update a category
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: MongoDB ObjectId of the category
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateCategoryBody'
+      responses:
+        '200':
+          description: Category updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericResponse'
+        '404':
+          description: Category not found
+        '409':
+          description: Slug already exists
+    delete:
+      tags: [Categories]
+      summary: Admin — Soft delete a category (set isActive = false)
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: MongoDB ObjectId of the category
+      responses:
+        '200':
+          description: Category deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericResponse'
+        '404':
+          description: Category not found
 
   # ================= PRODUCTS =================
   /products:
@@ -208,7 +300,7 @@ paths:
             type: integer
       responses:
         '200':
-          description: "Tìm thấy sản phẩm"
+          description: 'Tìm thấy sản phẩm'
           content:
             application/json:
               schema:
@@ -226,7 +318,7 @@ paths:
             type: string
       responses:
         '200':
-          description: "Lấy chi tiết sản phẩm thành công"
+          description: 'Lấy chi tiết sản phẩm thành công'
           content:
             application/json:
               schema:
@@ -246,7 +338,7 @@ paths:
               $ref: '#/components/schemas/AdminProductBody'
       responses:
         '200':
-          description: "Tạo sản phẩm thành công"
+          description: 'Tạo sản phẩm thành công'
           content:
             application/json:
               schema:
@@ -265,7 +357,7 @@ paths:
               $ref: '#/components/schemas/CartSyncBody'
       responses:
         '200':
-          description: "Đồng bộ giỏ hàng thành công"
+          description: 'Đồng bộ giỏ hàng thành công'
           content:
             application/json:
               schema:
@@ -285,7 +377,7 @@ paths:
               $ref: '#/components/schemas/OrderBody'
       responses:
         '200':
-          description: "Đặt hàng thành công"
+          description: 'Đặt hàng thành công'
           content:
             application/json:
               schema:
@@ -297,7 +389,7 @@ paths:
         - BearerAuth: []
       responses:
         '200':
-          description: "Danh sách đơn hàng"
+          description: 'Danh sách đơn hàng'
           content:
             application/json:
               schema:
@@ -317,7 +409,7 @@ paths:
             type: string
       responses:
         '200':
-          description: "Chi tiết đơn hàng"
+          description: 'Chi tiết đơn hàng'
           content:
             application/json:
               schema:
@@ -338,7 +430,7 @@ paths:
               $ref: '#/components/schemas/PaymentBody'
       responses:
         '200':
-          description: "Thanh toán thành công"
+          description: 'Thanh toán thành công'
           content:
             application/json:
               schema:
@@ -357,7 +449,7 @@ paths:
             type: string
       responses:
         '200':
-          description: "Danh sách đánh giá"
+          description: 'Danh sách đánh giá'
           content:
             application/json:
               schema:
@@ -381,7 +473,7 @@ paths:
               $ref: '#/components/schemas/ReviewBody'
       responses:
         '200':
-          description: "Gửi đánh giá thành công"
+          description: 'Gửi đánh giá thành công'
           content:
             application/json:
               schema:
@@ -400,7 +492,7 @@ paths:
               $ref: '#/components/schemas/LogBody'
       responses:
         '200':
-          description: "Đã ghi log"
+          description: 'Đã ghi log'
           content:
             application/json:
               schema:
@@ -428,7 +520,7 @@ paths:
             type: string
       responses:
         '200':
-          description: "Thống kê doanh thu"
+          description: 'Thống kê doanh thu'
           content:
             application/json:
               schema:

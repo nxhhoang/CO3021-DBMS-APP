@@ -1,11 +1,19 @@
-import js from '@eslint/js';
+import js from '@eslint/js'
 import eslintPluginPrettier from 'eslint-plugin-prettier'
-import globals from "globals";
-import tseslint from "typescript-eslint";
-import { defineConfig } from "eslint/config";
+import globals from 'globals'
+import tseslint from 'typescript-eslint'
+import { defineConfig } from 'eslint/config'
 
 export default defineConfig([
-  { files: ["**/*.{js,mjs,cjs,ts,mts,cts}"], plugins: { js }, extends: ["js/recommended"], languageOptions: { globals: globals.browser } },
+  {
+    ignores: ['**/node_modules/', '**/dist/']
+  },
+  {
+    files: ['**/*.{js,mjs,cjs,ts,mts,cts}'],
+    plugins: { js },
+    extends: ['js/recommended'],
+    languageOptions: { globals: globals.browser }
+  },
   tseslint.configs.recommended,
   {
     plugins: {
@@ -13,7 +21,7 @@ export default defineConfig([
     },
     rules: {
       '@typescript-eslint/no-explicit-any': 'warn',
-      '@typescript-eslint/no-unused-vars': 'warn',
+      '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
       'prettier/prettier': [
         'warn',
         {
@@ -28,7 +36,6 @@ export default defineConfig([
           jsxSingleQuote: true
         }
       ]
-    },
-    ignores: ['**/node_modules/', '**/dist/']
+    }
   }
-]);
+])

@@ -1,85 +1,77 @@
+export const AUTH_MESSAGES = {
+  // Register
+  REGISTER_SUCCESS: 'Đăng ký thành công',
+  EMAIL_ALREADY_EXISTS: 'Email đã tồn tại',
+  // Login
+  LOGIN_SUCCESS: 'Đăng nhập thành công',
+  EMAIL_OR_PASSWORD_IS_INCORRECT: 'Email hoặc mật khẩu không đúng',
+  // Token
+  ACCESS_TOKEN_IS_REQUIRED: 'Access token là bắt buộc',
+  ACCESS_TOKEN_IS_INVALID: 'Access token không hợp lệ',
+  REFRESH_TOKEN_IS_REQUIRED: 'Refresh token là bắt buộc',
+  REFRESH_TOKEN_IS_INVALID: 'Refresh token không hợp lệ hoặc đã được sử dụng',
+  REFRESH_TOKEN_SUCCESS: 'Cấp lại token thành công',
+  // Logout
+  LOGOUT_SUCCESS: 'Đăng xuất thành công',
+  // Validation
+  VALIDATION_ERROR: 'Validation error',
+  EMAIL_IS_REQUIRED: 'Email là bắt buộc',
+  EMAIL_IS_INVALID: 'Email không hợp lệ',
+  PASSWORD_IS_REQUIRED: 'Mật khẩu là bắt buộc',
+  PASSWORD_MUST_BE_STRONG:
+    'Mật khẩu phải từ 6-50 ký tự và có ít nhất 1 chữ thường, 1 chữ hoa, 1 số và 1 ký tự đặc biệt',
+  FULL_NAME_IS_REQUIRED: 'Họ tên là bắt buộc',
+  PHONE_NUM_IS_REQUIRED: 'Số điện thoại là bắt buộc',
+  PHONE_NUM_IS_INVALID: 'Số điện thoại không hợp lệ'
+} as const
+
+export const USER_MESSAGES = {
+  GET_PROFILE_SUCCESS: 'Lấy thông tin thành công',
+  UPDATE_PROFILE_SUCCESS: 'Cập nhật hồ sơ thành công',
+  USER_NOT_FOUND: 'Người dùng không tồn tại',
+  FORBIDDEN: 'Bạn không có quyền thực hiện hành động này',
+  // Address
+  GET_ADDRESSES_SUCCESS: 'Lấy danh sách địa chỉ thành công',
+  CREATE_ADDRESS_SUCCESS: 'Thêm địa chỉ thành công',
+  UPDATE_ADDRESS_SUCCESS: 'Cập nhật địa chỉ thành công',
+  DELETE_ADDRESS_SUCCESS: 'Đã xóa địa chỉ',
+  SET_DEFAULT_ADDRESS_SUCCESS: 'Đã đặt làm địa chỉ mặc định',
+  ADDRESS_NOT_FOUND: 'Địa chỉ không tồn tại',
+  ADDRESS_LINE_IS_REQUIRED: 'Địa chỉ cụ thể là bắt buộc',
+  CITY_IS_REQUIRED: 'Thành phố là bắt buộc',
+  DISTRICT_IS_REQUIRED: 'Quận/Huyện là bắt buộc'
+} as const
+
+export const ORDER_MESSAGES = {
+  CHECKOUT_SUCCESS: 'Đặt hàng thành công',
+  GET_ORDERS_SUCCESS: 'Danh sách đơn hàng',
+  GET_ORDER_DETAIL_SUCCESS: 'Chi tiết đơn hàng',
+  UPDATE_ORDER_STATUS_SUCCESS: 'Cập nhật trạng thái đơn hàng thành công',
+  ORDER_NOT_FOUND: 'Đơn hàng không tồn tại',
+  OUT_OF_STOCK: 'OUT_OF_STOCK',
+  INVALID_PAYMENT_METHOD: 'Phương thức thanh toán không hợp lệ',
+  INVALID_ORDER_STATUS: 'Trạng thái đơn hàng không hợp lệ',
+  ITEMS_ARE_REQUIRED: 'Danh sách sản phẩm là bắt buộc',
+  SHIPPING_ADDRESS_IS_REQUIRED: 'Địa chỉ giao hàng là bắt buộc'
+} as const
+
+export const PAYMENT_MESSAGES = {
+  PROCESS_SUCCESS: 'Thanh toán thành công',
+  PAYMENT_NOT_FOUND: 'Thanh toán không tồn tại',
+  ORDER_ALREADY_PAID: 'Đơn hàng đã được thanh toán'
+} as const
+
+export const STAT_MESSAGES = {
+  GET_REVENUE_SUCCESS: 'Thống kê doanh thu',
+  START_DATE_IS_REQUIRED: 'startDate là bắt buộc',
+  END_DATE_IS_REQUIRED: 'endDate là bắt buộc'
+} as const
+
+// Keep for backward compat with sample
 export const USERS_MESSAGES = {
   VALIDATION_ERROR: 'Validation error',
-  NAME_IS_REQUIRED: 'Name is required',
-  NAME_MUST_BE_A_STRING: 'Name must be a string',
-  NAME_LENGTH_MUST_BE_FROM_1_TO_100: 'Name length must be from 1 to 100',
-  EMAIL_ALREADY_EXISTS: 'Email already exists',
-  EMAIL_IS_REQUIRED: 'Email is required',
-  EMAIL_IS_INVALID: 'Email is invalid',
-  EMAIL_OR_PASSWORD_IS_INCORRECT: 'Email or password is incorrect',
-  PASSWORD_IS_REQUIRED: 'Password is required',
-  PASSWORD_MUST_BE_A_STRING: 'Password must be a string',
-  PASSWORD_LENGTH_MUST_BE_FROM_6_TO_50: 'Password length must be from 6 to 50',
-  PASSWORD_MUST_BE_STRONG:
-    'Password must be 6-50 characters long and contain at least 1 lowercase letter, 1 uppercase letter, 1 number, and 1 symbol',
-  CONFIRM_PASSWORD_IS_REQUIRED: 'Confirm password is required',
-  CONFIRM_PASSWORD_MUST_BE_A_STRING: 'Confirm password must be a string',
-  CONFIRM_PASSWORD_LENGTH_MUST_BE_FROM_6_TO_50: 'Confirm password length must be from 6 to 50',
-  CONFIRM_PASSWORD_MUST_BE_STRONG:
-    'Confirm password must be 6-50 characters long and contain at least 1 lowercase letter, 1 uppercase letter, 1 number, and 1 symbol',
-  CONFIRM_PASSWORD_MUST_BE_THE_SAME_AS_PASSWORD: 'Confirm password must be the same as password',
-  DATE_OF_BIRTH_MUST_BE_ISO8601: 'Date of birth must be ISO8601',
-  LOGIN_SUCCESS: 'Login success',
-  REGISTER_SUCCESS: 'Register success',
-  ACCESS_TOKEN_IS_REQUIRED: 'Access token is required',
-  REFRESH_TOKEN_IS_REQUIRED: 'Refresh token is required',
-  REFRESH_TOKEN_IS_INVALID: 'Refresh token is invalid',
-  USED_REFRESH_TOKEN_OR_NOT_EXIST: 'Used refresh token or not exist',
-  LOGOUT_SUCCESS: 'Logout success',
-  EMAIL_VERIFY_TOKEN_IS_REQUIRED: 'Email verify token is required',
-  USER_NOT_FOUND: 'User not found',
-  EMAIL_ALREADY_VERIFIED_BEFORE: 'Email already verified before',
-  EMAIL_VERIFY_SUCCESS: 'Email verify success',
-  RESEND_VERIFY_EMAIL_SUCCESS: 'Resend verify email success',
-  CHECK_EMAIL_TO_RESET_PASSWORD: 'Check email to reset password',
-  FORGOT_PASSWORD_TOKEN_IS_REQUIRED: 'Forgot password token is required',
-  VERIFY_FORGOT_PASSWORD_SUCCESS: 'Verify forgot password success',
-  INVALID_FORGOT_PASSWORD_TOKEN: 'Invalid forgot password token',
-  RESET_PASSWORD_SUCCESS: 'Reset password success',
-  GET_ME_SUCCESS: 'Get my profile success',
-  USER_NOT_VERIFIED: 'User not verified',
-  BIO_MUST_BE_STRING: 'Bio must be a string',
-  BIO_LENGTH: 'Bio length must be from 1 to 200',
-  LOCATION_MUST_BE_STRING: 'Location must be a string',
-  LOCATION_LENGTH: 'Location length must be from 1 to 200',
-  WEBSITE_MUST_BE_STRING: 'Website must be a string',
-  WEBSITE_LENGTH: 'Website length must be from 1 to 200',
-  USERNAME_MUST_BE_STRING: 'Username must be a string',
-  USERNAME_INVALID:
-    'Username must be 4-15 characters long and contain only letters, numbers, underscores, not only numbers',
-  IMAGE_URL_MUST_BE_STRING: 'Avatar must be a string',
-  IMAGE_URL_LENGTH: 'Avatar length must be from 1 to 200',
-  UPDATE_ME_SUCCESS: 'Update my profile success',
-  GET_PROFILE_SUCCESS: 'Get profile success',
-  FOLLOW_SUCCESS: 'Follow success',
-  INVALID_USER_ID: 'Invalid user id',
-  FOLLOWED: 'Followed',
-  ALREADY_UNFOLLOWED: 'Already unfollowed',
-  UNFOLLOW_SUCCESS: 'Unfollow success',
-  USERNAME_EXISTED: 'Username existed',
-  OLD_PASSWORD_NOT_MATCH: 'Old password not match',
-  CHANGE_PASSWORD_SUCCESS: 'Change password success',
-  GMAIL_NOT_VERIFIED: 'Gmail not verified',
-  UPLOAD_SUCCESS: 'Upload success',
-  REFRESH_TOKEN_SUCCESS: 'Refresh token success',
-  GET_VIDEO_STATUS_SUCCESS: 'Get video status success'
+  ACCESS_TOKEN_IS_REQUIRED: 'Access token là bắt buộc'
 } as const
-
-export const TWEETS_MESSAGES = {
-  INVALID_TYPE: 'Invalid type',
-  INVALID_AUDIENCE: 'Invalid audience',
-  PARENT_ID_MUST_BE_A_VALID_TWEET_ID: 'Parent id must be a valid tweet id',
-  PARENT_ID_MUST_BE_NULL: 'Parent id must be null',
-  CONTENT_MUST_BE_A_NON_EMPTY_STRING: 'Content must be a non-empty string',
-  CONTENT_MUST_BE_EMPTY_STRING: 'Content must be empty string',
-  HASHTAGS_MUST_BE_AN_ARRAY_OF_STRING: 'Hashtags must be an array of string',
-  MENTIONS_MUST_BE_AN_ARRAY_OF_USER_ID: 'Mentions must be an array of user id',
-  MEDIAS_MUST_BE_AN_ARRAY_OF_MEDIA_OBJECT: 'Medias must be an array of media object',
-  INVALID_TWEET_ID: 'Invalid tweet id',
-  TWEET_NOT_FOUND: 'Tweet not found',
-  TWEET_IS_NOT_PUBLIC: 'Tweet is not public'
-} as const
-
 export const BOOKMARK_MESSAGES = {
   BOOKMARK_SUCCESSFULLY: 'Bookmark successfully',
   UNBOOKMARK_SUCCESSFULLY: 'Unbookmark successfully'
@@ -89,3 +81,54 @@ export const LIKE_MESSAGES = {
   LIKE_SUCCESSFULLY: 'Like successfully',
   UNLIKE_SUCCESSFULLY: 'Unlike successfully'
 }
+
+export const CATEGORY_MESSAGES = {
+  CATEGORIES_FETCHED: 'Get categories successfully',
+  CATEGORY_FETCHED: 'Get category successfully',
+  CATEGORY_CREATED: 'Category created successfully',
+  CATEGORY_UPDATED: 'Category updated successfully',
+  CATEGORY_DELETED: 'Category deleted successfully (hidden)',
+  CATEGORY_NOT_FOUND: 'Category not found',
+  CATEGORY_SLUG_ALREADY_EXISTS: 'Category slug already exists',
+  CATEGORY_ID_INVALID: 'Category id is invalid'
+} as const
+
+export const PRODUCT_MESSAGES = {
+  PRODUCTS_FETCHED: 'Get products successfully',
+  PRODUCT_FETCHED: 'Get product detail successfully',
+  PRODUCT_CREATED: 'Product created successfully',
+  PRODUCT_UPDATED: 'Product updated successfully',
+  PRODUCT_DELETED: 'Product deleted successfully (inactive)',
+  PRODUCT_NOT_FOUND: 'Product not found',
+  PRODUCT_ID_INVALID: 'Product id is invalid',
+  CATEGORY_NOT_ACTIVE: 'Category does not exist or is inactive'
+} as const
+
+export const REVIEW_MESSAGES = {
+  REVIEWS_FETCHED: 'Get reviews successfully',
+  REVIEW_CREATED: 'Review submitted successfully',
+  REVIEW_RATING_INVALID: 'Rating must be an integer between 1 and 5',
+  REVIEW_COMMENT_REQUIRED: 'Comment is required',
+  TARGET_ID_REQUIRED: 'Target ID is required'
+} as const
+
+export const LOG_MESSAGES = {
+  LOG_CREATED: 'Log recorded',
+  LOG_ACTION_TYPE_INVALID: 'action_type is invalid'
+} as const
+
+export const INVENTORY_MESSAGES = {
+  PRODUCT_ID_IS_REQUIRED: 'Product ID is required',
+  PRODUCT_ID_MUST_BE_A_STRING: 'Product ID must be a string',
+  PRODUCT_ID_IS_INVALID: 'Product ID is invalid',
+  SKU_IS_REQUIRED: 'SKU is required',
+  SKU_MUST_BE_A_STRING: 'SKU must be a string',
+  STOCK_QUANTITY_IS_REQUIRED: 'Stock quantity is required',
+  STOCK_QUANTITY_MUST_BE_A_POSITIVE_INTEGER: 'Stock quantity must be a positive integer',
+  CREATE_INVENTORY_SUCCESS: 'Create inventory successfully',
+  UPDATE_INVENTORY_SUCCESS: 'Update inventory quantity successfully',
+  GET_INVENTORY_SUCCESS: 'Get inventory successfully',
+  INVENTORY_SKU_ALREADY_EXISTS: 'Inventory for this SKU already exists',
+  INVENTORY_NOT_FOUND: 'Inventory record not found',
+  INSUFFICIENT_STOCK: 'Insufficient stock for the requested item'
+} as const

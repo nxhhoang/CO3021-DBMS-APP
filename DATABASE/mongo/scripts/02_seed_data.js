@@ -177,19 +177,347 @@ const seedData = [
     {
         product: { categoryID: catIds.laptop, name: "MacBook Pro M3", slug: "macbook-pro-m3", basePrice: 40000000, description: "Apple M3 Chip", attributes: { brand: "Apple", cpu: "M3", gpu: "10-core", screenSize: 14, battery: 70, weight: 1.55, os: "macOS" }, isActive: true, avgRating: 4.9, totalReviews: 12, totalSold: 50, createdAt: new Date() },
         skus: [
+            // 8 - 256 - 3 
             { sku: "MBP-M3-8-256-SLV", skuPrice: 40000000, attributes: { ram: "8GB", storage: "256GB", color: "silver" } },
-            { sku: "MBP-M3-16-512-SLV", skuPrice: 50000000, attributes: { ram: "16GB", storage: "512GB", color: "silver" } },
-            { sku: "MBP-M3-16-512-GRY", skuPrice: 50000000, attributes: { ram: "16GB", storage: "512GB", color: "gray" } }
+            { sku: "MBP-M3-8-256-GRY", skuPrice: 40000000, attributes: { ram: "8GB", storage: "256GB", color: "gray" } },
+            { sku: "MBP-M3-8-256-BLK", skuPrice: 40000000, attributes: { ram: "8GB", storage: "256GB", color: "black" } },
+
+            // 16 - 256 - 3
+            { sku: "MBP-M3-16-256-SLV", skuPrice: 41000000, attributes: { ram: "16GB", storage: "256GB", color: "silver" } },
+            { sku: "MBP-M3-16-256-GRY", skuPrice: 41000000, attributes: { ram: "16GB", storage: "256GB", color: "gray" } },
+            { sku: "MBP-M3-16-256-BLK", skuPrice: 41000000, attributes: { ram: "16GB", storage: "256GB", color: "black" } },
+
+            // 32 - 256 - 3
+            { sku: "MBP-M3-32-256-SLV", skuPrice: 42000000, attributes: { ram: "32GB", storage: "256GB", color: "silver" } },
+            { sku: "MBP-M3-32-256-GRY", skuPrice: 42000000, attributes: { ram: "32GB", storage: "256GB", color: "gray" } },
+            { sku: "MBP-M3-32-256-BLK", skuPrice: 42000000, attributes: { ram: "32GB", storage: "256GB", color: "black" } },
+            
+            // 8 - 512 - 3 
+            { sku: "MBP-M3-8-512-SLV", skuPrice: 50000000, attributes: { ram: "8GB", storage: "512GB", color: "silver" } },
+            { sku: "MBP-M3-8-512-GRY", skuPrice: 50000000, attributes: { ram: "8GB", storage: "512GB", color: "gray" } },
+            { sku: "MBP-M3-8-512-BLK", skuPrice: 50000000, attributes: { ram: "8GB", storage: "512GB", color: "black" } },
+            
+            // 16 - 512 - 3
+            { sku: "MBP-M3-16-512-SLV", skuPrice: 51000000, attributes: { ram: "16GB", storage: "512GB", color: "silver" } },
+            { sku: "MBP-M3-16-512-GRY", skuPrice: 51000000, attributes: { ram: "16GB", storage: "512GB", color: "gray" } },
+            { sku: "MBP-M3-16-512-BLK", skuPrice: 51000000, attributes: { ram: "16GB", storage: "512GB", color: "black" } },
+
+            // 32 - 512 - 3
+            { sku: "MBP-M3-32-512-SLV", skuPrice: 52000000, attributes: { ram: "32GB", storage: "512GB", color: "silver" } },
+            { sku: "MBP-M3-32-512-GRY", skuPrice: 52000000, attributes: { ram: "32GB", storage: "512GB", color: "gray" } },
+            { sku: "MBP-M3-32-512-BLK", skuPrice: 52000000, attributes: { ram: "32GB", storage: "512GB", color: "black" } },
+            
+            // 8 - 1TB - 3 
+            { sku: "MBP-M3-8-1024-SLV", skuPrice: 60000000, attributes: { ram: "8GB", storage: "1TB", color: "silver" } },
+            { sku: "MBP-M3-8-1024-GRY", skuPrice: 60000000, attributes: { ram: "8GB", storage: "1TB", color: "gray" } },
+            { sku: "MBP-M3-8-1024-BLK", skuPrice: 60000000, attributes: { ram: "8GB", storage: "1TB", color: "black" } },
+            
+            // 16 - 1TB - 3
+            { sku: "MBP-M3-16-1024-SLV", skuPrice: 61000000, attributes: { ram: "16GB", storage: "1TB", color: "silver" } },
+            { sku: "MBP-M3-16-1024-GRY", skuPrice: 61000000, attributes: { ram: "16GB", storage: "1TB", color: "gray" } },
+            { sku: "MBP-M3-16-1024-BLK", skuPrice: 61000000, attributes: { ram: "16GB", storage: "1TB", color: "black" } },
+
+            // 32 - 1TB - 3
+            { sku: "MBP-M3-32-1024-SLV", skuPrice: 62000000, attributes: { ram: "32GB", storage: "1TB", color: "silver" } },
+            { sku: "MBP-M3-32-1024-GRY", skuPrice: 62000000, attributes: { ram: "32GB", storage: "1TB", color: "gray" } },
+            { sku: "MBP-M3-32-1024-BLK", skuPrice: 62000000, attributes: { ram: "32GB", storage: "1TB", color: "black" } }
         ]
     },
     {
         product: { categoryID: catIds.laptop, name: "Dell XPS 15", slug: "dell-xps-15", basePrice: 35000000, description: "Dell XPS 15 Ultra", attributes: { brand: "Dell", cpu: "Core i7", gpu: "RTX 4050", screenSize: 15.6, battery: 86, weight: 1.9, os: "Windows 11" }, isActive: true, avgRating: 4.7, totalReviews: 8, totalSold: 30, createdAt: new Date() },
         skus: [
-            { sku: "DXPS-16-512-BLK", skuPrice: 35000000, attributes: { ram: "16GB", storage: "512GB", color: "black" } },
-            { sku: "DXPS-32-1TB-BLK", skuPrice: 45000000, attributes: { ram: "32GB", storage: "1TB", color: "black" } },
-            { sku: "DXPS-32-1TB-SLV", skuPrice: 45000000, attributes: { ram: "32GB", storage: "1TB", color: "silver" } }
+            // 8 - 256 - 3 
+            { sku: "DXPS-M3-8-256-SLV", skuPrice: 35000000, attributes: { ram: "8GB", storage: "256GB", color: "silver" } },
+            { sku: "DXPS-M3-8-256-GRY", skuPrice: 35000000, attributes: { ram: "8GB", storage: "256GB", color: "gray" } },
+            { sku: "DXPS-M3-8-256-BLK", skuPrice: 35000000, attributes: { ram: "8GB", storage: "256GB", color: "black" } },
+
+            // 16 - 256 - 3
+            { sku: "DXPS-M3-16-256-SLV", skuPrice: 36000000, attributes: { ram: "16GB", storage: "256GB", color: "silver" } },
+            { sku: "DXPS-M3-16-256-GRY", skuPrice: 36000000, attributes: { ram: "16GB", storage: "256GB", color: "gray" } },
+            { sku: "DXPS-M3-16-256-BLK", skuPrice: 36000000, attributes: { ram: "16GB", storage: "256GB", color: "black" } },
+
+            // 32 - 256 - 3
+            { sku: "DXPS-M3-32-256-SLV", skuPrice: 37000000, attributes: { ram: "32GB", storage: "256GB", color: "silver" } },
+            { sku: "DXPS-M3-32-256-GRY", skuPrice: 37000000, attributes: { ram: "32GB", storage: "256GB", color: "gray" } },
+            { sku: "DXPS-M3-32-256-BLK", skuPrice: 37000000, attributes: { ram: "32GB", storage: "256GB", color: "black" } },
+
+            // 8 - 512 - 3 
+            { sku: "DXPS-M3-8-512-SLV", skuPrice: 45000000, attributes: { ram: "8GB", storage: "512GB", color: "silver" } },
+            { sku: "DXPS-M3-8-512-GRY", skuPrice: 45000000, attributes: { ram: "8GB", storage: "512GB", color: "gray" } },
+            { sku: "DXPS-M3-8-512-BLK", skuPrice: 45000000, attributes: { ram: "8GB", storage: "512GB", color: "black" } },
+
+            // 16 - 512 - 3
+            { sku: "DXPS-M3-16-512-SLV", skuPrice: 46000000, attributes: { ram: "16GB", storage: "512GB", color: "silver" } },
+            { sku: "DXPS-M3-16-512-GRY", skuPrice: 46000000, attributes: { ram: "16GB", storage: "512GB", color: "gray" } },
+            { sku: "DXPS-M3-16-512-BLK", skuPrice: 46000000, attributes: { ram: "16GB", storage: "512GB", color: "black" } },
+
+            // 32 - 512 - 3
+            { sku: "DXPS-M3-32-512-SLV", skuPrice: 47000000, attributes: { ram: "32GB", storage: "512GB", color: "silver" } },
+            { sku: "DXPS-M3-32-512-GRY", skuPrice: 47000000, attributes: { ram: "32GB", storage: "512GB", color: "gray" } },
+            { sku: "DXPS-M3-32-512-BLK", skuPrice: 47000000, attributes: { ram: "32GB", storage: "512GB", color: "black" } },
+
+            // 8 - 1TB - 3 
+            { sku: "DXPS-M3-8-1024-SLV", skuPrice: 55000000, attributes: { ram: "8GB", storage: "1TB", color: "silver" } },
+            { sku: "DXPS-M3-8-1024-GRY", skuPrice: 55000000, attributes: { ram: "8GB", storage: "1TB", color: "gray" } },
+            { sku: "DXPS-M3-8-1024-BLK", skuPrice: 55000000, attributes: { ram: "8GB", storage: "1TB", color: "black" } },
+
+            // 16 - 1TB - 3
+            { sku: "DXPS-M3-16-1024-SLV", skuPrice: 56000000, attributes: { ram: "16GB", storage: "1TB", color: "silver" } },
+            { sku: "DXPS-M3-16-1024-GRY", skuPrice: 56000000, attributes: { ram: "16GB", storage: "1TB", color: "gray" } },
+            { sku: "DXPS-M3-16-1024-BLK", skuPrice: 56000000, attributes: { ram: "16GB", storage: "1TB", color: "black" } },
+
+            // 32 - 1TB - 3
+            { sku: "DXPS-M3-32-1024-SLV", skuPrice: 57000000, attributes: { ram: "32GB", storage: "1TB", color: "silver" } },
+            { sku: "DXPS-M3-32-1024-GRY", skuPrice: 57000000, attributes: { ram: "32GB", storage: "1TB", color: "gray" } },
+            { sku: "DXPS-M3-32-1024-BLK", skuPrice: 57000000, attributes: { ram: "32GB", storage: "1TB", color: "black" } }
         ]
     },
+    {
+        product: {categoryID: catIds.laptop, name: "ASUS ROG Zephyrus G14", slug: "asus-rog-zephyrus-g14",
+            basePrice: 38000000, description: "Powerful compact gaming laptop", attributes: { brand: "ASUS", cpu: "Ryzen 9", gpu: "RTX 4060", screenSize: 14, battery: 76, weight: 1.7, os: "Windows 11"}, isActive: true,avgRating: 4.8, totalReviews: 12, totalSold: 45, createdAt: new Date()},
+        skus: [
+            // 8 - 256 - 3 
+            { sku: "AZG14-R9-8-256-SLV", skuPrice: 38000000, attributes: { ram: "8GB", storage: "256GB", color: "silver" } },
+            { sku: "AZG14-R9-8-256-GRY", skuPrice: 38000000, attributes: { ram: "8GB", storage: "256GB", color: "gray" } },
+            { sku: "AZG14-R9-8-256-BLK", skuPrice: 38000000, attributes: { ram: "8GB", storage: "256GB", color: "black" } },
+
+            // 16 - 256 - 3
+            { sku: "AZG14-R9-16-256-SLV", skuPrice: 39000000, attributes: { ram: "16GB", storage: "256GB", color: "silver" } },
+            { sku: "AZG14-R9-16-256-GRY", skuPrice: 39000000, attributes: { ram: "16GB", storage: "256GB", color: "gray" } },
+            { sku: "AZG14-R9-16-256-BLK", skuPrice: 39000000, attributes: { ram: "16GB", storage: "256GB", color: "black" } },
+
+            // 32 - 256 - 3
+            { sku: "AZG14-R9-32-256-SLV", skuPrice: 40000000, attributes: { ram: "32GB", storage: "256GB", color: "silver" } },
+            { sku: "AZG14-R9-32-256-GRY", skuPrice: 40000000, attributes: { ram: "32GB", storage: "256GB", color: "gray" } },
+            { sku: "AZG14-R9-32-256-BLK", skuPrice: 40000000, attributes: { ram: "32GB", storage: "256GB", color: "black" } },
+
+            // 8 - 512 - 3 
+            { sku: "AZG14-R9-8-512-SLV", skuPrice: 48000000, attributes: { ram: "8GB", storage: "512GB", color: "silver" } },
+            { sku: "AZG14-R9-8-512-GRY", skuPrice: 48000000, attributes: { ram: "8GB", storage: "512GB", color: "gray" } },
+            { sku: "AZG14-R9-8-512-BLK", skuPrice: 48000000, attributes: { ram: "8GB", storage: "512GB", color: "black" } },
+
+            // 16 - 512 - 3
+            { sku: "AZG14-R9-16-512-SLV", skuPrice: 49000000, attributes: { ram: "16GB", storage: "512GB", color: "silver" } },
+            { sku: "AZG14-R9-16-512-GRY", skuPrice: 49000000, attributes: { ram: "16GB", storage: "512GB", color: "gray" } },
+            { sku: "AZG14-R9-16-512-BLK", skuPrice: 49000000, attributes: { ram: "16GB", storage: "512GB", color: "black" } },
+
+            // 32 - 512 - 3
+            { sku: "AZG14-R9-32-512-SLV", skuPrice: 50000000, attributes: { ram: "32GB", storage: "512GB", color: "silver" } },
+            { sku: "AZG14-R9-32-512-GRY", skuPrice: 50000000, attributes: { ram: "32GB", storage: "512GB", color: "gray" } },
+            { sku: "AZG14-R9-32-512-BLK", skuPrice: 50000000, attributes: { ram: "32GB", storage: "512GB", color: "black" } },
+
+            // 8 - 1TB - 3 
+            { sku: "AZG14-R9-8-1024-SLV", skuPrice: 58000000, attributes: { ram: "8GB", storage: "1TB", color: "silver" } },
+            { sku: "AZG14-R9-8-1024-GRY", skuPrice: 58000000, attributes: { ram: "8GB", storage: "1TB", color: "gray" } },
+            { sku: "AZG14-R9-8-1024-BLK", skuPrice: 58000000, attributes: { ram: "8GB", storage: "1TB", color: "black" } },
+
+            // 16 - 1TB - 3
+            { sku: "AZG14-R9-16-1024-SLV", skuPrice: 59000000, attributes: { ram: "16GB", storage: "1TB", color: "silver" } },
+            { sku: "AZG14-R9-16-1024-GRY", skuPrice: 59000000, attributes: { ram: "16GB", storage: "1TB", color: "gray" } },
+            { sku: "AZG14-R9-16-1024-BLK", skuPrice: 59000000, attributes: { ram: "16GB", storage: "1TB", color: "black" } },
+
+            // 32 - 1TB - 3
+            { sku: "AZG14-R9-32-1024-SLV", skuPrice: 60000000, attributes: { ram: "32GB", storage: "1TB", color: "silver" } },
+            { sku: "AZG14-R9-32-1024-GRY", skuPrice: 60000000, attributes: { ram: "32GB", storage: "1TB", color: "gray" } },
+            { sku: "AZG14-R9-32-1024-BLK", skuPrice: 60000000, attributes: { ram: "32GB", storage: "1TB", color: "black" } }
+        ]
+    },
+    {
+        product: { categoryID: catIds.laptop, name: "ASUS Zenbook 14 OLED", slug: "asus-zenbook-14-oled", basePrice: 30000000, description: "Sleek ultrabook with OLED display", attributes: { brand: "ASUS", cpu: "Core i7", gpu: "Intel Iris Xe", screenSize: 14, battery: 75, weight: 1.4, os: "Windows 11"}, isActive: true,avgRating: 4.6, totalReviews: 10, totalSold: 38, createdAt: new Date()},
+        skus: [
+            // 8 - 256 - 3 
+            { sku: "AZB14-I7-8-256-SLV", skuPrice: 30000000, attributes: { ram: "8GB", storage: "256GB", color: "silver" } },
+            { sku: "AZB14-I7-8-256-GRY", skuPrice: 30000000, attributes: { ram: "8GB", storage: "256GB", color: "gray" } },
+            { sku: "AZB14-I7-8-256-BLK", skuPrice: 30000000, attributes: { ram: "8GB", storage: "256GB", color: "black" } },
+
+            // 16 - 256 - 3
+            { sku: "AZB14-I7-16-256-SLV", skuPrice: 31000000, attributes: { ram: "16GB", storage: "256GB", color: "silver" } },
+            { sku: "AZB14-I7-16-256-GRY", skuPrice: 31000000, attributes: { ram: "16GB", storage: "256GB", color: "gray" } },
+            { sku: "AZB14-I7-16-256-BLK", skuPrice: 31000000, attributes: { ram: "16GB", storage: "256GB", color: "black" } },
+
+            // 32 - 256 - 3
+            { sku: "AZB14-I7-32-256-SLV", skuPrice: 32000000, attributes: { ram: "32GB", storage: "256GB", color: "silver" } },
+            { sku: "AZB14-I7-32-256-GRY", skuPrice: 32000000, attributes: { ram: "32GB", storage: "256GB", color: "gray" } },
+            { sku: "AZB14-I7-32-256-BLK", skuPrice: 32000000, attributes: { ram: "32GB", storage: "256GB", color: "black" } },
+
+            // 8 - 512 - 3 
+            { sku: "AZB14-I7-8-512-SLV", skuPrice: 40000000, attributes: { ram: "8GB", storage: "512GB", color: "silver" } },
+            { sku: "AZB14-I7-8-512-GRY", skuPrice: 40000000, attributes: { ram: "8GB", storage: "512GB", color: "gray" } },
+            { sku: "AZB14-I7-8-512-BLK", skuPrice: 40000000, attributes: { ram: "8GB", storage: "512GB", color: "black" } },
+
+            // 16 - 512 - 3
+            { sku: "AZB14-I7-16-512-SLV", skuPrice: 41000000, attributes: { ram: "16GB", storage: "512GB", color: "silver" } },
+            { sku: "AZB14-I7-16-512-GRY", skuPrice: 41000000, attributes: { ram: "16GB", storage: "512GB", color: "gray" } },
+            { sku: "AZB14-I7-16-512-BLK", skuPrice: 41000000, attributes: { ram: "16GB", storage: "512GB", color: "black" } },
+
+            // 32 - 512 - 3
+            { sku: "AZB14-I7-32-512-SLV", skuPrice: 42000000, attributes: { ram: "32GB", storage: "512GB", color: "silver" } },
+            { sku: "AZB14-I7-32-512-GRY", skuPrice: 42000000, attributes: { ram: "32GB", storage: "512GB", color: "gray" } },
+            { sku: "AZB14-I7-32-512-BLK", skuPrice: 42000000, attributes: { ram: "32GB", storage: "512GB", color: "black" } },
+
+            // 8 - 1TB - 3 
+            { sku: "AZB14-I7-8-1024-SLV", skuPrice: 50000000, attributes: { ram: "8GB", storage: "1TB", color: "silver" } },
+            { sku: "AZB14-I7-8-1024-GRY", skuPrice: 50000000, attributes: { ram: "8GB", storage: "1TB", color: "gray" } },
+            { sku: "AZB14-I7-8-1024-BLK", skuPrice: 50000000, attributes: { ram: "8GB", storage: "1TB", color: "black" } },
+
+            // 16 - 1TB - 3
+            { sku: "AZB14-I7-16-1024-SLV", skuPrice: 51000000, attributes: { ram: "16GB", storage: "1TB", color: "silver" } },
+            { sku: "AZB14-I7-16-1024-GRY", skuPrice: 51000000, attributes: { ram: "16GB", storage: "1TB", color: "gray" } },
+            { sku: "AZB14-I7-16-1024-BLK", skuPrice: 51000000, attributes: { ram: "16GB", storage: "1TB", color: "black" } },
+
+            // 32 - 1TB - 3
+            { sku: "AZB14-I7-32-1024-SLV", skuPrice: 52000000, attributes: { ram: "32GB", storage: "1TB", color: "silver" } },
+            { sku: "AZB14-I7-32-1024-GRY", skuPrice: 52000000, attributes: { ram: "32GB", storage: "1TB", color: "gray" } },
+            { sku: "AZB14-I7-32-1024-BLK", skuPrice: 52000000, attributes: { ram: "32GB", storage: "1TB", color: "black" } }
+        ]
+    },
+    {
+        product: { categoryID: catIds.laptop, name: "MacBook Pro 14 M3", slug: "macbook-pro-14-m3", basePrice: 42000000, description: "High-performance laptop with Apple M3 chip", attributes: { brand: "Apple", cpu: "Apple M3", gpu: "Integrated", screenSize: 14.2, battery: 72, weight: 1.6, os: "macOS"}, isActive: true, avgRating: 4.9, totalReviews: 15, totalSold: 50, createdAt: new Date()}, 
+        skus: [
+            // 8 - 256 - 3 
+            { sku: "MBP14-M3-8-256-SLV", skuPrice: 42000000, attributes: { ram: "8GB", storage: "256GB", color: "silver" } },
+            { sku: "MBP14-M3-8-256-GRY", skuPrice: 42000000, attributes: { ram: "8GB", storage: "256GB", color: "gray" } },
+            { sku: "MBP14-M3-8-256-BLK", skuPrice: 42000000, attributes: { ram: "8GB", storage: "256GB", color: "black" } },
+
+            // 16 - 256 - 3
+            { sku: "MBP14-M3-16-256-SLV", skuPrice: 43000000, attributes: { ram: "16GB", storage: "256GB", color: "silver" } },
+            { sku: "MBP14-M3-16-256-GRY", skuPrice: 43000000, attributes: { ram: "16GB", storage: "256GB", color: "gray" } },
+            { sku: "MBP14-M3-16-256-BLK", skuPrice: 43000000, attributes: { ram: "16GB", storage: "256GB", color: "black" } },
+
+            // 32 - 256 - 3
+            { sku: "MBP14-M3-32-256-SLV", skuPrice: 44000000, attributes: { ram: "32GB", storage: "256GB", color: "silver" } },
+            { sku: "MBP14-M3-32-256-GRY", skuPrice: 44000000, attributes: { ram: "32GB", storage: "256GB", color: "gray" } },
+            { sku: "MBP14-M3-32-256-BLK", skuPrice: 44000000, attributes: { ram: "32GB", storage: "256GB", color: "black" } },
+
+            // 8 - 512 - 3 
+            { sku: "MBP14-M3-8-512-SLV", skuPrice: 52000000, attributes: { ram: "8GB", storage: "512GB", color: "silver" } },
+            { sku: "MBP14-M3-8-512-GRY", skuPrice: 52000000, attributes: { ram: "8GB", storage: "512GB", color: "gray" } },
+            { sku: "MBP14-M3-8-512-BLK", skuPrice: 52000000, attributes: { ram: "8GB", storage: "512GB", color: "black" } },
+
+            // 16 - 512 - 3
+            { sku: "MBP14-M3-16-512-SLV", skuPrice: 53000000, attributes: { ram: "16GB", storage: "512GB", color: "silver" } },
+            { sku: "MBP14-M3-16-512-GRY", skuPrice: 53000000, attributes: { ram: "16GB", storage: "512GB", color: "gray" } },
+            { sku: "MBP14-M3-16-512-BLK", skuPrice: 53000000, attributes: { ram: "16GB", storage: "512GB", color: "black" } },
+
+            // 32 - 512 - 3
+            { sku: "MBP14-M3-32-512-SLV", skuPrice: 54000000, attributes: { ram: "32GB", storage: "512GB", color: "silver" } },
+            { sku: "MBP14-M3-32-512-GRY", skuPrice: 54000000, attributes: { ram: "32GB", storage: "512GB", color: "gray" } },
+            { sku: "MBP14-M3-32-512-BLK", skuPrice: 54000000, attributes: { ram: "32GB", storage: "512GB", color: "black" } },
+
+            // 8 - 1TB - 3 
+            { sku: "MBP14-M3-8-1024-SLV", skuPrice: 62000000, attributes: { ram: "8GB", storage: "1TB", color: "silver" } },
+            { sku: "MBP14-M3-8-1024-GRY", skuPrice: 62000000, attributes: { ram: "8GB", storage: "1TB", color: "gray" } },
+            { sku: "MBP14-M3-8-1024-BLK", skuPrice: 62000000, attributes: { ram: "8GB", storage: "1TB", color: "black" } },
+
+            // 16 - 1TB - 3
+            { sku: "MBP14-M3-16-1024-SLV", skuPrice: 63000000, attributes: { ram: "16GB", storage: "1TB", color: "silver" } },
+            { sku: "MBP14-M3-16-1024-GRY", skuPrice: 63000000, attributes: { ram: "16GB", storage: "1TB", color: "gray" } },
+            { sku: "MBP14-M3-16-1024-BLK", skuPrice: 63000000, attributes: { ram: "16GB", storage: "1TB", color: "black" } },
+
+            // 32 - 1TB - 3
+            { sku: "MBP14-M3-32-1024-SLV", skuPrice: 64000000, attributes: { ram: "32GB", storage: "1TB", color: "silver" } },
+            { sku: "MBP14-M3-32-1024-GRY", skuPrice: 64000000, attributes: { ram: "32GB", storage: "1TB", color: "gray" } },
+            { sku: "MBP14-M3-32-1024-BLK", skuPrice: 64000000, attributes: { ram: "32GB", storage: "1TB", color: "black" } }
+        ]
+    },
+    {
+        product: { categoryID: catIds.laptop, name: "HP Spectre x360 14", slug: "hp-spectre-x360-14", basePrice: 32000000, description: "Premium 2-in-1 convertible laptop", attributes: { brand: "HP", cpu: "Core i7", gpu: "Intel Iris Xe", screenSize: 13.5, battery: 66, weight: 1.3, os: "Windows 11" }, isActive: true, avgRating: 4.7, totalReviews: 9, totalSold: 25, createdAt: new Date()},
+        skus: [
+            // 8 - 256 - 3 
+            { sku: "HPSX14-I7-8-256-SLV", skuPrice: 32000000, attributes: { ram: "8GB", storage: "256GB", color: "silver" } },
+            { sku: "HPSX14-I7-8-256-GRY", skuPrice: 32000000, attributes: { ram: "8GB", storage: "256GB", color: "gray" } },
+            { sku: "HPSX14-I7-8-256-BLK", skuPrice: 32000000, attributes: { ram: "8GB", storage: "256GB", color: "black" } },
+
+            // 16 - 256 - 3
+            { sku: "HPSX14-I7-16-256-SLV", skuPrice: 33000000, attributes: { ram: "16GB", storage: "256GB", color: "silver" } },
+            { sku: "HPSX14-I7-16-256-GRY", skuPrice: 33000000, attributes: { ram: "16GB", storage: "256GB", color: "gray" } },
+            { sku: "HPSX14-I7-16-256-BLK", skuPrice: 33000000, attributes: { ram: "16GB", storage: "256GB", color: "black" } },
+
+            // 32 - 256 - 3
+            { sku: "HPSX14-I7-32-256-SLV", skuPrice: 34000000, attributes: { ram: "32GB", storage: "256GB", color: "silver" } },
+            { sku: "HPSX14-I7-32-256-GRY", skuPrice: 34000000, attributes: { ram: "32GB", storage: "256GB", color: "gray" } },
+            { sku: "HPSX14-I7-32-256-BLK", skuPrice: 34000000, attributes: { ram: "32GB", storage: "256GB", color: "black" } },
+
+            // 8 - 512 - 3 
+            { sku: "HPSX14-I7-8-512-SLV", skuPrice: 42000000, attributes: { ram: "8GB", storage: "512GB", color: "silver" } },
+            { sku: "HPSX14-I7-8-512-GRY", skuPrice: 42000000, attributes: { ram: "8GB", storage: "512GB", color: "gray" } },
+            { sku: "HPSX14-I7-8-512-BLK", skuPrice: 42000000, attributes: { ram: "8GB", storage: "512GB", color: "black" } },
+
+            // 16 - 512 - 3
+            { sku: "HPSX14-I7-16-512-SLV", skuPrice: 43000000, attributes: { ram: "16GB", storage: "512GB", color: "silver" } },
+            { sku: "HPSX14-I7-16-512-GRY", skuPrice: 43000000, attributes: { ram: "16GB", storage: "512GB", color: "gray" } },
+            { sku: "HPSX14-I7-16-512-BLK", skuPrice: 43000000, attributes: { ram: "16GB", storage: "512GB", color: "black" } },
+
+            // 32 - 512 - 3
+            { sku: "HPSX14-I7-32-512-SLV", skuPrice: 44000000, attributes: { ram: "32GB", storage: "512GB", color: "silver" } },
+            { sku: "HPSX14-I7-32-512-GRY", skuPrice: 44000000, attributes: { ram: "32GB", storage: "512GB", color: "gray" } },
+            { sku: "HPSX14-I7-32-512-BLK", skuPrice: 44000000, attributes: { ram: "32GB", storage: "512GB", color: "black" } },
+
+            // 8 - 1TB - 3 
+            { sku: "HPSX14-I7-8-1024-SLV", skuPrice: 52000000, attributes: { ram: "8GB", storage: "1TB", color: "silver" } },
+            { sku: "HPSX14-I7-8-1024-GRY", skuPrice: 52000000, attributes: { ram: "8GB", storage: "1TB", color: "gray" } },
+            { sku: "HPSX14-I7-8-1024-BLK", skuPrice: 52000000, attributes: { ram: "8GB", storage: "1TB", color: "black" } },
+
+            // 16 - 1TB - 3
+            { sku: "HPSX14-I7-16-1024-SLV", skuPrice: 53000000, attributes: { ram: "16GB", storage: "1TB", color: "silver" } },
+            { sku: "HPSX14-I7-16-1024-GRY", skuPrice: 53000000, attributes: { ram: "16GB", storage: "1TB", color: "gray" } },
+            { sku: "HPSX14-I7-16-1024-BLK", skuPrice: 53000000, attributes: { ram: "16GB", storage: "1TB", color: "black" } },
+
+            // 32 - 1TB - 3
+            { sku: "HPSX14-I7-32-1024-SLV", skuPrice: 54000000, attributes: { ram: "32GB", storage: "1TB", color: "silver" } },
+            { sku: "HPSX14-I7-32-1024-GRY", skuPrice: 54000000, attributes: { ram: "32GB", storage: "1TB", color: "gray" } },
+            { sku: "HPSX14-I7-32-1024-BLK", skuPrice: 54000000, attributes: { ram: "32GB", storage: "1TB", color: "black" } }
+        ]
+    },
+    {
+        product: { categoryID: catIds.laptop, name: "ThinkPad X1 Carbon Gen 11", slug: "thinkpad-x1-carbon-gen-11", basePrice: 37000000, description: "Business-class lightweight laptop", attributes: { brand: "Lenovo", cpu: "Core i7", gpu: "Intel Iris Xe", screenSize: 14, battery: 57, weight: 1.1, os: "Windows 11" }, isActive: true, avgRating: 4.8, totalReviews: 11, totalSold: 40, createdAt: new Date()},
+        skus: [
+            // 8 - 256 - 3 
+            { sku: "TPX1G11-I7-8-256-SLV", skuPrice: 37000000, attributes: { ram: "8GB", storage: "256GB", color: "silver" } },
+            { sku: "TPX1G11-I7-8-256-GRY", skuPrice: 37000000, attributes: { ram: "8GB", storage: "256GB", color: "gray" } },
+            { sku: "TPX1G11-I7-8-256-BLK", skuPrice: 37000000, attributes: { ram: "8GB", storage: "256GB", color: "black" } },
+
+            // 16 - 256 - 3
+            { sku: "TPX1G11-I7-16-256-SLV", skuPrice: 38000000, attributes: { ram: "16GB", storage: "256GB", color: "silver" } },
+            { sku: "TPX1G11-I7-16-256-GRY", skuPrice: 38000000, attributes: { ram: "16GB", storage: "256GB", color: "gray" } },
+            { sku: "TPX1G11-I7-16-256-BLK", skuPrice: 38000000, attributes: { ram: "16GB", storage: "256GB", color: "black" } },
+
+            // 32 - 256 - 3
+            { sku: "TPX1G11-I7-32-256-SLV", skuPrice: 39000000, attributes: { ram: "32GB", storage: "256GB", color: "silver" } },
+            { sku: "TPX1G11-I7-32-256-GRY", skuPrice: 39000000, attributes: { ram: "32GB", storage: "256GB", color: "gray" } },
+            { sku: "TPX1G11-I7-32-256-BLK", skuPrice: 39000000, attributes: { ram: "32GB", storage: "256GB", color: "black" } },
+
+            // 8 - 512 - 3 
+            { sku: "TPX1G11-I7-8-512-SLV", skuPrice: 47000000, attributes: { ram: "8GB", storage: "512GB", color: "silver" } },
+            { sku: "TPX1G11-I7-8-512-GRY", skuPrice: 47000000, attributes: { ram: "8GB", storage: "512GB", color: "gray" } },
+            { sku: "TPX1G11-I7-8-512-BLK", skuPrice: 47000000, attributes: { ram: "8GB", storage: "512GB", color: "black" } },
+
+            // 16 - 512 - 3
+            { sku: "TPX1G11-I7-16-512-SLV", skuPrice: 48000000, attributes: { ram: "16GB", storage: "512GB", color: "silver" } },
+            { sku: "TPX1G11-I7-16-512-GRY", skuPrice: 48000000, attributes: { ram: "16GB", storage: "512GB", color: "gray" } },
+            { sku: "TPX1G11-I7-16-512-BLK", skuPrice: 48000000, attributes: { ram: "16GB", storage: "512GB", color: "black" } },
+
+            // 32 - 512 - 3
+            { sku: "TPX1G11-I7-32-512-SLV", skuPrice: 49000000, attributes: { ram: "32GB", storage: "512GB", color: "silver" } },
+            { sku: "TPX1G11-I7-32-512-GRY", skuPrice: 49000000, attributes: { ram: "32GB", storage: "512GB", color: "gray" } },
+            { sku: "TPX1G11-I7-32-512-BLK", skuPrice: 49000000, attributes: { ram: "32GB", storage: "512GB", color: "black" } },
+
+            // 8 - 1TB - 3 
+            { sku: "TPX1G11-I7-8-1024-SLV", skuPrice: 57000000, attributes: { ram: "8GB", storage: "1TB", color: "silver" } },
+            { sku: "TPX1G11-I7-8-1024-GRY", skuPrice: 57000000, attributes: { ram: "8GB", storage: "1TB", color: "gray" } },
+            { sku: "TPX1G11-I7-8-1024-BLK", skuPrice: 57000000, attributes: { ram: "8GB", storage: "1TB", color: "black" } },
+
+            // 16 - 1TB - 3
+            { sku: "TPX1G11-I7-16-1024-SLV", skuPrice: 58000000, attributes: { ram: "16GB", storage: "1TB", color: "silver" } },
+            { sku: "TPX1G11-I7-16-1024-GRY", skuPrice: 58000000, attributes: { ram: "16GB", storage: "1TB", color: "gray" } },
+            { sku: "TPX1G11-I7-16-1024-BLK", skuPrice: 58000000, attributes: { ram: "16GB", storage: "1TB", color: "black" } },
+
+            // 32 - 1TB - 3
+            { sku: "TPX1G11-I7-32-1024-SLV", skuPrice: 59000000, attributes: { ram: "32GB", storage: "1TB", color: "silver" } },
+            { sku: "TPX1G11-I7-32-1024-GRY", skuPrice: 59000000, attributes: { ram: "32GB", storage: "1TB", color: "gray" } },
+            { sku: "TPX1G11-I7-32-1024-BLK", skuPrice: 59000000, attributes: { ram: "32GB", storage: "1TB", color: "black" } }
+        ]
+    }, 
     {
         product: { categoryID: catIds.phone, name: "iPhone 15 Pro", slug: "iphone-15-pro", basePrice: 28000000, description: "Titanium design", attributes: { brand: "Apple", battery: 3274, camera: "48MP", chipset: "A17 Pro", os: "iOS", screenSize: 6.1 }, isActive: true, avgRating: 5.0, totalReviews: 150, totalSold: 500, createdAt: new Date() },
         skus: [

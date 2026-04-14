@@ -10,6 +10,7 @@ import {
   FieldGroup,
 } from '@/components/ui/field'
 import { Button } from '@/components/ui/button'
+import { Label } from '@/components/ui/label'
 
 interface ImageUrlPreviewProps {
   images: string[]
@@ -97,55 +98,64 @@ export default function ImageUrlPreview({
   }
 
   return (
-    <FieldGroup>
-      {/* Thay đổi cấu trúc Header ở đây */}
-      <div className="flex items-center justify-between">
-        <FieldLabel>Danh sách URL hình ảnh</FieldLabel>
+    <FieldGroup className="bg-primary-foreground rounded-lg p-4">
+      <Label className="text-lg font-semibold">Ảnh</Label>
+      <div>
+        <div className="flex flex-col gap-2">
+          {/* Thay đổi cấu trúc Header ở đây */}
+          <div className="flex items-center justify-between">
+            <FieldLabel className="text-md w-auto">
+              Danh sách URL hình ảnh
+            </FieldLabel>
 
-        {images.some((url) => url.trim() !== '') && (
-          <Button
-            type="button"
-            variant="ghost"
-            size="sm"
-            onClick={(e) => {
-              e.preventDefault()
-              e.stopPropagation()
-              clearAll()
+            {images.some((url) => url.trim() !== '') && (
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={(e) => {
+                  e.preventDefault()
+                  e.stopPropagation()
+                  clearAll()
+                }}
+                className="text-destructive"
+              >
+                <Trash2 className="mr-1 h-4 w-4" />
+                Xóa tất cả
+              </Button>
+            )}
+          </div>
+
+          {/* 🔽 Input */}
+          <Input
+            placeholder="Nhập URL ảnh"
+            value={inputValue}
+            onChange={(e) => {
+              setInputValue(e.target.value)
+              setError(null)
             }}
-            className="text-destructive"
-          >
-            <Trash2 className="mr-1 h-4 w-4" />
-            Xóa tất cả
-          </Button>
-        )}
-      </div>
-
-      {/* 🔽 Input */}
-      <Input
-        placeholder="Nhập URL ảnh"
-        value={inputValue}
-        onChange={(e) => {
-          setInputValue(e.target.value)
-          setError(null)
-        }}
-        onKeyDown={(e) => {
-          if (e.key === 'Enter') {
-            e.preventDefault()
-            addImage()
-          }
-        }}
-        disabled={checking}
-      />
-
-      {/* 🔴 Error / trạng thái - Giữ chỗ cố định */}
-      <div className="h-auto">
-        {error ? (
-          <FieldError className="text-xs leading-none">{error}</FieldError>
-        ) : checking ? (
-          <p className="text-muted-foreground animate-pulse text-xs">
-            Đang kiểm tra ảnh...
-          </p>
-        ) : null}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                e.preventDefault()
+                addImage()
+              }
+            }}
+            disabled={checking}
+            className="bg-muted-foreground/6 border"
+          />
+        </div>
+        {/* 🔴 Error / trạng thái - Giữ chỗ cố định */}
+        <div>
+          {error ? (
+            <FieldError className="mt-2 text-xs leading-none">
+              {error}
+            </FieldError>
+          ) : checking ? (
+            <p className="text-muted-foreground animate-pulse text-xs">
+              Đang kiểm tra ảnh...
+            </p>
+          ) : null}
+        </div>
       </div>
 
       {/* 🔥 Thumbnail list */}
@@ -155,7 +165,7 @@ export default function ImageUrlPreview({
             <div
               key={index}
               onClick={() => setSelectedImage(url)}
-              className={`group relative h-20 w-20 cursor-pointer overflow-hidden rounded-lg border ${
+              className={`group relative h-20 w-20 cursor-pointer overflow-hidden rounded-lg ${
                 selectedImage === url ? 'ring-primary ring-2' : ''
               }`}
             >
@@ -184,7 +194,7 @@ export default function ImageUrlPreview({
         )}
       </div>
       {/* 🔥 Preview lớn */}
-      <div className="bg-muted mb-4 flex h-80 w-full items-center justify-center overflow-hidden rounded-lg border">
+      <div className="bg-muted-foreground/6 mb-4 flex h-80 w-full items-center justify-center overflow-hidden rounded-lg">
         {selectedImage ? (
           <img
             src={selectedImage}

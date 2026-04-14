@@ -10,7 +10,7 @@ import useCategories from '@/features/products/hooks/useCategories'
 import { Plus } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { getUserRole } from '../../../utils/getUserRole'
-import AddProductModal from '@/features/products/components/AddProductModal/AddProductModal'
+// import AddProductModal from '@/features/products/components/AddProductModal/AddProductModal'
 import { useRouter } from 'next/navigation'
 
 export default function ProductsPage() {
@@ -72,11 +72,11 @@ export default function ProductsPage() {
         </div>
       </div>
 
-      <AddProductModal
+      {/* <AddProductModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         categories={categories || []}
-      />
+      /> */}
     </div>
   )
 }

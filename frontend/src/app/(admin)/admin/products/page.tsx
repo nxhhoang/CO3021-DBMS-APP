@@ -72,7 +72,7 @@ export default function AdminProductsPage() {
         <div className="flex items-center gap-3">
           <Button
             variant="outline"
-            className="border-emerald-600 text-emerald-600 hover:bg-emerald-50"
+            // className="border-emerald-600 text-emerald-600 hover:bg-emerald-50"
             onClick={() => setIsCategoryModalOpen(true)}
           >
             <FolderPlus className="mr-2 h-4 w-4" />

@@ -3,6 +3,7 @@
 import { Plus, Trash2, SlidersHorizontal } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { Switch } from '@/components/ui/switch'
 import {
   Select,
   SelectContent,
@@ -16,7 +17,7 @@ interface Attribute {
   label: string
   dataType: string
   isRequired: boolean
-  options: any[]
+  options: string[]
 }
 
 interface Props {
@@ -31,69 +32,77 @@ export default function AttributeInformation({
   const addAttribute = () => {
     setAttributes([
       ...attributes,
-      { key: '', label: '', dataType: 'string', isRequired: true, options: [] },
+      {
+        key: '',
+        label: '',
+        dataType: 'string',
+        isRequired: true,
+        options: [],
+      },
     ])
   }
 
+  const updateAttr = (idx: number, field: string, value: any) => {
+    const newAttrs = [...attributes]
+    newAttrs[idx] = { ...newAttrs[idx], [field]: value }
+    setAttributes(newAttrs)
+  }
+
+  const handleDataTypeChange = (idx: number, dataType: string) => {
+    const newAttrs = [...attributes]
+    newAttrs[idx] = {
+      ...newAttrs[idx],
+      dataType,
+      options: dataType === 'boolean' ? [] : newAttrs[idx].options,
+    }
+    setAttributes(newAttrs)
+  }
+
   return (
-    <>
-      <div className="flex items-center justify-between overflow-y-auto">
+    <div className="flex min-h-0 flex-1 flex-col gap-4">
+      {/* Header */}
+      <div className="flex shrink-0 items-center justify-between">
         <div className="flex items-center gap-4">
           <SlidersHorizontal size={20} className="text-[#002366]" />
           <h2 className="text-lg font-bold">Thuộc tính động</h2>
         </div>
 
-        <Button
-          variant="secondary"
-          onClick={addAttribute}
-          //   className="flex items-center gap-2 rounded-lg bg-[#002366]/5 px-5 py-2 text-xs font-bold text-[#002366]"
-        >
+        <Button variant="secondary" onClick={addAttribute}>
           <Plus size={16} /> Thêm
         </Button>
       </div>
 
-      <div className="space-y-4">
+      {/* ✅ List scroll độc lập */}
+      <div className="min-h-0 flex-1 space-y-4 overflow-y-auto pr-1">
         {attributes.map((attr, idx) => (
           <div
             key={idx}
-            className="bg-primary/3 grid grid-cols-12 gap-4 rounded-lg border-0 p-4"
+            className="bg-primary/8 grid grid-cols-12 gap-4 rounded-lg p-4"
           >
             {/* Key */}
             <Input
               value={attr.key}
-              onChange={(e) => {
-                const newAttrs = [...attributes]
-                newAttrs[idx].key = e.target.value
-                setAttributes(newAttrs)
-              }}
-              className="bg-primary/6 col-span-3 rounded-lg border-0 text-sm"
+              onChange={(e) => updateAttr(idx, 'key', e.target.value)}
+              className="bg-primary-foreground col-span-2 rounded-md border-0 text-sm shadow-none"
               placeholder="key"
             />
 
             {/* Label */}
             <Input
               value={attr.label}
-              onChange={(e) => {
-                const newAttrs = [...attributes]
-                newAttrs[idx].label = e.target.value
-                setAttributes(newAttrs)
-              }}
-              className="bg-primary/6 col-span-4 rounded-lg border-0 text-sm"
+              onChange={(e) => updateAttr(idx, 'label', e.target.value)}
+              className="bg-primary-foreground col-span-3 rounded-md border-0 text-sm shadow-none"
               placeholder="label"
             />
 
             {/* Type */}
-            <div className="bg-primary/6 col-span-3 rounded-lg border-0">
+            <div className="bg-primary-foreground col-span-2 rounded-md">
               <Select
                 value={attr.dataType}
-                onValueChange={(value) => {
-                  const newAttrs = [...attributes]
-                  newAttrs[idx].dataType = value
-                  setAttributes(newAttrs)
-                }}
+                onValueChange={(value) => handleDataTypeChange(idx, value)}
               >
-                <SelectTrigger className="w-full border-0">
-                  <SelectValue placeholder="Chọn kiểu" />
+                <SelectTrigger className="rounded-md border-0 shadow-none">
+                  <SelectValue />
                 </SelectTrigger>
 
                 <SelectContent>
@@ -104,18 +113,43 @@ export default function AttributeInformation({
               </Select>
             </div>
 
+            {/* Options */}
+            {(attr.dataType === 'string' || attr.dataType === 'number') && (
+              <Input
+                value={attr.options.join(', ')}
+                onChange={(e) => {
+                  const arr = e.target.value
+                    .split(',')
+                    .map((v) => v.trim())
+                    .filter(Boolean)
+                  updateAttr(idx, 'options', arr)
+                }}
+                className="bg-primary-foreground col-span-3 rounded-md border-0 text-sm shadow-none"
+                placeholder="vd: red, blue, green"
+              />
+            )}
+
+            {/* Required */}
+            <div className="col-span-1 flex items-center justify-center">
+              <Switch
+                checked={attr.isRequired}
+                onCheckedChange={(val) => updateAttr(idx, 'isRequired', val)}
+              />
+            </div>
+
             {/* Delete */}
-            <button
+            <Button
+              variant="ghost"
               onClick={() =>
                 setAttributes(attributes.filter((_, i) => i !== idx))
               }
-              className="col-span-2 flex items-center justify-center text-red-500"
+              className="col-span-1 text-red-500"
             >
               <Trash2 size={18} />
-            </button>
+            </Button>
           </div>
         ))}
       </div>
-    </>
+    </div>
   )
 }

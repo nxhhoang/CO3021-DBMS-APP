@@ -123,19 +123,31 @@ export default function ProductTable({
       {products.length > 0 ? (
         <Table>
           <TableHeader>
-            <TableRow>
-              <TableHead>Sản phẩm</TableHead>
-              <TableHead>Danh mục</TableHead>
-              <TableHead>Giá cơ bản</TableHead>
-              <TableHead className="text-center">Đã bán</TableHead>
-              <TableHead className="text-center">Đánh giá</TableHead>
-              <TableHead className="text-right">Thao tác</TableHead>
+            <TableRow className="tracking-wide uppercase">
+              <TableHead className="px-4 font-semibold text-gray-500">
+                Sản phẩm
+              </TableHead>
+              <TableHead className="px-4 font-semibold text-gray-500">
+                Danh mục
+              </TableHead>
+              <TableHead className="px-4 font-semibold text-gray-500">
+                Giá cơ bản
+              </TableHead>
+              <TableHead className="px-4 text-center font-semibold text-gray-500">
+                Đã bán
+              </TableHead>
+              <TableHead className="px-4 text-center font-semibold text-gray-500">
+                Đánh giá
+              </TableHead>
+              <TableHead className="px-4 text-right font-semibold text-gray-500">
+                Thao tác
+              </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {products.map((product) => (
               <TableRow key={product._id}>
-                <TableCell>
+                <TableCell className="px-4 py-3">
                   <div className="flex items-center gap-4">
                     <div className="relative h-12 w-12 overflow-hidden rounded-lg border">
                       <Image
@@ -156,17 +168,17 @@ export default function ProductTable({
                   </div>
                 </TableCell>
 
-                <TableCell>
+                <TableCell className="px-4 py-3">
                   <Badge variant="secondary">{product.category.name}</Badge>
                 </TableCell>
 
-                <TableCell className="font-semibold">
+                <TableCell className="px-4 py-3 font-semibold">
                   {product.basePrice.toLocaleString()}đ
                 </TableCell>
-                <TableCell className="text-center">
+                <TableCell className="px-4 py-3 text-center">
                   {product.totalSold}
                 </TableCell>
-                <TableCell className="text-center">
+                <TableCell className="px-4 py-3 text-center">
                   <div className="flex items-center justify-center gap-1">
                     <span className="text-yellow-500">★</span>
                     <span className="font-medium">
@@ -178,7 +190,7 @@ export default function ProductTable({
                   </div>
                 </TableCell>
 
-                <TableCell className="text-right">
+                <TableCell className="px-4 py-3 text-right">
                   <div className="flex justify-end gap-2">
                     <Button
                       variant="ghost"
@@ -228,7 +240,6 @@ export default function ProductTable({
         </div>
       )}
 
-      {/* Pagination luôn xuất hiện */}
       <div className="flex items-center justify-between border-t p-4">
         <p className="text-muted-foreground text-sm">
           Hiển thị {pagination?.itemCount ?? 0} trên{' '}

@@ -70,9 +70,9 @@ export default function AddCategoryModal({
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogOverlay className="bg-[#002366]/5 backdrop-blur-md" />
-      <DialogContent className="max-h-[90vh] sm:max-w-175 lg:max-w-250">
+      <DialogContent className="flex h-[90vh] flex-col overflow-hidden sm:max-w-175 lg:max-w-250">
         {/* Header */}
-        <DialogHeader className="border-b py-4 text-2xl font-bold">
+        <DialogHeader className="border-b pb-4 text-2xl font-bold">
           <DialogTitle className="text-2xl font-bold">
             Thêm danh mục mới
           </DialogTitle>
@@ -82,24 +82,24 @@ export default function AddCategoryModal({
         </DialogHeader>
 
         {/* Body */}
-        {/* <div className="max-h-[70vh] gap-16 overflow-y-auto"> */}
-        <GeneralInformation
-          name={name}
-          slug={slug}
-          description={description}
-          onNameChange={handleNameChange}
-          onSlugChange={setSlug}
-          onDescriptionChange={setDescription}
-        />
+        <div className="flex min-h-0 flex-1 flex-col gap-4 px-4">
+          <GeneralInformation
+            name={name}
+            slug={slug}
+            description={description}
+            onNameChange={handleNameChange}
+            onSlugChange={setSlug}
+            onDescriptionChange={setDescription}
+          />
 
-        <AttributeInformation
-          attributes={attributes}
-          setAttributes={setAttributes}
-        />
-        {/* </div> */}
+          <AttributeInformation
+            attributes={attributes}
+            setAttributes={setAttributes}
+          />
+        </div>
 
         {/* Footer */}
-        <DialogFooter className="border-t px-6 py-5">
+        <DialogFooter className="shrink-0 border-t px-6 py-5">
           <DialogClose asChild>
             <Button type="button" variant="outline">
               Hủy

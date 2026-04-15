@@ -54,53 +54,57 @@ export default function AdminProductsPage() {
   }
 
   return (
-    <div className="container mx-auto min-h-screen px-4 py-6 md:py-10">
-      {/* Header Section */}
-      <div className="mb-8 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-        <div>
-          <h1 className="flex items-center gap-2 text-2xl font-bold">
+    <div className="bg-surface min-h-screen px-6 py-8">
+      {/* HEADER */}
+      <div className="mb-8 flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+        <div className="space-y-1">
+          <h1 className="text-on-surface flex items-center gap-3 text-3xl font-extrabold">
             <Package className="text-primary" size={28} />
             Quản lý kho hàng
           </h1>
-          <p className="text-muted-foreground mt-1 text-sm">
+
+          <p className="text-on-surface-variant text-sm">
             {params.keyword
               ? `Tìm thấy ${pagination?.totalItems || 0} kết quả cho "${params.keyword}"`
               : `Tổng số sản phẩm: ${pagination?.totalItems || 0}`}
           </p>
         </div>
 
-        <div className="flex items-center gap-3">
-          <Button
-            variant="outline"
-            // className="border-emerald-600 text-emerald-600 hover:bg-emerald-50"
+        {/* ACTION BUTTONS */}
+        <div className="flex flex-wrap gap-3">
+          <button
             onClick={() => setIsCategoryModalOpen(true)}
+            className="bg-surface-container-high text-primary hover:bg-surface-container-highest flex items-center gap-2 rounded-full px-6 py-3 text-sm font-bold transition"
           >
-            <FolderPlus className="mr-2 h-4 w-4" />
-            <span className="hidden sm:inline">Thêm danh mục</span>
-          </Button>
+            <FolderPlus size={18} />
+            Thêm danh mục
+          </button>
 
-          <Button onClick={() => setIsProductModalOpen(true)}>
-            <Plus className="mr-2 h-4 w-4" />
+          <button
+            onClick={() => setIsProductModalOpen(true)}
+            className="text-on-primary bg-primary hover:bg-primary/90 flex items-center gap-2 rounded-full px-8 py-3 text-sm font-bold text-white transition"
+          >
+            <Plus size={18} />
             Thêm sản phẩm
-          </Button>
+          </button>
         </div>
       </div>
 
-      {/* Main Content Area */}
-      <div className="flex flex-col gap-8 lg:flex-row">
-        <main className="min-w-0 flex-1">
+      {/* MAIN CONTENT */}
+      <div className="bg-surface-container-lowest border-outline-variant/10 overflow-hidden rounded-xl border shadow-sm">
+        <div className="py-4">
           <ProductTable
             products={products}
             loading={loading}
-            pagination={pagination!} // Sử dụng type non-null vì hook luôn trả về pagination mặc định
+            pagination={pagination!}
             onRefresh={refetch}
             onEdit={handleEditProduct}
             onPageChange={handlePageChange}
           />
-        </main>
+        </div>
       </div>
 
-      {/* --- Modals --- */}
+      {/* MODALS */}
       <AddProductModal
         isOpen={isProductModalOpen}
         onClose={() => setIsProductModalOpen(false)}

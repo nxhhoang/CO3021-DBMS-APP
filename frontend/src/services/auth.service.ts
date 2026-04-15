@@ -3,8 +3,9 @@ import { LoginRequest, RegisterRequest, LogoutRequest } from '@/types';
 
 export const authService = {
   async login(payload: LoginRequest) {
-    const res = await api.post(`auth/login`, payload);
-    return res.data;
+    // Trả về toàn bộ response.data từ axios
+    const res = await api.post(`auth/login`, payload)
+    return res.data
   },
 
   async register(payload: RegisterRequest) {

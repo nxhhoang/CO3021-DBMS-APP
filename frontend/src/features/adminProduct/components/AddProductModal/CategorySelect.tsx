@@ -1,10 +1,15 @@
 'use client'
 
-import { Controller, Control, FieldErrors, UseFormWatch } from 'react-hook-form'
+import { useEffect } from 'react'
+import {
+  Controller,
+  Control,
+  FieldErrors,
+  UseFormSetValue,
+  UseFormWatch,
+} from 'react-hook-form'
 import { Category } from '@/types/category.types'
-
-import { Field, FieldLabel, FieldError } from '@/components/ui/field'
-
+import { Field, FieldError } from '@/components/ui/field'
 import {
   Select,
   SelectContent,
@@ -12,17 +17,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-
 import { Input } from '@/components/ui/input'
-
+import { Switch } from '@/components/ui/switch'
 import { type ProductFormInput } from '../schema'
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 
 interface CategoryAndAttributesProps {
   control: Control<ProductFormInput>
   errors: FieldErrors<ProductFormInput>
   categories: Category[]
   watch: UseFormWatch<ProductFormInput>
+  setValue: UseFormSetValue<ProductFormInput>
 }
 
 export default function CategorySelect({
@@ -30,143 +34,163 @@ export default function CategorySelect({
   errors,
   categories,
   watch,
+  setValue,
 }: CategoryAndAttributesProps) {
   const getCategoryId = (category: Category) =>
     category._id || category.ID || ''
 
-  const toSelectValue = (value: unknown) => {
-    if (value === undefined || value === null || value === '') return undefined
-    return String(value)
+  const getNormalizedAttributeValue = (
+    attr: Category['dynamicAttributes'][number],
+    value: unknown,
+  ) => {
+    if (attr.dataType === 'boolean') {
+      return typeof value === 'boolean' ? value : false
+    }
+
+    if (attr.dataType === 'number') {
+      return typeof value === 'number' && !Number.isNaN(value) ? value : ''
+    }
+
+    if (attr.options?.length) {
+      return typeof value === 'string' && attr.options.includes(value)
+        ? value
+        : ''
+    }
+
+    return typeof value === 'string' ? value : ''
   }
 
   const selectedCategory = categories.find(
     (cat) => getCategoryId(cat) === watch('categoryID'),
   )
 
+  useEffect(() => {
+    const categoryAttributes = selectedCategory?.dynamicAttributes ?? []
+    const currentAttributes = watch('attributes') ?? {}
+
+    if (!categoryAttributes.length) {
+      if (Object.keys(currentAttributes).length > 0) {
+        setValue('attributes', {}, { shouldDirty: true, shouldValidate: true })
+      }
+      return
+    }
+
+    const nextAttributes = categoryAttributes.reduce<Record<string, unknown>>(
+      (accumulator, attr) => {
+        const currentValue = currentAttributes[attr.key]
+        accumulator[attr.key] = getNormalizedAttributeValue(attr, currentValue)
+        return accumulator
+      },
+      {},
+    )
+
+    const hasChanged =
+      JSON.stringify(nextAttributes) !== JSON.stringify(currentAttributes)
+
+    if (hasChanged) {
+      setValue('attributes', nextAttributes, {
+        shouldDirty: true,
+        shouldValidate: true,
+      })
+    }
+  }, [selectedCategory, setValue, watch])
+
+  const labelStyles =
+    'text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-2 block'
+  const inputStyles =
+    'h-12 rounded-xl bg-white shadow-sm ring-1 ring-slate-100 focus-visible:ring-1 focus-visible:ring-slate-300'
+
   return (
-    <div className="bg-primary-foreground space-y-6 rounded-lg p-4">
-      {/* Category */}
-      <Field className="gap-2">
-        <FieldLabel className="text-lg font-semibold">Danh mục</FieldLabel>
+    <div className="space-y-8">
+      <Field>
+        <label className={labelStyles}>Product Category</label>
         <Controller
           control={control}
           name="categoryID"
           render={({ field }) => (
-            <div className="relative">
-              <Select
-                value={field.value || undefined}
-                onValueChange={field.onChange}
-              >
-                <SelectTrigger className="bg-muted-foreground/6 border">
-                  <SelectValue placeholder="Chọn danh mục" />
-                </SelectTrigger>
-                <SelectContent>
-                  {categories.map((cat) => (
-                    <SelectItem
-                      key={getCategoryId(cat)}
-                      value={getCategoryId(cat)}
-                    >
-                      {cat.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-
-              {field.value && (
-                <button
-                  type="button"
-                  onClick={() => field.onChange('')}
-                  className="text-muted-foreground hover:text-foreground absolute top-1/2 right-8 -translate-y-1/2 text-sm"
-                >
-                  ✕
-                </button>
-              )}
-            </div>
+            <Select
+              value={field.value || undefined}
+              onValueChange={field.onChange}
+            >
+              <SelectTrigger className={`${inputStyles} h-14 bg-white`}>
+                <SelectValue placeholder="Choose a product category" />
+              </SelectTrigger>
+              <SelectContent className="rounded-xl border-slate-100">
+                {categories.map((cat) => (
+                  <SelectItem
+                    key={getCategoryId(cat)}
+                    value={getCategoryId(cat)}
+                  >
+                    {cat.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           )}
         />
         {errors.categoryID && (
-          <FieldError>{errors.categoryID.message}</FieldError>
+          <FieldError className="text-xs">
+            {errors.categoryID.message}
+          </FieldError>
         )}
       </Field>
 
-      {/* Dynamic attributes */}
       {selectedCategory?.dynamicAttributes?.length ? (
-        <div className="border-primary/30 bg-primary-foreground rounded-lg border border-dashed p-4">
-          <h3 className="text-md mb-4 font-semibold">
-            Thông số: {selectedCategory.name}
-          </h3>
+        <div className="space-y-6 rounded-[24px] bg-slate-50/80 p-5 shadow-sm ring-1 ring-slate-100 sm:p-6">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <h3 className="text-[11px] font-bold tracking-[0.2em] text-slate-700 uppercase">
+              Category Attributes
+            </h3>
+            <span className="text-[11px] text-slate-400">
+              {selectedCategory.dynamicAttributes.length} field
+              {selectedCategory.dynamicAttributes.length > 1 ? 's' : ''}
+            </span>
+          </div>
 
-          <div className="grid gap-4 md:grid-cols-2">
+          <div className="grid grid-cols-1 gap-x-8 gap-y-6 md:grid-cols-2">
             {selectedCategory.dynamicAttributes.map((attr) => (
-              <Field key={attr.key} className="gap-2">
-                <FieldLabel className="text-md">
+              <Field key={attr.key}>
+                <label className="mb-2 block text-[11px] font-medium text-slate-500">
                   {attr.label || attr.key}
                   {attr.isRequired ? ' *' : ''}
-                </FieldLabel>
+                </label>
 
                 <Controller
                   control={control}
                   name={`attributes.${attr.key}` as any}
                   render={({ field }) => {
-                    /** BOOLEAN → Radio */
                     if (attr.dataType === 'boolean') {
                       return (
-                        <RadioGroup
-                          value={
-                            field.value !== undefined
-                              ? String(field.value)
-                              : undefined
-                          }
-                          onValueChange={(value) => {
-                            field.onChange(value === 'true')
-                          }}
-                          className="flex gap-4"
-                        >
-                          <div className="flex items-center space-x-2">
-                            <RadioGroupItem
-                              value="true"
-                              id={`${attr.key}-true`}
-                            />
-                            <label htmlFor={`${attr.key}-true`}>Có</label>
-                          </div>
-
-                          <div className="flex items-center space-x-2">
-                            <RadioGroupItem
-                              value="false"
-                              id={`${attr.key}-false`}
-                            />
-                            <label htmlFor={`${attr.key}-false`}>Không</label>
-                          </div>
-                        </RadioGroup>
+                        <div className="flex items-center justify-between rounded-xl border border-slate-100 bg-white px-4 py-3 shadow-sm">
+                          <span className="text-sm text-slate-500">
+                            {attr.label || attr.key}
+                          </span>
+                          <Switch
+                            checked={!!field.value}
+                            onCheckedChange={field.onChange}
+                            className="data-[state=checked]:bg-[#5851D8]"
+                          />
+                        </div>
                       )
                     }
 
-                    /** SELECT (có options) */
                     if (attr.options?.length) {
                       return (
                         <Select
                           value={
-                            field.value !== undefined && field.value !== null
-                              ? String(field.value)
-                              : undefined
+                            typeof field.value === 'string' ? field.value : ''
                           }
-                          onValueChange={(value) => {
-                            const converted =
-                              attr.dataType === 'number' ? Number(value) : value
-
-                            field.onChange(converted)
-                          }}
+                          onValueChange={field.onChange}
                         >
-                          <SelectTrigger className="bg-muted-foreground/6 h-9 w-full border">
+                          <SelectTrigger className={inputStyles}>
                             <SelectValue
-                              placeholder={`Chọn ${attr.label || attr.key}`}
+                              placeholder={`${attr.label || attr.key}`}
                             />
                           </SelectTrigger>
-
-                          <SelectContent>
-                            {attr.options.map((opt) => (
-                              <SelectItem key={opt} value={String(opt)}>
-                                {opt}
+                          <SelectContent className="rounded-xl border-slate-100">
+                            {attr.options.map((option) => (
+                              <SelectItem key={option} value={option}>
+                                {option}
                               </SelectItem>
                             ))}
                           </SelectContent>
@@ -174,16 +198,22 @@ export default function CategorySelect({
                       )
                     }
 
-                    /** INPUT */
                     return (
                       <Input
-                        className="bg-muted-foreground/6 h-9 border"
+                        className="h-11 rounded-xl bg-white text-sm shadow-sm ring-1 ring-slate-100"
                         type={attr.dataType === 'number' ? 'number' : 'text'}
+                        placeholder={
+                          attr.dataType === 'number'
+                            ? `Enter ${attr.label || attr.key}`
+                            : `Enter ${attr.label || attr.key}`
+                        }
                         value={field.value ?? ''}
                         onChange={(e) => {
                           const val = e.target.value
                           field.onChange(
-                            attr.dataType === 'number' ? Number(val) : val,
+                            attr.dataType === 'number' && val !== ''
+                              ? Number(val)
+                              : val,
                           )
                         }}
                       />
@@ -193,6 +223,10 @@ export default function CategorySelect({
               </Field>
             ))}
           </div>
+        </div>
+      ) : selectedCategory ? (
+        <div className="rounded-[24px] border border-dashed border-slate-200 bg-white p-5 text-sm text-slate-500">
+          This category does not define extra attributes.
         </div>
       ) : null}
     </div>

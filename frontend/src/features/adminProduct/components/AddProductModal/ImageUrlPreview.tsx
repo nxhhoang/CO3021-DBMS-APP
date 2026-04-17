@@ -1,16 +1,10 @@
 'use client'
 
-import { useState } from 'react'
-import { X, Trash2 } from 'lucide-react'
+import { useEffect, useRef, useState } from 'react'
+import { Trash2, X, Link as LinkIcon } from 'lucide-react'
 import { Input } from '@/components/ui/input'
-import {
-  Field,
-  FieldLabel,
-  FieldError,
-  FieldGroup,
-} from '@/components/ui/field'
 import { Button } from '@/components/ui/button'
-import { Label } from '@/components/ui/label'
+import { FieldError } from '@/components/ui/field'
 
 interface ImageUrlPreviewProps {
   images: string[]
@@ -22,11 +16,25 @@ export default function ImageUrlPreview({
   onChange,
 }: ImageUrlPreviewProps) {
   const [inputValue, setInputValue] = useState('')
-  const [selectedImage, setSelectedImage] = useState<string | null>(null)
+  const [selectedImage, setSelectedImage] = useState<string | null>(
+    images[0] || null,
+  )
   const [error, setError] = useState<string | null>(null)
   const [checking, setChecking] = useState(false)
+  const inputRef = useRef<HTMLInputElement>(null)
+  const thumbnailsRef = useRef<HTMLDivElement>(null)
 
-  // ✅ Validate URL format
+  useEffect(() => {
+    if (
+      images.length > 0 &&
+      (!selectedImage || !images.includes(selectedImage))
+    ) {
+      setSelectedImage(images[images.length - 1])
+    } else if (images.length === 0) {
+      setSelectedImage(null)
+    }
+  }, [images])
+
   const isValidUrl = (url: string) => {
     try {
       new URL(url)
@@ -36,12 +44,10 @@ export default function ImageUrlPreview({
     }
   }
 
-  // ✅ Check có phải ảnh thật
   const checkImageExists = (url: string): Promise<boolean> => {
     return new Promise((resolve) => {
       const img = new Image()
       img.src = url
-
       img.onload = () => resolve(true)
       img.onerror = () => resolve(false)
     })
@@ -50,24 +56,17 @@ export default function ImageUrlPreview({
   const addImage = async () => {
     const url = inputValue.trim()
     if (!url) return
-
-    // ❗ duplicate
     if (images.includes(url)) {
       setError('Ảnh đã tồn tại')
       return
     }
-
-    // ❗ validate URL
     if (!isValidUrl(url)) {
       setError('URL không hợp lệ')
       return
     }
 
     setChecking(true)
-    setError('Đang kiểm tra ảnh...')
-
     const isImage = await checkImageExists(url)
-
     setChecking(false)
 
     if (!isImage) {
@@ -75,60 +74,120 @@ export default function ImageUrlPreview({
       return
     }
 
-    // ✅ OK
     onChange([...images, url])
     setInputValue('')
-    setSelectedImage(url)
     setError(null)
   }
 
   const removeImage = (index: number) => {
-    const removed = images[index]
     const newImages = images.filter((_, i) => i !== index)
     onChange(newImages)
-
-    if (selectedImage === removed) {
-      setSelectedImage(newImages[0] || null)
-    }
   }
 
-  const clearAll = () => {
+  const clearAllImages = () => {
     onChange([])
     setSelectedImage(null)
+    setError(null)
+  }
+
+  const handleThumbnailWheel = (event: React.WheelEvent<HTMLDivElement>) => {
+    if (!thumbnailsRef.current) return
+
+    const delta =
+      Math.abs(event.deltaY) >= Math.abs(event.deltaX)
+        ? event.deltaY
+        : event.deltaX
+
+    if (delta === 0) return
+
+    thumbnailsRef.current.scrollLeft += delta
+    event.preventDefault()
   }
 
   return (
-    <FieldGroup className="bg-primary-foreground rounded-lg p-4">
-      <Label className="text-lg font-semibold">Ảnh</Label>
-      <div>
-        <div className="flex flex-col gap-2">
-          {/* Thay đổi cấu trúc Header ở đây */}
-          <div className="flex items-center justify-between">
-            <FieldLabel className="text-md w-auto">
-              Danh sách URL hình ảnh
-            </FieldLabel>
-
-            {images.some((url) => url.trim() !== '') && (
-              <Button
-                type="button"
-                variant="ghost"
-                size="sm"
-                onClick={(e) => {
-                  e.preventDefault()
-                  e.stopPropagation()
-                  clearAll()
-                }}
-                className="text-destructive"
-              >
-                <Trash2 className="mr-1 h-4 w-4" />
-                Xóa tất cả
-              </Button>
-            )}
+    // 1. Container chính phải có chiều cao xác định (ví dụ h-[600px] hoặc h-full nếu cha đã có h)
+    <div className="flex h-[550px] w-full min-w-0 flex-col gap-4 overflow-hidden p-1">
+      {/* 2. Phần Preview ảnh lớn: flex-1 giúp nó chiếm toàn bộ diện tích còn lại */}
+      <div className="relative min-h-0 flex-1 overflow-hidden rounded-[28px] bg-[#ECEFF1] shadow-sm ring-1 ring-slate-100">
+        {selectedImage ? (
+          <div className="h-full w-full">
+            <img
+              src={selectedImage}
+              alt="Selected preview"
+              className="h-full w-full object-cover"
+            />
+            <button
+              type="button"
+              onClick={() => removeImage(images.indexOf(selectedImage))}
+              className="absolute top-4 right-4 z-10 flex h-8 w-8 items-center justify-center rounded-full bg-white/90 shadow-sm backdrop-blur-sm transition-colors hover:bg-red-50"
+            >
+              <X className="h-4 w-4 text-red-500" />
+            </button>
           </div>
+        ) : (
+          <div className="flex h-full flex-col items-center justify-center px-6 text-center text-slate-400">
+            <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-200">
+              <LinkIcon className="h-5 w-5 rotate-45 text-slate-500" />
+            </div>
+            <p className="text-sm font-medium text-slate-500">
+              No image selected yet
+            </p>
+            <p className="mt-1 text-xs leading-5 text-slate-400">
+              Paste a direct image URL below to populate the gallery.
+            </p>
+          </div>
+        )}
+      </div>
 
-          {/* 🔽 Input */}
+      {/* 3. Danh sách Thumbnails: Cố định chiều cao, chỉ cho phép scroll ngang */}
+      <div
+        ref={thumbnailsRef}
+        onWheel={handleThumbnailWheel}
+        className="flex h-24 w-full flex-none snap-x flex-nowrap items-center gap-3 overflow-x-auto overflow-y-hidden pb-2 [scrollbar-width:thin]"
+      >
+        {images.map((url, index) => (
+          <div
+            key={index}
+            onClick={() => setSelectedImage(url)}
+            className={`group relative h-20 w-20 flex-none cursor-pointer snap-center overflow-hidden rounded-2xl transition-all duration-200 ${
+              selectedImage === url
+                ? 'scale-95 ring-2 ring-slate-800 ring-offset-2'
+                : 'hover:opacity-80'
+            }`}
+          >
+            <img
+              src={url}
+              alt={`Thumbnail ${index}`}
+              className="h-full w-full object-cover"
+            />
+          </div>
+        ))}
+      </div>
+
+      {/* 4. Phần Input: flex-none để không bị co giãn */}
+      <div className="flex-none space-y-3">
+        <div className="flex items-center justify-between gap-3">
+          <label className="text-[10px] font-bold tracking-widest text-slate-400 uppercase">
+            Remote URL
+          </label>
+          {images.length > 0 && (
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              onClick={clearAllImages}
+              className="h-8 gap-2 rounded-full px-3 text-[11px] font-semibold text-slate-500 transition-colors hover:bg-red-50 hover:text-red-600"
+            >
+              <Trash2 className="h-3.5 w-3.5" />
+              Delete all
+            </Button>
+          )}
+        </div>
+
+        <div className="group relative">
           <Input
-            placeholder="Nhập URL ảnh"
+            ref={inputRef}
+            placeholder="https://image-source.com/asset.jpg"
             value={inputValue}
             onChange={(e) => {
               setInputValue(e.target.value)
@@ -141,72 +200,28 @@ export default function ImageUrlPreview({
               }
             }}
             disabled={checking}
-            className="bg-muted-foreground/6 border"
+            className="h-12 rounded-2xl border-none bg-white pr-10 pl-4 text-sm shadow-sm ring-1 ring-slate-100 transition-all focus-visible:ring-1 focus-visible:ring-slate-300"
           />
+          <div className="absolute top-1/2 right-3 -translate-y-1/2 text-blue-500">
+            <LinkIcon className="h-4 w-4 rotate-45" />
+          </div>
         </div>
-        {/* 🔴 Error / trạng thái - Giữ chỗ cố định */}
-        <div>
-          {error ? (
-            <FieldError className="mt-2 text-xs leading-none">
+
+        <div className="min-h-[20px]">
+          {' '}
+          {/* Giữ chỗ cho error để tránh nhảy layout */}
+          {error && (
+            <FieldError className="text-[11px] text-red-500">
               {error}
             </FieldError>
-          ) : checking ? (
-            <p className="text-muted-foreground animate-pulse text-xs">
-              Đang kiểm tra ảnh...
+          )}
+          {checking && (
+            <p className="animate-pulse text-[11px] text-slate-400">
+              Verifying image source...
             </p>
-          ) : null}
+          )}
         </div>
       </div>
-
-      {/* 🔥 Thumbnail list */}
-      <div className="mb-4 flex flex-wrap gap-3">
-        {images.map((url, index) =>
-          url ? (
-            <div
-              key={index}
-              onClick={() => setSelectedImage(url)}
-              className={`group relative h-20 w-20 cursor-pointer overflow-hidden rounded-lg ${
-                selectedImage === url ? 'ring-primary ring-2' : ''
-              }`}
-            >
-              <img
-                src={url}
-                alt={`Preview ${index}`}
-                className="h-full w-full object-cover"
-                onError={(e) =>
-                  (e.currentTarget.src =
-                    'https://placehold.co/100x100?text=Error')
-                }
-              />
-
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation()
-                  removeImage(index)
-                }}
-                className="absolute top-1 right-1 hidden rounded-full bg-black/60 p-1 text-white group-hover:block"
-              >
-                <X className="h-3 w-3" />
-              </button>
-            </div>
-          ) : null,
-        )}
-      </div>
-      {/* 🔥 Preview lớn */}
-      <div className="bg-muted-foreground/6 mb-4 flex h-80 w-full items-center justify-center overflow-hidden rounded-lg">
-        {selectedImage ? (
-          <img
-            src={selectedImage}
-            alt="Selected preview"
-            className="h-full w-full object-contain transition-all"
-          />
-        ) : (
-          <div className="text-muted-foreground flex flex-col items-center text-sm italic">
-            Chưa có ảnh nào được chọn
-          </div>
-        )}
-      </div>
-    </FieldGroup>
+    </div>
   )
 }

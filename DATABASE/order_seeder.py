@@ -44,7 +44,11 @@ def seed_orders():
     
     if not user_address_list:
         print("❌ Không tìm thấy User/Address nào. Vui lòng import users.csv và addresses.csv trước.")
+        pg_cursor.close()
+        pg_conn.close()
+        mongo_client.close()
         return
+    
 
     print(f"📦 Bắt đầu sinh {TOTAL_ORDERS} Orders, Items và Payments...")
 

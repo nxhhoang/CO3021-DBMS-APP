@@ -18,6 +18,7 @@ def sync_inventory():
         pg_cursor = pg_conn.cursor()
     except Exception as e:
         print("❌ Lỗi kết nối PostgreSQL:", e)
+        mongo_client.close()
         return
 
     print("📥 Đang đọc dữ liệu SKUs thực tế từ MongoDB...")

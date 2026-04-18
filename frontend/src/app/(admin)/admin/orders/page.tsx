@@ -1,27 +1,34 @@
 'use client'
 
-import { useEffect, useState } from 'react'
-import { ClipboardList, RefreshCw } from 'lucide-react'
+import { useEffect, useState, useCallback } from 'react'
+import { ClipboardList } from 'lucide-react'
 
 // Types & Services
-import { Order } from '@/types'
+import { AdminOrder, Pagination } from '@/types'
 import { orderService } from '@/services/order.service'
 
 // Components
-import OrderTable from '@/features/orders/components/OrderTable'
-import { Button } from '@/components/ui/button'
 import { toast } from 'sonner'
+import OrderTable from '@/features/adminOrder/components/OrderTable'
 
 export default function AdminOrdersPage() {
-  const [orders, setOrders] = useState<Order[]>([])
+  const [orders, setOrders] = useState<AdminOrder[]>([])
   const [loading, setLoading] = useState(true)
 
-  const fetchOrders = async () => {
+  // State phân trang
+  const [pagination, setPagination] = useState<Pagination | null>(null)
+  const [currentPage, setCurrentPage] = useState(1)
+  const LIMIT = 10
+
+  const fetchOrders = useCallback(async (page: number = 1) => {
     try {
       setLoading(true)
-      const response = await orderService.getAdminOrders()
+      const response = await orderService.getAdminOrders({ page, limit: LIMIT })
+
       if (response.data) {
-        setOrders(response.data)
+        setOrders(response.data.orders)
+        setPagination(response.data.pagination)
+        setCurrentPage(page)
       }
     } catch (error) {
       toast.error('Không thể tải danh sách đơn hàng')
@@ -29,47 +36,45 @@ export default function AdminOrdersPage() {
     } finally {
       setLoading(false)
     }
-  }
-
-  useEffect(() => {
-    fetchOrders()
   }, [])
 
+  useEffect(() => {
+    fetchOrders(1)
+  }, [fetchOrders])
+
+  const handlePageChange = (newPage: number) => {
+    if (pagination && newPage >= 1 && newPage <= pagination.totalPages) {
+      fetchOrders(newPage)
+    }
+  }
+
   return (
-    <div className="container mx-auto min-h-screen px-4 py-6 md:py-10">
-      {/* Header */}
-      <div className="mb-8 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-        <div>
-          <h1 className="flex items-center gap-2 text-2xl font-bold">
+    <div className="bg-surface min-h-screen px-6 py-8">
+      {/* HEADER SECTION */}
+      <div className="mb-8 flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+        <div className="space-y-1">
+          <h1 className="text-on-surface flex items-center gap-3 text-3xl font-extrabold">
             <ClipboardList className="text-primary" size={28} />
             Quản lý đơn hàng
           </h1>
-          <p className="text-muted-foreground mt-1 text-sm">
+          <p className="text-on-surface-variant text-sm">
             {loading
-              ? 'Đang tải...'
-              : `Tổng số ${orders.length} đơn hàng đã đặt`}
+              ? 'Đang tải dữ liệu...'
+              : `Hiển thị ${orders.length} đơn hàng (Tổng số: ${pagination?.total || 0})`}
           </p>
-        </div>
-
-        <div className="flex items-center gap-3">
-          <Button variant="outline" onClick={fetchOrders} disabled={loading}>
-            <RefreshCw
-              className={`mr-2 h-4 w-4 ${loading ? 'animate-spin' : ''}`}
-            />
-            Làm mới
-          </Button>
         </div>
       </div>
 
-      <div className="flex flex-col gap-8">
-        {/* Main Table */}
-        <main className="min-w-0 flex-1">
-          <OrderTable
-            orders={orders}
-            loading={loading}
-            onRefresh={fetchOrders}
-          />
-        </main>
+      {/* TABLE SECTION */}
+      <div className="bg-surface-container-lowest border-outline-variant/10 overflow-hidden rounded-xl border shadow-sm">
+        <OrderTable
+          orders={orders}
+          loading={loading}
+          pagination={pagination}
+          currentPage={currentPage}
+          onPageChange={handlePageChange}
+          onRefresh={() => fetchOrders(currentPage)}
+        />
       </div>
     </div>
   )

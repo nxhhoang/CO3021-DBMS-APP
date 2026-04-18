@@ -8,6 +8,7 @@ import {
   UpdateOrderStatusResponse,
   GetOrderDetailRequest,
   GetOrderDetailResponse,
+  GetAdminOrdersParams,
 } from '@/types'
 
 export const orderService = {
@@ -19,8 +20,11 @@ export const orderService = {
     const res = await privateApi.get<GetOrdersResponse>(`orders`)
     return res.data
   },
-  async getAdminOrders() {
-    const res = await privateApi.get<GetAdminOrdersResponse>(`admin/orders`)
+  async getAdminOrders(params?: GetAdminOrdersParams) {
+    // Truyền params vào để axios tự động build query string: ?page=1&limit=10
+    const res = await privateApi.get<GetAdminOrdersResponse>(`admin/orders`, {
+      params,
+    })
     return res.data
   },
   async updateOrderStatus(orderId: number, data: UpdateOrderStatusRequest) {
@@ -52,4 +56,7 @@ export const orderService = {
 //   ],
 // });
 
-// privateApi.get('admin/orders')
+
+// privateApi.put('admin/orders/123/status', { status: 'DELIVERED' })
+
+// privateApi.get('admin/orders', { params: { page: 1, limit: 10 } })

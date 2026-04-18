@@ -40,6 +40,11 @@ export default function AdminLayout({
       href: '/admin/products',
       icon: Package,
     },
+    {
+      name: 'Orders',
+      href: '/admin/orders',
+      icon: Package,
+    },
   ]
 
   return (

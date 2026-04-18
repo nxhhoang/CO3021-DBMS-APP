@@ -8,7 +8,7 @@ pip install -r requirements.txt
 
 # 2. Sinh dữ liệu PostgreSQL (Tạo file 05_insert_data.sql)
 echo "📝 2. Chạy postgre_seeder.py để chuẩn bị dữ liệu khởi tạo..."
-python3 postgre_seeder.py
+python postgre_seeder.py
 
 # 3. Khởi chạy Docker Containers
 echo "🐳 3. Khởi chạy Docker Compose (PostgreSQL & MongoDB)..."
@@ -24,11 +24,15 @@ echo -e "\n✅ PostgreSQL đã sẵn sàng!"
 
 # 5. Seed dữ liệu cho MongoDB
 echo "🍃 5. Chạy mongo_seeder.py để nạp dữ liệu cho MongoDB..."
-python3 mongo_seeder.py
+python mongo_seeder.py
 
 # 6. Đồng bộ Inventory
 echo "🔄 6. Chạy sync_inventory.py để đồng bộ dữ liệu Inventory từ Mongo sang Postgres..."
-python3 sync_inventory.py
+python sync_inventory.py
+
+# 7. Seed dữ liệu cho orders trong database PostgreSQL
+echo "🔄 7. Chạy order_seeder.py để nạp dữ liệu cho orders..."
+python order_seeder.py
 
 echo "🎉 CHÚC MỪNG! Toàn bộ hệ thống đã được khởi tạo thành công."
 echo "👉 Bạn có thể dùng Extension VS Code để kết nối ngay bây giờ."

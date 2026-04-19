@@ -17,12 +17,12 @@ interface Attribute {
   label: string
   dataType: string
   isRequired: boolean
-  options: string[]
+  options: AttributeOptionValue[]
 }
 
 interface Props {
-  attributes: Attribute[]
-  setAttributes: (val: Attribute[]) => void
+  attributes: DynamicAttributeInput[]
+  setAttributes: (val: DynamicAttributeInput[]) => void
 }
 
 export default function AttributeInformation({

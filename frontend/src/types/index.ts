@@ -9,3 +9,4 @@ export * from './log.types';
 export * from './user.types';
 export * from './address.types';
 export * from './payment.types';
+export * from './category.types'

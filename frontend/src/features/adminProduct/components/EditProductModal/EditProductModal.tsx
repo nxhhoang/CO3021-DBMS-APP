@@ -68,7 +68,7 @@ export default function EditProductModal({
 
     try {
       await productService.updateProduct({
-        id: product._id,
+        productId: product._id,
         data,
       })
       toast.success('Cập nhật sản phẩm thành công!')

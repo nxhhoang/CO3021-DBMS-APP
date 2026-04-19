@@ -4,6 +4,9 @@ import {
   GetCategoriesResponse,
   CreateCategoryRequest,
   CreateCategoryResponse,
+  UpdateCategoryRequest,
+  UpdateCategoryResponse,
+  DeleteCategoryResponse,
 } from '@/types/category.types'
 
 const categoryService = {
@@ -20,9 +23,24 @@ const categoryService = {
     )
     return response.data
   },
+  async updateCategory(id: string, data: UpdateCategoryRequest) {
+    const response = await privateApi.put<UpdateCategoryResponse>(
+      `admin/categories/${id}`,
+      data,
+    )
+    return response.data
+  },
+  async deleteCategory(id: string) {
+    const response = await privateApi.delete<DeleteCategoryResponse>(
+      `admin/categories/${id}`,
+    )
+    return response.data
+  },
 }
 
 export default categoryService
 
 // api.get('categories', { params: { isActive: true } });
 // api.post('admin/categories', { name: 'New Category', slug: 'new-category', description: 'This is a new category', isActive: true, dynamicAttributes: [] });
+// api.put('admin/categories/category-1', { name: 'Updated Category' });
+// api.delete('admin/categories/category-1');

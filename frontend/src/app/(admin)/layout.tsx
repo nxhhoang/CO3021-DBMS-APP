@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react'
 import { getUserRole } from '@/utils/getUserRole'
 import '@/lib/axios'
 
-import { LayoutDashboard, Package } from 'lucide-react'
+import { LayoutDashboard, Package, Folder } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
@@ -44,6 +44,11 @@ export default function AdminLayout({
       name: 'Orders',
       href: '/admin/orders',
       icon: Package,
+    },
+    {
+      name: 'Categories',
+      href: '/admin/categories',
+      icon: Folder,
     },
   ]
 

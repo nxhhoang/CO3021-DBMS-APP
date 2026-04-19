@@ -17,8 +17,8 @@ export const productService = {
     return res.data
   },
 
-  async getProductDetail({ id }: GetProductDetailRequest) {
-    const res = await api.get<GetProductDetailResponse>(`products/${id}`)
+  async getProductDetail({ productId }: GetProductDetailRequest) {
+    const res = await api.get<GetProductDetailResponse>(`products/${productId}`)
     return res.data
   },
 
@@ -31,22 +31,22 @@ export const productService = {
   },
 
   async updateProduct({
-    id,
+    productId,
     data,
   }: {
-    id: string
+    productId: string
     data: UpdateProductRequest
   }) {
     const res = await privateApi.put<UpdateProductResponse>(
-      `admin/products/${id}`,
+      `admin/products/${productId}`,
       data,
     )
     return res.data
   },
 
-  async deleteProduct({ id }: { id: string }) {
+  async deleteProduct({ productId }: { productId: string }) {
     const res = await privateApi.delete<DeleteProductResponse>(
-      `admin/products/${id}`,
+      `admin/products/${productId}`,
     )
     return res.data
   },

@@ -1,16 +1,28 @@
 'use client'
 
+import { FormEvent } from 'react'
 import Image from 'next/image'
-import { Edit2, Trash2, Box, Loader2, Star } from 'lucide-react'
+import {
+  Box,
+  Edit2,
+  Loader2,
+  RotateCcw,
+  Search,
+  Star,
+  Trash2,
+} from 'lucide-react'
 import { toast } from 'sonner'
 
 import { ProductResponse } from '@/types/product.types'
 import { PaginationParams } from '@/types/api.types'
 import { productService } from '@/services/product.service'
+import { Category } from '@/types/category.types'
+import { SORT_BY } from '@/constants/enum'
 
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Input } from '@/components/ui/input'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -31,11 +43,34 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from '@/components/ui/pagination'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+
+const ADMIN_SORT_OPTIONS = [
+  { label: 'Bán chạy nhất', value: SORT_BY.POPULARITY },
+  { label: 'Giá tăng dần', value: SORT_BY.PRICE_ASC },
+  { label: 'Giá giảm dần', value: SORT_BY.PRICE_DESC },
+  { label: 'Đánh giá cao', value: SORT_BY.RATING },
+] as const
 
 interface ProductTableProps {
   products: ProductResponse[]
   loading: boolean
   pagination: PaginationParams | null
+  categories: Category[]
+  keywordInput: string
+  categoryFilter: string
+  sortFilter: string
+  onKeywordChange: (value: string) => void
+  onSearchSubmit: (event: FormEvent<HTMLFormElement>) => void
+  onCategoryChange: (value: string) => void
+  onSortChange: (value: string) => void
+  onResetFilters: () => void
   onRefresh: () => void
   onEdit: (product: ProductResponse) => void
   onPageChange: (page: number) => void
@@ -45,13 +80,22 @@ export default function ProductTable({
   products,
   loading,
   pagination,
+  categories,
+  keywordInput,
+  categoryFilter,
+  sortFilter,
+  onKeywordChange,
+  onSearchSubmit,
+  onCategoryChange,
+  onSortChange,
+  onResetFilters,
   onRefresh,
   onEdit,
   onPageChange,
 }: ProductTableProps) {
-  const handleDelete = async (id: string) => {
+  const handleDelete = async (productId: string) => {
     try {
-      const response = await productService.deleteProduct({ id })
+      const response = await productService.deleteProduct({ productId })
       if (response.data) {
         toast.success('Đã ngừng bán sản phẩm thành công')
         onRefresh()
@@ -104,10 +148,63 @@ export default function ProductTable({
   }
 
   return (
-    <Card>
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
+    <Card className="bg-surface-container-lowest border-outline-variant/10 overflow-hidden rounded-xl border shadow-sm">
+      <CardHeader className="space-y-4 pb-4">
         <CardTitle className="text-xl font-bold">Danh sách sản phẩm</CardTitle>
+
+        <form
+          onSubmit={onSearchSubmit}
+          className="grid grid-cols-1 gap-3 xl:grid-cols-[minmax(0,1fr)_220px_220px_auto_auto] xl:items-center"
+        >
+          <div className="relative">
+            <Search className="text-muted-foreground pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
+            <Input
+              value={keywordInput}
+              onChange={(event) => onKeywordChange(event.target.value)}
+              placeholder="Tìm kiếm theo tên hoặc mô tả..."
+              className="pl-9"
+            />
+          </div>
+
+          <Select value={categoryFilter} onValueChange={onCategoryChange}>
+            <SelectTrigger>
+              <SelectValue placeholder="Danh mục" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Tất cả danh mục</SelectItem>
+              {categories.map((category) => (
+                <SelectItem
+                  key={category._id || category.ID}
+                  value={category.slug}
+                >
+                  {category.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+
+          <Select value={sortFilter} onValueChange={onSortChange}>
+            <SelectTrigger>
+              <SelectValue placeholder="Sắp xếp" />
+            </SelectTrigger>
+            <SelectContent>
+              {ADMIN_SORT_OPTIONS.map((option) => (
+                <SelectItem key={option.value} value={option.value}>
+                  {option.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+
+          <Button type="submit">Áp dụng</Button>
+
+          <Button type="button" variant="outline" onClick={onResetFilters}>
+            <RotateCcw className="h-4 w-4" />
+            Đặt lại
+          </Button>
+        </form>
       </CardHeader>
+
       <CardContent>
         <div className="overflow-hidden rounded-md border">
           <table className="w-full text-sm">
@@ -181,7 +278,7 @@ export default function ProductTable({
                         variant="secondary"
                         className="text-[10px] font-normal uppercase"
                       >
-                        {product.category.name}
+                        {product.category?.name || 'N/A'}
                       </Badge>
                     </td>
                     <td className="p-4 text-right font-semibold">

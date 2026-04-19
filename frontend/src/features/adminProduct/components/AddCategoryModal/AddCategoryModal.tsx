@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import {
   Dialog,
   DialogContent,
@@ -14,23 +14,52 @@ import {
 import { Button } from '@/components/ui/button'
 
 import categoryService from '@/services/category.service'
-import { CreateCategoryRequest } from '@/types/category.types'
+import {
+  Category,
+  CreateCategoryRequest,
+  UpdateCategoryRequest,
+  DynamicAttributeInput,
+} from '@/types/category.types'
 import GeneralInformation from './GeneralInformation'
 import AttributeInformation from './AttributeInformation'
 
 interface AddCategoryModalProps {
   isOpen: boolean
   onClose: () => void
+  onSaved?: () => void
+  category?: Category | null
 }
 
 export default function AddCategoryModal({
   isOpen,
   onClose,
+  onSaved,
+  category = null,
 }: AddCategoryModalProps) {
   const [name, setName] = useState('')
   const [slug, setSlug] = useState('')
   const [description, setDescription] = useState('')
-  const [attributes, setAttributes] = useState<any[]>([])
+  const [attributes, setAttributes] = useState<DynamicAttributeInput[]>([])
+  const [saving, setSaving] = useState(false)
+
+  useEffect(() => {
+    if (!isOpen) {
+      return
+    }
+
+    setName(category?.name ?? '')
+    setSlug(category?.slug ?? '')
+    setDescription(category?.description ?? '')
+    setAttributes(
+      category?.dynamicAttributes?.map((attribute) => ({
+        key: attribute.key,
+        label: attribute.label,
+        dataType: attribute.dataType,
+        isRequired: attribute.isRequired ?? true,
+        options: attribute.options?.map((option) => String(option)) ?? [],
+      })) ?? [],
+    )
+  }, [category, isOpen])
 
   const generateSlug = (val: string) => {
     return val
@@ -50,20 +79,45 @@ export default function AddCategoryModal({
 
   const handleSave = async () => {
     try {
-      const payload: CreateCategoryRequest = {
-        name,
-        slug,
-        description,
-        isActive: true,
-        dynamicAttributes: attributes,
+      setSaving(true)
+
+      if (category) {
+        const payload: UpdateCategoryRequest = {
+          name,
+          slug,
+          description,
+          dynamicAttributes: attributes,
+        }
+
+        const result = await categoryService.updateCategory(
+          category._id || category.ID || '',
+          payload,
+        )
+        alert(result.message)
+      } else {
+        const payload: CreateCategoryRequest = {
+          name,
+          slug,
+          description,
+          isActive: true,
+          dynamicAttributes: attributes,
+        }
+
+        const result = await categoryService.createCategory(payload)
+        alert(result.message)
       }
 
-      const result = await categoryService.createCategory(payload)
-      alert(result.message)
+      onSaved?.()
       onClose()
     } catch (error) {
       console.error(error)
-      alert('Có lỗi xảy ra khi tạo danh mục')
+      alert(
+        category
+          ? 'Có lỗi xảy ra khi cập nhật danh mục'
+          : 'Có lỗi xảy ra khi tạo danh mục',
+      )
+    } finally {
+      setSaving(false)
     }
   }
 
@@ -74,10 +128,12 @@ export default function AddCategoryModal({
         {/* Header */}
         <DialogHeader className="border-b pb-4 text-2xl font-bold">
           <DialogTitle className="text-2xl font-bold">
-            Thêm danh mục mới
+            {category ? 'Cập nhật danh mục' : 'Thêm danh mục mới'}
           </DialogTitle>
           <DialogDescription className="font-medium">
-            Tạo một danh mục sản phẩm mới
+            {category
+              ? 'Chỉnh sửa thông tin danh mục sản phẩm'
+              : 'Tạo một danh mục sản phẩm mới'}
           </DialogDescription>
         </DialogHeader>
 
@@ -101,11 +157,13 @@ export default function AddCategoryModal({
         {/* Footer */}
         <DialogFooter className="shrink-0 border-t px-6 py-5">
           <DialogClose asChild>
-            <Button type="button" variant="outline">
+            <Button type="button" variant="outline" disabled={saving}>
               Hủy
             </Button>
           </DialogClose>
-          <Button onClick={handleSave}>Lưu danh mục</Button>
+          <Button onClick={handleSave} disabled={saving}>
+            {saving ? 'Đang lưu...' : 'Lưu danh mục'}
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

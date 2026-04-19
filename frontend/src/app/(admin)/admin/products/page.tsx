@@ -1,14 +1,15 @@
 'use client'
 
-import { useState } from 'react'
+import { FormEvent, useState } from 'react'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
-import { Plus, FolderPlus, Package } from 'lucide-react'
+import { FolderPlus, Package, Plus } from 'lucide-react'
 
 // Types & Hooks
 import { GetProductsRequest, ProductResponse } from '@/types/product.types'
 import useProducts from '@/features/products/hooks/useProducts'
 import useProductQueryParams from '@/features/products/hooks/useProductQueryParams'
 import useCategories from '@/features/products/hooks/useCategories'
+import { SORT_BY } from '@/constants/enum'
 
 // Components
 import ProductTable from '@/features/products/components/ProductTable'
@@ -19,6 +20,8 @@ import EditProductModal from '@/features/adminProduct/components/EditProductModa
 // shadcn
 import { Button } from '@/components/ui/button'
 
+type ProductSortValue = Exclude<GetProductsRequest['sort'], undefined>
+
 export default function AdminProductsPage() {
   const router = useRouter()
   const pathname = usePathname()
@@ -26,8 +29,14 @@ export default function AdminProductsPage() {
 
   // Data Fetching
   const params: GetProductsRequest = useProductQueryParams()
-  const { products, pagination, loading, refetch } = useProducts(params)
-  const { categories } = useCategories()
+  const { products, pagination, loading, error, refetch } = useProducts(params)
+  const { categories, refetch: refetchCategories } = useCategories()
+
+  const [keywordInput, setKeywordInput] = useState(params.keyword ?? '')
+  const [categoryFilter, setCategoryFilter] = useState(params.category ?? 'all')
+  const [sortFilter, setSortFilter] = useState<ProductSortValue>(
+    params.sort ?? SORT_BY.POPULARITY,
+  )
 
   // State Modals
   const [isProductModalOpen, setIsProductModalOpen] = useState(false)
@@ -53,6 +62,73 @@ export default function AdminProductsPage() {
     router.push(`${pathname}?${nextParams.toString()}`, { scroll: false })
   }
 
+  const applyFilters = ({
+    keyword,
+    category,
+    sort,
+  }: {
+    keyword: string
+    category: string
+    sort: ProductSortValue
+  }) => {
+    const nextParams = new URLSearchParams(searchParams.toString())
+
+    const normalizedKeyword = keyword.trim()
+    if (normalizedKeyword) nextParams.set('keyword', normalizedKeyword)
+    else nextParams.delete('keyword')
+
+    if (category && category !== 'all') nextParams.set('category', category)
+    else nextParams.delete('category')
+
+    if (sort) nextParams.set('sort', sort)
+    else nextParams.delete('sort')
+
+    nextParams.set('page', '1')
+    router.push(`${pathname}?${nextParams.toString()}`, { scroll: false })
+  }
+
+  const handleSearchSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+    applyFilters({
+      keyword: keywordInput,
+      category: categoryFilter,
+      sort: sortFilter,
+    })
+  }
+
+  const handleCategoryChange = (value: string) => {
+    setCategoryFilter(value)
+    applyFilters({
+      keyword: keywordInput,
+      category: value,
+      sort: sortFilter,
+    })
+  }
+
+  const handleSortChange = (value: string) => {
+    const nextSort = value as ProductSortValue
+    setSortFilter(nextSort)
+    applyFilters({
+      keyword: keywordInput,
+      category: categoryFilter,
+      sort: nextSort,
+    })
+  }
+
+  const handleResetFilters = () => {
+    setKeywordInput('')
+    setCategoryFilter('all')
+    setSortFilter(SORT_BY.POPULARITY)
+
+    const nextParams = new URLSearchParams(searchParams.toString())
+    nextParams.delete('keyword')
+    nextParams.delete('category')
+    nextParams.delete('sort')
+    nextParams.delete('page')
+
+    router.push(`${pathname}?${nextParams.toString()}`, { scroll: false })
+  }
+
   return (
     <div className="bg-surface min-h-screen px-6 py-8">
       {/* HEADER */}
@@ -72,35 +148,51 @@ export default function AdminProductsPage() {
 
         {/* ACTION BUTTONS */}
         <div className="flex flex-wrap gap-3">
-          <button
+          <Button
+            type="button"
+            variant="outline"
             onClick={() => setIsCategoryModalOpen(true)}
-            className="bg-surface-container-high text-primary hover:bg-surface-container-highest flex items-center gap-2 rounded-full px-6 py-3 text-sm font-bold transition"
+            className="rounded-full px-6"
           >
             <FolderPlus size={18} />
             Thêm danh mục
-          </button>
+          </Button>
 
-          <button
+          <Button
+            type="button"
             onClick={() => setIsProductModalOpen(true)}
-            className="text-on-primary bg-primary hover:bg-primary/90 flex items-center gap-2 rounded-full px-8 py-3 text-sm font-bold text-white transition"
+            className="rounded-full px-8"
           >
             <Plus size={18} />
             Thêm sản phẩm
-          </button>
+          </Button>
         </div>
       </div>
 
+      {error && (
+        <p className="mb-4 text-sm text-red-500">
+          Không thể tải danh sách sản phẩm: {error}
+        </p>
+      )}
+
       {/* MAIN CONTENT */}
-      <div className="bg-surface-container-lowest border-outline-variant/10 overflow-hidden rounded-xl border shadow-sm">
-        <ProductTable
-          products={products}
-          loading={loading}
-          pagination={pagination!}
-          onRefresh={refetch}
-          onEdit={handleEditProduct}
-          onPageChange={handlePageChange}
-        />
-      </div>
+      <ProductTable
+        products={products}
+        loading={loading}
+        pagination={pagination}
+        categories={categories || []}
+        keywordInput={keywordInput}
+        categoryFilter={categoryFilter}
+        sortFilter={sortFilter}
+        onKeywordChange={setKeywordInput}
+        onSearchSubmit={handleSearchSubmit}
+        onCategoryChange={handleCategoryChange}
+        onSortChange={handleSortChange}
+        onResetFilters={handleResetFilters}
+        onRefresh={refetch}
+        onEdit={handleEditProduct}
+        onPageChange={handlePageChange}
+      />
 
       {/* MODALS */}
       <AddProductModal
@@ -121,6 +213,7 @@ export default function AdminProductsPage() {
       <AddCategoryModal
         isOpen={isCategoryModalOpen}
         onClose={() => setIsCategoryModalOpen(false)}
+        onSaved={refetchCategories}
       />
     </div>
   )

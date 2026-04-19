@@ -1,4 +1,4 @@
-import { ApiResponse, PaginatedResponse, PaginationParams } from './api.types'
+import { ApiResponse, PaginationParams } from './api.types'
 import { Category } from './category.types'
 import { SORT_BY } from '@/constants/enum'
 
@@ -29,7 +29,7 @@ export interface Inventory extends SKU {
 }
 
 export interface ProductResponse extends Omit<Product, 'categoryID'> {
-  category: Pick<Category, '_id' | 'name' | 'slug'>
+  category: Pick<Category, '_id' | 'name' | 'slug'> | null
   sku?: string // Thêm sku mặc định (tùy chọn)
   skuPrice?: number // Giá theo SKU, nếu khác basePrice
 }
@@ -58,7 +58,7 @@ export interface PaginatedData<T> {
 export type GetProductsResponse = ApiResponse<PaginatedData<ProductResponse>>
 
 //GET /products/:id
-export type GetProductDetailRequest = { id: string }
+export type GetProductDetailRequest = { productId: string }
 export type GetProductDetailResponse = ApiResponse<ProductDetail>
 
 //POST /admin/products
@@ -73,11 +73,15 @@ export type CreateProductRequest = Pick<
   | 'attributes'
 >
 
-export type CreateProductResponse = ApiResponse<Product>
+export type CreateProductResponse = ApiResponse<{ _id: string }>
 
 //PUT /admin/products/:id
 export type UpdateProductRequest = Partial<CreateProductRequest>
-export type UpdateProductResponse = ApiResponse<Product>
+export type UpdateProductResponse = ApiResponse<{
+  _id: string
+  name: string
+  basePrice: number
+}>
 
 //DELETE /admin/products/:id
 export type DeleteProductResponse = ApiResponse<{

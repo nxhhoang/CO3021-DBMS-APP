@@ -1,15 +1,15 @@
-import { useState, useEffect, useCallback } from 'react';
-import { GetProductsRequest, ProductResponse } from '@/types/product.types';
-import { PaginationParams, PaginatedResponse } from '@/types';
-import { productService } from '@/services/product.service';
+import { useState, useEffect, useCallback } from 'react'
+import { GetProductsRequest, ProductResponse } from '@/types/product.types'
+import { PaginationParams } from '@/types'
+import { productService } from '@/services/product.service'
 
 function useProducts(params: GetProductsRequest) {
-  const [products, setProducts] = useState<ProductResponse[]>([]);
-  const [pagination, setPagination] = useState<PaginationParams | null>(null);
+  const [products, setProducts] = useState<ProductResponse[]>([])
+  const [pagination, setPagination] = useState<PaginationParams | null>(null)
 
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [message, setMessage] = useState('');
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const [message, setMessage] = useState('')
 
   const fetchProducts = useCallback(async () => {
     try {
@@ -18,25 +18,26 @@ function useProducts(params: GetProductsRequest) {
 
       const response = await productService.getProducts(params)
 
-      // Giả sử response trả về là object có cấu trúc { message, data: { products, pagination } }
-      const result = response?.data // Đây là object chứa { products, pagination }
+      const result = response?.data
 
-      if (result) {
-        setProducts(result.products ?? [])
-        setPagination(result.pagination ?? null) // Lấy pagination từ trong result (tức là response.data)
-      }
+      setProducts(result?.products ?? [])
+      setPagination(result?.pagination ?? null)
 
       setMessage(response.message ?? '')
     } catch (err) {
-      // ... lỗi
+      const errorMessage =
+        err instanceof Error ? err.message : 'Không thể tải danh sách sản phẩm'
+      setError(errorMessage)
+      setProducts([])
+      setPagination(null)
     } finally {
       setLoading(false)
     }
   }, [params])
 
   useEffect(() => {
-    fetchProducts();
-  }, [fetchProducts]);
+    fetchProducts()
+  }, [fetchProducts])
 
   return {
     products,
@@ -45,7 +46,7 @@ function useProducts(params: GetProductsRequest) {
     error,
     message,
     refetch: fetchProducts,
-  };
+  }
 }
 
-export default useProducts;
+export default useProducts

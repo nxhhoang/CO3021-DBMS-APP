@@ -45,7 +45,7 @@ export const ProductDetailModal = ({
       setLoading(true)
       try {
         const response = await productService.getProductDetail({
-          id: productId,
+          productId,
         })
         if (response.data) {
           setProduct(response.data)

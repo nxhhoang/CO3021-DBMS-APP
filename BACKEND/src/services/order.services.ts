@@ -43,9 +43,10 @@ class OrderService {
 
       //  Step 2: Lock & validate inventory for each item
       for (const item of items) {
-        const invResult = await client.query(`SELECT stockQuantity AS "stockQuantity" FROM INVENTORY WHERE sku = $1 FOR UPDATE`, [
-          item.sku
-        ])
+        const invResult = await client.query(
+          `SELECT stockQuantity AS "stockQuantity" FROM INVENTORY WHERE sku = $1 FOR UPDATE`,
+          [item.sku]
+        )
 
         if (invResult.rows.length === 0 || invResult.rows[0].stockQuantity < item.quantity) {
           await client.query('ROLLBACK')
@@ -174,6 +175,41 @@ class OrderService {
     }
 
     return result.rows[0]
+  }
+
+  // Admin: Get all orders with pagination
+  async getAllOrdersAdmin(limit: number = 10, page: number = 1) {
+    const offset = (page - 1) * limit
+
+    // 1. Lấy danh sách orders kèm thông tin User (nếu cần)
+    // Tôi sử dụng "userid" thay vì "userID" dựa trên lỗi database trước đó của bạn
+    const result = await query(
+      `SELECT 
+        orderid AS "orderID", 
+        userid AS "userID", 
+        status, 
+        totalamount AS "totalAmount", 
+        createdat AS "createdAt",
+        shippingaddr AS "shippingAddr"
+       FROM ORDERS
+       ORDER BY createdat DESC
+       LIMIT $1 OFFSET $2`,
+      [limit, offset]
+    )
+
+    // 2. Lấy tổng số lượng để Frontend làm phân trang
+    const countResult = await query(`SELECT COUNT(*) FROM ORDERS`)
+    const totalOrders = parseInt(countResult.rows[0].count)
+
+    return {
+      orders: result.rows,
+      pagination: {
+        total: totalOrders,
+        page,
+        limit,
+        totalPages: Math.ceil(totalOrders / limit)
+      }
+    }
   }
 }
 

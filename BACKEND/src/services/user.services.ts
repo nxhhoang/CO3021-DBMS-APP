@@ -50,7 +50,7 @@ class UserService {
 
   async getAddresses(userId: string) {
     const result = await query(
-      `SELECT addressID AS "addressID", addressline AS "addressline", addressname AS "addressname",
+      `SELECT addressID AS "addressID", addressLine AS "addressLine", addressName AS "addressName",
               city, district, isDefault AS "isDefault"
        FROM ADDRESSES WHERE userID = $1
        ORDER BY isDefault DESC, addressID ASC`,
@@ -66,13 +66,13 @@ class UserService {
       await client.query('BEGIN')
 
       if (isDefault) {
-        await client.query(`UPDATE ADDRESSES SET "isdefault" = false WHERE "userID" = $1`, [userId])
+        await client.query(`UPDATE ADDRESSES SET isDefault = false WHERE userID = $1`, [userId])
       }
 
       const result = await client.query(
-        `INSERT INTO ADDRESSES (userID, addressline, addressname, city, district, isdefault)
+        `INSERT INTO ADDRESSES (userID, addressLine, addressName, city, district, isDefault)
          VALUES ($1, $2, $3, $4, $5, $6)
-         RETURNING addressID AS "addressID", addressline AS "addressline"`,
+         RETURNING addressID AS "addressID", addressLine AS "addressLine"`,
         [userId, addressLine, addressName, city, district, isDefault ?? false]
       )
 
@@ -87,8 +87,8 @@ class UserService {
   }
 
   async updateAddress(addressId: number, userId: string, payload: UpdateAddressReqBody) {
-    // 1. Kiểm tra quyền sở hữu (Verify ownership)
-    const check = await query(`SELECT addressID FROM ADDRESSES WHERE addressid = $1 AND userID = $2`, [
+    // Verify ownership
+    const check = await query(`SELECT addressID FROM ADDRESSES WHERE addressID = $1 AND userID = $2`, [
       addressId,
       userId
     ])
@@ -100,47 +100,45 @@ class UserService {
     const values: unknown[] = []
     let idx = 1
 
-    // Dynamic fields build
-    const updatableFields = ['addressline', 'addressname', 'city', 'district']
-    updatableFields.forEach((field) => {
-      if (payload[field as keyof UpdateAddressReqBody] !== undefined) {
-        fields.push(`"${field}" = $${idx++}`) // Dùng ngoặc kép để tránh lỗi case-sensitive trong Postgres
-        values.push(payload[field as keyof UpdateAddressReqBody])
-      }
-    })
+    if (payload.addressLine !== undefined) {
+      fields.push(`addressLine = $${idx++}`)
+      values.push(payload.addressLine)
+    }
+    if (payload.addressName !== undefined) {
+      fields.push(`addressName = $${idx++}`)
+      values.push(payload.addressName)
+    }
+    if (payload.city !== undefined) {
+      fields.push(`city = $${idx++}`)
+      values.push(payload.city)
+    }
+    if (payload.district !== undefined) {
+      fields.push(`district = $${idx++}`)
+      values.push(payload.district)
+    }
 
     const client = await getClient()
     try {
       await client.query('BEGIN')
 
-      // 2. Xử lý logic isDefault (Transaction safe)
       if (payload.isDefault === true) {
-        await client.query(`UPDATE ADDRESSES SET "isdefault" = false WHERE "userid" = $1`, [userId])
-        fields.push(`"isdefault" = $${idx++}`)
+        await client.query(`UPDATE ADDRESSES SET isDefault = false WHERE userID = $1`, [userId])
+        fields.push(`isDefault = $${idx++}`)
         values.push(true)
       } else if (payload.isDefault === false) {
-        fields.push(`"isdefault" = $${idx++}`)
+        fields.push(`isDefault = $${idx++}`)
         values.push(false)
-      }
-
-      // Nếu không có field nào thay đổi, trả về dữ liệu cũ hoặc báo lỗi tùy logic
-      if (fields.length === 0) {
-        await client.query('COMMIT')
-        const currentData = await query(`SELECT * FROM ADDRESSES WHERE "addressid" = $1`, [addressId])
-        return currentData.rows[0]
       }
 
       values.push(addressId)
       const result = await client.query(
-        `UPDATE ADDRESSES 
-       SET ${fields.join(', ')} 
-       WHERE "addressid" = $${idx}
-       RETURNING *`, // Lấy hết tất cả các cột của dòng vừa update
+        `UPDATE ADDRESSES SET ${fields.join(', ')} WHERE addressID = $${idx}
+         RETURNING addressID AS "addressID", city, district`,
         values
       )
 
       await client.query('COMMIT')
-      return result.rows[0] // Trả về object đầy đủ
+      return result.rows[0]
     } catch (err) {
       await client.query('ROLLBACK')
       throw err

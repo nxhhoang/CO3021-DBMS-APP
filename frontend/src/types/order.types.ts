@@ -46,37 +46,11 @@ export type GetOrdersResponse = ApiResponse<Order[]>;
 export type GetOrderDetailRequest = { orderId: number };
 export type GetOrderDetailResponse = ApiResponse<OrderDetail>;
 
-// // GET /admin/orders
-// export type GetAdminOrdersResponse = ApiResponse<Order[]>;
+// GET /admin/orders
+export type GetAdminOrdersResponse = ApiResponse<Order[]>;
 
 //PUT /admin/orders/:orderId/status
 export type UpdateOrderStatusRequest = { status: OrderStatus };
 export type UpdateOrderStatusResponse = ApiResponse<
   Pick<Order, 'orderID' | 'status'> & { updatedAt: string }
 >;
-
-// Định nghĩa cấu trúc phân trang trả về từ Backend
-export interface Pagination {
-  total: number;
-  page: number;
-  limit: number;
-  totalPages: number;
-}
-
-// Cập nhật lại Order để khớp với dữ liệu Admin (có thêm userID)
-export interface AdminOrder extends Order {
-  userID: string;
-  shippingAddr?: any; // Bạn có thể định nghĩa interface cụ thể cho địa chỉ nếu cần
-}
-
-// Cập nhật Response cho Admin: Data bây giờ là một object chứa list và pagination
-export type GetAdminOrdersResponse = ApiResponse<{
-  orders: AdminOrder[];
-  pagination: Pagination;
-}>;
-
-// Params khi gọi API (Query string)
-export interface GetAdminOrdersParams {
-  page?: number;
-  limit?: number;
-}

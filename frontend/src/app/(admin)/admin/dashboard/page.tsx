@@ -1,9 +1,24 @@
 'use client'
 
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { endOfDay, format, parseISO, startOfDay } from 'date-fns'
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from '@/components/ui/select'
+import {
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+} from '@/components/ui/popover'
+import { Calendar } from '@/components/ui/calendar'
+import { CalendarIcon, ChevronDownIcon } from 'lucide-react'
+import { format, parseISO } from 'date-fns'
+import { cn } from '@/lib/utils'
 
 import {
   ComposedChart,
@@ -16,12 +31,16 @@ import {
   CartesianGrid,
   Legend,
 } from 'recharts'
-import FilterSection from '@/features/adminDashboard/components/FilterSection'
-import SummaryCard from '@/features/adminDashboard/components/SummaryCard'
-import { RevenueStat } from '@/types'
+import { statsService } from '@/services/stats.service'
+
+interface RevenueItem {
+  date: string
+  totalRevenue: number
+  orderCount: number
+}
 
 // MOCK DATA
-const MOCK_REVENUE_DATA: RevenueStat[] = [
+const MOCK_REVENUE_DATA: RevenueItem[] = [
   { date: '2026-01-01', totalRevenue: 52000000, orderCount: 21 },
   { date: '2026-01-02', totalRevenue: 48000000, orderCount: 19 },
   { date: '2026-01-03', totalRevenue: 61000000, orderCount: 26 },
@@ -54,128 +73,41 @@ const MOCK_REVENUE_DATA: RevenueStat[] = [
   { date: '2026-01-30', totalRevenue: 150000000, orderCount: 90 },
 ]
 
-const filterRevenueData = (
-  items: RevenueStat[],
-  startDate: Date,
-  endDate: Date,
-  type: 'day' | 'month',
-) => {
-  const start = startOfDay(startDate)
-  const end = endOfDay(endDate)
-
-  const filteredItems = items.filter((item) => {
-    const itemDate = parseISO(item.date)
-    return itemDate >= start && itemDate <= end
-  })
-
-  if (type === 'day') {
-    return filteredItems
-  }
-
-  const groupedByMonth = new Map<string, RevenueStat>()
-
-  filteredItems.forEach((item) => {
-    const itemDate = parseISO(item.date)
-    const monthKey = format(itemDate, 'yyyy-MM')
-    const existingItem = groupedByMonth.get(monthKey)
-
-    if (existingItem) {
-      groupedByMonth.set(monthKey, {
-        date: existingItem.date,
-        totalRevenue: existingItem.totalRevenue + item.totalRevenue,
-        orderCount: existingItem.orderCount + item.orderCount,
-      })
-      return
-    }
-
-    groupedByMonth.set(monthKey, {
-      date: `${monthKey}-01`,
-      totalRevenue: item.totalRevenue,
-      orderCount: item.orderCount,
-    })
-  })
-
-  return Array.from(groupedByMonth.values())
-}
-
-const formatRevenueDate = (date: string, type: 'day' | 'month') =>
-  type === 'month'
-    ? format(parseISO(date), 'MM/yyyy')
-    : format(parseISO(date), 'dd/MM/yyyy')
-
 export default function DashboardPage() {
-  const [data, setData] = useState<RevenueStat[]>([])
-  const [summaryTotals, setSummaryTotals] = useState({
-    totalRevenue: 0,
-    totalOrders: 0,
-  })
+  const [data, setData] = useState<RevenueItem[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  const currentDate = new Date()
   const [startDate, setStartDate] = useState<Date>(parseISO('2026-01-01'))
-  const [endDate, setEndDate] = useState<Date>(currentDate)
+  const [endDate, setEndDate] = useState<Date>(parseISO('2026-02-01'))
   const [type, setType] = useState<'day' | 'month'>('day')
 
-  const [appliedStartDate, setAppliedStartDate] = useState<Date>(startDate)
-  const [appliedEndDate, setAppliedEndDate] = useState<Date>(endDate)
-  const [appliedType, setAppliedType] = useState<'day' | 'month'>(type)
-
-  const hasFilterChanges = useMemo(() => {
-    const draftStart = format(startDate, 'yyyy-MM-dd')
-    const draftEnd = format(endDate, 'yyyy-MM-dd')
-    const appliedStart = format(appliedStartDate, 'yyyy-MM-dd')
-    const appliedEnd = format(appliedEndDate, 'yyyy-MM-dd')
-
-    return (
-      draftStart !== appliedStart ||
-      draftEnd !== appliedEnd ||
-      type !== appliedType
-    )
-  }, [startDate, endDate, type, appliedStartDate, appliedEndDate, appliedType])
-
-  const fetchData = () => {
-    if (startDate > endDate) {
-      setError('Ngày bắt đầu phải nhỏ hơn hoặc bằng ngày kết thúc')
-      return
+  const fetchData = async () => {
+    try {
+      setLoading(true)
+      setError(null)
+      await new Promise((resolve) => setTimeout(resolve, 500))
+      setData(MOCK_REVENUE_DATA)
+    } catch (err: any) {
+      setError(err?.message || 'Lỗi khi tải dữ liệu')
+      setData([])
+    } finally {
+      setLoading(false)
     }
-
-    if (endDate > currentDate) {
-      setError('Ngày kết thúc không được lớn hơn ngày hiện tại')
-      return
-    }
-
-    setLoading(true)
-    setError(null)
-
-    const filteredData = filterRevenueData(
-      MOCK_REVENUE_DATA,
-      startDate,
-      endDate,
-      type,
-    )
-    const totals = filteredData.reduce(
-      (acc, item) => {
-        acc.totalRevenue += item.totalRevenue || 0
-        acc.totalOrders += item.orderCount || 0
-        return acc
-      },
-      { totalRevenue: 0, totalOrders: 0 },
-    )
-
-    setAppliedStartDate(startDate)
-    setAppliedEndDate(endDate)
-    setAppliedType(type)
-    setData(filteredData)
-    setSummaryTotals(totals)
-    setLoading(false)
   }
 
   useEffect(() => {
     fetchData()
-    // Initial data should load once; later updates happen only from the action button.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
+
+  const totalRevenue = data.reduce(
+    (sum, item) => sum + (item.totalRevenue || 0),
+    0,
+  )
+  const totalOrders = data.reduce(
+    (sum, item) => sum + (item.orderCount || 0),
+    0,
+  )
 
   return (
     <div className="space-y-6 p-6">
@@ -186,32 +118,135 @@ export default function DashboardPage() {
         </Button>
       </div>
 
-      {error && <p className="text-sm font-medium text-red-500">{error}</p>}
-
       {/* FILTER SECTION */}
-      <FilterSection
-        startDate={startDate}
-        endDate={endDate}
-        currentDate={currentDate}
-        type={type}
-        loading={loading}
-        hasFilterChanges={hasFilterChanges}
-        onStartDateChange={(date) => {
-          setStartDate(date)
-          if (date > endDate) setEndDate(date)
-        }}
-        onEndDateChange={setEndDate}
-        onTypeChange={setType}
-        onApply={fetchData}
-      />
+      <Card className="shadow-sm">
+        <CardHeader className="pb-3">
+          <CardTitle className="text-sm font-medium">Bộ lọc báo cáo</CardTitle>
+        </CardHeader>
+        <CardContent className="flex flex-wrap items-end gap-4">
+          {/* TỪ NGÀY (Date Picker) */}
+          <div className="flex flex-col gap-1.5">
+            <label className="text-muted-foreground text-xs font-medium">
+              Từ ngày
+            </label>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  className={cn(
+                    'w-[180px] justify-start text-left font-normal',
+                    !startDate && 'text-muted-foreground',
+                  )}
+                >
+                  <CalendarIcon className="mr-2 h-4 w-4" />
+                  {startDate ? (
+                    format(startDate, 'dd/MM/yyyy')
+                  ) : (
+                    <span>Chọn ngày</span>
+                  )}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="start">
+                <Calendar
+                  mode="single"
+                  selected={startDate}
+                  onSelect={(date) => date && setStartDate(date)}
+                  initialFocus
+                />
+              </PopoverContent>
+            </Popover>
+          </div>
+
+          {/* ĐẾN NGÀY (Date Picker) */}
+          <div className="flex flex-col gap-1.5">
+            <label className="text-muted-foreground text-xs font-medium">
+              Đến ngày
+            </label>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  className={cn(
+                    'w-[180px] justify-start text-left font-normal',
+                    !endDate && 'text-muted-foreground',
+                  )}
+                >
+                  <CalendarIcon className="mr-2 h-4 w-4" />
+                  {endDate ? (
+                    format(endDate, 'dd/MM/yyyy')
+                  ) : (
+                    <span>Chọn ngày</span>
+                  )}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="start">
+                <Calendar
+                  mode="single"
+                  selected={endDate}
+                  onSelect={(date) => date && setEndDate(date)}
+                  initialFocus
+                />
+              </PopoverContent>
+            </Popover>
+          </div>
+
+          <div className="flex flex-col gap-1.5">
+            <label className="text-muted-foreground text-xs font-medium">
+              Chế độ
+            </label>
+            <Select
+              value={type}
+              onValueChange={(v: 'day' | 'month') => setType(v)}
+            >
+              <SelectTrigger className="w-36">
+                <SelectValue placeholder="Chọn loại" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="day">Theo ngày</SelectItem>
+                <SelectItem value="month">Theo tháng</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <Button
+            onClick={fetchData}
+            className="bg-primary text-primary-foreground px-8"
+          >
+            Lọc báo cáo
+          </Button>
+        </CardContent>
+      </Card>
 
       {/* SUMMARY CARDS */}
-      <SummaryCard
-        totalRevenue={summaryTotals.totalRevenue}
-        totalOrders={summaryTotals.totalOrders}
-        startDateLabel={format(appliedStartDate, 'dd/MM/yyyy')}
-        endDateLabel={format(appliedEndDate, 'dd/MM/yyyy')}
-      />
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+        <Card className="border-l-4 border-l-emerald-500">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-muted-foreground text-sm font-medium">
+              Tổng doanh thu
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-emerald-600">
+              {totalRevenue.toLocaleString()}{' '}
+              <span className="text-sm font-normal">VND</span>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="border-l-4 border-l-blue-500">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-muted-foreground text-sm font-medium">
+              Tổng đơn hàng
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-blue-600">
+              {totalOrders.toLocaleString()}{' '}
+              <span className="text-sm font-normal">đơn</span>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
 
       {/* CHART SECTION */}
       <Card>
@@ -219,7 +254,7 @@ export default function DashboardPage() {
           <CardTitle>Phân tích biến động doanh thu & Đơn hàng</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="mt-4 h-100 w-full">
+          <div className="mt-4 h-[400px] w-full">
             <ResponsiveContainer width="100%" height="100%">
               <ComposedChart
                 data={data}
@@ -235,7 +270,7 @@ export default function DashboardPage() {
                   fontSize={12}
                   tickLine={false}
                   axisLine={false}
-                  tickFormatter={(val) => formatRevenueDate(val, appliedType)}
+                  tickFormatter={(val) => val.split('-').slice(1).join('/')}
                 />
                 <YAxis
                   yAxisId="left"
@@ -257,6 +292,7 @@ export default function DashboardPage() {
                     border: 'none',
                     boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
                   }}
+                  // Đã sửa lỗi TS: name có thể undefined, value có thể là string/number
                   formatter={(value: any, name: any) => {
                     const label =
                       name === 'totalRevenue' ? 'Doanh thu' : 'Số đơn hàng'
@@ -272,7 +308,7 @@ export default function DashboardPage() {
                 <Bar
                   yAxisId="right"
                   dataKey="orderCount"
-                  name="orderCount"
+                  name="orderCount" // Tên key trong data để tooltip nhận diện
                   fill="#3b82f6"
                   radius={[4, 4, 0, 0]}
                   barSize={40}
@@ -282,7 +318,7 @@ export default function DashboardPage() {
                   yAxisId="left"
                   type="monotone"
                   dataKey="totalRevenue"
-                  name="totalRevenue"
+                  name="totalRevenue" // Tên key trong data để tooltip nhận diện
                   stroke="#10b981"
                   strokeWidth={3}
                   dot={{ r: 4, fill: '#10b981' }}
@@ -316,28 +352,18 @@ export default function DashboardPage() {
                 </tr>
               </thead>
               <tbody>
-                {data.length > 0 ? (
-                  data.map((item) => (
-                    <tr
-                      key={item.date}
-                      className="hover:bg-muted/50 border-b transition-colors"
-                    >
-                      <td className="p-4 font-medium">
-                        {formatRevenueDate(item.date, appliedType)}
-                      </td>
-                      <td className="p-4 text-right">
-                        {item.totalRevenue.toLocaleString()}
-                      </td>
-                      <td className="p-4 text-right">{item.orderCount}</td>
-                    </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td className="text-muted-foreground p-4" colSpan={3}>
-                      Không có dữ liệu trong khoảng thời gian đã chọn.
+                {data.map((item, index) => (
+                  <tr
+                    key={index}
+                    className="hover:bg-muted/50 border-b transition-colors"
+                  >
+                    <td className="p-4 font-medium">{item.date}</td>
+                    <td className="p-4 text-right">
+                      {item.totalRevenue.toLocaleString()}
                     </td>
+                    <td className="p-4 text-right">{item.orderCount}</td>
                   </tr>
-                )}
+                ))}
               </tbody>
             </table>
           </div>

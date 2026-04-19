@@ -92,14 +92,16 @@ export default function AdminProductsPage() {
 
       {/* MAIN CONTENT */}
       <div className="bg-surface-container-lowest border-outline-variant/10 overflow-hidden rounded-xl border shadow-sm">
-        <ProductTable
-          products={products}
-          loading={loading}
-          pagination={pagination!}
-          onRefresh={refetch}
-          onEdit={handleEditProduct}
-          onPageChange={handlePageChange}
-        />
+        <div className="py-4">
+          <ProductTable
+            products={products}
+            loading={loading}
+            pagination={pagination!}
+            onRefresh={refetch}
+            onEdit={handleEditProduct}
+            onPageChange={handlePageChange}
+          />
+        </div>
       </div>
 
       {/* MODALS */}

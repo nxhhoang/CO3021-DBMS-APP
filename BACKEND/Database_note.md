@@ -1,0 +1,1 @@
+- Run `npm install mongodb pg` then `node sync_inventory.js` to create inventory data for PostgresSQL (because _id from skus in Mongo is random -> syncronize between databases)

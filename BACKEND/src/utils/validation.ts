@@ -16,7 +16,7 @@ export const validate = (validation: ValidationChain | ValidationChain[]) => {
     const errors = validationResult(req)
 
     // if (!errors.isEmpty()) {
-      // console.log(errors.array())
+    // console.log(errors.array())
     // }
 
     if (errors.isEmpty()) {

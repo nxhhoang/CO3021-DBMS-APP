@@ -5,3 +5,12 @@ BACKEND/package-lock.json
 FRONTEND/node_modules
 FRONTEND/dist
 FRONTEND/package-lock.json
+
+
+DATABASE/addresses.csv
+DATABASE/users.csv
+DATABASE/venv
+DATABASE/migration.sql
+DATABASE/seed.sql
+
+.DS_Store

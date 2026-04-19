@@ -23,7 +23,7 @@ class SampleService {
         const payload = {
             user_id: 'fake-user-id-123456',
             token_type: enums_1.TokenType.AccessToken,
-            verify: enums_1.UserVerifyStatus.Verified,
+            role: enums_1.UserRole.CUSTOMER,
             exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24 // Hết hạn sau 1 ngày
         };
         const access_token = await (0, jwt_1.signToken)({

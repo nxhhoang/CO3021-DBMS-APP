@@ -64,7 +64,7 @@ const dotenv_1 = require("dotenv");
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 const env = process.env.NODE_ENV || 'development';
-const envFilename = `.env`; // Hoặc .env.${env} nếu bạn muốn chia file
+const envFilename = `.env`;
 if (!fs_1.default.existsSync(path_1.default.resolve(envFilename))) {
     console.log(`Không tìm thấy file môi trường ${envFilename}`);
     console.log(`Vui lòng tạo file .env dựa trên mẫu`);
@@ -77,17 +77,28 @@ exports.isProduction = env === 'production';
 exports.envConfig = {
     port: process.env.PORT || 4000,
     host: process.env.HOST,
+    // MongoDB
+    mongoHost: process.env.MONGO_HOST || 'localhost',
+    mongoPort: parseInt(process.env.MONGO_PORT) || 27017,
+    // mongoUser: process.env.MONGO_USER as string,
+    // mongoPassword: process.env.MONGO_PASSWORD as string,
+    // mongoDatabase: (process.env.MONGO_DATABASE as string) || 'ecommerce_db',
     // dbHost: process.env.DB_HOST as string,
     // dbPort: parseInt(process.env.DB_PORT as string) || 1433,
     // dbUser: process.env.DB_USER as string,
     // dbPassword: process.env.DB_PASSWORD as string,
     // dbName: process.env.DB_NAME as string,
+    // PostgreSQL
+    pgHost: process.env.PG_HOST || 'localhost',
+    pgPort: parseInt(process.env.PG_PORT) || 5432,
+    pgUser: process.env.PG_USER || 'postgres',
+    pgPassword: process.env.PG_PASSWORD || 'postgres',
+    pgDatabase: process.env.PG_DATABASE || 'ecommerce_db',
+    // Auth
     passwordSecret: process.env.PASSWORD_SECRET,
     jwtSecretAccessToken: process.env.JWT_SECRET_ACCESS_TOKEN,
     jwtSecretRefreshToken: process.env.JWT_SECRET_REFRESH_TOKEN,
-    jwtSecretEmailVerifyToken: process.env.JWT_SECRET_EMAIL_VERIFY_TOKEN,
-    jwtSecretForgotPasswordToken: process.env.JWT_SECRET_FORGOT_PASSWORD_TOKEN,
-    refreshTokenExpiresIn: process.env.REFRESH_TOKEN_EXPIRES_IN,
-    accessTokenExpiresIn: process.env.ACCESS_TOKEN_EXPIRES_IN,
+    refreshTokenExpiresIn: process.env.REFRESH_TOKEN_EXPIRES_IN || '7d',
+    accessTokenExpiresIn: process.env.ACCESS_TOKEN_EXPIRES_IN || '15m',
     clientUrl: process.env.CLIENT_URL
 };

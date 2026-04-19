@@ -9,7 +9,7 @@ export const connectMongo = async (): Promise<void> => {
     const { mongoHost, mongoPort, mongoUser, mongoPassword, mongoDatabase } = envConfig
     
     // Construct URI from parts
-    let uri = `mongodb://${mongoHost}:${mongoPort}/${mongoDatabase}`
+    let uri = `mongodb://${mongoHost}:${mongoPort}/${mongoDatabase}z`
     
     // Only include authentication if provided
     if (mongoUser && mongoPassword) {

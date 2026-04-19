@@ -15,7 +15,7 @@ const getSamplesController = async (req, res) => {
 };
 exports.getSamplesController = getSamplesController;
 const createSampleController = async (
- 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 req, res) => {
     const result = await sample_services_1.default.createSample(req.body);
     res.status(httpStatus_1.default.CREATED).json({

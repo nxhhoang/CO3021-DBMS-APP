@@ -8,7 +8,7 @@ from datetime import datetime, timedelta
 MONGO_URI = "mongodb://localhost:27017/"
 PG_URI = "postgresql://postgres:admin123@127.0.0.1:5432/hybrid_db"
 
-TOTAL_ORDERS = 500000
+TOTAL_ORDERS = 100000
 STATUSES = ['PENDING', 'PROCESSING', 'SHIPPED', 'DELIVERED', 'CANCELLED']
 PAYMENT_METHODS = ['COD', 'BANKING', 'E_WALLET']
 

@@ -42,8 +42,8 @@ export default function useProductQueryParams(): GetProductsRequest {
 
       page: Number.isFinite(page) && page > 0 ? page : 1,
 
-      // API mặc định 10 sản phẩm / trang
-      limit: 10,
+      // API mặc định 12 sản phẩm / trang
+      limit: 12,
 
       priceMin: parsePositiveNumber(searchParams.get('priceMin')),
 

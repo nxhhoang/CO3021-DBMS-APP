@@ -2,7 +2,6 @@
 
 import { useEffect, useRef, useState } from 'react'
 import { Button } from '@/components/ui/button';
-import { Separator } from '@/components/ui/separator';
 import { Category } from '@/types/category.types';
 import { Filter, ListFilter } from 'lucide-react'
 
@@ -107,22 +106,19 @@ const FilterSidebar = ({
   }, [localCategory, localAttrs, priceRange, sort, applyFilters])
 
   return (
-    <aside className="bg-card sticky top-20 h-fit w-full space-y-5 rounded-lg border p-5 shadow-sm md:w-64 md:self-start">
+    <aside className="sticky top-24 h-fit w-full space-y-6 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition-all md:w-64 md:self-start">
       {/* Header */}
-      <div className="text-primary flex items-center gap-2 pb-2">
-        <Filter className="h-5 w-5" />
-        <h2 className="text-lg font-bold">Bộ lọc</h2>
+      <div className="flex flex-col gap-1 pb-2">
+        <div className="flex items-center gap-2 text-slate-400">
+          <Filter className="h-4 w-4" />
+          <span className="text-[10px] font-bold tracking-wider uppercase">Lọc theo</span>
+        </div>
+        <h2 className="text-xl font-bold text-slate-900">Bộ lọc</h2>
       </div>
-
-      <Separator />
 
       {/* Category */}
       <div className="space-y-3">
-        <div className="text-muted-foreground flex items-center gap-2">
-          <ListFilter className="h-4 w-4" />
-          <h3 className="text-sm font-semibold uppercase">Danh mục</h3>
-        </div>
-
+        <h3 className="text-[11px] font-bold tracking-wider text-slate-500 uppercase">Danh mục</h3>
         <CategorySelect
           value={localCategory}
           onChange={handleCategoryChange}
@@ -131,18 +127,19 @@ const FilterSidebar = ({
       </div>
 
       {/* Dynamic Attributes */}
+      <div className="space-y-6">
+        <AttributeSelect
+          category={selectedCategoryData}
+          localAttrs={localAttrs}
+          setLocalAttrs={handleAttrsChange}
+        />
+      </div>
 
-      <AttributeSelect
-        category={selectedCategoryData}
-        localAttrs={localAttrs}
-        setLocalAttrs={handleAttrsChange}
-      />
-
-      <Separator />
+      <div className="h-px bg-slate-200/50" />
 
       {/* Price */}
-      <div className="space-y-4">
-        <h3 className="text-muted-foreground text-sm font-semibold uppercase">
+      <div className="space-y-6">
+        <h3 className="text-[11px] font-bold tracking-wider text-slate-400 uppercase">
           Khoảng Giá (₫)
         </h3>
 
@@ -154,26 +151,33 @@ const FilterSidebar = ({
         />
       </div>
 
-      <Separator />
+      <div className="h-px bg-slate-200/50" />
 
       {/* Sort */}
-      <SortSelect value={sort} onChange={handleSortChange} />
+      <div className="space-y-4">
+        <h3 className="text-[11px] font-bold tracking-wider text-slate-400 uppercase">Sắp xếp</h3>
+        <SortSelect value={sort} onChange={handleSortChange} />
+      </div>
 
       {/* Apply button */}
-      <div className="space-y-2">
+      <div className="flex flex-col gap-2 pt-2">
         <Button
-          className="w-full font-bold shadow-blue-200"
+          className="h-10 w-full rounded-lg bg-slate-900 font-bold text-white transition-all hover:bg-slate-800"
           onClick={handleApply}
         >
-          ÁP DỤNG
+          Áp dụng
         </Button>
-        <Button variant="outline" className="w-full" onClick={handleReset}>
-          XÓA BỘ LỌC
+        <Button 
+          variant="ghost" 
+          className="h-10 w-full rounded-lg text-slate-500 font-medium hover:bg-slate-50" 
+          onClick={handleReset}
+        >
+          Xóa bộ lọc
         </Button>
       </div>
 
-      <p className="text-muted-foreground text-center text-xs">
-        Bộ lọc tự áp dụng sau ~0.45s khi bạn dừng thao tác
+      <p className="text-center text-[10px] text-slate-400">
+        Tự động áp dụng sau khi dừng thao tác
       </p>
     </aside>
   )

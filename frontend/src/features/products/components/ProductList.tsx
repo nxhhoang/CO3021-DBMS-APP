@@ -14,15 +14,15 @@ const ProductList = ({ products, loading }: Props) => {
     );
   }
   return (
-    <main className="bg-muted flex-1 rounded-sm p-2 md:p-4">
+    <main className="flex-1">
       {loading ? (
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
-          {[...Array(10)].map((_, i) => (
-            <Skeleton key={i} className="h-72 rounded-xl" />
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          {[...Array(12)].map((_, i) => (
+            <Skeleton key={i} className="h-[420px] rounded-[2rem]" />
           ))}
         </div>
       ) : (
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {products.map((product) => (
             <ProductCard key={product._id} product={product} />
           ))}

@@ -6,13 +6,13 @@ import { INVENTORY_MESSAGES } from '~/constants/messages'
 
 class InventoryService {
   async createInventory(body: CreateInventoryReqBody) {
-    const { product_id, sku, stock_quantity } = body
+    const { productID, sku, stockQuantity } = body
 
     try {
       const result = await pool.query(
-        `INSERT INTO inventories (product_id, sku, stock_quantity) 
+        `INSERT INTO INVENTORY (productID, sku, stockQuantity) 
          VALUES ($1, $2, $3) RETURNING *`,
-        [product_id, sku, stock_quantity]
+        [productID, sku, stockQuantity]
       )
       return result.rows[0]
     } catch (error: any) {
@@ -28,9 +28,9 @@ class InventoryService {
 
   async updateInventoryQuantity(inventoryId: string, quantity: number) {
     const result = await pool.query(
-      `UPDATE inventories 
-       SET stock_quantity = $1, updated_at = NOW() 
-       WHERE inventory_id = $2 RETURNING *`,
+      `UPDATE INVENTORY 
+       SET stockQuantity = $1, lastUpdated = NOW() 
+       WHERE inventoryID = $2 RETURNING *`,
       [quantity, inventoryId]
     )
     if (result.rows.length === 0) {
@@ -44,7 +44,7 @@ class InventoryService {
 
   async getInventoriesByProductId(productId: string) {
     const result = await pool.query(
-      `SELECT * FROM inventories WHERE product_id = $1`,
+      `SELECT * FROM INVENTORY WHERE productID = $1`,
       [productId]
     )
     return result.rows
@@ -52,7 +52,7 @@ class InventoryService {
 
   async getInventoriesBySku(sku: string) {
     const result = await pool.query(
-      `SELECT * FROM inventories WHERE sku = $1`,
+      `SELECT * FROM INVENTORY WHERE sku = $1`,
       [sku]
     )
     return result.rows

@@ -10,9 +10,9 @@ class LogService {
   // Fire-and-forget
   createLog(body: CreateLogReqBody, userId?: string | null): void {
     const newLog = new UserActivityLog({
-      user_id: userId || null,
-      action_type: body.actionType,
-      target_id: body.targetID,
+      userID: userId || null,
+      actionType: body.actionType,
+      targetID: body.targetID,
       metadata: body.metadata || {}
     })
 

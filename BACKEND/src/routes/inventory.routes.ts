@@ -18,7 +18,7 @@ const inventoryRouter = Router()
  * Description: Create a new inventory record for a product/sku variant
  * Path: /admin/inventories
  * Method: POST
- * Body: { product_id: string, sku: string, stock_quantity: number }
+ * Body: { productID: string, sku: string, stockQuantity: number }
  */
 inventoryRouter.post(
   '/',
@@ -31,7 +31,7 @@ inventoryRouter.post(
  * Description: Update stock quantity of an existing inventory record
  * Path: /admin/inventories/:inventoryId
  * Method: PUT
- * Body: { stock_quantity: number }
+ * Body: { stockQuantity: number }
  */
 inventoryRouter.put(
   '/:inventoryId',

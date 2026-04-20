@@ -26,8 +26,8 @@ export const updateInventoryQuantityController = async (
   res: Response
 ) => {
   const { inventoryId } = req.params
-  const { stock_quantity } = req.body
-  const result = await inventoryService.updateInventoryQuantity(inventoryId, stock_quantity)
+  const { stockQuantity } = req.body
+  const result = await inventoryService.updateInventoryQuantity(inventoryId, stockQuantity)
   res.json({
     message: INVENTORY_MESSAGES.UPDATE_INVENTORY_SUCCESS,
     result

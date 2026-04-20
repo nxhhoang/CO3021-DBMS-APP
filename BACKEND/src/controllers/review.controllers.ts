@@ -19,11 +19,9 @@ export const createReviewController = async (
   res: Response
 ) => {
   const { productId } = req.params
-  const { user_id } = req.decoded_authorization as TokenPayload
-
-  // Dùng user_id làm username tạm (trong thực tế lấy từ DB user)
-  const userName = user_id
-  const result = await reviewService.createReview(productId, req.body, user_id, userName)
+  const { userId } = req.decoded_authorization as TokenPayload
+  const userName = userId
+  const result = await reviewService.createReview(productId, req.body, userId, userName)
 
   res.status(HTTP_STATUS.CREATED).json({
     message: REVIEW_MESSAGES.REVIEW_CREATED,

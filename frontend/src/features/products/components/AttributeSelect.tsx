@@ -22,7 +22,13 @@ const AttributeSelect = ({
   localAttrs,
   setLocalAttrs,
 }: AttributeSelectProps) => {
-  if (!category || category.dynamicAttributes.length === 0) return null;
+  if (
+    !category ||
+    !Array.isArray(category.dynamicAttributes) ||
+    category.dynamicAttributes.length === 0
+  ) {
+    return null
+  }
 
   return (
     <>
@@ -35,47 +41,51 @@ const AttributeSelect = ({
             Thông số
           </h3>
         </div>
-        {category.dynamicAttributes.map((attr) => (
-          <div key={attr.key} className="space-y-2">
-            <label className="text-xs font-medium text-gray-500">
-              {attr.label}
-            </label>
+        {category.dynamicAttributes.map((attr) => {
+          const options = Array.isArray(attr.options) ? attr.options : []
 
-            <Select
-              value={localAttrs[attr.key] || 'all'}
-              onValueChange={(val) => {
-                const newAttrs = { ...localAttrs }
+          return (
+            <div key={attr.key} className="space-y-2">
+              <label className="text-xs font-medium text-gray-500">
+                {attr.label}
+              </label>
 
-                if (val === 'all') {
-                  delete newAttrs[attr.key]
-                } else {
-                  newAttrs[attr.key] = val
-                }
+              <Select
+                value={localAttrs[attr.key] || 'all'}
+                onValueChange={(val) => {
+                  const newAttrs = { ...localAttrs }
 
-                setLocalAttrs(newAttrs)
-              }}
-            >
-              <SelectTrigger className="bg-background h-8 w-full text-xs">
-                <SelectValue placeholder="Tất cả" />
-              </SelectTrigger>
+                  if (val === 'all') {
+                    delete newAttrs[attr.key]
+                  } else {
+                    newAttrs[attr.key] = val
+                  }
 
-              <SelectContent>
-                <SelectItem value="all">
-                  Tất cả {attr.label.toLowerCase()}
-                </SelectItem>
+                  setLocalAttrs(newAttrs)
+                }}
+              >
+                <SelectTrigger className="bg-background h-8 w-full text-xs">
+                  <SelectValue placeholder="Tất cả" />
+                </SelectTrigger>
 
-                {attr.options.map((opt) => (
-                  <SelectItem
-                    key={`${attr.key}-${String(opt)}`}
-                    value={String(opt)}
-                  >
-                    {String(opt)}
+                <SelectContent>
+                  <SelectItem value="all">
+                    Tất cả {attr.label.toLowerCase()}
                   </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-        ))}
+
+                  {options.map((opt) => (
+                    <SelectItem
+                      key={`${attr.key}-${String(opt)}`}
+                      value={String(opt)}
+                    >
+                      {String(opt)}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          )
+        })}
       </div>
     </>
   )

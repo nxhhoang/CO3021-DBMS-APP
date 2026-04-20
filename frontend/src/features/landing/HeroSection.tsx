@@ -3,6 +3,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { useRouter } from 'next/navigation'
 
 const HERO_SPEED_OPTIONS = [
   { label: 'Nhanh', duration: 3000 },
@@ -16,24 +17,25 @@ const heroSlides = [
     alt: 'Hero Product Watch',
   },
   {
-    src: 'https://images.unsplash.com/photo-1496181133206-80ce9b88a853?auto=format&fit=crop&q=80&w=1200',
+    src: 'https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?auto=format&fit=crop&q=80&w=1200',
     alt: 'Hero Product Laptop',
   },
   {
-    src: 'https://images.unsplash.com/photo-1510557880182-3d4d3cba35a5?auto=format&fit=crop&q=80&w=1200',
+    src: 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&q=80&w=1200',
     alt: 'Hero Product Smartphone',
   },
   {
-    src: 'https://images.unsplash.com/photo-1541807084-5c52b6b3adef?auto=format&fit=crop&q=80&w=1200',
+    src: 'https://images.unsplash.com/photo-1603808033192-082d6919d3e1?auto=format&fit=crop&q=80&w=1200',
     alt: 'Hero Product Tablet',
   },
   {
-    src: 'https://images.unsplash.com/photo-1622286346003-c5c7e63b1088?auto=format&fit=crop&q=80&w=1200',
+    src: 'https://images.unsplash.com/photo-1510127034890-ba27508e9f1c?auto=format&fit=crop&q=80&w=1200',
     alt: 'Hero Product Accessories',
   },
 ]
 
 export default function HeroSection() {
+  const router = useRouter()
   const [activeHeroSlide, setActiveHeroSlide] = useState(0)
   const [heroProgress, setHeroProgress] = useState(0)
   const [heroSlideDuration, setHeroSlideDuration] = useState(
@@ -63,20 +65,31 @@ export default function HeroSection() {
     setHeroProgress(0)
   }
 
+  const handleExploreProducts = () => {
+    router.push('/products')
+  }
+
+  const handleViewAllCategories = () => {
+    const targetId = 'featured-categories'
+    const section = document.getElementById(targetId)
+    if (section) {
+      section.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      return
+    }
+    router.push(`/#${targetId}`)
+  }
+
   useEffect(() => {
     let frameId = 0
-
     const tick = (timestamp: number) => {
       if (lastTimestampRef.current === null) {
         lastTimestampRef.current = timestamp
       }
-
       const delta = timestamp - lastTimestampRef.current
       lastTimestampRef.current = timestamp
 
       if (!isHeroPaused) {
         elapsedRef.current += delta
-
         if (elapsedRef.current >= heroSlideDuration) {
           const slideAdvance = Math.floor(
             elapsedRef.current / heroSlideDuration,
@@ -86,60 +99,63 @@ export default function HeroSection() {
           )
           elapsedRef.current %= heroSlideDuration
         }
-
         const nextProgress = Math.min(
           (elapsedRef.current / heroSlideDuration) * 100,
           100,
         )
         setHeroProgress(nextProgress)
       }
-
       frameId = window.requestAnimationFrame(tick)
     }
-
     frameId = window.requestAnimationFrame(tick)
-
-    return () => {
-      window.cancelAnimationFrame(frameId)
-    }
+    return () => window.cancelAnimationFrame(frameId)
   }, [heroSlideDuration, isHeroPaused])
 
-  useEffect(() => {
-    elapsedRef.current = 0
-    setHeroProgress(0)
-  }, [heroSlideDuration])
-
   return (
-    <section className="container mx-auto px-4 py-8">
-      <div className="relative overflow-hidden rounded-[2.5rem] bg-[#f8f9fa] lg:flex lg:items-center">
-        <div className="z-10 p-8 md:p-16 lg:w-1/2">
-          <span className="text-xs font-bold tracking-widest text-blue-600 uppercase">
-            Edition 2026
-          </span>
-          <h1 className="mt-4 text-5xl leading-tight font-black tracking-tighter italic md:text-7xl">
-            FUTURE <br />
-            <span className="text-blue-500 underline decoration-blue-200 underline-offset-4">
-              DIGITAL.
+    <section className="relative container mx-auto px-4 py-6 sm:py-8 lg:py-16">
+      <div className="relative overflow-hidden rounded-3xl border border-white/45 bg-linear-to-br from-white/45 via-slate-50/55 to-blue-100/35 shadow-lg ring-1 shadow-slate-900/10 ring-white/35 backdrop-blur-xl transition-all duration-300 ease-in-out hover:shadow-xl hover:shadow-slate-900/15 lg:flex lg:items-stretch">
+        <div className="relative z-10 overflow-hidden border-b border-white/35 bg-white/26 px-6 py-8 backdrop-blur-2xl sm:px-8 sm:py-10 lg:flex lg:w-1/2 lg:items-center lg:border-r lg:border-b-0 lg:px-10 lg:py-12 xl:px-12">
+          <div className="pointer-events-none absolute inset-0">
+            <div className="absolute inset-0 bg-linear-to-br from-white/50 via-white/15 to-blue-100/15" />
+            <div className="absolute -top-28 left-14 h-48 w-48 rounded-full bg-blue-200/28 blur-3xl" />
+          </div>
+
+          <div className="relative">
+            <span className="inline-block w-fit rounded-full border border-white/50 bg-blue-100/55 px-3 py-1 text-[11px] font-semibold tracking-[0.18em] text-blue-700 uppercase backdrop-blur-md">
+              Danh mục nổi bật
             </span>
-          </h1>
-          <p className="mt-6 max-w-md text-slate-500">
-            Khám phá bộ sưu tập công nghệ được tuyển chọn, nơi sự chính xác kiến
-            trúc kết hợp với sự sang trọng hiện đại.
-          </p>
-          <div className="mt-8 flex gap-4">
-            <Button className="rounded-full bg-blue-600 px-8 py-6 hover:bg-blue-700">
-              MUA NGAY
-            </Button>
-            <Button
-              variant="outline"
-              className="rounded-full border-slate-200 px-8 py-6"
-            >
-              XEM THÊM
-            </Button>
+
+            <h1 className="mt-5 text-3xl leading-[1.12] font-extrabold tracking-tight text-slate-900 sm:text-4xl lg:mt-6 lg:text-5xl xl:text-[3.4rem]">
+              Khám phá thế giới <br />
+              <span className="text-blue-700">công nghệ hiện đại</span>
+            </h1>
+
+            <p className="mt-5 max-w-xl text-sm leading-7 text-slate-600 sm:text-base lg:mt-6 lg:text-lg lg:leading-8">
+              Từ thiết bị thông minh đến phụ kiện cao cấp — lựa chọn những danh
+              mục được yêu thích nhất, tối ưu cho trải nghiệm số của bạn.
+            </p>
+
+            <div className="mt-7 flex flex-wrap gap-3 sm:gap-4 lg:mt-8">
+              <Button
+                onClick={handleExploreProducts}
+                className="h-11 rounded-full bg-blue-600 px-6 text-sm font-semibold text-white shadow-md transition-all duration-300 ease-out hover:scale-105 hover:bg-blue-700 hover:shadow-lg active:scale-95 sm:h-12 sm:px-8"
+              >
+                Khám phá ngay
+              </Button>
+
+              <Button
+                variant="outline"
+                onClick={handleViewAllCategories}
+                className="h-11 rounded-full border-white/60 bg-white/45 px-6 text-sm font-semibold text-slate-700 backdrop-blur-md transition-all duration-300 ease-out hover:scale-105 hover:bg-white/65 active:scale-95 sm:h-12 sm:px-8"
+              >
+                Xem các sản phẩm nổi bật
+              </Button>
+            </div>
           </div>
         </div>
+
         <div
-          className="group/hero relative h-100 overflow-hidden bg-slate-200 lg:h-150 lg:w-1/2"
+          className="group/hero relative h-96 overflow-hidden bg-slate-200 sm:h-112 lg:h-auto lg:min-h-144 lg:w-1/2"
           onMouseEnter={() => setIsHeroPaused(true)}
           onMouseLeave={() => setIsHeroPaused(false)}
         >
@@ -148,25 +164,19 @@ export default function HeroSection() {
               key={slide.src}
               src={slide.src}
               alt={slide.alt}
-              onError={(event) => {
-                if (event.currentTarget.src !== heroSlides[0].src) {
-                  event.currentTarget.src = heroSlides[0].src
-                  return
-                }
-                event.currentTarget.onerror = null
-              }}
               className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-700 ease-in-out ${
                 index === activeHeroSlide ? 'opacity-100' : 'opacity-0'
               }`}
             />
           ))}
 
+          <div className="pointer-events-none absolute inset-0 z-10 bg-linear-to-t from-slate-900/10 via-transparent to-white/15" />
+
           <div className="pointer-events-none absolute inset-y-0 left-0 z-20 w-36 bg-linear-to-r from-black/45 to-transparent opacity-0 transition-opacity duration-300 group-hover/hero:opacity-100" />
           <div className="pointer-events-none absolute inset-y-0 right-0 z-20 w-36 bg-linear-to-l from-black/45 to-transparent opacity-0 transition-opacity duration-300 group-hover/hero:opacity-100" />
 
           <button
             type="button"
-            aria-label="Ảnh trước"
             onClick={goToPrevHeroSlide}
             className="absolute top-1/2 left-4 z-30 -translate-y-1/2 rounded-full border border-white/35 bg-black/35 p-2 text-white opacity-0 backdrop-blur-sm transition-all duration-300 group-hover/hero:opacity-100 hover:bg-black/55"
           >
@@ -175,29 +185,11 @@ export default function HeroSection() {
 
           <button
             type="button"
-            aria-label="Ảnh tiếp theo"
             onClick={goToNextHeroSlide}
             className="absolute top-1/2 right-4 z-30 -translate-y-1/2 rounded-full border border-white/35 bg-black/35 p-2 text-white opacity-0 backdrop-blur-sm transition-all duration-300 group-hover/hero:opacity-100 hover:bg-black/55"
           >
             <ChevronRight size={20} />
           </button>
-
-          {/* <div className="absolute top-4 right-4 z-20 flex items-center gap-1 rounded-full bg-black/35 p-1 backdrop-blur-sm">
-						{HERO_SPEED_OPTIONS.map((speed) => (
-							<button
-								key={speed.label}
-								type="button"
-								onClick={() => setHeroSlideDuration(speed.duration)}
-								className={`rounded-full px-3 py-1 text-[10px] font-bold tracking-widest uppercase transition-colors ${
-									heroSlideDuration === speed.duration
-										? 'bg-white text-slate-900'
-										: 'text-white/85 hover:bg-white/15'
-								}`}
-							>
-								{speed.label}
-							</button>
-						))}
-					</div> */}
 
           <div className="absolute right-6 bottom-6 left-6 z-30">
             <div className="flex gap-2">
@@ -208,27 +200,22 @@ export default function HeroSection() {
                     : index === activeHeroSlide
                       ? `${heroProgress}%`
                       : '0%'
-
                 return (
                   <button
                     key={`${slide.alt}-${index}`}
                     type="button"
-                    aria-label={`Chuyển đến ảnh ${index + 1}`}
                     onClick={() => goToHeroSlide(index)}
-                    className="h-1.5 flex-1 overflow-hidden rounded-full bg-white/30"
+                    className="group/progress relative flex-1 cursor-pointer touch-manipulation py-1 focus:outline-none"
                   >
+                    <div className="h-1.5 overflow-hidden rounded-full bg-white/30 transition-all duration-200 ease-out group-hover/progress:h-2 group-hover/progress:bg-white/45" />
                     <div
-                      className="h-full rounded-full bg-white transition-[width] duration-100"
+                      className="pointer-events-none absolute inset-y-1 left-0 rounded-full bg-white transition-[width] duration-100"
                       style={{ width }}
                     />
                   </button>
                 )
               })}
             </div>
-
-            {/* <p className="mt-2 text-center text-[10px] font-semibold tracking-widest text-white/90 uppercase">
-							{isHeroPaused ? 'Tạm dừng khi rê chuột' : 'Tự động chuyển ảnh'}
-						</p> */}
           </div>
         </div>
       </div>

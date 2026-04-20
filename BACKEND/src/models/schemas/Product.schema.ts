@@ -4,7 +4,7 @@ interface ProductType {
   _id?: ObjectId
   name: string
   slug?: string
-  categoryID: ObjectId
+  categoryID?: ObjectId | string
   basePrice: number
   description?: string
   images?: string[]
@@ -22,7 +22,7 @@ export default class Product {
   _id: ObjectId
   name: string
   slug: string
-  categoryID: ObjectId
+  categoryID?: ObjectId | string
   basePrice: number
   description: string
   images: string[]
@@ -40,7 +40,7 @@ export default class Product {
     this._id = product._id || new ObjectId()
     this.name = product.name
     this.slug = product.slug || ''
-    this.categoryID = product.categoryID
+    this.categoryID = product.categoryID || undefined
     this.basePrice = product.basePrice
     this.description = product.description || ''
     this.images = product.images || []

@@ -13,12 +13,12 @@ const seedMongo = async () => {
     await connectMongo()
     const db = getMongoDB()
 
-    console.log('Clearing existing collections...')
     const categoriesCollection = db.collection('categories')
     const productsCollection = db.collection('products')
 
-    await categoriesCollection.deleteMany({})
-    await productsCollection.deleteMany({})
+    // console.log('Clearing existing collections...')
+    // await categoriesCollection.deleteMany({})
+    // await productsCollection.deleteMany({})
 
     console.log('Inserting mock categories...')
     if (mockCategories.length > 0) {

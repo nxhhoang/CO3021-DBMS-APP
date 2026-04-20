@@ -23,7 +23,7 @@ const dynamicAttributeSchema = {
         if (!['string', 'number', 'boolean'].includes(attr['dataType'] as string)) {
           throw new Error("Each attribute dataType must be 'string', 'number', or 'boolean'")
         }
-        if (typeof attr['isRequired'] !== 'boolean') throw new Error('Each attribute isRequired must be a boolean')
+        // if (typeof attr['isRequired'] !== 'boolean') throw new Error('Each attribute isRequired must be a boolean')
         if (attr['options'] !== undefined && !Array.isArray(attr['options'])) {
           throw new Error('Each attribute options must be an array')
         }

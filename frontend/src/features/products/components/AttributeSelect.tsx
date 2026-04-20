@@ -44,15 +44,15 @@ const AttributeSelect = ({
             <Select
               value={localAttrs[attr.key] || 'all'}
               onValueChange={(val) => {
-                const newAttrs = { ...localAttrs };
+                const newAttrs = { ...localAttrs }
 
                 if (val === 'all') {
-                  delete newAttrs[attr.key];
+                  delete newAttrs[attr.key]
                 } else {
-                  newAttrs[attr.key] = val;
+                  newAttrs[attr.key] = val
                 }
 
-                setLocalAttrs(newAttrs);
+                setLocalAttrs(newAttrs)
               }}
             >
               <SelectTrigger className="bg-background h-8 w-full text-xs">
@@ -65,8 +65,11 @@ const AttributeSelect = ({
                 </SelectItem>
 
                 {attr.options.map((opt) => (
-                  <SelectItem key={opt} value={opt}>
-                    {opt}
+                  <SelectItem
+                    key={`${attr.key}-${String(opt)}`}
+                    value={String(opt)}
+                  >
+                    {String(opt)}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -75,7 +78,7 @@ const AttributeSelect = ({
         ))}
       </div>
     </>
-  );
+  )
 };
 
 export default AttributeSelect;

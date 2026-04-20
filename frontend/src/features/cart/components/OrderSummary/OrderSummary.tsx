@@ -29,6 +29,10 @@ const OrderSummary = ({ selectedItems, totalPrice }: OrderSummaryProps) => {
   } = useCheckout(selectedItems)
 
   const hasItems = selectedItems.length > 0;
+  const selectedUnits = selectedItems.reduce(
+    (sum, item) => sum + item.quantity,
+    0,
+  )
 
   return (
     <div className="h-fit lg:sticky lg:top-24">
@@ -44,7 +48,8 @@ const OrderSummary = ({ selectedItems, totalPrice }: OrderSummaryProps) => {
             <div className="animate-in fade-in space-y-4 duration-500">
               <div>
                 <p className="text-muted-foreground mb-2 text-sm font-semibold">
-                  Sản phẩm đã chọn ({selectedItems.length})
+                  Sản phẩm đã chọn ({selectedItems.length} mẫu, {selectedUnits}{' '}
+                  sản phẩm)
                 </p>
                 <div className="custom-scrollbar max-h-75 overflow-y-auto pr-2">
                   <OrderItemsList items={selectedItems} />
@@ -66,12 +71,15 @@ const OrderSummary = ({ selectedItems, totalPrice }: OrderSummaryProps) => {
 
               <Button
                 size="lg"
+                disabled={!hasItems}
                 onClick={() =>
                   setDialogState((prev) => ({ ...prev, confirm: true }))
                 }
                 className="shadow-primary/20 mt-4 w-full text-base font-bold shadow-lg transition-all hover:scale-[1.02] active:scale-[0.98]"
               >
-                Tiến hành thanh toán
+                {hasItems
+                  ? 'Tiến hành thanh toán'
+                  : 'Chọn sản phẩm để thanh toán'}
               </Button>
             </div>
           ) : (

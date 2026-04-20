@@ -158,18 +158,27 @@ class ProductService {
 
     const mongoSkus = await getMongoDB()
       .collection('skus')
-      .find({ productID: product._id }, { projection: { _id: 0, sku: 1, skuPrice: 1 } })
+      .find({ productID: product._id }, { projection: { _id: 0, sku: 1, skuPrice: 1, attributes: 1 } })
       .toArray()
 
-    const skuPriceMap = new Map(
-      (Array.isArray(mongoSkus) ? mongoSkus : []).map((mongoSku: any) => [mongoSku.sku, mongoSku.skuPrice])
+    const skuDetailMap = new Map(
+      (Array.isArray(mongoSkus) ? mongoSkus : []).map((mongoSku: any) => [
+        mongoSku.sku,
+        {
+          skuPrice: mongoSku.skuPrice,
+          attributes: mongoSku.attributes ?? {}
+        }
+      ])
     )
 
     const inventory = rows.map((row: any) => {
+      const skuDetail = skuDetailMap.get(row.sku)
       return {
         sku: row.sku,
-        skuPrice: skuPriceMap.get(row.sku) ?? null,
-        stockQuantity: Number(row.stockQuantity ?? row.stockquantity ?? 0)
+        sku_price: skuDetail?.skuPrice ?? null,
+        skuPrice: skuDetail?.skuPrice ?? null,
+        stockQuantity: Number(row.stockQuantity ?? row.stockquantity ?? 0),
+        attributes: skuDetail?.attributes ?? {}
       }
     })
 

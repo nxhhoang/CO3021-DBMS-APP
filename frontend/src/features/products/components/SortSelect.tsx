@@ -1,5 +1,6 @@
 'use client';
 
+import { SORT_BY } from '@/constants/enum'
 import {
   Select,
   SelectContent,
@@ -26,13 +27,14 @@ const SortSelect = ({ value, onChange }: SortSelectProps) => {
         </SelectTrigger>
 
         <SelectContent>
-          <SelectItem value="price_asc">Giá tăng dần</SelectItem>
-          <SelectItem value="price_desc">Giá giảm dần</SelectItem>
-          <SelectItem value="sold_desc">Bán chạy nhất</SelectItem>
+          <SelectItem value={SORT_BY.POPULARITY}>Bán chạy nhất</SelectItem>
+          <SelectItem value={SORT_BY.PRICE_ASC}>Giá tăng dần</SelectItem>
+          <SelectItem value={SORT_BY.PRICE_DESC}>Giá giảm dần</SelectItem>
+          <SelectItem value={SORT_BY.RATING}>Đánh giá cao</SelectItem>
         </SelectContent>
       </Select>
     </div>
-  );
+  )
 };
 
 export default SortSelect;

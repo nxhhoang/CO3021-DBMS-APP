@@ -14,6 +14,7 @@ export default function CartPage() {
     selectedItems,
     selectedSkus,
     toggleItemSelection,
+    toggleAllSelection,
     loading,
     updateQuantity,
     removeItem,
@@ -35,7 +36,7 @@ export default function CartPage() {
   }
 
   return (
-    <div className="container mx-auto max-w-6xl px-4 py-10">
+    <div className="animate-in fade-in container mx-auto max-w-6xl px-4 py-8 duration-300 md:py-10">
       <div className="mb-8 flex items-end gap-3">
         <h1 className="text-3xl font-bold tracking-tight">Giỏ hàng</h1>
         <span className="text-muted-foreground mb-1 text-lg">
@@ -57,16 +58,16 @@ export default function CartPage() {
         </Card>
       ) : (
         <div className="grid gap-8 lg:grid-cols-3">
-          {/* LEFT: DANH SÁCH SẢN PHẨM */}
           <ItemsList
             items={items}
             selectedSkus={selectedSkus}
             toggleItemSelection={toggleItemSelection}
+            toggleAllSelection={toggleAllSelection}
             updateQuantity={updateQuantity}
             removeItem={removeItem}
+            removeMultipleItems={removeMultipleItems}
           />
 
-          {/* RIGHT: HÓA ĐƠN */}
           <OrderSummary selectedItems={selectedItems} totalPrice={totalPrice} />
         </div>
       )}

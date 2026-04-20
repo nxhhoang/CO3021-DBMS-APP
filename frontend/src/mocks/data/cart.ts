@@ -2,6 +2,7 @@ import { Cart, CartItem } from '@/types';
 
 export const MOCK_CART_ITEMS: CartItem[] = [
   {
+    productId: 'product-1',
     productID: 'product-1',
     sku: 'MBP-M3-16-512',
     quantity: 1,
@@ -9,8 +10,10 @@ export const MOCK_CART_ITEMS: CartItem[] = [
     image: 'https://picsum.photos/300/200?random=laptop',
     basePrice: 16000000,
     skuPrice: 14000000,
+    stockQuantity: 8,
   },
   {
+    productId: 'product-2',
     productID: 'product-2',
     productName: 'iPhone 14 Pro',
     sku: 'IP14P-128-SILVER',
@@ -18,10 +21,14 @@ export const MOCK_CART_ITEMS: CartItem[] = [
     basePrice: 28000000,
     skuPrice: 25000000,
     image: 'https://picsum.photos/300/200?random=phone',
+    stockQuantity: 12,
   },
-];
+]
 
 export const MOCK_CART: Cart = {
-  cartTotal: 3,
+  cartTotal: MOCK_CART_ITEMS.reduce(
+    (sum, item) => sum + item.skuPrice * item.quantity,
+    0,
+  ),
   items: MOCK_CART_ITEMS,
-};
+}

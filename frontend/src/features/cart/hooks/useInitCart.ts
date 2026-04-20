@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
-import { cartService } from '@/services/cart.service';
+import { CartItem } from '@/types'
 
-function useInitCart(setItems: any) {
-  const [loading, setLoading] = useState(true);
+function useInitCart(setItems: (items: CartItem[]) => void) {
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     try {
@@ -23,6 +23,8 @@ function useInitCart(setItems: any) {
     } catch (error) {
       console.error('Failed to init cart:', error)
       setItems([])
+    } finally {
+      setLoading(false)
     }
   }, [setItems])
 

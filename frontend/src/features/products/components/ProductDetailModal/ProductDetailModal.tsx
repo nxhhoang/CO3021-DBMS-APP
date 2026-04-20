@@ -17,6 +17,8 @@ import { productService } from '@/services/product.service'
 import { ProductDetail, Inventory } from '@/types'
 import formatVND from '@/features/cart/utils/formatVND'
 import { cn } from '@/lib/utils'
+import { useCartStore } from '@/store/cartStore'
+import { CartItem } from '@/types/cart.types'
 
 interface ProductDetailModalProps {
   productId: string
@@ -29,17 +31,24 @@ export const ProductDetailModal = ({
   isOpen,
   onClose,
 }: ProductDetailModalProps) => {
+  const setCartItems = useCartStore((state) => state.setItems)
   const [product, setProduct] = useState<ProductDetail | null>(null)
   const [loading, setLoading] = useState(false)
-  const [selectedSku, setSelectedSku] = useState<Omit<
-    Inventory,
-    'productID'
-  > | null>(null)
+  const [selectedSku, setSelectedSku] = useState<Inventory | null>(null)
   const [quantity, setQuantity] = useState(1)
+
+  const getSkuDisplayPrice = (item: Inventory | null) => {
+    return item?.skuPrice ?? item?.sku_price ?? product?.basePrice ?? 0
+  }
 
   // Fetch product detail
   useEffect(() => {
-    if (!isOpen || !productId) return
+    if (!isOpen || !productId) {
+      setProduct(null)
+      setSelectedSku(null)
+      setQuantity(1)
+      return
+    }
 
     const fetchDetail = async () => {
       setLoading(true)
@@ -49,9 +58,10 @@ export const ProductDetailModal = ({
         })
         if (response.data) {
           setProduct(response.data)
-          if (response.data.inventory?.length) {
-            setSelectedSku(response.data.inventory[0])
-          }
+          const firstInStock = response.data.inventory?.find(
+            (item) => item.stockQuantity > 0,
+          )
+          setSelectedSku(firstInStock ?? response.data.inventory?.[0] ?? null)
         }
       } catch (error) {
         console.error(error)
@@ -67,14 +77,25 @@ export const ProductDetailModal = ({
 
   useEffect(() => setQuantity(1), [selectedSku])
 
+  useEffect(() => {
+    if (!selectedSku) return
+    setQuantity((prev) =>
+      Math.min(Math.max(prev, 1), selectedSku.stockQuantity || 1),
+    )
+  }, [selectedSku])
+
   // Add to cart
   const handleAddToCart = () => {
     if (!product || !selectedSku) return
+    if (selectedSku.stockQuantity <= 0) {
+      toast.error('Phiên bản đã chọn hiện đang hết hàng')
+      return
+    }
 
     try {
       const cartKey = 'cart'
       const rawCart = sessionStorage.getItem(cartKey)
-      let cartData: { items: any[] } = { items: [] }
+      let cartData: { items: CartItem[] } = { items: [] }
 
       if (rawCart) {
         try {
@@ -89,19 +110,25 @@ export const ProductDetailModal = ({
 
       const existingIndex = cartData.items.findIndex(
         (item) =>
-          item.productID === product._id && item.sku === selectedSku.sku,
+          (item.productId || item.productID) === product._id &&
+          item.sku === selectedSku.sku,
       )
 
       if (existingIndex >= 0) {
-        cartData.items[existingIndex].quantity += quantity
+        const nextQty = cartData.items[existingIndex].quantity + quantity
+        cartData.items[existingIndex].quantity = Math.min(
+          selectedSku.stockQuantity,
+          nextQty,
+        )
       } else {
         cartData.items.push({
+          productId: product._id,
           productID: product._id,
           sku: selectedSku.sku,
           quantity,
           productName: product.name,
           image: product.images?.[0] || '/images/default-product.png',
-          skuPrice: selectedSku.skuPrice,
+          skuPrice: getSkuDisplayPrice(selectedSku),
           basePrice: product.basePrice,
           attributes: selectedSku.attributes,
           stockQuantity: selectedSku.stockQuantity,
@@ -109,7 +136,16 @@ export const ProductDetailModal = ({
       }
 
       sessionStorage.setItem(cartKey, JSON.stringify(cartData))
-      window.dispatchEvent(new Event('storage'))
+      setCartItems(cartData.items)
+      window.dispatchEvent(
+        new CustomEvent('cart:updated', {
+          detail: {
+            productId: product._id,
+            sku: selectedSku.sku,
+            quantity,
+          },
+        }),
+      )
       toast.success(`Đã thêm ${quantity} sản phẩm vào giỏ hàng`)
       onClose()
     } catch (error) {
@@ -120,7 +156,7 @@ export const ProductDetailModal = ({
 
   if (loading) {
     return (
-      <Dialog open={isOpen} onOpenChange={onClose}>
+      <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
         <DialogContent className="flex h-72 items-center justify-center">
           <DialogHeader>
             <DialogTitle className="text-2xl leading-tight font-bold">
@@ -136,7 +172,7 @@ export const ProductDetailModal = ({
   if (!product) return null
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="max-w-full sm:max-w-2xl lg:max-w-5xl xl:max-w-[80%]">
         <DialogHeader>
           <DialogTitle className="text-2xl leading-tight font-bold">
@@ -203,7 +239,7 @@ export const ProductDetailModal = ({
             </div>
 
             <div className="text-primary text-3xl font-black">
-              {formatVND(selectedSku?.skuPrice || product.basePrice)}
+              {formatVND(getSkuDisplayPrice(selectedSku))}
             </div>
 
             {/* SKU & Quantity */}
@@ -242,6 +278,28 @@ export const ProductDetailModal = ({
                   </div>
                 </div>
               </div>
+
+              {selectedSku?.attributes &&
+                Object.keys(selectedSku.attributes).length > 0 && (
+                  <div className="space-y-2 rounded-lg border p-3">
+                    <h4 className="text-muted-foreground text-sm font-semibold">
+                      Thông số phiên bản đã chọn
+                    </h4>
+                    <div className="flex flex-wrap gap-2">
+                      {Object.entries(selectedSku.attributes).map(
+                        ([key, value]) => (
+                          <Badge
+                            key={key}
+                            variant="outline"
+                            className="font-medium"
+                          >
+                            {key}: {String(value)}
+                          </Badge>
+                        ),
+                      )}
+                    </div>
+                  </div>
+                )}
 
               <div className="space-y-2">
                 <h4 className="text-muted-foreground text-sm font-bold tracking-wider uppercase">

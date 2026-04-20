@@ -1,9 +1,12 @@
 // types/cart.types.ts
 import { ApiResponse } from './api.types';
-import { Product, ProductDetail } from './product.types';
+import { Product } from './product.types'
 
 export interface CartItem {
-  productID: string
+  // Backend/OpenAPI field
+  productId: string
+  // Legacy field kept for backward compatibility with existing session data
+  productID?: string
   sku: string
 
   quantity: number
@@ -12,6 +15,8 @@ export interface CartItem {
   image: string // Lấy images[0]
   basePrice: number // Thường là giá tại thời điểm sync
   skuPrice: number
+  stockQuantity?: number
+  attributes?: Record<string, string | number | boolean>
 }
 
 export interface Cart {
@@ -22,7 +27,8 @@ export interface Cart {
 // POST /cart/sync
 export interface SyncCartRequest {
   items: Array<{
-    productID: string
+    productId: string
+    productID?: string
     sku: string
     quantity: number
   }>

@@ -1,83 +1,149 @@
 'use client';
 
-import { useEffect } from 'react'
+import { useCallback, useEffect, useMemo } from 'react'
 import { toast } from 'sonner'
 import { useCartStore } from '@/store/cartStore'
+import { CartItem } from '@/types'
+
+const CART_STORAGE_KEY = 'cart'
+
+const normalizeCartItem = (raw: Partial<CartItem>): CartItem | null => {
+  if (!raw.sku || !raw.productName) return null
+
+  const normalizedQuantity = Number.isFinite(raw.quantity)
+    ? Math.max(1, Math.floor(raw.quantity as number))
+    : 1
+
+  const productId = raw.productId || raw.productID
+  if (!productId) return null
+
+  return {
+    productId,
+    productID: raw.productID || productId,
+    sku: raw.sku,
+    quantity: normalizedQuantity,
+    productName: raw.productName,
+    image: raw.image || '',
+    basePrice: Number(raw.basePrice) || 0,
+    skuPrice: Number(raw.skuPrice) || 0,
+    stockQuantity:
+      raw.stockQuantity !== undefined
+        ? Math.max(0, Number(raw.stockQuantity) || 0)
+        : undefined,
+    attributes: raw.attributes,
+  }
+}
+
+const readCartFromSessionStorage = (): CartItem[] => {
+  try {
+    const rawData = sessionStorage.getItem(CART_STORAGE_KEY)
+    if (!rawData) return []
+
+    const parsed = JSON.parse(rawData)
+    const cartItems = Array.isArray(parsed)
+      ? parsed
+      : Array.isArray(parsed?.items)
+        ? parsed.items
+        : []
+
+    return cartItems
+      .map((item) => normalizeCartItem(item as Partial<CartItem>))
+      .filter((item): item is CartItem => item !== null)
+  } catch (error) {
+    console.error('Failed to parse cart from sessionStorage:', error)
+    return []
+  }
+}
 
 export const useCart = () => {
-  const items = useCartStore((s) => s.items) || [] // Đảm bảo luôn là mảng
-  const selectedSkus = useCartStore((s) => s.selectedSkus) || []
+  const items = useCartStore((s) => s.items)
+  const selectedSkus = useCartStore((s) => s.selectedSkus)
+  const loading = useCartStore((s) => s.loading)
 
   const setItems = useCartStore((s) => s.setItems)
-  const updateQuantityStore = useCartStore((s) => s.updateQuantity)
+  const setLoading = useCartStore((s) => s.setLoading)
   const removeItemStore = useCartStore((s) => s.removeItem)
+  const removeMultipleItemsStore = useCartStore((s) => s.removeMultipleItems)
   const toggleItemSelection = useCartStore((s) => s.toggleItemSelection)
+  const toggleAllSelection = useCartStore((s) => s.toggleAllSelection)
 
-  // 1. INIT CART FROM LOCALSTORAGE
+  const persistCart = useCallback((nextItems: CartItem[]) => {
+    sessionStorage.setItem(
+      CART_STORAGE_KEY,
+      JSON.stringify({ items: nextItems }),
+    )
+    window.dispatchEvent(
+      new CustomEvent('cart:updated', {
+        detail: {
+          totalItems: nextItems.reduce((sum, item) => sum + item.quantity, 0),
+        },
+      }),
+    )
+  }, [])
+
+  // Initialize cart data once and sync updates from other cart write points.
   useEffect(() => {
-    try {
-      const rawData = sessionStorage.getItem('cart')
-      if (!rawData) {
-        setItems([])
-        return
-      }
+    const syncCart = () => setItems(readCartFromSessionStorage())
 
-      const localData = JSON.parse(rawData)
+    setLoading(true)
+    syncCart()
+    setLoading(false)
 
-      // Xử lý trường hợp dữ liệu là { items: [...] } hoặc [...]
-      const cartArray = Array.isArray(localData)
-        ? localData
-        : localData.items || []
+    window.addEventListener('cart:updated', syncCart)
+    window.addEventListener('storage', syncCart)
 
-      setItems(cartArray)
-    } catch (error) {
-      console.error('Failed to parse cart from sessionStorage:', error)
-      setItems([])
+    return () => {
+      window.removeEventListener('cart:updated', syncCart)
+      window.removeEventListener('storage', syncCart)
     }
-  }, [setItems])
+  }, [setItems, setLoading])
 
-  // 2. Update quantity
   const updateQuantity = (sku: string, delta: number) => {
+    if (delta === 0) return
+
     const item = items.find((i) => i.sku === sku)
     if (!item) return
 
-    const newQty = Math.max(1, Math.min(item.quantity + delta, 99))
+    const maxStock =
+      item.stockQuantity && item.stockQuantity > 0 ? item.stockQuantity : 99
+    const newQty = Math.max(1, Math.min(item.quantity + delta, maxStock, 99))
+    if (newQty === item.quantity) return
 
-    // Cập nhật Store
-    updateQuantityStore(sku, newQty)
-
-    // Cập nhật LocalStorage đồng bộ với Store
-    const updated = items.map((i) =>
+    const nextItems = items.map((i) =>
       i.sku === sku ? { ...i, quantity: newQty } : i,
     )
-    sessionStorage.setItem('cart', JSON.stringify(updated))
+    setItems(nextItems)
+    persistCart(nextItems)
   }
 
-  // 3. Remove single item
   const removeItem = (sku: string) => {
-    const updated = items.filter((i) => i.sku !== sku)
-    sessionStorage.setItem('cart', JSON.stringify(updated))
+    const nextItems = items.filter((i) => i.sku !== sku)
     removeItemStore(sku)
+    persistCart(nextItems)
     toast.success('Đã xóa sản phẩm khỏi giỏ hàng')
   }
 
-  // 4. Remove multiple items
   const removeMultipleItems = (skus: string[]) => {
-    const updated = items.filter((i) => !skus.includes(i.sku))
-    sessionStorage.setItem('cart', JSON.stringify(updated))
+    if (skus.length === 0) return
 
-    // Giả sử store của bạn có hàm removeMultiple hoặc lặp qua từng cái
-    skus.forEach((sku) => removeItemStore(sku))
-    toast.success(`Đã xóa ${skus.length} sản phẩm`)
+    const nextItems = items.filter((i) => !skus.includes(i.sku))
+    removeMultipleItemsStore(skus)
+    persistCart(nextItems)
+    toast.success(`Đã xóa ${skus.length} sản phẩm khỏi giỏ hàng`)
   }
 
-  // 5. Compute selected items and total
-  // Sử dụng (items || []) để phòng thủ cực đoan
-  const selectedItems = items.filter((i) => selectedSkus.includes(i.sku))
+  const selectedItems = useMemo(
+    () => items.filter((i) => selectedSkus.includes(i.sku)),
+    [items, selectedSkus],
+  )
 
-  const totalPrice = selectedItems.reduce(
-    (sum, i) => sum + (i.skuPrice || i.basePrice || 0) * i.quantity,
-    0,
+  const totalPrice = useMemo(
+    () =>
+      selectedItems.reduce(
+        (sum, i) => sum + (i.skuPrice || i.basePrice || 0) * i.quantity,
+        0,
+      ),
+    [selectedItems],
   )
 
   return {
@@ -85,10 +151,11 @@ export const useCart = () => {
     selectedItems,
     selectedSkus,
     toggleItemSelection,
-    loading: false, // Bạn có thể kết nối với state loading từ useInitCart nếu cần
+    toggleAllSelection,
+    loading,
     updateQuantity,
     removeItem,
     removeMultipleItems,
     totalPrice,
   }
-};
+}

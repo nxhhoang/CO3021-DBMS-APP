@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Card, CardContent, CardFooter } from '@/components/ui/card'
+import { Card, CardContent } from '@/components/ui/card'
 import { AspectRatio } from '@/components/ui/aspect-ratio'
 import { ProductResponse } from '@/types/product.types'
 import { Star, Eye } from 'lucide-react'
@@ -38,7 +38,7 @@ const ProductCard = ({ product }: { product: ProductResponse }) => {
 
         <CardContent className="space-y-2 p-3">
           <Badge variant="secondary" className="text-xs">
-            {product.category.name}
+            {product.category?.name ?? 'Chưa phân loại'}
           </Badge>
           <h3 className="line-clamp-2 h-10 text-sm font-medium">
             {product.name}

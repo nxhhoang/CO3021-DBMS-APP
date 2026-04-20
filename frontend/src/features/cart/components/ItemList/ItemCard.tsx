@@ -7,10 +7,11 @@ import { Trash } from 'lucide-react'
 import formatVND from '@/features/cart/utils/formatVND'
 import QuantitySelector from './QuantitySelector'
 import { Checkbox } from '@/components/ui/checkbox'
+import Image from 'next/image'
 
 // Đảm bảo dùng đúng các trường thông tin đã lưu từ Modal
 interface ItemCardProps {
-  item: CartItem & { stockQuantity: number }
+  item: CartItem
   updateQuantity: (sku: string, delta: number) => void
   removeItem: (sku: string) => void
   isSelected: boolean
@@ -24,6 +25,8 @@ const ItemCard = ({
   isSelected,
   onToggle,
 }: ItemCardProps) => {
+  const stockQuantity = item.stockQuantity ?? 99
+
   // Ở trang Cart, hàm updateQuantity từ useCart nhận (sku, delta)
   // nên ta chỉ cần truyền delta vào
   const handleQuantityChange = (delta: number) => {
@@ -31,8 +34,14 @@ const ItemCard = ({
   }
 
   return (
-    <div className="flex items-start gap-4">
-      <Card className="group hover:border-primary/20 flex-1 shadow-sm transition-all">
+    <div className="animate-in fade-in slide-in-from-bottom-2 flex items-start gap-4 duration-300">
+      <Card
+        className={`group flex-1 shadow-sm transition-all ${
+          isSelected
+            ? 'border-primary/50 ring-primary/10 ring-2'
+            : 'hover:border-primary/20'
+        }`}
+      >
         <CardContent className="p-4">
           <div className="flex gap-4">
             {/* Checkbox chọn sản phẩm */}
@@ -47,10 +56,12 @@ const ItemCard = ({
             {/* Product Image */}
             <div className="bg-muted relative h-24 w-24 shrink-0 overflow-hidden rounded-lg border">
               {item.image ? (
-                <img
+                <Image
                   src={item.image}
                   alt={item.productName}
-                  className="h-full w-full object-cover transition-transform group-hover:scale-105"
+                  fill
+                  sizes="96px"
+                  className="object-cover transition-transform group-hover:scale-105"
                 />
               ) : (
                 <div className="text-muted-foreground flex h-full w-full items-center justify-center text-[10px]">
@@ -90,21 +101,21 @@ const ItemCard = ({
 
                   <p
                     className={`text-[10px] font-bold uppercase ${
-                      item.stockQuantity <= 3
+                      stockQuantity <= 3
                         ? 'text-destructive'
                         : 'text-muted-foreground'
                     }`}
                   >
-                    {item.stockQuantity <= 3
-                      ? `Chỉ còn ${item.stockQuantity} sp!`
-                      : `Kho: ${item.stockQuantity}`}
+                    {stockQuantity <= 3
+                      ? `Chỉ còn ${stockQuantity} sp!`
+                      : `Kho: ${stockQuantity}`}
                   </p>
                 </div>
 
                 {/* Quantity Controller */}
                 <QuantitySelector
                   quantity={item.quantity}
-                  stockQuantity={item.stockQuantity}
+                  stockQuantity={stockQuantity}
                   onDecrease={() => handleQuantityChange(-1)}
                   onIncrease={() => handleQuantityChange(1)}
                 />

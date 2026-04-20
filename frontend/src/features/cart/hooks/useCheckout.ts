@@ -5,10 +5,11 @@ import { addressService } from '@/services/address.service';
 import { PAYMENT_METHOD } from '@/constants/enum';
 import { CartItem } from '@/types/cart.types';
 import { Address, PaymentMethod } from '@/types';
-import { useCart } from './useCart'; // Import hook useCart của bạn
+import { useCartStore } from '@/store/cartStore'
 
 export const useCheckout = (selectedItems: CartItem[]) => {
-  const { removeMultipleItems } = useCart(); // Lấy hàm xóa nhiều sản phẩm
+  const items = useCartStore((s) => s.items)
+  const removeMultipleItemsStore = useCartStore((s) => s.removeMultipleItems)
 
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>(
     PAYMENT_METHOD.COD,
@@ -55,11 +56,11 @@ export const useCheckout = (selectedItems: CartItem[]) => {
         shippingAddressId: defaultAddress.addressID,
         paymentMethod,
         items: selectedItems.map((item) => ({
-          productId: item.productID,
+          productId: item.productId || item.productID,
           productName: item.productName,
           sku: item.sku,
           quantity: item.quantity,
-          unitPrice: item.basePrice,
+          unitPrice: item.skuPrice || item.basePrice,
         })),
       }
 
@@ -67,15 +68,38 @@ export const useCheckout = (selectedItems: CartItem[]) => {
 
       if (res.data) {
         const skusToRemove = selectedItems.map((item) => item.sku);
-        await removeMultipleItems(skusToRemove);
+        const nextItems = items.filter(
+          (item) => !skusToRemove.includes(item.sku),
+        )
+
+        removeMultipleItemsStore(skusToRemove)
+        sessionStorage.setItem('cart', JSON.stringify({ items: nextItems }))
+        window.dispatchEvent(
+          new CustomEvent('cart:updated', {
+            detail: {
+              totalItems: nextItems.reduce(
+                (sum, item) => sum + item.quantity,
+                0,
+              ),
+            },
+          }),
+        )
 
         // Cập nhật ID mới và mở Dialog thành công
         setOrderID(res.data.orderID);
         setDialogState({ confirm: false, success: true });
         toast.success('Đặt hàng thành công');
       }
-    } catch (error: any) {
-      toast.error(error?.response?.data?.message || 'Lỗi đặt hàng');
+    } catch (error: unknown) {
+      const message =
+        typeof error === 'object' &&
+        error !== null &&
+        'response' in error &&
+        typeof (error as { response?: { data?: { message?: string } } }).response?.data?.message === 'string'
+          ? (error as { response?: { data?: { message?: string } } }).response?.data?.message
+          : 'Lỗi đặt hàng';
+
+      toast.error(message);
     } finally {
       setIsLoading(false);
     }

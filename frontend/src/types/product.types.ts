@@ -24,7 +24,11 @@ export interface SKU {
   attributes: Record<string, string | number | boolean> // Variant attributes
 }
 
-export interface Inventory extends SKU {
+export interface Inventory {
+  sku: string
+  skuPrice?: number
+  sku_price?: number
+  attributes: Record<string, string | number | boolean>
   stockQuantity: number
 }
 
@@ -35,7 +39,7 @@ export interface ProductResponse extends Omit<Product, 'categoryID'> {
 }
 
 export interface ProductDetail extends ProductResponse {
-  inventory: Omit<Inventory, 'productID'>[]
+  inventory: Inventory[]
 }
 
 //GET /products

@@ -4,25 +4,89 @@ import Logo from '../../common/Logo';
 import { SearchBar } from '@/components/common/SearchBar';
 import { useEffect, useState } from 'react';
 import { DropdownProfile } from './DropdownProfile';
+import { useCartStore } from '@/store/cartStore'
+import { CartItem } from '@/types'
 import { CartButton } from './CartButton';
 import { useRouter, useSearchParams } from 'next/navigation';
 
 const Header = () => {
   const [query, setQuery] = useState('');
+  const [isCartBumping, setIsCartBumping] = useState(false)
+
   const router = useRouter();
   const searchParams = useSearchParams()
 
+  const cartItems = useCartStore((state) => state.items)
+  const setCartItems = useCartStore((state) => state.setItems)
+
   const urlKeyword = searchParams.get('keyword') || '';
+  const cartCount = cartItems.reduce((sum, item) => sum + item.quantity, 0)
 
   useEffect(() => {
     setQuery(urlKeyword);
   }, [urlKeyword]);
 
+  useEffect(() => {
+    const syncCartFromSession = () => {
+      try {
+        const rawCart = sessionStorage.getItem('cart')
+        if (!rawCart) {
+          setCartItems([])
+          return
+        }
+
+        const parsed = JSON.parse(rawCart)
+        const items = Array.isArray(parsed)
+          ? parsed
+          : Array.isArray(parsed?.items)
+            ? parsed.items
+            : []
+
+        setCartItems(items as CartItem[])
+      } catch {
+        setCartItems([])
+      }
+    }
+
+    const handleCartUpdated = () => {
+      syncCartFromSession()
+      setIsCartBumping(true)
+      window.setTimeout(() => setIsCartBumping(false), 300)
+    }
+
+    syncCartFromSession()
+    window.addEventListener('storage', syncCartFromSession)
+    window.addEventListener('cart:updated', handleCartUpdated)
+
+    return () => {
+      window.removeEventListener('storage', syncCartFromSession)
+      window.removeEventListener('cart:updated', handleCartUpdated)
+    }
+  }, [setCartItems])
+
+  const handleSearchSubmit = (value: string, blurActiveElement = false) => {
+    const keyword = value.trim()
+    const params = new URLSearchParams(searchParams.toString())
+
+    if (keyword) {
+      params.set('keyword', keyword)
+    } else {
+      params.delete('keyword')
+    }
+
+    if (blurActiveElement && document.activeElement instanceof HTMLElement) {
+      document.activeElement.blur()
+    }
+
+    const queryString = params.toString()
+    router.push(queryString ? `/products?${queryString}` : '/products')
+  }
+
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-slate-100 bg-white/80 backdrop-blur-md">
-      <div className="container mx-auto flex h-20 items-center justify-between px-6 md:px-10">
+    <header className="sticky top-0 z-50 w-full border-b border-slate-200 bg-white/90 shadow-sm backdrop-blur-md">
+      <div className="container mx-auto flex h-16 items-center justify-between px-4 md:h-20 md:px-10">
         {/* Logo - Căn trái và tạo khoảng trống */}
-        <div className="flex-shrink-0 transition-transform hover:scale-105">
+        <div className="shrink-0 transition-transform hover:scale-105">
           <Logo />
         </div>
 
@@ -32,53 +96,35 @@ const Header = () => {
             value={query}
             onChange={setQuery}
             onSubmit={(value: string) => {
-              const keyword = value.trim()
-              if (!keyword) return
-              if (document.activeElement instanceof HTMLElement) {
-                document.activeElement.blur()
-              }
-              const params = new URLSearchParams()
-              params.set('keyword', keyword)
-              router.push(`/products?${params.toString()}`)
+              handleSearchSubmit(value, true)
             }}
-            // Lưu ý: Đảm bảo SearchBar component của bạn nhận các class này
-            // hoặc có style bo tròn (rounded-full) bên trong
             className="w-full"
           />
         </div>
 
         {/* Actions - Cụm nút bên phải */}
         <div className="flex items-center gap-3 md:gap-6">
-          {/* Cart Button với Style tinh tế */}
           <div className="relative transform transition-all active:scale-95">
-            <CartButton count={2} />
+            <CartButton count={cartCount} animate={isCartBumping} />
           </div>
 
-          {/* Divider nhẹ giữa Cart và Profile */}
-          <div className="h-6 w-[1px] bg-slate-200" aria-hidden="true" />
+          <div
+            className="hidden h-6 w-px bg-slate-200 md:block"
+            aria-hidden="true"
+          />
 
-          {/* Dropdown Menu Profile */}
           <div className="flex items-center gap-2">
             <DropdownProfile />
-            {/* Thêm text ẩn trên mobile để tăng độ sang trọng */}
-            {/* <span className="hidden text-xs font-bold tracking-widest text-slate-500 uppercase lg:block">
-              Account
-            </span> */}
           </div>
         </div>
       </div>
 
-      {/* Search Bar cho Mobile (Hiển thị dưới Header trên màn hình nhỏ) */}
-      <div className="border-t border-slate-50 p-4 md:hidden">
+      <div className="border-t border-slate-100 px-4 py-3 md:hidden">
         <SearchBar
           value={query}
           onChange={setQuery}
           onSubmit={(value: string) => {
-            const keyword = value.trim()
-            if (!keyword) return
-            const params = new URLSearchParams()
-            params.set('keyword', keyword)
-            router.push(`/products?${params.toString()}`)
+            handleSearchSubmit(value)
           }}
         />
       </div>

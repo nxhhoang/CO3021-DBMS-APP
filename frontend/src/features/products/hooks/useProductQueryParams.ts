@@ -4,10 +4,16 @@ import { GetProductsRequest } from '@/types/product.types'
 import { SORT_BY } from '@/constants/enum'
 
 function parseSort(value: string | null): GetProductsRequest['sort'] {
-  const validSorts = Object.values(SORT_BY)
-  return validSorts.includes(value as any)
+  const validSorts = Object.values(SORT_BY) as GetProductsRequest['sort'][]
+  return validSorts.includes(value as GetProductsRequest['sort'])
     ? (value as GetProductsRequest['sort'])
     : SORT_BY.POPULARITY // default = soldDESC
+}
+
+function parsePositiveNumber(value: string | null) {
+  if (!value) return undefined
+  const parsed = Number(value)
+  return Number.isFinite(parsed) && parsed >= 0 ? parsed : undefined
 }
 
 export default function useProductQueryParams(): GetProductsRequest {
@@ -24,27 +30,24 @@ export default function useProductQueryParams(): GetProductsRequest {
       }
     })
 
-    const keyword = searchParams.get('keyword') || ''
+    const keyword = (searchParams.get('keyword') || '').trim()
     const category = searchParams.get('category') || undefined
+    const page = Number(searchParams.get('page'))
 
     return {
-      keyword,
+      keyword: keyword || undefined,
 
       // Nếu có keyword thì bỏ category theo spec API
       category: keyword ? undefined : category,
 
-      page: Number(searchParams.get('page')) || 1,
+      page: Number.isFinite(page) && page > 0 ? page : 1,
 
       // API mặc định 10 sản phẩm / trang
       limit: 10,
 
-      priceMin: searchParams.get('priceMin')
-        ? Number(searchParams.get('priceMin'))
-        : undefined,
+      priceMin: parsePositiveNumber(searchParams.get('priceMin')),
 
-      priceMax: searchParams.get('priceMax')
-        ? Number(searchParams.get('priceMax'))
-        : undefined,
+      priceMax: parsePositiveNumber(searchParams.get('priceMax')),
 
       // ✅ FIX: validate sort trước khi dùng
       sort: parseSort(searchParams.get('sort')),

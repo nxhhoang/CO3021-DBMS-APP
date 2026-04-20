@@ -2,6 +2,7 @@
 
 import { useRouter, useSearchParams } from 'next/navigation';
 import { buildProductFilterParams } from '../utils/buildProductFilterParams';
+import { DEFAULT_MAX_PRICE } from '@/constants/enum'
 
 export function useProductFilterNavigation() {
   const router = useRouter();
@@ -19,10 +20,37 @@ export function useProductFilterNavigation() {
       attrs,
       priceRange,
       sort,
-    );
+    )
 
-    router.push(`/products?${params.toString()}`);
-  };
+    const nextQuery = params.toString()
+    const currentQuery = searchParams.toString()
 
-  return { applyFilters };
+    if (nextQuery === currentQuery) return
+    router.push(`/products?${nextQuery}`, { scroll: false })
+  }
+
+  const resetFilters = () => {
+    const params = new URLSearchParams(searchParams.toString())
+
+    params.delete('category')
+    params.delete('sort')
+    params.delete('priceMin')
+    params.delete('priceMax')
+
+    Array.from(params.keys()).forEach((key) => {
+      if (key.startsWith('attrs[')) {
+        params.delete(key)
+      }
+    })
+
+    params.set('page', '1')
+
+    const nextQuery = params.toString()
+    const currentQuery = searchParams.toString()
+
+    if (nextQuery === currentQuery) return
+    router.push(`/products?${nextQuery}`, { scroll: false })
+  }
+
+  return { applyFilters, resetFilters, defaultPriceMax: DEFAULT_MAX_PRICE }
 }

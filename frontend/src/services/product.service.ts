@@ -19,7 +19,27 @@ export const productService = {
 
   async getProductDetail({ productId }: GetProductDetailRequest) {
     const res = await api.get<GetProductDetailResponse>(`products/${productId}`)
-    return res.data
+    const payload = res.data
+
+    if (!payload?.data) return payload
+
+    const normalizedInventory = (payload.data.inventory ?? []).map((item) => {
+      const normalizedPrice = item.skuPrice ?? item.sku_price ?? 0
+      return {
+        ...item,
+        skuPrice: normalizedPrice,
+        sku_price: item.sku_price ?? normalizedPrice,
+        attributes: item.attributes ?? {},
+      }
+    })
+
+    return {
+      ...payload,
+      data: {
+        ...payload.data,
+        inventory: normalizedInventory,
+      },
+    }
   },
 
   async createProduct(data: CreateProductRequest) {

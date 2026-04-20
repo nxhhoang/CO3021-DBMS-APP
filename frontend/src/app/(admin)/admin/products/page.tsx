@@ -12,7 +12,7 @@ import useCategories from '@/features/products/hooks/useCategories'
 import { SORT_BY } from '@/constants/enum'
 
 // Components
-import ProductTable from '@/features/products/components/ProductTable'
+import ProductTable from '@/features/adminProduct/components/ProductTable'
 import AddProductModal from '@/features/adminProduct/components/AddProductModal/AddProductModal'
 import AddCategoryModal from '@/features/adminProduct/components/AddCategoryModal/AddCategoryModal'
 import EditProductModal from '@/features/adminProduct/components/EditProductModal/EditProductModal'

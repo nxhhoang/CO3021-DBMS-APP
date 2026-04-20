@@ -1,10 +1,9 @@
 import { http, HttpResponse } from 'msw';
 import {
   SyncCartRequest,
-  SyncCartResponse,
   CartItem,
   UpdateCartItemRequest,
-} from '@/types/cart.types';
+} from '@/types/cart.types'
 import { BASE_URL } from '@/constants/api';
 import { MOCK_CART } from '../data/cart';
 import { MOCK_PRODUCTS } from '../data/products';
@@ -20,7 +19,8 @@ export const cartHandlers = [
     const merged: CartItem[] = [...MOCK_CART.items];
 
     for (const reqItem of body.items) {
-      const product = MOCK_PRODUCTS.find((p) => p._id === reqItem.productID);
+      const productId = reqItem.productId || reqItem.productID
+      const product = MOCK_PRODUCTS.find((p) => p._id === productId)
       const inventory = MOCK_INVENTORY.find((inv) => inv.sku === reqItem.sku);
 
       if (!product || !inventory) continue;
@@ -34,6 +34,7 @@ export const cartHandlers = [
       } else {
         // Thêm mới item
         merged.push({
+          productId: product._id,
           productID: product._id,
           sku: reqItem.sku,
           quantity: reqItem.quantity,
@@ -41,7 +42,8 @@ export const cartHandlers = [
           image: product.images[0] || '',
           basePrice: product.base_price, // Giá gốc từ bảng sản phẩm
           skuPrice: inventory.sku_price, // Giá biến thể từ kho
-        });
+          stockQuantity: inventory.stock_quantity,
+        })
       }
     }
 

@@ -19,7 +19,7 @@ export const OrderItemsList = ({ items }: Props) => {
             {item.productName} (x{item.quantity})
           </span>
           <span className="font-medium">
-            {formatVND(item.basePrice * item.quantity)}
+            {formatVND((item.skuPrice || item.basePrice) * item.quantity)}
           </span>
         </div>
       ))}

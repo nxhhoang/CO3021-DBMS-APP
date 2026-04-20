@@ -18,18 +18,21 @@ import { OrderItemsList } from '../OrderSummary/OrderItemsList';
 import { PaymentMethodSelector } from './PaymentMethodSelector';
 import formatVND from '@/features/cart/utils/formatVND';
 import { useRouter } from 'next/navigation';
-import { Address } from '@/types';
+import { Address, CartItem, PaymentMethod } from '@/types'
+import { Dispatch, SetStateAction } from 'react'
+
+type CheckoutDialogState = { confirm: boolean; success: boolean }
 
 interface Props {
-  state: { confirm: boolean; success: boolean }
-  setState: (val: any) => void
+  state: CheckoutDialogState
+  setState: Dispatch<SetStateAction<CheckoutDialogState>>
   isLoading: boolean
   isAddressLoading: boolean
   address: Address | null
   onConfirm: () => void
-  paymentMethod: any
-  setPaymentMethod: (val: any) => void
-  selectedItems: any[]
+  paymentMethod: PaymentMethod
+  setPaymentMethod: (val: PaymentMethod) => void
+  selectedItems: CartItem[]
   totalPrice: number
   orderID: number | null
   setOrderID: (id: number | null) => void
@@ -53,7 +56,7 @@ export const CheckoutDialogs = ({
 
   // Hàm reset trạng thái để sẵn sàng cho lần thanh toán tiếp theo
   const handleCloseSuccess = () => {
-    setState((prev: any) => ({ ...prev, success: false }));
+    setState((prev) => ({ ...prev, success: false }))
     setOrderID(null);
   };
 
@@ -62,7 +65,7 @@ export const CheckoutDialogs = ({
       {/* Dialog Xác nhận */}
       <Dialog
         open={state.confirm}
-        onOpenChange={(v) => setState((prev: any) => ({ ...prev, confirm: v }))}
+        onOpenChange={(v) => setState((prev) => ({ ...prev, confirm: v }))}
       >
         <DialogContent className="max-w-lg">
           <DialogHeader>
@@ -146,7 +149,7 @@ export const CheckoutDialogs = ({
       <Dialog
         open={state.success}
         onOpenChange={(v) => {
-          if (!v) handleCloseSuccess(); // Reset khi click ra ngoài hoặc bấm X
+          if (!v) handleCloseSuccess() // Reset khi click ra ngoài hoặc bấm X
         }}
       >
         <DialogContent className="max-w-sm text-center">
@@ -171,8 +174,8 @@ export const CheckoutDialogs = ({
             <Button
               className="flex-1 sm:flex-none"
               onClick={() => {
-                handleCloseSuccess();
-                router.push('/orders');
+                handleCloseSuccess()
+                router.push('/orders')
               }}
             >
               Xem đơn hàng
@@ -181,5 +184,5 @@ export const CheckoutDialogs = ({
         </DialogContent>
       </Dialog>
     </>
-  );
+  )
 };

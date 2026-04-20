@@ -3,30 +3,35 @@
 import { GetProductsRequest } from '@/types/product.types'
 import useProducts from '@/features/products/hooks/useProducts'
 import ProductList from '@/features/products/components/ProductList'
+import ProductPagination from '@/features/products/components/ProductPagination'
 import FilterSidebar from '@/features/products/components/FilterSidebar'
 import useProductQueryParams from '@/features/products/hooks/useProductQueryParams'
-import useProductFilters from '@/features/products/hooks/useProductFilters'
 import useCategories from '@/features/products/hooks/useCategories'
-import { Plus } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo } from 'react'
 import { getUserRole } from '../../../utils/getUserRole'
-// import AddProductModal from '@/features/products/components/AddProductModal/AddProductModal'
-import { useRouter } from 'next/navigation'
+import { usePathname, useRouter, useSearchParams } from 'next/navigation'
+import { DEFAULT_MAX_PRICE } from '@/constants/enum'
 
 export default function ProductsPage() {
   const router = useRouter()
+  const pathname = usePathname()
+  const searchParams = useSearchParams()
 
   const params: GetProductsRequest = useProductQueryParams()
-  const { products, loading, message } = useProducts(params)
-  const { priceRange, setPriceRange, sort, setSort } = useProductFilters(params)
+  const { products, loading, message, pagination } = useProducts(params)
   const { categories } = useCategories()
 
-  const [role, setRole] = useState<string | null>(null)
-  const [isModalOpen, setIsModalOpen] = useState(false)
+  const initialAttrs = useMemo(() => {
+    const attrs: Record<string, string> = {}
+    searchParams.forEach((value, key) => {
+      const match = key.match(/^attrs\[(.*)\]$/)
+      if (match) attrs[match[1]] = value
+    })
+    return attrs
+  }, [searchParams])
 
   useEffect(() => {
     const userRole = getUserRole()
-    setRole(userRole)
 
     // 🔥 Redirect nếu là ADMIN
     if (userRole === 'ADMIN') {
@@ -34,7 +39,11 @@ export default function ProductsPage() {
     }
   }, [router])
 
-  const isAdmin = role === 'ADMIN'
+  const handlePageChange = (page: number) => {
+    const nextParams = new URLSearchParams(searchParams.toString())
+    nextParams.set('page', String(page))
+    router.push(`${pathname}?${nextParams.toString()}`)
+  }
 
   return (
     <div className="container mx-auto min-h-screen px-4 py-6 md:py-10">
@@ -44,7 +53,9 @@ export default function ProductsPage() {
             <>
               <h1 className="text-2xl font-semibold">
                 {message}{' '}
-                <span className="text-primary italic">"{params.keyword}"</span>
+                <span className="text-primary italic">
+                  &quot;{params.keyword}&quot;
+                </span>
               </h1>
               <p className="text-muted-foreground mt-1 text-sm">
                 Tìm thấy {products.length} sản phẩm phù hợp
@@ -56,27 +67,29 @@ export default function ProductsPage() {
         </div>
       </div>
 
-      <div className="flex flex-col gap-6 md:flex-row lg:gap-10">
+      <div className="flex flex-col gap-6 md:flex-row lg:gap-8">
         <div className="shrink-0">
           <FilterSidebar
-            priceRange={priceRange}
-            setPriceRange={setPriceRange}
-            sort={sort}
-            setSort={setSort}
+            key={searchParams.toString()}
+            initialCategory={params.category ?? 'all'}
+            initialAttrs={initialAttrs}
+            initialPriceRange={[
+              params.priceMin ?? 0,
+              params.priceMax ?? DEFAULT_MAX_PRICE,
+            ]}
+            initialSort={params.sort ?? ''}
             categories={categories || []}
           />
         </div>
 
         <div className="flex-1">
           <ProductList products={products} loading={loading} />
+          <ProductPagination
+            pagination={pagination}
+            onPageChange={handlePageChange}
+          />
         </div>
       </div>
-
-      {/* <AddProductModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        categories={categories || []}
-      /> */}
     </div>
   )
 }

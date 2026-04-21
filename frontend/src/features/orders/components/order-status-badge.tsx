@@ -11,29 +11,42 @@ export function OrderStatusBadge({ status }: Props) {
   switch (status) {
     case 'PROCESSING':
       return (
-        <Badge className="bg-blue-100 text-blue-700 hover:bg-blue-100">
-          <Clock className="mr-1 h-3 w-3" />
-          Đang xử lý
-        </Badge>
+        <div className="flex items-center gap-2 rounded-full bg-blue-50 px-3 py-1 ring-1 ring-blue-200/50 dark:bg-blue-900/20 dark:ring-blue-500/20">
+          <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.5)]" />
+          <span className="font-display text-[10px] font-black tracking-widest text-blue-600 uppercase dark:text-blue-400">
+            Đang xử lý
+          </span>
+        </div>
       );
 
     case 'DELIVERED':
       return (
-        <Badge className="bg-green-100 text-green-700 hover:bg-green-100">
-          <CheckCircle2 className="mr-1 h-3 w-3" />
-          Đã giao
-        </Badge>
+        <div className="flex items-center gap-2 rounded-full bg-emerald-50 px-3 py-1 ring-1 ring-emerald-200/50 dark:bg-emerald-900/20 dark:ring-emerald-500/20">
+          <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
+          <span className="font-display text-[10px] font-black tracking-widest text-emerald-600 uppercase dark:text-emerald-400">
+            Đã giao
+          </span>
+        </div>
       );
 
     case 'CANCELLED':
       return (
-        <Badge className="bg-red-100 text-red-700 hover:bg-red-100">
-          <XCircle className="mr-1 h-3 w-3" />
-          Đã hủy
-        </Badge>
+        <div className="flex items-center gap-2 rounded-full bg-rose-50 px-3 py-1 ring-1 ring-rose-200/50 dark:bg-rose-900/20 dark:ring-rose-500/20">
+          <span className="h-1.5 w-1.5 rounded-full bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.5)]" />
+          <span className="font-display text-[10px] font-black tracking-widest text-rose-600 uppercase dark:text-rose-400">
+            Đã hủy
+          </span>
+        </div>
       );
 
     default:
-      return <Badge variant="outline">{status}</Badge>;
+      return (
+        <div className="flex items-center gap-2 rounded-full bg-slate-50 px-3 py-1 ring-1 ring-slate-200/50 dark:bg-slate-900/20 dark:ring-slate-500/20">
+          <span className="h-1.5 w-1.5 rounded-full bg-slate-400" />
+          <span className="font-display text-[10px] font-black tracking-widest text-slate-500 uppercase">
+            {status}
+          </span>
+        </div>
+      );
   }
 }

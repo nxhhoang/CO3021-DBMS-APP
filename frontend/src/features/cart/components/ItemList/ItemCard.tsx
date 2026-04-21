@@ -8,6 +8,7 @@ import formatVND from '@/features/cart/utils/formatVND'
 import QuantitySelector from './QuantitySelector'
 import { Checkbox } from '@/components/ui/checkbox'
 import Image from 'next/image'
+import { cn } from '@/lib/utils'
 
 // Đảm bảo dùng đúng các trường thông tin đã lưu từ Modal
 interface ItemCardProps {
@@ -34,91 +35,105 @@ const ItemCard = ({
   }
 
   return (
-    <div className="animate-in fade-in slide-in-from-bottom-2 flex items-start gap-4 duration-300">
+    <div className="animate-in fade-in slide-in-from-bottom-3 duration-500">
       <Card
-        className={`group flex-1 shadow-sm transition-all ${
+        className={`group relative overflow-hidden rounded-[2.5rem] border-white/40 bg-white/40 shadow-xl shadow-slate-200/50 transition-all duration-500 backdrop-blur-3xl hover:shadow-2xl hover:shadow-slate-200/60 dark:border-white/10 dark:bg-white/5 dark:shadow-none ${
           isSelected
-            ? 'border-primary/50 ring-primary/10 ring-2'
-            : 'hover:border-primary/20'
+            ? 'ring-blue-500/20 border-blue-500/50 ring-8'
+            : 'hover:border-blue-500/30'
         }`}
       >
-        <CardContent className="p-4">
-          <div className="flex gap-4">
+        <CardContent className="p-6">
+          <div className="flex gap-6">
             {/* Checkbox chọn sản phẩm */}
             <div className="flex items-center">
               <Checkbox
                 checked={isSelected}
                 onCheckedChange={(checked) => onToggle(!!checked)}
                 id={`select-${item.sku}`}
+                className="h-6 w-6 rounded-lg border-slate-200 transition-all data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600"
               />
             </div>
 
             {/* Product Image */}
-            <div className="bg-muted relative h-24 w-24 shrink-0 overflow-hidden rounded-lg border">
+            <div className="relative h-32 w-32 shrink-0 overflow-hidden rounded-3xl border border-white/60 bg-slate-100 dark:border-white/10 dark:bg-slate-800">
               {item.image ? (
                 <Image
                   src={item.image}
                   alt={item.productName}
                   fill
-                  sizes="96px"
-                  className="object-cover transition-transform group-hover:scale-105"
+                  sizes="128px"
+                  className="object-cover transition-transform duration-700 group-hover:scale-110"
                 />
               ) : (
-                <div className="text-muted-foreground flex h-full w-full items-center justify-center text-[10px]">
+                <div className="font-display flex h-full w-full items-center justify-center text-[10px] font-black uppercase tracking-widest text-slate-400">
                   No Image
                 </div>
               )}
+              {/* Overlay on hover */}
+              <div className="absolute inset-0 bg-linear-to-t from-slate-900/20 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
             </div>
 
             {/* Product Info */}
-            <div className="flex flex-1 flex-col justify-between">
-              <div>
-                <div className="flex justify-between gap-2">
-                  <h2 className="line-clamp-1 text-base font-bold">
+            <div className="flex flex-1 flex-col justify-between py-1">
+              <div className="space-y-1">
+                <div className="flex justify-between gap-4">
+                  <h2 className="font-display line-clamp-1 text-xl font-black tracking-tight text-slate-900 dark:text-white">
                     {item.productName}
                   </h2>
 
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="text-muted-foreground hover:text-destructive h-8 w-8 transition-colors"
+                    className="h-10 w-10 rounded-full text-slate-300 transition-all hover:bg-rose-50 hover:text-rose-500 active:scale-90 dark:hover:bg-rose-900/20"
                     onClick={() => removeItem(item.sku)}
                   >
-                    <Trash className="h-4 w-4" />
+                    <Trash className="h-4 w-4" strokeWidth={2.5} />
                   </Button>
                 </div>
 
-                <p className="text-muted-foreground text-[11px] font-medium tracking-wider uppercase">
-                  SKU: {item.sku}
-                </p>
+                <div className="flex items-center gap-2">
+                  <span className="rounded-full bg-slate-100 px-3 py-1 font-mono text-[9px] font-black tracking-widest text-slate-400 uppercase dark:bg-slate-800">
+                    SKU • {item.sku}
+                  </span>
+                </div>
               </div>
 
-              <div className="mt-2 flex items-end justify-between">
-                <div className="space-y-1">
-                  <p className="text-primary text-lg font-black">
+              <div className="mt-6 flex items-end justify-between">
+                <div className="space-y-2">
+                  <p className="font-mono text-2xl font-black tracking-tighter text-blue-600 dark:text-blue-400">
                     {formatVND(item.skuPrice)}
                   </p>
 
-                  <p
-                    className={`text-[10px] font-bold uppercase ${
-                      stockQuantity <= 3
-                        ? 'text-destructive'
-                        : 'text-muted-foreground'
-                    }`}
-                  >
-                    {stockQuantity <= 3
-                      ? `Chỉ còn ${stockQuantity} sp!`
-                      : `Kho: ${stockQuantity}`}
-                  </p>
+                  <div className="flex items-center gap-2.5">
+                    <span
+                      className={cn(
+                        "h-2 w-2 rounded-full animate-pulse",
+                        stockQuantity <= 3 ? 'bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.5)]' : 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]'
+                      )}
+                    />
+                    <p
+                      className={cn(
+                        "font-display text-[10px] font-black tracking-widest uppercase",
+                        stockQuantity <= 3 ? 'text-rose-500' : 'text-slate-400'
+                      )}
+                    >
+                      {stockQuantity <= 3
+                        ? `Ưu tiên (Còn ${stockQuantity})`
+                        : `Sẵn hàng (${stockQuantity})`}
+                    </p>
+                  </div>
                 </div>
 
                 {/* Quantity Controller */}
-                <QuantitySelector
-                  quantity={item.quantity}
-                  stockQuantity={stockQuantity}
-                  onDecrease={() => handleQuantityChange(-1)}
-                  onIncrease={() => handleQuantityChange(1)}
-                />
+                <div className="rounded-full bg-white p-1.5 shadow-xl shadow-slate-200/40 ring-1 ring-slate-100 dark:bg-slate-900 dark:ring-white/5">
+                  <QuantitySelector
+                    quantity={item.quantity}
+                    stockQuantity={stockQuantity}
+                    onDecrease={() => handleQuantityChange(-1)}
+                    onIncrease={() => handleQuantityChange(1)}
+                  />
+                </div>
               </div>
             </div>
           </div>

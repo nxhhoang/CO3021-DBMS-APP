@@ -141,37 +141,68 @@ export default function AdminOrdersPage() {
   }
 
   return (
-    <div className="bg-surface min-h-screen px-6 py-8">
-      <div className="mb-8 flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
-        <div className="space-y-3">
-          <div className="flex items-center gap-3">
-            <h1 className="text-on-surface text-3xl font-extrabold">
-              Quản lý đơn hàng
-            </h1>
-          </div>
-          <p className="text-on-surface-variant max-w-2xl text-sm">
-            {loading
-              ? 'Đang tải dữ liệu...'
-              : `Hiển thị ${orders.length} đơn hàng · Tổng số: ${pagination?.total || 0}`}
-          </p>
-        </div>
+    <div className="relative isolate min-h-screen w-full bg-slate-50 dark:bg-slate-950">
+      {/* SUBTLE BACKGROUND SYSTEM FOR ADMIN */}
+      <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
+        <div className="absolute inset-0 bg-linear-to-b from-slate-50 via-white to-slate-100 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950" />
+        <div
+          className="absolute inset-0 opacity-[0.05] dark:opacity-[0.03]"
+          style={{
+            backgroundImage: `radial-gradient(circle, #64748b 1px, transparent 1px)`,
+            backgroundSize: '24px 24px',
+          }}
+        />
+        <div className="absolute top-0 right-0 h-[400px] w-[400px] rounded-full bg-blue-400/5 blur-[100px] dark:bg-blue-900/5" />
       </div>
 
-      <SummaryCard
-        totalOrders={summaryCards.totalOrders}
-        statusCounts={summaryCards.statusCounts}
-      />
+      <div className="container mx-auto px-6 py-10 md:py-16">
+        <div className="animate-in fade-in slide-in-from-top-4 mb-12 flex flex-col gap-8 duration-700 lg:flex-row lg:items-end lg:justify-between">
+          <div className="space-y-4">
+            <div className="inline-flex items-center gap-2 rounded-full border border-blue-100 bg-blue-50/50 px-4 py-1.5 text-[11px] font-black tracking-widest text-blue-600 uppercase backdrop-blur-sm dark:border-blue-900/30 dark:bg-blue-900/20 dark:text-blue-400">
+              Hệ thống quản lý
+            </div>
+            <h1 className="font-display text-4xl font-black tracking-tight text-slate-900 dark:text-white sm:text-5xl">
+              Quản lý{' '}
+              <span className="bg-linear-to-r from-blue-600 to-cyan-500 bg-clip-text text-transparent">
+                Đơn hàng
+              </span>
+            </h1>
+            <p className="font-sans text-lg text-slate-500 dark:text-slate-400">
+              {loading
+                ? 'Đang chuẩn bị dữ liệu...'
+                : `Theo dõi và xử lý ${pagination?.total || orders.length} đơn hàng trên toàn hệ thống.`}
+            </p>
+          </div>
 
-      <div className="bg-surface-container-lowest border-outline-variant/10 overflow-hidden rounded-xl border shadow-sm">
-        <OrderTable
-          orders={orders}
-          loading={loading}
-          pagination={pagination}
-          currentPage={currentPage}
-          onPageChange={handlePageChange}
-          onRefresh={() => fetchOrders(currentPage)}
-          onViewDetails={handleViewDetails}
-        />
+          <div className="flex items-center gap-4">
+            <Button
+              onClick={() => fetchOrders(currentPage)}
+              variant="outline"
+              className="rounded-full border-slate-200 font-bold active:scale-95 transition-all hover:bg-white shadow-sm"
+            >
+              Làm mới dữ liệu
+            </Button>
+          </div>
+        </div>
+
+        <div className="animate-in fade-in slide-in-from-bottom-4 space-y-10 duration-700">
+          <SummaryCard
+            totalOrders={summaryCards.totalOrders}
+            statusCounts={summaryCards.statusCounts}
+          />
+
+          <div className="overflow-hidden rounded-[2rem] border border-white/40 bg-white/40 shadow-2xl shadow-slate-200/50 backdrop-blur-3xl dark:border-white/10 dark:bg-white/5 dark:shadow-none">
+            <OrderTable
+              orders={orders}
+              loading={loading}
+              pagination={pagination}
+              currentPage={currentPage}
+              onPageChange={handlePageChange}
+              onRefresh={() => fetchOrders(currentPage)}
+              onViewDetails={handleViewDetails}
+            />
+          </div>
+        </div>
       </div>
 
       <OrderDetailModal

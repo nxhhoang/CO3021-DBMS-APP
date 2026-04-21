@@ -51,21 +51,25 @@ export const DropdownProfile = () => {
             <User className="h-5 w-5" />
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-52">
-          <DropdownMenuLabel>My Account</DropdownMenuLabel>
+        <DropdownMenuContent align="end" className="w-56 rounded-2xl border-white/40 bg-white/80 p-2 shadow-2xl backdrop-blur-xl">
+          <DropdownMenuLabel className="px-3 py-2 text-[10px] font-bold tracking-widest text-slate-400 uppercase">
+            Tài khoản của tôi
+          </DropdownMenuLabel>
           <DropdownMenuSeparator />
           {NAV_ITEMS.map((item) => (
-            <DropdownMenuItem key={item.href} asChild>
-              <Link href={item.href}>{item.label}</Link>
+            <DropdownMenuItem key={item.href} asChild className="cursor-pointer rounded-xl px-3 py-2.5 transition-colors focus:bg-blue-50 focus:text-blue-600">
+              <Link href={item.href} className="flex w-full items-center font-medium">
+                {item.label}
+              </Link>
             </DropdownMenuItem>
           ))}
           <DropdownMenuSeparator />
           <DropdownMenuItem
             onClick={handleLogout}
-            className="cursor-pointer text-red-500 focus:text-red-500"
+            className="mt-1 cursor-pointer rounded-xl px-3 py-2.5 text-red-500 transition-colors focus:bg-red-50 focus:text-red-600"
           >
             <LogOut className="mr-2 h-4 w-4" />
-            Log out
+            <span className="font-medium">Đăng xuất</span>
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

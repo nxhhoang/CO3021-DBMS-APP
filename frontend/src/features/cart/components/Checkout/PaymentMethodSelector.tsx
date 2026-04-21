@@ -22,11 +22,12 @@ interface Props {
 
 export const PaymentMethodSelector = ({ selected, onChange }: Props) => {
   return (
-    <div className="mt-6 flex flex-col gap-3">
-      <p className="text-muted-foreground text-center text-xs">
-        Chọn phương thức thanh toán
-      </p>
-      <div className="grid grid-cols-3 gap-3">
+    <div className="space-y-6">
+      <div className="flex items-center gap-3">
+         <div className="h-1 w-4 rounded-full bg-slate-200" />
+         <p className="font-display text-[10px] font-black tracking-widest text-slate-400 uppercase">Lựa chọn phương thức</p>
+      </div>
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         {OPTIONS.map((method) => {
           const isSelected = selected === method.value;
           const Icon = method.icon;
@@ -34,14 +35,28 @@ export const PaymentMethodSelector = ({ selected, onChange }: Props) => {
             <button
               key={method.value}
               onClick={() => onChange(method.value)}
-              className={`flex flex-col items-center justify-center gap-1 rounded-lg border p-3 text-xs font-medium transition-all ${
+              className={`group relative flex flex-col items-center justify-center gap-4 rounded-3xl border-2 p-6 transition-all duration-300 ${
                 isSelected
-                  ? 'border-primary bg-primary/10 text-primary'
-                  : 'hover:border-primary/40'
+                  ? 'border-slate-900 bg-slate-900 text-white shadow-2xl dark:border-white dark:bg-white dark:text-slate-900'
+                  : 'border-slate-100 bg-white hover:border-slate-200 dark:border-white/5 dark:bg-slate-800/40 dark:hover:border-white/20'
               }`}
             >
-              <Icon className="h-4 w-4" />
-              {method.label}
+              <div className={`flex h-12 w-12 items-center justify-center rounded-2xl transition-colors ${
+                isSelected 
+                  ? 'bg-white/10 dark:bg-slate-900/10' 
+                  : 'bg-slate-50 dark:bg-slate-800'
+              }`}>
+                <Icon className={`h-6 w-6 ${isSelected ? 'text-white dark:text-slate-900' : 'text-slate-400'}`} strokeWidth={2.5} />
+              </div>
+              <span className="font-display text-[11px] font-black tracking-widest uppercase">
+                {method.label}
+              </span>
+              
+              {isSelected && (
+                <div className="absolute -top-2 -right-2 flex h-6 w-6 items-center justify-center rounded-full bg-blue-600 text-white shadow-lg">
+                   <div className="h-2 w-2 rounded-full bg-white animate-pulse" />
+                </div>
+              )}
             </button>
           );
         })}

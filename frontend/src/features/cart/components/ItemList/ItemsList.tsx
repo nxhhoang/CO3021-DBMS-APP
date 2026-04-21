@@ -27,17 +27,18 @@ const ItemsList = ({
   const hasSelection = selectedSkus.length > 0
 
   return (
-    <div className="space-y-4 lg:col-span-2">
-      <div className="bg-background/90 supports-backdrop-filter:bg-background/70 sticky top-20 z-10 rounded-lg border px-3 py-2 backdrop-blur">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <label className="flex cursor-pointer items-center gap-2 text-sm font-medium">
+    <div className="space-y-6">
+      <div className="sticky top-20 z-10 rounded-full border border-white/40 bg-white/40 px-8 py-5 shadow-xl shadow-slate-200/50 backdrop-blur-3xl dark:border-white/10 dark:bg-slate-900/40">
+        <div className="flex flex-wrap items-center justify-between gap-4">
+          <label className="flex cursor-pointer items-center gap-4 font-display text-base font-black tracking-tight text-slate-900 dark:text-white">
             <Checkbox
               checked={allSelected}
               onCheckedChange={(checked) => toggleAllSelection(!!checked)}
               aria-label="Chọn tất cả sản phẩm"
+              className="h-6 w-6 rounded-lg border-slate-200 transition-all data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600"
             />
-            <span>
-              Chọn tất cả ({selectedSkus.length}/{items.length})
+            <span className="uppercase tracking-widest text-[11px] text-slate-400">
+              CHỌN TẤT CẢ ({selectedSkus.length}/{items.length})
             </span>
           </label>
 
@@ -46,10 +47,10 @@ const ItemsList = ({
             size="sm"
             disabled={!hasSelection}
             onClick={() => removeMultipleItems(selectedSkus)}
-            className="text-destructive hover:text-destructive"
+            className="h-10 rounded-full px-6 font-display text-[10px] font-black tracking-[0.2em] text-rose-500 uppercase transition-all hover:bg-rose-50 active:scale-95 disabled:opacity-20 dark:hover:bg-rose-900/20"
           >
-            <Trash2 className="mr-2 h-4 w-4" />
-            Xóa đã chọn
+            <Trash2 className="mr-2 h-4 w-4" strokeWidth={2.5} />
+            Loại bỏ đã chọn
           </Button>
         </div>
       </div>

@@ -83,10 +83,10 @@ const Header = () => {
   }
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-slate-200 bg-white/90 shadow-sm backdrop-blur-md">
+    <header className="sticky top-0 z-50 w-full border-b border-white/40 bg-white/80 shadow-xs backdrop-blur-xl transition-all duration-300">
       <div className="container mx-auto flex h-16 items-center justify-between px-4 md:h-20 md:px-10">
         {/* Logo - Căn trái và tạo khoảng trống */}
-        <div className="shrink-0 transition-transform hover:scale-105">
+        <div className="shrink-0 transition-all duration-300 hover:scale-105 active:scale-95">
           <Logo />
         </div>
 
@@ -119,15 +119,7 @@ const Header = () => {
         </div>
       </div>
 
-      <div className="border-t border-slate-100 px-4 py-3 md:hidden">
-        <SearchBar
-          value={query}
-          onChange={setQuery}
-          onSubmit={(value: string) => {
-            handleSearchSubmit(value)
-          }}
-        />
-      </div>
+
     </header>
   )
 };

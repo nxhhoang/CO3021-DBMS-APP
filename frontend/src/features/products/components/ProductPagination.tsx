@@ -45,6 +45,11 @@ export default function ProductPagination({
                 event.preventDefault()
                 if (currentPage !== i) onPageChange(i)
               }}
+              className={`h-10 w-10 cursor-pointer rounded-full font-mono text-sm font-bold transition-all active:scale-90 ${
+                currentPage === i
+                  ? 'bg-slate-900 text-white shadow-lg dark:bg-white dark:text-slate-900'
+                  : 'border-transparent hover:bg-white hover:shadow-sm'
+              }`}
             >
               {i}
             </PaginationLink>
@@ -56,7 +61,7 @@ export default function ProductPagination({
       ) {
         items.push(
           <PaginationItem key={`ellipsis-${i}`}>
-            <PaginationEllipsis />
+            <PaginationEllipsis className="h-10 w-10" />
           </PaginationItem>,
         )
       }
@@ -66,13 +71,20 @@ export default function ProductPagination({
   }
 
   return (
-    <div className="bg-card mt-6 flex flex-col items-center justify-between gap-4 rounded-lg border p-3 sm:flex-row">
-      <p className="text-muted-foreground text-xs italic">
-        Hiển thị {pagination.itemCount} trên {pagination.totalItems} sản phẩm
-      </p>
+    <div className="flex flex-col items-center justify-between gap-6 rounded-[2.5rem] border border-white/40 bg-white/40 p-6 shadow-xl shadow-slate-200/50 backdrop-blur-3xl dark:border-white/10 dark:bg-white/5 dark:shadow-none sm:flex-row sm:px-10">
+      <div className="flex items-center gap-3">
+        <div className="h-1.5 w-6 rounded-full bg-blue-600" />
+        <p className="font-display text-[11px] font-black tracking-widest text-slate-400 uppercase">
+          Hiển thị{' '}
+          <span className="font-mono text-slate-900 dark:text-white">
+            {pagination.itemCount}
+          </span>{' '}
+          / {pagination.totalItems} sản phẩm
+        </p>
+      </div>
 
       <Pagination className="mx-0 w-auto">
-        <PaginationContent>
+        <PaginationContent className="gap-2">
           <PaginationItem>
             <PaginationPrevious
               href="#"
@@ -80,11 +92,11 @@ export default function ProductPagination({
                 event.preventDefault()
                 if (currentPage > 1) onPageChange(currentPage - 1)
               }}
-              className={
+              className={`h-10 w-10 rounded-full border-slate-200 p-0 transition-all active:scale-90 ${
                 currentPage <= 1
-                  ? 'pointer-events-none opacity-50'
-                  : 'cursor-pointer'
-              }
+                  ? 'pointer-events-none opacity-20'
+                  : 'cursor-pointer hover:bg-white shadow-sm'
+              }`}
             />
           </PaginationItem>
 
@@ -97,11 +109,11 @@ export default function ProductPagination({
                 event.preventDefault()
                 if (hasNextPage) onPageChange(currentPage + 1)
               }}
-              className={
+              className={`h-10 w-10 rounded-full border-slate-200 p-0 transition-all active:scale-90 ${
                 !hasNextPage
-                  ? 'pointer-events-none opacity-50'
-                  : 'cursor-pointer'
-              }
+                  ? 'pointer-events-none opacity-20'
+                  : 'cursor-pointer hover:bg-white shadow-sm'
+              }`}
             />
           </PaginationItem>
         </PaginationContent>

@@ -30,11 +30,11 @@ const getStatusBadge = (status: string) => {
 
   return (
     <div
-      className={`inline-flex items-center gap-2 rounded-lg px-3 py-1.5 ${config.bgColor}`}
+      className={`inline-flex items-center gap-2.5 rounded-full px-4 py-1.5 ${config.bgColor} border border-white/20 shadow-sm transition-all hover:scale-105`}
     >
-      <span className={`h-2 w-2 rounded-full ${config.dotColor}`}></span>
+      <span className={`h-2 w-2 rounded-full animate-pulse ${config.dotColor}`} />
       <span
-        className={`text-xs font-semibold tracking-wide ${config.textColor}`}
+        className={`text-[10px] font-black tracking-widest uppercase ${config.textColor}`}
       >
         {config.label}
       </span>
@@ -49,64 +49,68 @@ const OrderTable = ({
   currentPage,
   onPageChange,
   onRefresh,
-  onViewDetails, // Destructure prop mới
+  onViewDetails,
 }: OrderTableProps) => {
   return (
-    <Card className="border-none shadow-none">
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
-        <CardTitle className="text-xl font-bold">
-          Danh sách đơn hàng chi tiết
-        </CardTitle>
+    <Card className="border-none bg-transparent shadow-none">
+      <CardHeader className="flex flex-col gap-6 p-8 md:flex-row md:items-center md:justify-between">
+        <div className="space-y-1">
+          <CardTitle className="font-display text-2xl font-black tracking-tight text-slate-900 dark:text-white">
+            Danh sách đơn hàng
+          </CardTitle>
+          <p className="font-sans text-sm font-medium text-slate-500">
+            Tổng hợp thông tin chi tiết từ hệ thống cơ sở dữ liệu.
+          </p>
+        </div>
         <Button
           variant="outline"
-          size="sm"
           onClick={onRefresh}
           disabled={loading}
-          className="h-9"
+          className="h-12 rounded-full border-slate-200 bg-white px-6 font-bold shadow-sm transition-all hover:bg-slate-50 active:scale-95"
         >
           <RefreshCw
-            className={`mr-2 h-4 w-4 ${loading ? 'animate-spin' : ''}`}
+            className={`mr-2 h-4 w-4 text-blue-600 ${loading ? 'animate-spin' : ''}`}
           />
           Làm mới
         </Button>
       </CardHeader>
 
-      <CardContent>
-        <div className="overflow-x-auto rounded-lg border border-zinc-200 bg-white dark:border-zinc-700 dark:bg-zinc-800">
-          <table className="w-full text-sm">
+      <CardContent className="p-0">
+        <div className="overflow-x-auto">
+          <table className="w-full">
             <thead>
-              <tr className="border-b border-zinc-200 bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-800/80">
-                <th className="h-14 px-6 text-left text-xs font-bold tracking-wider text-zinc-600 uppercase dark:text-zinc-400">
+              <tr className="border-y border-slate-100 bg-slate-50/50 dark:border-white/5 dark:bg-slate-900/50">
+                <th className="font-display h-16 px-8 text-left text-[11px] font-black tracking-widest text-slate-400 uppercase">
                   Mã đơn hàng
                 </th>
-                <th className="h-14 px-6 text-left text-xs font-bold tracking-wider text-zinc-600 uppercase dark:text-zinc-400">
-                  Khách hàng (ID)
+                <th className="font-display h-16 px-8 text-left text-[11px] font-black tracking-widest text-slate-400 uppercase">
+                  Khách hàng
                 </th>
-                <th className="h-14 px-6 text-left text-xs font-bold tracking-wider text-zinc-600 uppercase dark:text-zinc-400">
-                  Ngày tạo
+                <th className="font-display h-16 px-8 text-left text-[11px] font-black tracking-widest text-slate-400 uppercase">
+                  Thời gian
                 </th>
-                <th className="h-14 px-6 text-left text-xs font-bold tracking-wider text-zinc-600 uppercase dark:text-zinc-400">
+                <th className="font-display h-16 px-8 text-left text-[11px] font-black tracking-widest text-slate-400 uppercase">
                   Trạng thái
                 </th>
-                <th className="h-14 px-6 text-right text-xs font-bold tracking-wider text-zinc-600 uppercase dark:text-zinc-400">
+                <th className="font-display h-16 px-8 text-right text-[11px] font-black tracking-widest text-slate-400 uppercase">
                   Tổng tiền
                 </th>
-                <th className="h-14 px-6 text-center text-xs font-bold tracking-wider text-zinc-600 uppercase dark:text-zinc-400">
+                <th className="font-display h-16 px-8 text-center text-[11px] font-black tracking-widest text-slate-400 uppercase">
                   Thao tác
                 </th>
               </tr>
             </thead>
 
-            <tbody className="relative divide-y divide-zinc-100 dark:divide-zinc-700">
+            <tbody className="divide-y divide-slate-50 dark:divide-white/5">
               {loading ? (
                 <tr>
                   <td colSpan={6} className="p-24 text-center">
-                    <div className="flex flex-col items-center gap-3">
-                      <div className="rounded-full bg-zinc-100 p-3 dark:bg-zinc-700">
-                        <RefreshCw className="h-5 w-5 animate-spin text-zinc-400" />
+                    <div className="flex flex-col items-center gap-4">
+                      <div className="flex h-16 w-16 items-center justify-center rounded-full bg-blue-50 dark:bg-blue-900/20">
+                        <RefreshCw className="h-8 w-8 animate-spin text-blue-600" />
                       </div>
-                      <p className="text-sm font-medium text-zinc-500">
-                        Đang tải dữ liệu...
+                      <p className="font-display text-lg font-bold text-slate-500">
+                        Đang xử lý dữ liệu...
                       </p>
                     </div>
                   </td>
@@ -114,64 +118,60 @@ const OrderTable = ({
               ) : orders.length === 0 ? (
                 <tr>
                   <td colSpan={6} className="p-24 text-center">
-                    <p className="text-sm text-zinc-400 italic">
-                      Không tìm thấy đơn hàng nào.
-                    </p>
+                    <div className="flex flex-col items-center gap-4 opacity-40">
+                      <Eye size={48} className="text-slate-400" />
+                      <p className="font-display text-lg font-bold text-slate-500 italic">
+                        Dữ liệu hiện đang trống.
+                      </p>
+                    </div>
                   </td>
                 </tr>
               ) : (
                 orders.map((order) => (
                   <tr
                     key={order.orderID}
-                    className="transition-colors hover:bg-zinc-50/50 dark:hover:bg-zinc-700/30"
+                    className="group transition-all hover:bg-slate-50/50 dark:hover:bg-white/5"
                   >
-                    <td className="px-6 py-4">
-                      <div className="flex items-center gap-2">
-                        <div className="rounded-md bg-blue-50 px-2.5 py-1 font-mono text-xs font-bold text-blue-700 ring-1 ring-blue-100 dark:bg-blue-900/20 dark:text-blue-300 dark:ring-blue-900/30">
-                          #{order.orderID}
-                        </div>
+                    <td className="px-8 py-6">
+                      <div className="font-mono text-sm font-black tracking-tighter text-blue-600 dark:text-blue-400">
+                        #{order.orderID}
                       </div>
                     </td>
 
-                    <td className="px-6 py-4">
-                      <div className="font-medium text-zinc-700 dark:text-zinc-300">
-                        {order.userID}
+                    <td className="px-8 py-6">
+                      <div className="font-mono text-xs font-bold text-slate-600 dark:text-slate-400">
+                        ID: {order.userID}
                       </div>
                     </td>
 
-                    <td className="px-6 py-4">
-                      <div className="font-medium text-zinc-700 dark:text-zinc-300">
+                    <td className="px-8 py-6">
+                      <div className="font-sans text-sm font-bold text-slate-900 dark:text-white">
                         {format(new Date(order.createdAt), 'dd/MM/yyyy')}
                       </div>
-                      <p className="mt-0.5 text-xs text-zinc-400">
+                      <p className="mt-1 font-mono text-[10px] font-bold text-slate-400">
                         {format(new Date(order.createdAt), 'HH:mm')}
                       </p>
                     </td>
 
-                    <td className="px-6 py-4">
-                      {getStatusBadge(order.status)}
-                    </td>
+                    <td className="px-8 py-6">{getStatusBadge(order.status)}</td>
 
-                    <td className="px-6 py-4 text-right">
-                      <div className="text-lg font-bold text-zinc-900 dark:text-zinc-100">
+                    <td className="px-8 py-6 text-right">
+                      <div className="font-mono text-lg font-black tracking-tighter text-slate-900 dark:text-white">
                         {new Intl.NumberFormat('vi-VN').format(
                           order.totalAmount,
                         )}
-                        <span className="ml-1 text-xs">đ</span>
+                        <span className="ml-1 text-[10px] font-bold uppercase text-slate-400">đ</span>
                       </div>
                     </td>
 
-                    <td className="px-6 py-4 text-center">
+                    <td className="px-8 py-6 text-center">
                       <Button
                         variant="ghost"
-                        size="sm"
-                        className="group relative h-9 w-9 rounded-lg hover:bg-blue-50 hover:text-blue-600 dark:hover:bg-blue-900/20"
+                        size="icon"
+                        className="h-10 w-10 rounded-full transition-all hover:scale-110 hover:bg-blue-50 hover:text-blue-600 dark:hover:bg-blue-900/20"
                         onClick={() => onViewDetails(order)}
                       >
-                        <Eye
-                          size={18}
-                          className="transition-transform group-hover:scale-110"
-                        />
+                        <Eye size={20} strokeWidth={2.5} />
                       </Button>
                     </td>
                   </tr>
@@ -183,30 +183,32 @@ const OrderTable = ({
 
         {/* FOOTER & PAGINATION */}
         {!loading && pagination && pagination.totalPages > 1 && (
-          <div className="mt-8 flex flex-col items-center justify-between gap-6 rounded-lg border border-zinc-200 bg-zinc-50 p-4 md:flex-row dark:border-zinc-700 dark:bg-zinc-800/60">
+          <div className="flex flex-col items-center justify-between gap-8 border-t border-slate-50 bg-slate-50/30 p-10 md:flex-row dark:border-white/5 dark:bg-slate-900/50">
             {/* INFO */}
-            <div className="flex items-center gap-2 text-sm">
-              <span className="text-zinc-600 dark:text-zinc-400">Hiển thị</span>
-              <span className="inline-flex h-8 min-w-8 items-center justify-center rounded-md bg-blue-100 font-bold text-blue-700 dark:bg-blue-900/30 dark:text-blue-400">
-                {orders.length}
-              </span>
-              <span className="text-zinc-600 dark:text-zinc-400">trên</span>
-              <span className="inline-flex h-8 min-w-8 items-center justify-center rounded-md bg-purple-100 font-bold text-purple-700 dark:bg-purple-900/30 dark:text-purple-400">
-                {pagination.total}
-              </span>
-              <span className="text-zinc-600 dark:text-zinc-400">đơn hàng</span>
+            <div className="flex items-center gap-3">
+               <div className="flex -space-x-2">
+                  <div className="h-8 w-8 rounded-full border-2 border-white bg-blue-100 flex items-center justify-center dark:border-slate-900">
+                     <span className="font-mono text-[10px] font-bold text-blue-600">{orders.length}</span>
+                  </div>
+                  <div className="h-8 w-8 rounded-full border-2 border-white bg-slate-100 flex items-center justify-center dark:border-slate-900">
+                     <span className="font-mono text-[10px] font-bold text-slate-500">{pagination.total}</span>
+                  </div>
+               </div>
+               <p className="font-display text-[11px] font-black tracking-widest text-slate-400 uppercase">
+                  Bản ghi hiển thị / Tổng số
+               </p>
             </div>
 
             {/* PAGINATION */}
             <Pagination className="mx-0 w-auto">
-              <PaginationContent>
+              <PaginationContent className="gap-2">
                 <PaginationItem>
                   <PaginationPrevious
-                    className={
+                    className={`h-10 w-10 rounded-full border-slate-200 p-0 transition-all active:scale-90 ${
                       currentPage <= 1
-                        ? 'pointer-events-none opacity-40'
-                        : 'cursor-pointer hover:bg-zinc-200 dark:hover:bg-zinc-600'
-                    }
+                        ? 'pointer-events-none opacity-20'
+                        : 'cursor-pointer hover:bg-white shadow-sm'
+                    }`}
                     onClick={() => onPageChange(currentPage - 1)}
                   />
                 </PaginationItem>
@@ -219,10 +221,10 @@ const OrderTable = ({
                     <PaginationLink
                       isActive={page === currentPage}
                       onClick={() => onPageChange(page)}
-                      className={`cursor-pointer transition-all ${
+                      className={`h-10 w-10 cursor-pointer rounded-full font-mono text-sm font-bold transition-all active:scale-90 ${
                         page === currentPage
-                          ? 'bg-blue-600 text-white hover:bg-blue-600'
-                          : 'hover:bg-zinc-200 dark:hover:bg-zinc-600'
+                          ? 'bg-slate-900 text-white shadow-lg dark:bg-white dark:text-slate-900'
+                          : 'border-transparent hover:bg-white hover:shadow-sm'
                       }`}
                     >
                       {page}
@@ -232,11 +234,11 @@ const OrderTable = ({
 
                 <PaginationItem>
                   <PaginationNext
-                    className={
+                    className={`h-10 w-10 rounded-full border-slate-200 p-0 transition-all active:scale-90 ${
                       currentPage >= pagination.totalPages
-                        ? 'pointer-events-none opacity-40'
-                        : 'cursor-pointer hover:bg-zinc-200 dark:hover:bg-zinc-600'
-                    }
+                        ? 'pointer-events-none opacity-20'
+                        : 'cursor-pointer hover:bg-white shadow-sm'
+                    }`}
                     onClick={() => onPageChange(currentPage + 1)}
                   />
                 </PaginationItem>

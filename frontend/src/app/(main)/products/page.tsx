@@ -47,57 +47,71 @@ export default function ProductsPage() {
 
   return (
     <div className="relative isolate min-h-screen w-full overflow-clip bg-white text-slate-900">
-      {/* BACKGROUND SYSTEM */}
+      {/* IMPROVED BACKGROUND SYSTEM - Matched with Landing Page */}
       <div className="pointer-events-none absolute inset-0 -z-10">
+        {/* Base Layer Gradient */}
         <div className="absolute inset-0 bg-linear-to-b from-slate-50 via-white to-slate-100" />
+
+        {/* Sophisticated Dot Pattern */}
         <div
-          className="absolute inset-0 opacity-[0.05]"
+          className="absolute inset-0 opacity-[0.15]"
           style={{
-            backgroundImage: `
-              linear-gradient(to right, rgba(148, 163, 184, 0.4) 1px, transparent 1px),
-              linear-gradient(to bottom, rgba(148, 163, 184, 0.4) 1px, transparent 1px)
-            `,
-            backgroundSize: '40px 40px',
+            backgroundImage: `radial-gradient(circle, #64748b 1px, transparent 1px)`,
+            backgroundSize: '24px 24px',
           }}
         />
+
+        {/* Spotlight behind Content */}
+        <div className="absolute top-0 left-1/2 h-[800px] w-full -translate-x-1/2 bg-[radial-gradient(circle_at_50%_40%,rgba(147,197,253,0.15),transparent_70%)]" />
+
+        {/* Vivid Mesh Gradient Blobs */}
         <div className="absolute inset-0 overflow-hidden">
-          <div className="absolute -top-[10%] -left-[5%] h-[500px] w-[500px] rounded-full bg-slate-200/20 blur-[120px]" />
-          <div className="absolute top-[20%] -right-[10%] h-[600px] w-[600px] rounded-full bg-blue-50/10 blur-[140px]" />
+          <div className="absolute -top-[5%] left-[15%] h-[600px] w-[600px] rounded-full bg-blue-300/20 blur-[120px] animate-pulse" />
+          <div className="absolute top-[10%] right-[10%] h-[500px] w-[500px] rounded-full bg-cyan-300/20 blur-[100px]" />
+          <div className="absolute top-[40%] left-[5%] h-[400px] w-[400px] rounded-full bg-sky-200/20 blur-[90px]" />
         </div>
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,white_90%)] opacity-40" />
+
+        {/* Subtle Radial Vignette */}
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,white_100%)] opacity-20" />
       </div>
 
-      <div className="relative z-10 container mx-auto px-4 py-8 md:py-12">
-        <div className="mb-10">
+      <div className="relative z-10 container mx-auto px-4 py-8 md:py-16">
+        {/* HEADER SECTION */}
+        <div className="mb-12">
           {params.keyword ? (
-            <div className="space-y-1">
-              <h1 className="text-3xl font-bold tracking-tight text-slate-900 lg:text-4xl">
+            <div className="space-y-4">
+              <div className="inline-flex items-center gap-2 rounded-full border border-blue-100 bg-blue-50/50 px-4 py-1.5 text-[11px] font-semibold tracking-wide text-blue-600 backdrop-blur-sm">
                 Kết quả tìm kiếm
+              </div>
+              <h1 className="font-display text-4xl font-bold tracking-tight text-slate-900 lg:text-5xl">
+                &quot;{params.keyword}&quot;
               </h1>
-              <p className="text-slate-500">
-                {message}{' '}
-                <span className="text-blue-600 font-semibold">
-                  &quot;{params.keyword}&quot;
-                </span>
-                <span className="ml-2 text-sm text-slate-400">
-                  ({products.length} sản phẩm)
-                </span>
+              <p className="text-lg text-slate-500">
+                {message} <span className="font-semibold text-slate-900">({pagination?.totalItems ?? 0} sản phẩm)</span>
               </p>
             </div>
           ) : (
-            <div className="space-y-1">
-              <h1 className="text-3xl font-bold tracking-tight text-slate-900 lg:text-4xl">
-                Danh sách sản phẩm
+            <div className="space-y-4 text-center md:text-left">
+              <div className="inline-flex items-center gap-2 rounded-full border border-blue-100 bg-blue-50/50 px-4 py-1.5 text-[11px] font-semibold tracking-wide text-blue-600 backdrop-blur-sm">
+                Cửa hàng trực tuyến
+              </div>
+              <h1 className="font-display text-4xl font-bold tracking-tight text-slate-900 lg:text-5xl">
+                Khám phá{' '}
+                <span className="bg-linear-to-r from-blue-600 to-cyan-500 bg-clip-text text-transparent">
+                  Sản phẩm
+                </span>
               </h1>
-              <p className="text-slate-500 max-w-2xl">
-                Khám phá những thiết bị công nghệ mới nhất được tuyển chọn kỹ lưỡng.
+              <p className="mx-auto max-w-2xl text-lg text-slate-500 md:mx-0">
+                Tìm kiếm những thiết bị công nghệ và phụ kiện cao cấp được tuyển chọn kỹ lưỡng để nâng tầm cuộc sống của bạn.
               </p>
             </div>
           )}
         </div>
 
-        <div className="flex flex-col gap-8 lg:flex-row xl:gap-10">
-          <div className="lg:w-64 shrink-0">
+        {/* MAIN CONTENT AREA */}
+        <div className="flex flex-col gap-8 lg:flex-row xl:gap-12">
+          {/* SIDEBAR FILTERS */}
+          <div className="w-full lg:w-72 shrink-0">
             <FilterSidebar
               key={searchParams.toString()}
               initialCategory={params.category ?? 'all'}
@@ -111,12 +125,18 @@ export default function ProductsPage() {
             />
           </div>
 
-          <div className="flex-1 space-y-10">
+          {/* PRODUCT GRID & PAGINATION */}
+          <div className="flex-1 space-y-12">
             <ProductList products={products} loading={loading} />
-            <ProductPagination
-              pagination={pagination}
-              onPageChange={handlePageChange}
-            />
+            
+            {pagination && pagination.totalPages > 1 && (
+              <div className="flex justify-center pt-8">
+                <ProductPagination
+                  pagination={pagination}
+                  onPageChange={handlePageChange}
+                />
+              </div>
+            )}
           </div>
         </div>
       </div>

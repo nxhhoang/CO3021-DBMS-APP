@@ -36,36 +36,52 @@ const OrderSummary = ({ selectedItems, totalPrice }: OrderSummaryProps) => {
 
   return (
     <div className="h-fit lg:sticky lg:top-24">
-      <Card className="overflow-hidden border-2 shadow-md transition-all hover:shadow-lg">
-        <div className="bg-primary/5 border-b px-6 py-4">
-          <h3 className="flex items-center gap-2 text-lg font-bold">
-            <ShoppingBag className="h-5 w-5" /> Hóa đơn
-          </h3>
+      <Card className="rounded-[2.5rem] border-white/40 bg-white/40 shadow-xl shadow-slate-200/50 backdrop-blur-3xl transition-all duration-500 hover:shadow-2xl hover:shadow-slate-200/60 dark:border-white/10 dark:bg-white/5 dark:shadow-none">
+        <div className="border-b border-white/40 px-8 py-6 dark:border-white/10">
+          <div className="flex items-center gap-3">
+             <div className="h-2 w-6 rounded-full bg-blue-600" />
+             <h3 className="font-display text-2xl font-black tracking-tight text-slate-900 dark:text-white uppercase">
+               Tóm tắt
+             </h3>
+          </div>
         </div>
 
-        <CardContent className="p-6">
+        <CardContent className="p-8">
           {hasItems ? (
-            <div className="animate-in fade-in space-y-4 duration-500">
-              <div>
-                <p className="text-muted-foreground mb-2 text-sm font-semibold">
-                  Sản phẩm đã chọn ({selectedItems.length} mẫu, {selectedUnits}{' '}
-                  sản phẩm)
-                </p>
-                <div className="custom-scrollbar max-h-75 overflow-y-auto pr-2">
+            <div className="animate-in fade-in slide-in-from-bottom-4 space-y-8 duration-700">
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                   <p className="font-display text-[11px] font-black tracking-widest text-slate-400 uppercase">
+                     Chi tiết sản phẩm
+                   </p>
+                   <span className="rounded-full bg-slate-900 px-3 py-1 font-mono text-[9px] font-bold text-white dark:bg-white dark:text-slate-900">
+                     {selectedItems.length} mẫu
+                   </span>
+                </div>
+                <div className="custom-scrollbar max-h-[300px] overflow-y-auto pr-3">
                   <OrderItemsList items={selectedItems} />
                 </div>
               </div>
 
-              <div className="space-y-2 border-t pt-4">
-                <div className="text-muted-foreground flex items-center justify-between italic">
-                  <span className="text-sm">Tạm tính</span>
-                  <span className="text-sm">{formatVND(totalPrice)}</span>
+              <div className="space-y-4 border-t border-white/40 pt-8 dark:border-white/10">
+                <div className="flex items-center justify-between">
+                  <span className="font-display text-[11px] font-black tracking-widest text-slate-400 uppercase">Tạm tính</span>
+                  <span className="font-mono text-sm font-black text-slate-900 dark:text-white">
+                    {formatVND(totalPrice)}
+                  </span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-lg font-bold">Tổng cộng</span>
-                  <p className="text-primary text-2xl font-black tracking-tight">
-                    {formatVND(totalPrice)}
-                  </p>
+                  <span className="font-display text-xl font-black tracking-tight text-slate-900 dark:text-white">
+                    Tổng cộng
+                  </span>
+                  <div className="text-right">
+                    <p className="font-mono text-3xl font-black tracking-tighter text-blue-600 dark:text-blue-400">
+                      {formatVND(totalPrice)}
+                    </p>
+                    <p className="mt-1 font-display text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                      VAT INCLUDED
+                    </p>
+                  </div>
                 </div>
               </div>
 
@@ -75,23 +91,31 @@ const OrderSummary = ({ selectedItems, totalPrice }: OrderSummaryProps) => {
                 onClick={() =>
                   setDialogState((prev) => ({ ...prev, confirm: true }))
                 }
-                className="shadow-primary/20 mt-4 w-full text-base font-bold shadow-lg transition-all hover:scale-[1.02] active:scale-[0.98]"
+                className="group relative h-16 w-full overflow-hidden rounded-full bg-slate-900 text-sm font-black tracking-[0.2em] text-white uppercase transition-all hover:scale-[1.02] hover:shadow-2xl active:scale-[0.98] dark:bg-white dark:text-slate-900"
               >
-                {hasItems
-                  ? 'Tiến hành thanh toán'
-                  : 'Chọn sản phẩm để thanh toán'}
+                <span className="relative z-10">
+                  {hasItems
+                    ? 'Thanh toán ngay'
+                    : 'Chọn sản phẩm'}
+                </span>
+                <div className="absolute inset-0 -translate-x-full bg-linear-to-r from-blue-600 to-cyan-500 transition-transform duration-500 group-hover:translate-x-0" />
               </Button>
             </div>
           ) : (
-            <div className="animate-in zoom-in-95 flex flex-col items-center gap-3 py-10 text-center duration-300">
-              <div className="bg-muted rounded-full p-4">
-                <ShoppingBag className="text-muted-foreground h-8 w-8" />
+            <div className="animate-in zoom-in-95 flex flex-col items-center gap-6 py-16 text-center duration-500">
+              <div className="bg-slate-100/50 flex h-24 w-24 items-center justify-center rounded-full dark:bg-slate-800/50">
+                <ShoppingBag className="h-10 w-10 text-slate-400" />
               </div>
-              <p className="text-muted-foreground font-medium">
-                {dialogState.success
-                  ? 'Đang chuyển hướng...'
-                  : 'Chưa có sản phẩm nào'}
-              </p>
+              <div className="space-y-2">
+                <p className="font-display text-xl font-black text-slate-900 dark:text-white">
+                  {dialogState.success
+                    ? 'Đang chuẩn bị...'
+                    : 'Hóa đơn trống'}
+                </p>
+                <p className="text-muted-foreground mx-auto max-w-[200px] text-xs font-medium leading-relaxed">
+                  Vui lòng chọn sản phẩm để xem tính toán chi tiết.
+                </p>
+              </div>
             </div>
           )}
         </CardContent>

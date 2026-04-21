@@ -20,54 +20,54 @@ export default function SummaryCard({
   statusCounts,
 }: SummaryCardProps) {
   return (
-    <div className="mb-6 grid grid-cols-1 gap-3 xl:grid-cols-[280px_minmax(0,1fr)]">
-      <Card className="h-full w-full border-l-8 border-l-blue-600 shadow-md">
-        <CardHeader className="pb-2">
-          <CardTitle className="text-muted-foreground text-sm font-semibold tracking-wide uppercase">
-            Tổng đơn hàng
-          </CardTitle>
-          <p className="text-muted-foreground text-[11px]">
-            Theo dữ liệu admin hiện tại
-          </p>
-        </CardHeader>
-        <CardContent className="pb-4">
-          <div className="text-5xl leading-none font-extrabold text-blue-700">
-            {totalOrders.toLocaleString()}{' '}
-            <span className="text-lg font-medium">đơn</span>
+    <div className="mb-10 grid grid-cols-1 gap-6 xl:grid-cols-[320px_minmax(0,1fr)]">
+      <Card className="group relative overflow-hidden rounded-[2.5rem] border-none bg-slate-900 p-8 text-white shadow-2xl">
+        <div className="relative z-10 space-y-6">
+          <div className="flex items-center gap-2">
+            <div className="h-1.5 w-6 rounded-full bg-blue-400" />
+            <p className="font-display text-[11px] font-black tracking-widest text-slate-400 uppercase">
+              TỔNG ĐƠN HÀNG
+            </p>
           </div>
-        </CardContent>
+          <div>
+            <div className="font-mono text-6xl font-black tracking-tighter text-blue-400">
+              {totalOrders.toLocaleString()}
+            </div>
+            <p className="mt-2 font-display text-lg font-bold text-slate-300">
+              Đơn hàng hệ thống
+            </p>
+          </div>
+          <p className="text-sm leading-relaxed text-slate-500">
+            Dữ liệu tổng hợp từ toàn bộ các kênh bán hàng hiện có.
+          </p>
+        </div>
+        {/* Decorative element */}
+        <div className="absolute -right-10 -bottom-10 h-40 w-40 rounded-full bg-blue-500/10 blur-[50px] transition-all group-hover:bg-blue-500/20" />
       </Card>
 
-      <Card className="h-full w-full shadow-sm">
-        <CardHeader>
-          <CardTitle className="text-muted-foreground text-base font-semibold">
-            Theo trạng thái đơn hàng
-          </CardTitle>
-          <p className="text-muted-foreground text-[11px]">
-            Tổng quan số lượng theo từng trạng thái
+      <Card className="rounded-[2.5rem] border-white/40 bg-white/40 p-8 shadow-xl shadow-slate-200/50 backdrop-blur-3xl dark:border-white/10 dark:bg-white/5 dark:shadow-none">
+        <div className="mb-8 flex items-center gap-2">
+          <div className="h-1.5 w-6 rounded-full bg-cyan-500" />
+          <p className="font-display text-[11px] font-black tracking-widest text-slate-400 uppercase">
+            PHÂN TÍCH TRẠNG THÁI
           </p>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-5">
-            {statusCounts.map((item) => (
-              <div
-                key={item.status}
-                className={`bg-muted/20 rounded-md border-l-6 px-4 py-3 ${item.accentClass}`}
-              >
-                <p className="text-muted-foreground text-sm font-semibold">
-                  {item.label}
-                </p>
-                <p className="text-muted-foreground mt-1 text-[11px]">
-                  Đơn hàng có trạng thái này
-                </p>
-                <div className={`mt-2 text-2xl font-bold ${item.textColor}`}>
-                  {item.count.toLocaleString()}{' '}
-                  <span className="text-sm font-normal">đơn</span>
-                </div>
+        </div>
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-5">
+          {statusCounts.map((item) => (
+            <div
+              key={item.status}
+              className="group rounded-3xl border border-slate-100 bg-white p-5 transition-all hover:scale-105 hover:shadow-lg dark:border-white/5 dark:bg-slate-800/50"
+            >
+              <p className="font-display text-[10px] font-black tracking-widest text-slate-400 uppercase">
+                {item.label}
+              </p>
+              <div className={`mt-4 font-mono text-3xl font-black tracking-tighter ${item.textColor}`}>
+                {item.count.toLocaleString()}
               </div>
-            ))}
-          </div>
-        </CardContent>
+              <div className="mt-2 h-1 w-8 rounded-full bg-slate-100 dark:bg-slate-700 transition-all group-hover:w-full group-hover:bg-blue-500/30" />
+            </div>
+          ))}
+        </div>
       </Card>
     </div>
   )

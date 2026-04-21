@@ -12,13 +12,18 @@ export const OrderItemsList = ({ items }: Props) => {
   }
 
   return (
-    <div className="space-y-1">
+    <div className="space-y-3">
       {items.map((item) => (
-        <div key={item.sku} className="flex justify-between text-sm">
-          <span className="max-w-[70%] truncate">
-            {item.productName} (x{item.quantity})
-          </span>
-          <span className="font-medium">
+        <div key={item.sku} className="group flex items-center justify-between gap-4 py-1">
+          <div className="flex max-w-[70%] items-center gap-2 overflow-hidden">
+             <div className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-slate-100 text-[10px] font-black text-slate-500 dark:bg-slate-800">
+               {item.quantity}
+             </div>
+             <span className="truncate font-display text-sm font-bold text-slate-700 dark:text-slate-300 transition-colors group-hover:text-blue-600">
+               {item.productName}
+             </span>
+          </div>
+          <span className="shrink-0 font-mono text-[13px] font-black tracking-tighter text-slate-900 dark:text-white">
             {formatVND((item.skuPrice || item.basePrice) * item.quantity)}
           </span>
         </div>

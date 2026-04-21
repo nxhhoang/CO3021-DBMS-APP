@@ -1,5 +1,6 @@
 const CATEGORIES = [
   {
+    _id: 'cat-laptop',
     name: 'Laptop',
     slug: 'laptop',
     description: 'Máy tính xách tay',
@@ -43,8 +44,29 @@ const CATEGORIES = [
         options: ['Windows 11', 'macOS', 'Linux'],
       },
     ],
+    variantAttributes: [
+      {
+        key: 'color',
+        label: 'Màu sắc',
+        dataType: 'string',
+        options: ['Silver', 'Space Gray', 'Black'],
+      },
+      {
+        key: 'ram',
+        label: 'RAM',
+        dataType: 'string',
+        options: ['8GB', '16GB', '32GB'],
+      },
+      {
+        key: 'storage',
+        label: 'Ổ cứng',
+        dataType: 'string',
+        options: ['256GB', '512GB', '1TB'],
+      },
+    ],
   },
   {
+    _id: 'cat-dien-thoai',
     name: 'Điện thoại',
     slug: 'dien-thoai',
     description: 'Điện thoại thông minh',
@@ -69,8 +91,23 @@ const CATEGORIES = [
         options: ['iOS', 'Android'],
       },
     ],
+    variantAttributes: [
+      {
+        key: 'color',
+        label: 'Màu sắc',
+        dataType: 'string',
+        options: ['Black', 'White', 'Blue', 'Gold'],
+      },
+      {
+        key: 'storage',
+        label: 'Dung lượng',
+        dataType: 'string',
+        options: ['128GB', '256GB', '512GB'],
+      },
+    ],
   },
   {
+    _id: 'cat-dong-ho',
     name: 'Đồng hồ',
     slug: 'dong-ho',
     description: 'Đồng hồ thông minh và thời trang',
@@ -103,8 +140,26 @@ const CATEGORIES = [
         dataType: 'number',
       },
     ],
+    variantAttributes: [
+      {
+        key: 'color',
+        label: 'Màu sắc',
+        dataType: 'string',
+      },
+      {
+        key: 'size',
+        label: 'Kích thước mặt',
+        dataType: 'number',
+      },
+      {
+        key: 'strapMaterial',
+        label: 'Chất liệu dây',
+        dataType: 'string',
+      },
+    ],
   },
   {
+    _id: 'cat-giay',
     name: 'Giày',
     slug: 'giay',
     description: 'Giày dép thể thao và thời trang',
@@ -136,8 +191,28 @@ const CATEGORIES = [
         dataType: 'string',
       },
     ],
+    variantAttributes: [
+      {
+        key: 'color',
+        label: 'Màu sắc',
+        dataType: 'string',
+      },
+      {
+        key: 'size',
+        label: 'Kích cỡ',
+        dataType: 'number',
+        options: [38, 39, 40, 41],
+      },
+      {
+        key: 'width',
+        label: 'Độ rộng',
+        dataType: 'string',
+        options: ['normal', 'wide'],
+      },
+    ],
   },
   {
+    _id: 'cat-camera',
     name: 'Camera',
     slug: 'camera',
     description: 'Máy ảnh và thiết bị quay phim',
@@ -166,6 +241,24 @@ const CATEGORIES = [
       {
         key: 'videoQuality',
         label: 'Chất lượng video',
+        dataType: 'string',
+      },
+    ],
+    variantAttributes: [
+      {
+        key: 'color',
+        label: 'Màu sắc',
+        dataType: 'string',
+      },
+      {
+        key: 'kit',
+        label: 'Bộ kit',
+        dataType: 'string',
+        options: ['body', 'kit'],
+      },
+      {
+        key: 'edition',
+        label: 'Phiên bản',
         dataType: 'string',
       },
     ],

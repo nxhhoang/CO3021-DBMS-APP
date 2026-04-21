@@ -10,7 +10,7 @@ export const connectMongo = async (): Promise<void> => {
     
     // Construct URI from parts - simplifying to local/no-auth by default
     const mongoDatabase = 'hybrid_db' // Default database name
-    const uri = `mongodb://${mongoHost}:${mongoPort}/${mongoDatabase}`
+    const uri = `mongodb://${mongoHost}:${mongoPort}`
 
     clientInstance = new MongoClient(uri, {
       serverSelectionTimeoutMS: 5000,

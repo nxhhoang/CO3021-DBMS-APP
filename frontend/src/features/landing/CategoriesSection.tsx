@@ -59,7 +59,7 @@ export default function CategoriesSection() {
           <span className="inline-block rounded-full border border-blue-100 bg-blue-50/50 px-4 py-1.5 text-[11px] font-semibold tracking-wide text-blue-600 backdrop-blur-sm">
             Khám phá danh mục
           </span>
-          <h2 className="mt-5 font-display text-4xl font-bold tracking-tight text-slate-900 sm:text-5xl">
+          <h2 className="font-display mt-5 text-4xl font-bold tracking-tight text-slate-900 sm:text-5xl">
             Sản phẩm{' '}
             <span className="bg-linear-to-r from-blue-600 to-cyan-500 bg-clip-text text-transparent">
               đáng mong đợi
@@ -113,7 +113,7 @@ export default function CategoriesSection() {
               <div className="relative z-10 flex h-full flex-col justify-between p-8 sm:p-10">
                 <div>
                   <div className="mb-4 flex items-center gap-3">
-                    <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white shadow-sm ring-1 ring-slate-200/50 transition-transform group-hover:rotate-3 group-hover:scale-110">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white shadow-sm ring-1 ring-slate-200/50 transition-transform group-hover:scale-110 group-hover:rotate-3">
                       <Icon className="text-blue-600" size={24} />
                     </div>
                     <span className="text-[10px] font-bold tracking-wide text-slate-400 uppercase">
@@ -142,9 +142,7 @@ export default function CategoriesSection() {
                 </div>
 
                 <div className="mt-10">
-                  <Button
-                    className="group/btn relative w-full justify-between rounded-2xl bg-slate-900 py-7 text-xs font-bold tracking-wide text-white uppercase shadow-lg transition-all hover:bg-blue-600 active:scale-[0.98]"
-                  >
+                  <Button className="group/btn relative w-full justify-between rounded-2xl bg-slate-900 py-7 text-xs font-bold tracking-wide text-white uppercase shadow-lg transition-all hover:bg-blue-600 active:scale-[0.98]">
                     Khám phá ngay
                     <ChevronRight
                       size={18}

@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useEffect, useRef, useState } from 'react'
-import { ChevronLeft, ChevronRight, LayoutGrid } from 'lucide-react'
+import { ChevronLeft, ChevronRight, LayoutGrid, Laptop, Smartphone, Watch, Footprints, Camera } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
@@ -227,21 +227,26 @@ export default function HeroSection() {
       </div>
 
       {/* QUICK CATEGORY NAV */}
-      <div className="mt-12 flex flex-wrap justify-center gap-4 sm:mt-16 lg:gap-8">
+      <div className="mt-20 grid grid-cols-2 gap-8 md:grid-cols-5">
         {[
-          { label: 'Laptops', icon: '💻', href: '/products?category=laptop' },
-          { label: 'Điện thoại', icon: '📱', href: '/products?category=dien-thoai' },
-          { label: 'Đồng hồ', icon: '⌚', href: '/products?category=dong-ho' },
-          { label: 'Giày dép', icon: '👟', href: '/products?category=giay' },
-          { label: 'Máy ảnh', icon: '📷', href: '/products?category=camera' },
-        ].map((item) => (
+          { label: 'Laptops', icon: Laptop, href: '/products?category=laptop', description: 'Đỉnh cao công nghệ' },
+          { label: 'Điện thoại', icon: Smartphone, href: '/products?category=dien-thoai', description: 'Kết nối tương lai' },
+          { label: 'Đồng hồ', icon: Watch, href: '/products?category=dong-ho', description: 'Sang trọng & Đẳng cấp' },
+          { label: 'Giày dép', icon: Footprints, href: '/products?category=giay', description: 'Năng động mỗi ngày' },
+          { label: 'Máy ảnh', icon: Camera, href: '/products?category=camera', description: 'Lưu giữ khoảnh khắc' },
+        ].map((item, index) => (
           <Link
-            key={item.label}
+            key={index}
             href={item.href}
-            className="flex items-center gap-2 rounded-full border border-slate-100 bg-white/60 px-5 py-2.5 text-sm font-semibold text-slate-700 shadow-sm transition-all hover:border-blue-200 hover:bg-white hover:text-blue-600 hover:shadow-md active:scale-95"
+            className="flex flex-col items-center text-center group"
           >
-            <span>{item.icon}</span>
-            {item.label}
+            <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-white border border-slate-100 text-slate-600 shadow-sm transition-all duration-200 group-hover:bg-blue-600 group-hover:text-white group-hover:shadow-lg group-hover:shadow-blue-500/25 group-hover:scale-105">
+              <item.icon size={26} strokeWidth={1.5} />
+            </div>
+            <h3 className="text-xs font-bold text-slate-800 transition-colors group-hover:text-blue-600">{item.label}</h3>
+            <p className="mt-1.5 text-[10px] font-medium text-slate-500 opacity-0 transition-all duration-200 group-hover:opacity-100">
+              {item.description}
+            </p>
           </Link>
         ))}
       </div>

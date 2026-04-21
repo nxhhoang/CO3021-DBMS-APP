@@ -4,12 +4,10 @@ import React from 'react'
 import { Search } from 'lucide-react'
 import HeroSection from '@/features/landing/HeroSection'
 import CategoriesSection from '@/features/landing/CategoriesSection'
-import TrustSignals from '@/features/landing/TrustSignals'
-import HotDeals from '@/features/landing/HotDeals'
 import PromoBanners from '@/features/landing/PromoBanners'
 import FeaturedProducts from '@/features/landing/FeaturedProducts'
 import BrandLogos from '@/features/landing/BrandLogos'
-import Newsletter from '@/features/landing/Newsletter'
+import HotDeals from '@/features/landing/HotDeals'
 
 export default function LandingPage() {
 
@@ -46,9 +44,6 @@ export default function LandingPage() {
 
       <div className="relative z-10">
         <HeroSection />
-        
-        {/* TRUST SIGNALS */}
-        <TrustSignals />
 
         {/* HOT DEALS */}
         <HotDeals />
@@ -64,9 +59,6 @@ export default function LandingPage() {
 
         {/* BRAND LOGOS */}
         <BrandLogos />
-
-        {/* NEWSLETTER */}
-        <Newsletter />
       </div>
     </div>
   )

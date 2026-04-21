@@ -275,7 +275,7 @@ export const ProductDetailModal = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="max-h-[95vh] overflow-hidden border-none bg-white p-0 shadow-2xl transition-all duration-500 sm:max-w-4xl sm:rounded-[2.5rem] lg:max-w-5xl xl:max-w-6xl">
+      <DialogContent className="max-h-[95vh] overflow-hidden border-none bg-white p-0 shadow-2xl transition-all duration-500 sm:max-w-5xl sm:rounded-[2.5rem] lg:max-w-6xl xl:max-w-[1280px]">
         <div className="relative flex h-full flex-col overflow-y-auto lg:flex-row lg:overflow-hidden">
           {/* Close Button Mobile */}
           <button

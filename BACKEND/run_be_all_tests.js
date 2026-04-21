@@ -85,7 +85,7 @@ async function runAllTests() {
   // 5. Login (Admin - Using seeded account from .env)
   res = await apiClient.post('/auth/login', {
     email: 'admin@ecommerce.com',
-    password: 'admin_password'
+    password: 'password'
   })
   logResult('Admin Login', res, 200)
   adminToken = res.data.data?.accessToken

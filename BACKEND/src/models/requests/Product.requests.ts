@@ -18,7 +18,7 @@ export interface ProductReqParams extends ParamsDictionary {
 export interface CreateProductReqBody {
   name: string
   slug?: string
-  categoryID: string
+  categoryID?: string
   basePrice: number
   description?: string
   images?: string[]

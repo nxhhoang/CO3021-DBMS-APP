@@ -84,8 +84,8 @@ async function runAllTests() {
 
   // 5. Login (Admin - Using seeded account from .env)
   res = await apiClient.post('/auth/login', {
-    email: 'example@example.com',
-    password: 'admin_password'
+    email: 'admin@ecommerce.com',
+    password: 'password'
   })
   logResult('Admin Login', res, 200)
   adminToken = res.data.data?.accessToken
@@ -135,7 +135,7 @@ async function runAllTests() {
     slug: categorySlug,
     description: 'Unit Testing Category',
     isActive: true,
-    dynamicAttributes: [{ key: 'color', label: 'Color', dataType: 'string', isRequired: true, options: ['Red', 'Blue'] }]
+    dynamicAttributes: [{ key: 'color', label: 'Color', dataType: 'string', options: ['Red', 'Blue'] }]
   }, { headers: { Authorization: `Bearer ${adminToken}` } })
   logResult('Admin Create Category', res, 201)
   categoryId = res.data.data?._id   // service returns { _id: insertedId }

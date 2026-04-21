@@ -18,11 +18,11 @@ async function seedAdmin() {
   // Connect to PostgreSQL
   await connectPostgres()
 
-  // Check if admin already exists
+  // Delete admin if already exists to ensure password matches latest secret
   const existing = await query('SELECT userID FROM USERS WHERE email = $1', [email])
   if (existing.rows.length > 0) {
-    console.log(`Admin account already exists (userID=${existing.rows[0].userID}). Skipping.`)
-    process.exit(0)
+    console.log(`Admin account already exists (userID=${existing.rows[0].userid}). Re-seeding to sync password...`)
+    await query('DELETE FROM USERS WHERE email = $1', [email])
   }
 
   // Hash the password the same way the API does

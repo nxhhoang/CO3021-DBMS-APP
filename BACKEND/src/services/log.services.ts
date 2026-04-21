@@ -1,5 +1,5 @@
 import UserActivityLog from '~/models/schemas/UserActivityLog.schema'
-import { CreateLogReqBody } from '~/models/requests/Log.requests'
+import { CreateLogReqBody, GetLogsQuery, GetLogsResponse } from '~/models/requests/Log.requests'
 import { getMongoDB } from '~/utils/mongodb'
 
 class LogService {
@@ -21,8 +21,31 @@ class LogService {
     })
   }
 
-  async getLogs(): Promise<UserActivityLog[]> {
-    return this.collection.find({}).toArray()
+  async getLogs(query: GetLogsQuery): Promise<GetLogsResponse> {
+    const { page = '1', limit = '10', actionType, userID, targetID } = query
+    const pageNum = parseInt(page)
+    const limitNum = parseInt(limit)
+    const skip = (pageNum - 1) * limitNum
+
+    const filter: Record<string, string> = {}
+    if (actionType) filter.actionType = actionType
+    if (userID) filter.userID = userID
+    if (targetID) filter.targetID = targetID
+
+    const [logs, total] = await Promise.all([
+      this.collection.find(filter).sort({ timestamp: -1 }).skip(skip).limit(limitNum).toArray(),
+      this.collection.countDocuments(filter)
+    ])
+
+    return {
+      logs,
+      pagination: {
+        page: pageNum,
+        limit: limitNum,
+        total,
+        totalPages: Math.ceil(total / limitNum)
+      }
+    }
   }
 }
 

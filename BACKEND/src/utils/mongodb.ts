@@ -6,15 +6,11 @@ let clientInstance: MongoClient | null = null
 
 export const connectMongo = async (): Promise<void> => {
   try {
-    const { mongoHost, mongoPort, mongoUser, mongoPassword, mongoDatabase } = envConfig
+    const { mongoHost, mongoPort } = envConfig
     
-    // Construct URI from parts
-    let uri = `mongodb://${mongoHost}:${mongoPort}/${mongoDatabase}`
-    
-    // Only include authentication if provided
-    if (mongoUser && mongoPassword) {
-      uri = `mongodb://${mongoUser}:${mongoPassword}@${mongoHost}:${mongoPort}/${mongoDatabase}?authSource=${mongoDatabase}`
-    }
+    // Construct URI from parts - simplifying to local/no-auth by default
+    const mongoDatabase = 'hybrid_db' // Default database name
+    const uri = `mongodb://${mongoHost}:${mongoPort}`
 
     clientInstance = new MongoClient(uri, {
       serverSelectionTimeoutMS: 5000,

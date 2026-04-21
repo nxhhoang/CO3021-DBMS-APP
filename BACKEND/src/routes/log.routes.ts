@@ -1,5 +1,5 @@
 import { Router } from 'express'
-import { createLogController } from '~/controllers/log.controllers'
+import { createLogController, getLogsController } from '~/controllers/log.controllers'
 import { createLogValidator } from '~/middlewares/log.middlewares'
 
 const logRouter = Router()
@@ -11,5 +11,12 @@ const logRouter = Router()
  * Body: CreateLogReqBody
  */
 logRouter.post('/', createLogValidator, createLogController)
+
+/**
+ * Description: Get all user activity logs
+ * Path: /
+ * Method: GET
+ */
+logRouter.get('/', getLogsController)
 
 export default logRouter

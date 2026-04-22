@@ -41,7 +41,7 @@ const PriceRangeSlider = ({
           <input
             type="number"
             value={priceRange[0]}
-            className="w-full rounded-xl border border-slate-100 bg-slate-50/50 py-2 pl-7 pr-3 text-xs font-bold text-slate-700 transition-all focus:border-blue-200 focus:bg-white focus:ring-2 focus:ring-blue-500/20"
+            className="input-premium w-full py-2 pl-7 pr-3 text-xs font-bold"
             min={min}
             max={priceRange[1]}
             onChange={(e) => handleMinInput(e.target.value)}
@@ -55,7 +55,7 @@ const PriceRangeSlider = ({
           <input
             type="number"
             value={priceRange[1]}
-            className="w-full rounded-xl border border-slate-100 bg-slate-50/50 py-2 pl-7 pr-3 text-xs font-bold text-slate-700 transition-all focus:border-blue-200 focus:bg-white focus:ring-2 focus:ring-blue-500/20"
+            className="input-premium w-full py-2 pl-7 pr-3 text-xs font-bold"
             min={priceRange[0]}
             max={max}
             onChange={(e) => handleMaxInput(e.target.value)}

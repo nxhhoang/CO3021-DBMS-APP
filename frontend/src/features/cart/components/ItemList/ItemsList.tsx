@@ -27,31 +27,31 @@ const ItemsList = ({
   const hasSelection = selectedSkus.length > 0
 
   return (
-    <div className="space-y-6">
-      <div className="sticky top-20 z-10 rounded-full border border-white/40 bg-white/40 px-8 py-5 shadow-xl shadow-slate-200/50 backdrop-blur-3xl dark:border-white/10 dark:bg-slate-900/40">
-        <div className="flex flex-wrap items-center justify-between gap-4">
-          <label className="flex cursor-pointer items-center gap-4 font-display text-base font-black tracking-tight text-slate-900 dark:text-white">
+    <div className="space-y-4">
+      <div className="glass-container-full sticky top-20 z-10 !px-5 !py-3">
+        <div className="flex items-center justify-between gap-4">
+          <label className="flex cursor-pointer items-center gap-3">
             <Checkbox
               checked={allSelected}
               onCheckedChange={(checked) => toggleAllSelection(!!checked)}
-              aria-label="Chọn tất cả sản phẩm"
-              className="h-6 w-6 rounded-lg border-slate-200 transition-all data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600"
+              className="checkbox-premium"
             />
-            <span className="uppercase tracking-widest text-[11px] text-slate-400">
-              CHỌN TẤT CẢ ({selectedSkus.length}/{items.length})
+            <span className="font-display text-[11px] font-bold tracking-[0.1em] text-slate-500 uppercase">
+              TẤT CẢ ({selectedSkus.length}/{items.length})
             </span>
           </label>
 
-          <Button
-            variant="ghost"
-            size="sm"
-            disabled={!hasSelection}
-            onClick={() => removeMultipleItems(selectedSkus)}
-            className="h-10 rounded-full px-6 font-display text-[10px] font-black tracking-[0.2em] text-rose-500 uppercase transition-all hover:bg-rose-50 active:scale-95 disabled:opacity-20 dark:hover:bg-rose-900/20"
-          >
-            <Trash2 className="mr-2 h-4 w-4" strokeWidth={2.5} />
-            Loại bỏ đã chọn
-          </Button>
+          {hasSelection && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => removeMultipleItems(selectedSkus)}
+              className="h-9 rounded-full px-4 font-display text-[10px] font-bold tracking-wider text-rose-500 uppercase hover:bg-rose-50 dark:hover:bg-rose-900/10"
+            >
+              <Trash2 className="mr-2 h-3.5 w-3.5" />
+              Xóa mục chọn
+            </Button>
+          )}
         </div>
       </div>
 

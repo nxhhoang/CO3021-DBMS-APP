@@ -1,4 +1,4 @@
-import { ApiResponse } from './api.types';
+import { ApiResponse } from './api.types'
 
 export interface Review {
   _id: string
@@ -13,8 +13,12 @@ export interface Review {
 }
 
 // GET /products/:productId/reviews
-export type GetReviewsRequest = { productId: string };
-export type GetReviewsResponse = ApiResponse<Review[]>;
+export interface ReviewPathParams {
+  productId: string
+}
+
+export type GetReviewsRequest = ReviewPathParams
+export type GetReviewsResponse = ApiResponse<Review[]>
 
 // POST /products/:productId/reviews
 export interface CreateReviewRequest {
@@ -23,4 +27,5 @@ export interface CreateReviewRequest {
   images?: string[]
 }
 
-export type CreateReviewResponse = ApiResponse<{ _id: string }>;
+export type CreateReviewParams = ReviewPathParams
+export type CreateReviewResponse = ApiResponse<{ _id: string }>

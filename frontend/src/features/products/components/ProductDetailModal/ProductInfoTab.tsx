@@ -100,7 +100,6 @@ export const ProductInfoTab = ({
                 )
               }
               size="lg"
-              className="bg-slate-50/50 dark:bg-slate-900/50"
             />
           </div>
         </div>

@@ -4,6 +4,7 @@ import React, { useState } from 'react'
 import { ShoppingCart, Heart, Eye } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import MOCK_PRODUCTS from '@/mocks/data/products'
+import { cn } from '@/lib/utils'
 
 const TABS = [
   { id: 'bestseller', label: 'Bán chạy' },
@@ -18,11 +19,15 @@ export default function FeaturedProducts() {
   const getFilteredProducts = () => {
     switch (activeTab) {
       case 'bestseller':
-        return [...MOCK_PRODUCTS].sort((a, b) => b.totalSold - a.totalSold).slice(0, 8)
+        return [...MOCK_PRODUCTS]
+          .sort((a, b) => b.totalSold - a.totalSold)
+          .slice(0, 8)
       case 'new':
         return MOCK_PRODUCTS.slice(4, 12)
       case 'toprated':
-        return [...MOCK_PRODUCTS].sort((a, b) => b.avgRating - a.avgRating).slice(0, 8)
+        return [...MOCK_PRODUCTS]
+          .sort((a, b) => b.avgRating - a.avgRating)
+          .slice(0, 8)
       default:
         return MOCK_PRODUCTS.slice(0, 8)
     }
@@ -31,11 +36,11 @@ export default function FeaturedProducts() {
   const products = getFilteredProducts()
 
   return (
-    <section className="container mx-auto px-4 py-24">
+    <section className="container mx-auto px-4 section-padding">
       <div className="mb-12 text-center">
         <h2 className="text-4xl font-bold tracking-tight text-slate-900">
           Sản phẩm{' '}
-          <span className="bg-linear-to-r from-blue-600 to-cyan-500 bg-clip-text text-transparent">
+          <span className="text-gradient-primary">
             Đặc sắc
           </span>
         </h2>
@@ -48,11 +53,10 @@ export default function FeaturedProducts() {
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`rounded-full px-6 py-2 text-sm font-bold transition-all ${
-                activeTab === tab.id
-                  ? 'bg-slate-900 text-white shadow-lg'
-                  : 'bg-slate-100 text-slate-500 hover:bg-slate-200'
-              }`}
+              className={cn(
+                'tab-premium',
+                activeTab === tab.id ? 'tab-premium-active' : 'tab-premium-inactive'
+              )}
             >
               {tab.label}
             </button>
@@ -64,7 +68,7 @@ export default function FeaturedProducts() {
         {products.map((product) => (
           <div
             key={product._id}
-            className="group relative flex flex-col overflow-hidden rounded-[2rem] border border-slate-100 bg-white p-2 transition-all hover:-translate-y-1 hover:shadow-2xl hover:shadow-slate-200"
+            className="card-premium group relative flex flex-col p-2"
           >
             {/* IMAGE WRAPPER */}
             <div className="relative aspect-[4/5] overflow-hidden rounded-[1.5rem] bg-slate-50">
@@ -73,13 +77,21 @@ export default function FeaturedProducts() {
                 alt={product.name}
                 className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
               />
-              
+
               {/* HOVER ACTIONS */}
               <div className="absolute inset-0 flex items-center justify-center gap-3 bg-black/10 opacity-0 backdrop-blur-[2px] transition-opacity group-hover:opacity-100">
-                <Button size="icon" variant="secondary" className="rounded-full shadow-lg hover:bg-blue-600 hover:text-white">
+                <Button
+                  size="icon"
+                  variant="secondary"
+                  className="rounded-full shadow-lg hover:bg-blue-600 hover:text-white"
+                >
                   <Heart size={18} />
                 </Button>
-                <Button size="icon" variant="secondary" className="rounded-full shadow-lg hover:bg-blue-600 hover:text-white">
+                <Button
+                  size="icon"
+                  variant="secondary"
+                  className="rounded-full shadow-lg hover:bg-blue-600 hover:text-white"
+                >
                   <Eye size={18} />
                 </Button>
               </div>
@@ -97,23 +109,25 @@ export default function FeaturedProducts() {
             <div className="flex flex-1 flex-col p-4">
               <div className="mb-2 flex items-center justify-between">
                 <span className="text-[10px] font-bold tracking-widest text-slate-400 uppercase">
-                  {product.attributes.brand as string || 'Premium'}
+                  {(product.attributes.brand as string) || 'Premium'}
                 </span>
                 <div className="flex items-center gap-1">
-                  <span className="text-[10px] font-bold text-slate-900">{product.avgRating}</span>
+                  <span className="text-[10px] font-bold text-slate-900">
+                    {product.avgRating}
+                  </span>
                   <ShoppingCart size={10} className="text-blue-600" />
                 </div>
               </div>
-              
-              <h3 className="line-clamp-1 flex-1 font-display text-lg font-bold text-slate-900 group-hover:text-blue-600">
+
+              <h3 className="font-display line-clamp-1 flex-1 text-lg font-bold text-slate-900 group-hover:text-blue-600">
                 {product.name}
               </h3>
-              
+
               <div className="mt-4 flex items-center justify-between">
                 <span className="text-xl font-bold text-slate-900">
                   {product.basePrice.toLocaleString('vi-VN')}đ
                 </span>
-                <Button className="rounded-xl bg-slate-900 px-4 text-xs font-bold transition-all hover:bg-blue-600">
+                <Button className="btn-premium-primary rounded-xl px-4 text-xs">
                   Mua ngay
                 </Button>
               </div>

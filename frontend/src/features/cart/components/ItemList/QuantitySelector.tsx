@@ -45,7 +45,7 @@ export default function QuantitySelector({
   return (
     <div
       className={cn(
-        'flex items-center rounded-full border border-slate-100 bg-white/50 shadow-xs transition-all duration-300 hover:border-slate-200 hover:bg-white dark:border-white/5 dark:bg-slate-900/50 dark:hover:border-white/10 dark:hover:bg-slate-900',
+        'quantity-selector-premium',
         currentSize.container,
         className
       )}
@@ -54,7 +54,7 @@ export default function QuantitySelector({
         variant="ghost"
         size="icon"
         className={cn(
-          'rounded-full bg-transparent transition-all hover:bg-slate-100 active:scale-90 disabled:opacity-30 dark:hover:bg-white/5',
+          'quantity-selector-btn',
           currentSize.button
         )}
         disabled={quantity <= 1}
@@ -79,7 +79,7 @@ export default function QuantitySelector({
         variant="ghost"
         size="icon"
         className={cn(
-          'rounded-full bg-transparent transition-all hover:bg-slate-100 active:scale-90 disabled:opacity-30 dark:hover:bg-white/5',
+          'quantity-selector-btn',
           currentSize.button
         )}
         disabled={quantity >= stockQuantity}

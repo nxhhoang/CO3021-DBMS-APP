@@ -16,7 +16,7 @@ export const OrderItemsList = ({ items }: Props) => {
       {items.map((item) => (
         <div key={item.sku} className="group flex items-center justify-between gap-4 py-1">
           <div className="flex max-w-[70%] items-center gap-2 overflow-hidden">
-             <div className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-slate-100 text-[10px] font-black text-slate-500 dark:bg-slate-800">
+             <div className="badge-count-premium">
                {item.quantity}
              </div>
              <span className="truncate font-display text-sm font-bold text-slate-700 dark:text-slate-300 transition-colors group-hover:text-blue-600">

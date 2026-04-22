@@ -31,8 +31,16 @@ export const ProductReviewsTab = ({
   onSubmitReview,
   formatReviewDate,
 }: ProductReviewsTabProps) => {
+  const trimmedReviewComment = reviewComment.trim()
+  const isReviewCommentValid = trimmedReviewComment.length >= 10
+  const canSubmitReview =
+    !reviewSubmitting &&
+    reviewRating >= 1 &&
+    reviewRating <= 5 &&
+    isReviewCommentValid
+
   return (
-    <div className="space-y-10 animate-in fade-in slide-in-from-bottom-2 duration-500">
+    <div className="animate-in fade-in slide-in-from-bottom-2 space-y-10 duration-500">
       {/* MINIMAL RATING SUMMARY */}
       <div className="flex items-center gap-8 border-b border-slate-100 pb-8 dark:border-white/5">
         <div className="flex flex-col items-center">
@@ -53,9 +61,11 @@ export const ProductReviewsTab = ({
             ))}
           </div>
         </div>
-        
+
         <div className="flex flex-1 flex-col gap-2">
-          <div className="text-sm font-bold text-slate-900 dark:text-white">Tổng hợp đánh giá</div>
+          <div className="text-sm font-bold text-slate-900 dark:text-white">
+            Tổng hợp đánh giá
+          </div>
           <p className="text-xs text-slate-500">
             Dựa trên {reviews.length} lượt đánh giá thực tế từ người dùng.
           </p>
@@ -85,11 +95,11 @@ export const ProductReviewsTab = ({
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex gap-4">
                     <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-slate-100 font-bold text-slate-600 dark:bg-white/5 dark:text-slate-400">
-                      {review.userName.charAt(0)}
+                      {(review.userName?.charAt(0) || 'U').toUpperCase()}
                     </div>
                     <div className="space-y-1">
                       <div className="text-sm font-bold text-slate-900 dark:text-white">
-                        {review.userName}
+                        {review.userName || 'Người dùng'}
                       </div>
                       <div className="flex items-center gap-2">
                         <div className="flex items-center gap-0.5">
@@ -129,8 +139,12 @@ export const ProductReviewsTab = ({
               <MessageSquarePlus size={20} className="text-blue-600" />
             </div>
             <div>
-              <h4 className="text-base font-bold text-slate-900 dark:text-white">Đánh giá sản phẩm</h4>
-              <p className="text-xs text-slate-400">Ý kiến của bạn rất quan trọng với chúng tôi</p>
+              <h4 className="text-base font-bold text-slate-900 dark:text-white">
+                Đánh giá sản phẩm
+              </h4>
+              <p className="text-xs text-slate-400">
+                Ý kiến của bạn rất quan trọng với chúng tôi
+              </p>
             </div>
           </div>
         </div>
@@ -160,7 +174,7 @@ export const ProductReviewsTab = ({
                 )
               })}
             </div>
-            <div className="text-[10px] font-black text-blue-600 uppercase tracking-widest">
+            <div className="text-[10px] font-black tracking-widest text-blue-600 uppercase">
               {reviewRating === 5
                 ? 'Rất hài lòng'
                 : reviewRating >= 4
@@ -187,7 +201,7 @@ export const ProductReviewsTab = ({
           <Button
             type="button"
             onClick={onSubmitReview}
-            disabled={reviewSubmitting}
+            disabled={!canSubmitReview}
             className="h-12 w-full rounded-xl bg-blue-600 text-xs font-bold tracking-widest text-white uppercase transition-all hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-500/25 active:scale-95 disabled:bg-slate-100 disabled:text-slate-400 dark:disabled:bg-white/5"
           >
             {reviewSubmitting ? (
@@ -196,6 +210,11 @@ export const ProductReviewsTab = ({
               'Gửi đánh giá ngay'
             )}
           </Button>
+          {!isReviewCommentValid && (
+            <p className="text-center text-xs text-slate-400">
+              Nội dung đánh giá cần tối thiểu 10 ký tự.
+            </p>
+          )}
         </div>
       </div>
     </div>

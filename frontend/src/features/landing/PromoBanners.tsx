@@ -6,7 +6,7 @@ import Link from 'next/link'
 
 export default function PromoBanners() {
   return (
-    <section className="container mx-auto px-4 py-20">
+    <section className="container mx-auto px-4 section-padding">
       <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
         {/* BANNER 1 */}
         <div className="group relative h-[400px] overflow-hidden rounded-[2.5rem] bg-slate-900">
@@ -29,7 +29,7 @@ export default function PromoBanners() {
             </p>
             <Link
               href="/products?category=giay"
-              className="mt-8 flex w-fit items-center gap-2 rounded-full bg-white px-8 py-3 text-sm font-bold text-slate-900 transition-all hover:bg-blue-600 hover:text-white"
+              className="mt-8 flex w-fit items-center gap-2 rounded-full bg-white px-8 py-3 text-sm font-bold text-slate-900 transition-all hover:bg-blue-600 hover:text-white hover:shadow-lg active:scale-95"
             >
               Mua ngay <ArrowRight size={18} />
             </Link>
@@ -57,7 +57,7 @@ export default function PromoBanners() {
             </p>
             <Link
               href="/products?category=dong-ho"
-              className="mt-8 flex w-fit items-center gap-2 rounded-full bg-cyan-500 px-8 py-3 text-sm font-bold text-white transition-all hover:bg-white hover:text-cyan-900"
+              className="mt-8 flex w-fit items-center gap-2 rounded-full bg-cyan-500 px-8 py-3 text-sm font-bold text-white transition-all hover:bg-white hover:text-cyan-900 hover:shadow-lg active:scale-95"
             >
               Khám phá <ArrowRight size={18} />
             </Link>

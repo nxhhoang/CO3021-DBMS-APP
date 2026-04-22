@@ -113,8 +113,8 @@ export default function HeroSection() {
   }, [heroSlideDuration, isHeroPaused])
 
   return (
-    <section className="relative container mx-auto px-4 py-8 sm:py-12 lg:py-20">
-      <div className="relative overflow-hidden rounded-[2.5rem] border border-white/40 bg-neutral-50/10 shadow-2xl ring-1 ring-black/5 backdrop-blur-3xl transition-all duration-500 ease-in-out hover:shadow-blue-900/5 lg:flex lg:items-stretch">
+    <section className="container mx-auto px-4 py-8 sm:py-12 lg:py-20 relative">
+      <div className="glass-card lg:flex lg:items-stretch overflow-hidden">
         <div className="relative z-10 border-b border-white/20 bg-linear-to-br from-white/10 via-white/5 to-transparent px-6 py-8 sm:px-8 sm:py-10 lg:flex lg:w-1/2 lg:items-center lg:border-r lg:border-b-0 lg:px-10 lg:py-12 xl:px-12">
           <div className="pointer-events-none absolute inset-0 -z-10">
             <div className="absolute -top-28 left-14 h-64 w-64 rounded-full bg-blue-100/40 blur-3xl" />
@@ -122,13 +122,13 @@ export default function HeroSection() {
           </div>
 
           <div className="relative">
-            <span className="inline-block w-fit rounded-full border border-blue-100 bg-blue-50/50 px-4 py-1.5 text-[11px] font-semibold tracking-wide text-blue-600 backdrop-blur-sm">
+            <span className="glass-badge-blue">
               Danh mục nổi bật
             </span>
 
             <h1 className="mt-5 font-display text-4xl leading-[1.1] font-bold tracking-tight text-slate-900 sm:text-5xl lg:mt-6 lg:text-6xl xl:text-[3.8rem]">
               Nâng tầm phong cách <br />
-              <span className="bg-linear-to-r from-blue-600 to-cyan-500 bg-clip-text text-transparent">
+              <span className="text-gradient-primary">
                 Sống hiện đại
               </span>
             </h1>
@@ -140,7 +140,7 @@ export default function HeroSection() {
             <div className="mt-8 flex flex-wrap gap-4 lg:mt-10">
               <Button
                 onClick={handleExploreProducts}
-                className="group relative h-12 overflow-hidden rounded-full bg-slate-900 px-8 text-sm font-bold text-white transition-all duration-300 hover:bg-slate-800 hover:shadow-xl hover:shadow-slate-200/50 active:scale-95 sm:h-14 sm:px-10"
+                className="btn-premium-primary group relative h-12 px-8 text-sm sm:h-14 sm:px-10"
               >
                 <span className="relative z-10 flex items-center gap-2">
                   Khám phá ngay
@@ -152,7 +152,7 @@ export default function HeroSection() {
               <Button
                 variant="outline"
                 onClick={handleViewAllCategories}
-                className="h-12 rounded-full border-slate-200 bg-white/40 px-8 text-sm font-semibold text-slate-700 backdrop-blur-md transition-all duration-300 hover:border-slate-300 hover:bg-white/60 hover:text-slate-900 active:scale-95 sm:h-14 sm:px-10"
+                className="btn-premium-secondary h-12 px-8 text-sm sm:h-14 sm:px-10"
               >
                 Xem các sản phẩm nổi bật
               </Button>
@@ -240,7 +240,7 @@ export default function HeroSection() {
             href={item.href}
             className="flex flex-col items-center text-center group"
           >
-            <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-white border border-slate-100 text-slate-600 shadow-sm transition-all duration-200 group-hover:bg-blue-600 group-hover:text-white group-hover:shadow-lg group-hover:shadow-blue-500/25 group-hover:scale-105">
+            <div className="icon-box-premium mb-4 h-16 w-16 group-hover:bg-blue-600 group-hover:text-white group-hover:shadow-lg group-hover:shadow-blue-500/25 group-hover:scale-105">
               <item.icon size={26} strokeWidth={1.5} />
             </div>
             <h3 className="text-xs font-bold text-slate-800 transition-colors group-hover:text-blue-600">{item.label}</h3>

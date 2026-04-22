@@ -256,7 +256,7 @@ export const ProductDetailModal = ({
   if (loading) {
     return (
       <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-        <DialogContent className="flex h-[400px] items-center justify-center border-none bg-white/80 p-0 backdrop-blur-xl sm:rounded-[2.5rem]">
+        <DialogContent className="glass-panel flex h-[400px] items-center justify-center sm:rounded-[2.5rem]">
           <div className="flex flex-col items-center gap-4">
             <div className="relative flex h-16 w-16 items-center justify-center">
               <div className="absolute inset-0 animate-spin rounded-full border-4 border-blue-100 border-t-blue-600" />
@@ -361,7 +361,7 @@ export const ProductDetailModal = ({
             <div className="sticky bottom-0 z-20 border-t border-slate-100 bg-white/80 p-6 backdrop-blur-3xl sm:px-10 dark:border-white/5 dark:bg-slate-900/80">
               <Button
                 size="lg"
-                className="group relative h-16 w-full overflow-hidden rounded-full bg-slate-900 text-sm font-black tracking-[0.2em] text-white uppercase shadow-xl transition-all hover:scale-[1.02] active:scale-[0.98] disabled:bg-slate-100 disabled:text-slate-400 dark:bg-white dark:text-slate-900 dark:disabled:bg-slate-800 dark:disabled:text-slate-600"
+                className="btn-premium-primary group relative h-16 w-full overflow-hidden shadow-xl"
                 disabled={!selectedSku || selectedSku.stockQuantity <= 0}
                 onClick={handleAddToCart}
               >

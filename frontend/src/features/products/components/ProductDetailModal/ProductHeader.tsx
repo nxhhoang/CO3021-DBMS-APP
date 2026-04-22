@@ -27,9 +27,9 @@ export const ProductHeader = ({
     <div className="p-6 pb-2 sm:p-10 sm:pb-4">
       <div className="mb-6 space-y-4">
         <div className="flex items-center justify-between">
-          <Badge className="border-none bg-slate-100 px-4 py-1.5 text-[10px] font-bold tracking-widest text-slate-600 uppercase">
+          <div className="glass-badge-blue">
             {categoryName || 'Sản phẩm'}
-          </Badge>
+          </div>
           <div className="hidden items-center gap-1.5 lg:flex">
             <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
             <span className="text-sm font-bold text-slate-900">{avgRating || 5}</span>

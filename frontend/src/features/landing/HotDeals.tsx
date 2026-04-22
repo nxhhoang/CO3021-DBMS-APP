@@ -12,11 +12,11 @@ export default function HotDeals() {
   const hotProducts = MOCK_PRODUCTS.slice(0, 5)
 
   return (
-    <section className="container mx-auto px-4 py-20">
+    <section className="container mx-auto px-4 section-padding">
       {/* Section: Hot Deals */}
       <div className="mb-10 flex flex-col items-center justify-between gap-4 sm:flex-row">
         <div>
-          <span className="inline-block rounded-full bg-red-100 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-red-600">
+          <span className="glass-badge-red">
             Đừng bỏ lỡ
           </span>
           <h2 className="mt-2 text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">

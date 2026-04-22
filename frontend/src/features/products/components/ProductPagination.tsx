@@ -10,6 +10,7 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from '@/components/ui/pagination'
+import { cn } from '@/lib/utils'
 
 interface ProductPaginationProps {
   pagination: PaginationParams | null
@@ -45,11 +46,12 @@ export default function ProductPagination({
                 event.preventDefault()
                 if (currentPage !== i) onPageChange(i)
               }}
-              className={`h-10 w-10 cursor-pointer rounded-full font-mono text-sm font-bold transition-all active:scale-90 ${
+              className={cn(
+                'h-10 w-10 cursor-pointer rounded-full font-mono text-sm font-bold transition-all active:scale-90 flex items-center justify-center',
                 currentPage === i
-                  ? 'bg-slate-900 text-white shadow-lg dark:bg-white dark:text-slate-900'
+                  ? 'bg-slate-900 text-white shadow-lg'
                   : 'border-transparent hover:bg-white hover:shadow-sm'
-              }`}
+              )}
             >
               {i}
             </PaginationLink>
@@ -71,7 +73,7 @@ export default function ProductPagination({
   }
 
   return (
-    <div className="flex flex-col items-center justify-between gap-6 rounded-[2.5rem] border border-white/40 bg-white/40 p-6 shadow-xl shadow-slate-200/50 backdrop-blur-3xl dark:border-white/10 dark:bg-white/5 dark:shadow-none sm:flex-row sm:px-10">
+    <div className="glass-container flex flex-col items-center justify-between gap-6 sm:flex-row sm:px-10">
       <div className="flex items-center gap-3">
         <div className="h-1.5 w-6 rounded-full bg-blue-600" />
         <p className="font-display text-[11px] font-black tracking-widest text-slate-400 uppercase">

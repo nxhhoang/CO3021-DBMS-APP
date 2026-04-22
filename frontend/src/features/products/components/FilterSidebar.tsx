@@ -106,7 +106,7 @@ const FilterSidebar = ({
   }, [localCategory, localAttrs, priceRange, sort, applyFilters])
 
   return (
-    <aside className="sticky top-24 h-fit w-full space-y-10 rounded-[2.5rem] border border-white/40 bg-white/40 p-10 shadow-xl shadow-slate-200/50 backdrop-blur-3xl dark:border-white/10 dark:bg-white/5 dark:shadow-none md:w-80 md:self-start transition-all duration-500 hover:shadow-2xl hover:shadow-slate-200/60">
+    <aside className="glass-sidebar sticky top-24 h-fit w-full space-y-10 md:w-80 md:self-start">
       {/* Header */}
       <div className="flex flex-col gap-2 pb-2">
         <div className="flex items-center gap-2.5 text-blue-600">
@@ -162,7 +162,7 @@ const FilterSidebar = ({
         <div className="flex flex-col gap-4 pt-6">
           <Button 
             variant="outline" 
-            className="group h-14 w-full rounded-full border-slate-200 bg-white font-bold text-slate-600 transition-all hover:bg-slate-50 hover:text-slate-900 active:scale-95 dark:border-white/10 dark:bg-slate-900 dark:text-slate-400 dark:hover:text-white" 
+            className="btn-premium-secondary group h-14 w-full" 
             onClick={handleReset}
           >
             Xóa tất cả bộ lọc

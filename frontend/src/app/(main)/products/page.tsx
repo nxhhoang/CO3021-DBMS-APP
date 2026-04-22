@@ -47,31 +47,18 @@ export default function ProductsPage() {
 
   return (
     <div className="relative isolate min-h-screen w-full overflow-clip bg-white text-slate-900">
-      {/* IMPROVED BACKGROUND SYSTEM - Matched with Landing Page */}
-      <div className="pointer-events-none absolute inset-0 -z-10">
-        {/* Base Layer Gradient */}
-        <div className="absolute inset-0 bg-linear-to-b from-slate-50 via-white to-slate-100" />
+      {/* REUSABLE BACKGROUND SYSTEM */}
+      <div className="mesh-gradient-container">
+        <div className="mesh-gradient-base" />
+        <div className="mesh-gradient-dots" />
+        <div className="mesh-gradient-spotlight" />
 
-        {/* Sophisticated Dot Pattern */}
-        <div
-          className="absolute inset-0 opacity-[0.15]"
-          style={{
-            backgroundImage: `radial-gradient(circle, #64748b 1px, transparent 1px)`,
-            backgroundSize: '24px 24px',
-          }}
-        />
-
-        {/* Spotlight behind Content */}
-        <div className="absolute top-0 left-1/2 h-[800px] w-full -translate-x-1/2 bg-[radial-gradient(circle_at_50%_40%,rgba(147,197,253,0.15),transparent_70%)]" />
-
-        {/* Vivid Mesh Gradient Blobs */}
         <div className="absolute inset-0 overflow-hidden">
-          <div className="absolute -top-[5%] left-[15%] h-[600px] w-[600px] rounded-full bg-blue-300/20 blur-[120px] animate-pulse" />
-          <div className="absolute top-[10%] right-[10%] h-[500px] w-[500px] rounded-full bg-cyan-300/20 blur-[100px]" />
-          <div className="absolute top-[40%] left-[5%] h-[400px] w-[400px] rounded-full bg-sky-200/20 blur-[90px]" />
+          <div className="mesh-gradient-blob -top-[5%] left-[15%] h-[600px] w-[600px] bg-blue-300/20 blur-[120px] animate-pulse" />
+          <div className="mesh-gradient-blob top-[10%] right-[10%] h-[500px] w-[500px] bg-cyan-300/20 blur-[100px]" />
+          <div className="mesh-gradient-blob top-[40%] left-[5%] h-[400px] w-[400px] bg-sky-200/20 blur-[90px]" />
         </div>
 
-        {/* Subtle Radial Vignette */}
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,white_100%)] opacity-20" />
       </div>
 
@@ -80,7 +67,7 @@ export default function ProductsPage() {
         <div className="mb-12">
           {params.keyword ? (
             <div className="space-y-4">
-              <div className="inline-flex items-center gap-2 rounded-full border border-blue-100 bg-blue-50/50 px-4 py-1.5 text-[11px] font-semibold tracking-wide text-blue-600 backdrop-blur-sm">
+              <div className="glass-badge-blue">
                 Kết quả tìm kiếm
               </div>
               <h1 className="font-display text-4xl font-bold tracking-tight text-slate-900 lg:text-5xl">
@@ -92,12 +79,12 @@ export default function ProductsPage() {
             </div>
           ) : (
             <div className="space-y-4 text-center md:text-left">
-              <div className="inline-flex items-center gap-2 rounded-full border border-blue-100 bg-blue-50/50 px-4 py-1.5 text-[11px] font-semibold tracking-wide text-blue-600 backdrop-blur-sm">
+              <div className="glass-badge-blue">
                 Cửa hàng trực tuyến
               </div>
               <h1 className="font-display text-4xl font-bold tracking-tight text-slate-900 lg:text-5xl">
                 Khám phá{' '}
-                <span className="bg-linear-to-r from-blue-600 to-cyan-500 bg-clip-text text-transparent">
+                <span className="text-gradient-primary">
                   Sản phẩm
                 </span>
               </h1>

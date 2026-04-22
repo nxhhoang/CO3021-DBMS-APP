@@ -52,17 +52,23 @@ export default function AddressesPage() {
   };
 
   return (
-    <div className="mx-auto max-w-4xl space-y-8 py-8">
-      <div className="flex items-center justify-between">
+    <div className="animate-in fade-in slide-in-from-bottom-8 space-y-10 duration-700">
+      <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h2 className="text-2xl font-bold tracking-tight">Sổ địa chỉ</h2>
-          <p className="text-muted-foreground">
+           <div className="flex items-center gap-3">
+             <div className="h-1.5 w-6 rounded-full bg-blue-600" />
+             <h2 className="font-display text-2xl font-black tracking-tight text-slate-900">Sổ địa chỉ</h2>
+          </div>
+          <p className="mt-1 font-medium text-slate-500">
             Quản lý các địa chỉ giao hàng của bạn.
           </p>
         </div>
 
-        <Button onClick={handleAdd}>
-          <Plus className="mr-2 h-4 w-4" />
+        <Button 
+          onClick={handleAdd}
+          className="h-14 rounded-full bg-slate-900 px-8 font-display text-[11px] font-black tracking-[0.2em] text-white uppercase transition-all hover:scale-[1.05] active:scale-95"
+        >
+          <Plus className="mr-2 h-4 w-4" strokeWidth={2.5} />
           Thêm địa chỉ
         </Button>
       </div>

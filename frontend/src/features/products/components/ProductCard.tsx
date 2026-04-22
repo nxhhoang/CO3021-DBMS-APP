@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react'
 import { ProductResponse } from '@/types/product.types'
-import { Star, ShoppingCart } from 'lucide-react'
+import { Star, ShoppingCart, Eye } from 'lucide-react'
 import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 import { ProductDetailModal } from './ProductDetailModal/ProductDetailModal'
@@ -33,7 +33,7 @@ export default function ProductCard({
     <>
       <div
         className={cn(
-          "group relative flex flex-col overflow-hidden rounded-3xl border border-slate-100 bg-white p-4 shadow-sm transition-all duration-500 hover:shadow-xl hover:shadow-slate-200/50 cursor-pointer",
+          "card-premium group relative flex flex-col p-4 cursor-pointer",
           className
         )}
         onClick={() => setIsModalOpen(true)}
@@ -61,7 +61,16 @@ export default function ProductCard({
             className="object-cover transition-transform duration-500 group-hover:scale-110"
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           />
-          <div className="absolute inset-0 bg-black/0 transition-colors duration-300 group-hover:bg-black/5" />
+          {/* HOVER ACTIONS */}
+          <div className="absolute inset-0 flex items-center justify-center bg-black/10 opacity-0 backdrop-blur-[2px] transition-all duration-300 group-hover:opacity-100">
+            <Button
+              variant="secondary"
+              className="rounded-full bg-white/90 px-6 font-bold text-slate-900 shadow-xl backdrop-blur-sm transition-all hover:bg-blue-600 hover:text-white"
+            >
+              <Eye size={16} className="mr-2" />
+              Xem chi tiết
+            </Button>
+          </div>
         </div>
 
         {/* CONTENT */}

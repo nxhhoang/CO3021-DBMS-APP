@@ -36,16 +36,11 @@ export default function CheckoutPage() {
   if (selectedItems.length === 0 && !dialogState.success) {
     return (
       <div className="relative isolate flex min-h-screen w-full flex-col items-center justify-center overflow-hidden">
-        {/* BACKGROUND SYSTEM */}
-        <div className="pointer-events-none absolute inset-0 -z-10">
-          <div className="absolute inset-0 bg-linear-to-b from-slate-50 via-white to-slate-100 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950" />
-          <div
-            className="absolute inset-0 opacity-[0.03] dark:opacity-[0.05]"
-            style={{
-              backgroundImage: `radial-gradient(#000 0.5px, transparent 0.5px)`,
-              backgroundSize: '32px 32px',
-            }}
-          />
+        {/* REUSABLE BACKGROUND SYSTEM */}
+        <div className="mesh-gradient-container">
+          <div className="mesh-gradient-base" />
+          <div className="mesh-gradient-dots" />
+          <div className="mesh-gradient-spotlight" />
         </div>
 
         <div className="z-10 flex flex-col items-center gap-10 px-4 text-center">
@@ -73,18 +68,16 @@ export default function CheckoutPage() {
 
   return (
     <div className="relative isolate min-h-screen w-full overflow-hidden">
-      {/* BACKGROUND SYSTEM */}
-      <div className="pointer-events-none absolute inset-0 -z-10">
-        <div className="absolute inset-0 bg-linear-to-b from-slate-50 via-white to-slate-100 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950" />
-        <div
-          className="absolute inset-0 opacity-[0.03] dark:opacity-[0.05]"
-          style={{
-            backgroundImage: `radial-gradient(#000 0.5px, transparent 0.5px)`,
-            backgroundSize: '32px 32px',
-          }}
-        />
-        <div className="absolute -top-[10%] left-[5%] h-[800px] w-[800px] rounded-full bg-blue-400/5 blur-[120px] dark:bg-blue-900/10" />
-        <div className="absolute top-[30%] -right-[10%] h-[600px] w-[600px] rounded-full bg-cyan-400/5 blur-[100px] dark:bg-cyan-900/10" />
+      {/* REUSABLE BACKGROUND SYSTEM */}
+      <div className="mesh-gradient-container">
+        <div className="mesh-gradient-base" />
+        <div className="mesh-gradient-dots" />
+        <div className="mesh-gradient-spotlight" />
+        
+        <div className="absolute inset-0 overflow-hidden">
+          <div className="mesh-gradient-blob -top-[10%] left-[5%] h-[800px] w-[800px] bg-blue-400/5 dark:bg-blue-900/10" />
+          <div className="mesh-gradient-blob top-[30%] -right-[10%] h-[600px] w-[600px] bg-cyan-400/5 dark:bg-cyan-900/10" />
+        </div>
       </div>
 
       <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8 lg:py-20">
@@ -118,7 +111,7 @@ export default function CheckoutPage() {
           {/* MAIN FORM */}
           <div className="animate-in fade-in slide-in-from-left-6 space-y-10 duration-1000 lg:col-span-8">
             {/* SHIPPING ADDRESS */}
-            <div className="overflow-hidden rounded-[3rem] border border-white/40 bg-white/40 shadow-2xl shadow-slate-200/50 backdrop-blur-3xl dark:border-white/10 dark:bg-white/5 dark:shadow-none">
+            <div className="glass-card">
               <div className="border-b border-slate-100 px-10 py-10 dark:border-white/5">
                 <div className="flex items-center gap-4">
                   <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-600 text-white shadow-xl shadow-blue-500/20">
@@ -175,7 +168,7 @@ export default function CheckoutPage() {
             </div>
 
             {/* PAYMENT METHOD */}
-            <div className="overflow-hidden rounded-[3rem] border border-white/40 bg-white/40 shadow-2xl shadow-slate-200/50 backdrop-blur-3xl dark:border-white/10 dark:bg-white/5 dark:shadow-none">
+            <div className="glass-card">
               <div className="border-b border-slate-100 px-10 py-10 dark:border-white/5">
                 <div className="flex items-center gap-4">
                   <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-cyan-600 text-white shadow-xl shadow-cyan-500/20">
@@ -195,7 +188,7 @@ export default function CheckoutPage() {
             </div>
 
             {/* ORDER ITEMS REVIEW */}
-            <div className="overflow-hidden rounded-[3rem] border border-white/40 bg-white/40 shadow-2xl shadow-slate-200/50 backdrop-blur-3xl dark:border-white/10 dark:bg-white/5 dark:shadow-none">
+            <div className="glass-card">
               <div className="border-b border-slate-100 px-10 py-10 dark:border-white/5">
                 <div className="flex items-center gap-4">
                   <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-900 text-white shadow-xl dark:bg-white dark:text-slate-900">
@@ -207,7 +200,7 @@ export default function CheckoutPage() {
                 </div>
               </div>
               <div className="p-10">
-                <div className="rounded-[2.5rem] border border-slate-100 bg-white/60 p-10 dark:border-white/5 dark:bg-slate-900/60">
+                <div className="glass-container border border-slate-100 bg-white/60 p-10 dark:border-white/5 dark:bg-slate-900/60">
                    <div className="flex items-center gap-3 mb-8">
                      <div className="h-1.5 w-6 rounded-full bg-slate-300" />
                      <p className="font-display text-[11px] font-black tracking-widest text-slate-400 uppercase">

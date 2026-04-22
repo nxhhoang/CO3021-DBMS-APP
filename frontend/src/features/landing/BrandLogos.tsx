@@ -4,11 +4,11 @@ import React from 'react'
 
 const BRANDS = [
   { name: 'Apple', logo: 'https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg' },
-  { name: 'Samsung', logo: 'https://upload.wikimedia.org/wikipedia/commons/2/24/Samsung_Logo.svg' },
+  { name: 'Samsung', logo: 'https://upload.wikimedia.org/wikipedia/commons/b/b4/Samsung_wordmark.svg' },
   { name: 'Sony', logo: 'https://upload.wikimedia.org/wikipedia/commons/c/ca/Sony_logo.svg' },
   { name: 'Nike', logo: 'https://upload.wikimedia.org/wikipedia/commons/a/a6/Logo_NIKE.svg' },
   { name: 'Adidas', logo: 'https://upload.wikimedia.org/wikipedia/commons/2/20/Adidas_Logo.svg' },
-  { name: 'Canon', logo: 'https://upload.wikimedia.org/wikipedia/commons/b/bd/Canon_logo.svg' },
+  { name: 'Microsoft', logo: 'https://upload.wikimedia.org/wikipedia/commons/9/96/Microsoft_logo_%282012%29.svg' },
 ]
 
 export default function BrandLogos() {
@@ -25,7 +25,7 @@ export default function BrandLogos() {
             key={brand.name}
             src={brand.logo}
             alt={brand.name}
-            className="h-8 w-auto transition-all hover:grayscale-0 hover:opacity-100"
+            className="h-8 w-auto object-contain transition-all hover:grayscale-0 hover:opacity-100"
           />
         ))}
       </div>

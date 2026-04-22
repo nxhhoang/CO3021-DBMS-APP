@@ -35,7 +35,7 @@ export default function TrustSignals() {
             key={index}
             className="flex flex-col items-center text-center group"
           >
-            <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-blue-50 text-blue-600 transition-all duration-300 group-hover:bg-blue-600 group-hover:text-white group-hover:shadow-lg group-hover:shadow-blue-200">
+            <div className="icon-box-premium mb-4 h-16 w-16 group-hover:bg-blue-600 group-hover:text-white group-hover:shadow-lg group-hover:shadow-blue-200">
               <signal.icon size={28} />
             </div>
             <h3 className="text-sm font-bold text-slate-900">{signal.title}</h3>

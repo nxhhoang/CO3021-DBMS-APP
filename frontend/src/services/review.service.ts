@@ -1,5 +1,6 @@
 import { api, privateApi } from '@/lib/axios'
 import {
+  CreateReviewParams,
   CreateReviewRequest,
   CreateReviewResponse,
   GetReviewsRequest,
@@ -15,7 +16,7 @@ const reviewService = {
   },
 
   async createReview(
-    { productId }: GetReviewsRequest,
+    { productId }: CreateReviewParams,
     data: CreateReviewRequest,
   ) {
     const response = await privateApi.post<CreateReviewResponse>(

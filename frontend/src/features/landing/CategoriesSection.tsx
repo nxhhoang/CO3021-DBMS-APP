@@ -50,18 +50,18 @@ const categoryMetadata: Record<
 export default function CategoriesSection() {
   return (
     <section
-      className="container mx-auto px-4 py-24 sm:py-32"
+      className="container mx-auto px-4 section-padding"
       id="featured-categories"
     >
       {/* HEADER */}
       <div className="mb-16 flex flex-col items-center text-center sm:flex-row sm:items-end sm:justify-between sm:text-left">
         <div className="max-w-2xl">
-          <span className="inline-block rounded-full border border-blue-100 bg-blue-50/50 px-4 py-1.5 text-[11px] font-semibold tracking-wide text-blue-600 backdrop-blur-sm">
+          <span className="glass-badge-blue">
             Khám phá danh mục
           </span>
           <h2 className="font-display mt-5 text-4xl font-bold tracking-tight text-slate-900 sm:text-5xl">
             Sản phẩm{' '}
-            <span className="bg-linear-to-r from-blue-600 to-cyan-500 bg-clip-text text-transparent">
+            <span className="text-gradient-primary">
               đáng mong đợi
             </span>
           </h2>
@@ -95,9 +95,9 @@ export default function CategoriesSection() {
           return (
             <div
               key={cat.slug}
-              className={`group relative overflow-hidden rounded-[2.5rem] border border-white/40 bg-white/40 shadow-xl shadow-slate-200/50 backdrop-blur-md transition-all duration-500 hover:-translate-y-2 hover:bg-white/60 hover:shadow-2xl ${
+              className={`glass-card group relative p-0 overflow-hidden ${
                 isFeatured ? 'lg:col-span-3' : 'lg:col-span-2'
-              }`}
+              } hover:-translate-y-2 hover:shadow-2xl`}
             >
               {/* IMAGE BACKGROUND */}
               <div className="absolute inset-0 z-0">
@@ -142,7 +142,7 @@ export default function CategoriesSection() {
                 </div>
 
                 <div className="mt-10">
-                  <Button className="group/btn relative w-full justify-between rounded-2xl bg-slate-900 py-7 text-xs font-bold tracking-wide text-white uppercase shadow-lg transition-all hover:bg-blue-600 active:scale-[0.98]">
+                  <Button className="btn-premium-primary group/btn relative w-full justify-between rounded-2xl py-7 text-xs tracking-wide uppercase">
                     Khám phá ngay
                     <ChevronRight
                       size={18}

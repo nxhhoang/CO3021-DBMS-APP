@@ -81,9 +81,6 @@ export const envConfig = {
   // MongoDB
   mongoHost: (process.env.MONGO_HOST as string) || 'localhost',
   mongoPort: parseInt(process.env.MONGO_PORT as string) || 27017,
-  mongoUser: process.env.MONGO_USER as string,
-  mongoPassword: process.env.MONGO_PASSWORD as string,
-  mongoDatabase: (process.env.MONGO_DATABASE as string) || 'ecommerce_db',
 
   // dbHost: process.env.DB_HOST as string,
   // dbPort: parseInt(process.env.DB_PORT as string) || 1433,

@@ -63,3 +63,34 @@ db.createCollection("reviews", {
         }
     }
 });
+
+db.createCollection("userActivityLogs", {
+    validator: {
+        $jsonSchema: {
+            bsonType: "object",
+            required: ["actionType", "targetID", "timestamp"],
+            properties: {
+                userID: { 
+                    bsonType: ["string", "null"],
+                    description: "Tham chiếu logic tới userID trong PostgreSQL (có thể null nếu user chưa đăng nhập)"
+                },
+                actionType: { 
+                    bsonType: "string",
+                    description: "Loại hành động (VD: VIEW_PRODUCT, SEARCH, ADD_TO_CART)"
+                },
+                targetID: { 
+                    bsonType: ["string", "objectId"],
+                    description: "ID của đối tượng liên quan (VD: productID, categoryID)"
+                },
+                metadata: { 
+                    bsonType: "object",
+                    description: "Các thông tin bổ sung tùy ngữ cảnh (VD: searchKeyword, device)"
+                },
+                timestamp: { 
+                    bsonType: "date",
+                    description: "Thời gian thực hiện hành vi"
+                }
+            }
+        }
+    }
+});

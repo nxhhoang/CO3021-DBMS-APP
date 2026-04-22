@@ -4,7 +4,6 @@ export interface DynamicAttributeInput {
   key: string
   label: string
   dataType: 'string' | 'number' | 'boolean'
-  isRequired: boolean
   options?: string[]
 }
 

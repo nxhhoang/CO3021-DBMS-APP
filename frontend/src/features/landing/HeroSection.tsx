@@ -1,7 +1,16 @@
 'use client'
 
 import React, { useEffect, useRef, useState } from 'react'
-import { ChevronLeft, ChevronRight, LayoutGrid, Laptop, Smartphone, Watch, Footprints, Camera } from 'lucide-react'
+import {
+  ChevronLeft,
+  ChevronRight,
+  LayoutGrid,
+  Laptop,
+  Smartphone,
+  Watch,
+  Footprints,
+  Camera,
+} from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
@@ -113,8 +122,8 @@ export default function HeroSection() {
   }, [heroSlideDuration, isHeroPaused])
 
   return (
-    <section className="container mx-auto px-4 py-8 sm:py-12 lg:py-20 relative">
-      <div className="glass-card lg:flex lg:items-stretch overflow-hidden">
+    <section className="relative container mx-auto px-4 py-8 sm:py-12 lg:py-20">
+      <div className="glass-card overflow-hidden lg:flex lg:items-stretch">
         <div className="relative z-10 border-b border-white/20 bg-linear-to-br from-white/10 via-white/5 to-transparent px-6 py-8 sm:px-8 sm:py-10 lg:flex lg:w-1/2 lg:items-center lg:border-r lg:border-b-0 lg:px-10 lg:py-12 xl:px-12">
           <div className="pointer-events-none absolute inset-0 -z-10">
             <div className="absolute -top-28 left-14 h-64 w-64 rounded-full bg-blue-100/40 blur-3xl" />
@@ -122,19 +131,16 @@ export default function HeroSection() {
           </div>
 
           <div className="relative">
-            <span className="glass-badge-blue">
-              Danh mục nổi bật
-            </span>
+            <span className="glass-badge-blue">Danh mục nổi bật</span>
 
-            <h1 className="mt-5 font-display text-4xl leading-[1.1] font-bold tracking-tight text-slate-900 sm:text-5xl lg:mt-6 lg:text-6xl xl:text-[3.8rem]">
+            <h1 className="font-display mt-5 text-4xl leading-[1.1] font-bold tracking-tight text-slate-900 sm:text-5xl lg:mt-6 lg:text-6xl xl:text-[3.8rem]">
               Nâng tầm phong cách <br />
-              <span className="text-gradient-primary">
-                Sống hiện đại
-              </span>
+              <span className="text-gradient-primary">Sống hiện đại</span>
             </h1>
 
             <p className="mt-5 max-w-xl text-sm leading-7 text-slate-600 sm:text-base lg:mt-6 lg:text-lg lg:leading-8">
-              Từ công nghệ đột phá đến thời trang đẳng cấp — Khám phá hệ sinh thái sản phẩm cao cấp được tuyển chọn dành riêng cho bạn.
+              Từ công nghệ đột phá đến thời trang đẳng cấp — Khám phá hệ sinh
+              thái sản phẩm cao cấp được tuyển chọn dành riêng cho bạn.
             </p>
 
             <div className="mt-8 flex flex-wrap gap-4 lg:mt-10">
@@ -144,7 +150,10 @@ export default function HeroSection() {
               >
                 <span className="relative z-10 flex items-center gap-2">
                   Khám phá ngay
-                  <ChevronRight size={18} className="transition-transform group-hover:translate-x-1" />
+                  <ChevronRight
+                    size={18}
+                    className="transition-transform group-hover:translate-x-1"
+                  />
                 </span>
                 <div className="absolute inset-0 z-0 bg-linear-to-tr from-blue-600/20 to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
               </Button>
@@ -229,22 +238,49 @@ export default function HeroSection() {
       {/* QUICK CATEGORY NAV */}
       <div className="mt-20 grid grid-cols-2 gap-8 md:grid-cols-5">
         {[
-          { label: 'Laptops', icon: Laptop, href: '/products?category=laptop', description: 'Đỉnh cao công nghệ' },
-          { label: 'Điện thoại', icon: Smartphone, href: '/products?category=dien-thoai', description: 'Kết nối tương lai' },
-          { label: 'Đồng hồ', icon: Watch, href: '/products?category=dong-ho', description: 'Sang trọng & Đẳng cấp' },
-          { label: 'Giày dép', icon: Footprints, href: '/products?category=giay', description: 'Năng động mỗi ngày' },
-          { label: 'Máy ảnh', icon: Camera, href: '/products?category=camera', description: 'Lưu giữ khoảnh khắc' },
+          {
+            label: 'Laptops',
+            icon: Laptop,
+            href: '/products?category=laptop',
+            description: 'Đỉnh cao công nghệ',
+          },
+          {
+            label: 'Điện thoại',
+            icon: Smartphone,
+            href: '/products?category=dien-thoai',
+            description: 'Kết nối tương lai',
+          },
+          {
+            label: 'Đồng hồ',
+            icon: Watch,
+            href: '/products?category=dong-ho',
+            description: 'Sang trọng & Đẳng cấp',
+          },
+          {
+            label: 'Giày dép',
+            icon: Footprints,
+            href: '/products?category=giay',
+            description: 'Năng động mỗi ngày',
+          },
+          {
+            label: 'Máy ảnh',
+            icon: Camera,
+            href: '/products?category=camera',
+            description: 'Lưu giữ khoảnh khắc',
+          },
         ].map((item, index) => (
           <Link
             key={index}
             href={item.href}
-            className="flex flex-col items-center text-center group"
+            className="group flex flex-col items-center text-center transition-transform hover:-translate-y-1"
           >
-            <div className="icon-box-premium mb-4 h-16 w-16 group-hover:bg-blue-600 group-hover:text-white group-hover:shadow-lg group-hover:shadow-blue-500/25 group-hover:scale-105">
-              <item.icon size={26} strokeWidth={1.5} />
+            <div className="icon-box-premium mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-white border border-slate-100 text-slate-600 shadow-sm transition-all duration-300 group-hover:bg-blue-600 group-hover:text-white group-hover:shadow-xl group-hover:shadow-blue-500/20 group-hover:border-transparent">
+              <item.icon size={28} strokeWidth={2} className="transition-transform group-hover:scale-110" />
             </div>
-            <h3 className="text-xs font-bold text-slate-800 transition-colors group-hover:text-blue-600">{item.label}</h3>
-            <p className="mt-1.5 text-[10px] font-medium text-slate-500 opacity-0 transition-all duration-200 group-hover:opacity-100">
+            <h3 className="text-[13px] font-bold text-slate-800 transition-colors group-hover:text-blue-600">
+              {item.label}
+            </h3>
+            <p className="mt-1.5 text-[10px] font-medium text-slate-500 opacity-0 transition-all duration-300 group-hover:translate-y-0 translate-y-2 group-hover:opacity-100">
               {item.description}
             </p>
           </Link>

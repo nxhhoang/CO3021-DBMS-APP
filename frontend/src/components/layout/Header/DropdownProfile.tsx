@@ -11,7 +11,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { User, LogOut } from 'lucide-react';
 import Link from 'next/link';
-import { authService } from '@/services/auth.service';
+import { authService } from '@/features/auth/services/auth.service';
 import { useRouter } from 'next/navigation';
 
 const NAV_ITEMS = [

@@ -59,14 +59,17 @@ export const getRevenueStatsController = async (
 }
 
 export const getAllOrdersAdminController = async (req: Request, res: Response) => {
-  // Lấy page và limit từ query string, mặc định là 1 và 10
+  // Lấy page, limit, search, status và sort từ query string
   const page = parseInt(req.query.page as string) || 1
   const limit = parseInt(req.query.limit as string) || 10
+  const search = req.query.search as string
+  const status = req.query.status as string
+  const sort = req.query.sort as string
 
-  const result = await orderService.getAllOrdersAdmin(limit, page)
+  const result = await orderService.getAllOrdersAdmin(limit, page, search, status, sort)
 
   res.status(HTTP_STATUS.OK).json({
-    message: ORDER_MESSAGES.GET_ORDERS_SUCCESS, // Hoặc định nghĩa thêm GET_ALL_ORDERS_SUCCESS
+    message: ORDER_MESSAGES.GET_ORDERS_SUCCESS,
     data: result
   })
 }

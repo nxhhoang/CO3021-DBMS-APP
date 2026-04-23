@@ -79,4 +79,7 @@ export type GetAdminOrdersResponse = ApiResponse<{
 export interface GetAdminOrdersParams {
   page?: number;
   limit?: number;
+  search?: string;
+  status?: string;
+  sort?: string;
 }

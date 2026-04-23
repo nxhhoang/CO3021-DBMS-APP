@@ -146,7 +146,7 @@ function useProducts(params: GetProductsRequest) {
       if (latestRequestIdRef.current !== requestId) return
       setLoading(false)
     }
-  }, [params])
+  }, [JSON.stringify(params)])
 
   useEffect(() => {
     fetchProducts()

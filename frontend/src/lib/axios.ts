@@ -40,7 +40,7 @@ declare global {
 }
 
 // Gán vào window để debug khi cần thiết
-if (typeof window !== 'undefined') {
+if (typeof window !== 'undefined' && process.env.NODE_ENV === 'development') {
   window.api = api
   window.privateApi = privateApi
 }

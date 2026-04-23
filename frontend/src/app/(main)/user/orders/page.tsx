@@ -13,10 +13,13 @@ import { orderService } from '@/services/order.service';
 import type { Order } from '@/types';
 import { format } from 'date-fns';
 import { vi } from 'date-fns/locale';
+import { OrderDetailModal } from '@/features/orders/components/OrderDetailModal';
 
 export default function OrdersPage() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [selectedOrderId, setSelectedOrderId] = useState<number | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     const fetchOrders = async () => {
@@ -34,6 +37,11 @@ export default function OrdersPage() {
 
     fetchOrders();
   }, []);
+
+  const handleViewDetail = (orderId: number) => {
+    setSelectedOrderId(orderId);
+    setIsModalOpen(true);
+  };
 
   const processingOrders = orders.filter((o) => o.status === 'PROCESSING' || o.status === 'PENDING');
   const historyOrders = orders.filter((o) => o.status !== 'PROCESSING' && o.status !== 'PENDING');
@@ -66,23 +74,29 @@ export default function OrdersPage() {
 
         <TabsContent value="current" className="space-y-6">
           {processingOrders.map((order) => (
-            <OrderCard key={order.orderID} order={order} />
+            <OrderCard key={order.orderID} order={order} onViewDetail={handleViewDetail} />
           ))}
           {processingOrders.length === 0 && <EmptyOrderState />}
         </TabsContent>
 
         <TabsContent value="history" className="space-y-6">
           {historyOrders.map((order) => (
-            <OrderCard key={order.orderID} order={order} />
+            <OrderCard key={order.orderID} order={order} onViewDetail={handleViewDetail} />
           ))}
           {historyOrders.length === 0 && <EmptyOrderState />}
         </TabsContent>
       </Tabs>
+
+      <OrderDetailModal 
+        orderId={selectedOrderId}
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+      />
     </div>
   );
 }
 
-function OrderCard({ order }: { order: Order }) {
+function OrderCard({ order, onViewDetail }: { order: Order; onViewDetail: (id: number) => void }) {
   const formattedDate = format(new Date(order.createdAt), 'dd MMMM, yyyy', { locale: vi });
   const formattedAmount = new Intl.NumberFormat('vi-VN', {
     style: 'currency',
@@ -118,6 +132,7 @@ function OrderCard({ order }: { order: Order }) {
           </div>
           <Button 
             className="btn-premium-primary h-14 px-8"
+            onClick={() => onViewDetail(order.orderID)}
           >
             <Eye className="mr-2 h-4 w-4" strokeWidth={2.5} />
             Chi tiết
@@ -149,3 +164,4 @@ function EmptyOrderState() {
     </div>
   );
 }
+

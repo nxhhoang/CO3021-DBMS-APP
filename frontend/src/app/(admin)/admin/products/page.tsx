@@ -1,220 +1,144 @@
 'use client'
 
-import { FormEvent, useState } from 'react'
-import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { FolderPlus, Package, Plus } from 'lucide-react'
 
-// Types & Hooks
-import { GetProductsRequest, ProductResponse } from '@/types/product.types'
-import useProducts from '@/features/products/hooks/useProducts'
-import useProductQueryParams from '@/features/products/hooks/useProductQueryParams'
-import useCategories from '@/features/products/hooks/useCategories'
-import { SORT_BY } from '@/constants/enum'
+// Hooks
+import { useAdminProducts } from '@/features/admin/products/hooks/useAdminProducts'
 
 // Components
 import ProductTable from '@/features/adminProduct/components/ProductTable'
 import AddProductModal from '@/features/adminProduct/components/AddProductModal/AddProductModal'
 import AddCategoryModal from '@/features/adminProduct/components/AddCategoryModal/AddCategoryModal'
 import EditProductModal from '@/features/adminProduct/components/EditProductModal/EditProductModal'
-
-// shadcn
 import { Button } from '@/components/ui/button'
-
-type ProductSortValue = Exclude<GetProductsRequest['sort'], undefined>
+import { MeshBackground } from '@/components/common/MeshBackground'
 
 export default function AdminProductsPage() {
-  const router = useRouter()
-  const pathname = usePathname()
-  const searchParams = useSearchParams()
-
-  // Data Fetching
-  const params: GetProductsRequest = useProductQueryParams()
-  const { products, pagination, loading, error, refetch } = useProducts(params)
-  const { categories, refetch: refetchCategories } = useCategories()
-
-  const [keywordInput, setKeywordInput] = useState(params.keyword ?? '')
-  const [categoryFilter, setCategoryFilter] = useState(params.category ?? 'all')
-  const [sortFilter, setSortFilter] = useState<ProductSortValue>(
-    params.sort ?? SORT_BY.POPULARITY,
-  )
-
-  // State Modals
-  const [isProductModalOpen, setIsProductModalOpen] = useState(false)
-  const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false)
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false)
-  const [selectedProduct, setSelectedProduct] =
-    useState<ProductResponse | null>(null)
-
-  // Handlers
-  const handleEditProduct = (product: ProductResponse) => {
-    setSelectedProduct(product)
-    setIsEditModalOpen(true)
-  }
-
-  const handleCloseEditModal = () => {
-    setIsEditModalOpen(false)
-    setSelectedProduct(null)
-  }
-
-  const handlePageChange = (page: number) => {
-    const nextParams = new URLSearchParams(searchParams.toString())
-    nextParams.set('page', String(page))
-    router.push(`${pathname}?${nextParams.toString()}`, { scroll: false })
-  }
-
-  const applyFilters = ({
-    keyword,
-    category,
-    sort,
-  }: {
-    keyword: string
-    category: string
-    sort: ProductSortValue
-  }) => {
-    const nextParams = new URLSearchParams(searchParams.toString())
-
-    const normalizedKeyword = keyword.trim()
-    if (normalizedKeyword) nextParams.set('keyword', normalizedKeyword)
-    else nextParams.delete('keyword')
-
-    if (category && category !== 'all') nextParams.set('category', category)
-    else nextParams.delete('category')
-
-    if (sort) nextParams.set('sort', sort)
-    else nextParams.delete('sort')
-
-    nextParams.set('page', '1')
-    router.push(`${pathname}?${nextParams.toString()}`, { scroll: false })
-  }
-
-  const handleSearchSubmit = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault()
-    applyFilters({
-      keyword: keywordInput,
-      category: categoryFilter,
-      sort: sortFilter,
-    })
-  }
-
-  const handleCategoryChange = (value: string) => {
-    setCategoryFilter(value)
-    applyFilters({
-      keyword: keywordInput,
-      category: value,
-      sort: sortFilter,
-    })
-  }
-
-  const handleSortChange = (value: string) => {
-    const nextSort = value as ProductSortValue
-    setSortFilter(nextSort)
-    applyFilters({
-      keyword: keywordInput,
-      category: categoryFilter,
-      sort: nextSort,
-    })
-  }
-
-  const handleResetFilters = () => {
-    setKeywordInput('')
-    setCategoryFilter('all')
-    setSortFilter(SORT_BY.POPULARITY)
-
-    const nextParams = new URLSearchParams(searchParams.toString())
-    nextParams.delete('keyword')
-    nextParams.delete('category')
-    nextParams.delete('sort')
-    nextParams.delete('page')
-
-    router.push(`${pathname}?${nextParams.toString()}`, { scroll: false })
-  }
+  const {
+    products,
+    pagination,
+    loading,
+    error,
+    refetch,
+    categories,
+    refetchCategories,
+    keywordInput,
+    setKeywordInput,
+    categoryFilter,
+    sortFilter,
+    isProductModalOpen,
+    setIsProductModalOpen,
+    isCategoryModalOpen,
+    setIsCategoryModalOpen,
+    isEditModalOpen,
+    handleEditProduct,
+    handleCloseEditModal,
+    selectedProduct,
+    handlePageChange,
+    handleSearchSubmit,
+    handleCategoryChange,
+    handleSortChange,
+    handleResetFilters,
+    params,
+  } = useAdminProducts()
 
   return (
-    <div className="bg-surface min-h-screen px-6 py-8">
-      {/* HEADER */}
-      <div className="mb-8 flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
-        <div className="space-y-1">
-          <h1 className="text-on-surface flex items-center gap-3 text-3xl font-extrabold">
-            <Package className="text-primary" size={28} />
-            Quản lý kho hàng
-          </h1>
+    <div className="relative isolate min-h-screen">
+      <MeshBackground variant="admin" />
 
-          <p className="text-on-surface-variant text-sm">
-            {params.keyword
-              ? `Tìm thấy ${pagination?.totalItems || 0} kết quả cho "${params.keyword}"`
-              : `Tổng số sản phẩm: ${pagination?.totalItems || 0}`}
+      <div className="mx-auto max-w-7xl px-4 py-4 md:px-6 md:py-8">
+        {/* HEADER */}
+        <div className="mb-8 flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between animate-in fade-in slide-in-from-top-4 duration-700">
+          <div className="space-y-3">
+            <div className="inline-flex items-center gap-2 rounded-full border border-blue-100 bg-blue-50/50 px-4 py-1.5 text-[11px] font-black tracking-widest text-blue-600 uppercase backdrop-blur-sm dark:border-blue-900/30 dark:bg-blue-900/20 dark:text-blue-400">
+              Quản lý kho hàng
+            </div>
+            <h1 className="font-display text-3xl font-black tracking-tight text-slate-900 sm:text-4xl dark:text-white">
+              Sản phẩm &{' '}
+              <span className="bg-linear-to-r from-blue-600 to-cyan-500 bg-clip-text text-transparent">
+                Tồn kho
+              </span>
+            </h1>
+
+            <p className="font-sans text-base text-slate-500 dark:text-slate-400">
+              {params.keyword
+                ? `Tìm thấy ${pagination?.totalItems || 0} kết quả cho "${params.keyword}"`
+                : `Tổng số sản phẩm: ${pagination?.totalItems || 0}`}
+            </p>
+          </div>
+
+          {/* ACTION BUTTONS */}
+          <div className="flex flex-wrap gap-3">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setIsCategoryModalOpen(true)}
+              className="rounded-full px-6 btn-premium-secondary"
+            >
+              <FolderPlus size={18} />
+              Thêm danh mục
+            </Button>
+
+            <Button
+              type="button"
+              onClick={() => setIsProductModalOpen(true)}
+              className="rounded-full px-8 btn-premium-primary shadow-lg shadow-blue-500/20"
+            >
+              <Plus size={18} />
+              Thêm sản phẩm
+            </Button>
+          </div>
+        </div>
+
+        {error && (
+          <p className="mb-4 text-sm text-red-500 bg-red-50 border border-red-100 p-3 rounded-xl">
+            Không thể tải danh sách sản phẩm: {error}
           </p>
+        )}
+
+        {/* MAIN CONTENT */}
+        <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
+          <ProductTable
+            products={products}
+            loading={loading}
+            pagination={pagination}
+            categories={categories || []}
+            keywordInput={keywordInput}
+            categoryFilter={categoryFilter}
+            sortFilter={sortFilter}
+            onKeywordChange={setKeywordInput}
+            onSearchSubmit={handleSearchSubmit}
+            onCategoryChange={handleCategoryChange}
+            onSortChange={handleSortChange}
+            onResetFilters={handleResetFilters}
+            onRefresh={refetch}
+            onEdit={handleEditProduct}
+            onPageChange={handlePageChange}
+          />
         </div>
 
-        {/* ACTION BUTTONS */}
-        <div className="flex flex-wrap gap-3">
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => setIsCategoryModalOpen(true)}
-            className="rounded-full px-6"
-          >
-            <FolderPlus size={18} />
-            Thêm danh mục
-          </Button>
+        {/* MODALS */}
+        <AddProductModal
+          isOpen={isProductModalOpen}
+          onClose={() => setIsProductModalOpen(false)}
+          categories={categories || []}
+          onSuccess={refetch}
+        />
 
-          <Button
-            type="button"
-            onClick={() => setIsProductModalOpen(true)}
-            className="rounded-full px-8"
-          >
-            <Plus size={18} />
-            Thêm sản phẩm
-          </Button>
-        </div>
+        <EditProductModal
+          isOpen={isEditModalOpen}
+          onClose={handleCloseEditModal}
+          product={selectedProduct}
+          categories={categories || []}
+          onSuccess={refetch}
+        />
+
+        <AddCategoryModal
+          isOpen={isCategoryModalOpen}
+          onClose={() => setIsCategoryModalOpen(false)}
+          onSaved={refetchCategories}
+        />
       </div>
-
-      {error && (
-        <p className="mb-4 text-sm text-red-500">
-          Không thể tải danh sách sản phẩm: {error}
-        </p>
-      )}
-
-      {/* MAIN CONTENT */}
-      <ProductTable
-        products={products}
-        loading={loading}
-        pagination={pagination}
-        categories={categories || []}
-        keywordInput={keywordInput}
-        categoryFilter={categoryFilter}
-        sortFilter={sortFilter}
-        onKeywordChange={setKeywordInput}
-        onSearchSubmit={handleSearchSubmit}
-        onCategoryChange={handleCategoryChange}
-        onSortChange={handleSortChange}
-        onResetFilters={handleResetFilters}
-        onRefresh={refetch}
-        onEdit={handleEditProduct}
-        onPageChange={handlePageChange}
-      />
-
-      {/* MODALS */}
-      <AddProductModal
-        isOpen={isProductModalOpen}
-        onClose={() => setIsProductModalOpen(false)}
-        categories={categories || []}
-        onSuccess={refetch}
-      />
-
-      <EditProductModal
-        isOpen={isEditModalOpen}
-        onClose={handleCloseEditModal}
-        product={selectedProduct}
-        categories={categories || []}
-        onSuccess={refetch}
-      />
-
-      <AddCategoryModal
-        isOpen={isCategoryModalOpen}
-        onClose={() => setIsCategoryModalOpen(false)}
-        onSaved={refetchCategories}
-      />
     </div>
   )
 }

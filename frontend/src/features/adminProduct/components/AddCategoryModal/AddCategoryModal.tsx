@@ -12,6 +12,7 @@ import {
   DialogClose,
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
+import { FolderPlus } from 'lucide-react'
 
 import categoryService from '@/services/category.service'
 import {
@@ -40,6 +41,9 @@ export default function AddCategoryModal({
   const [slug, setSlug] = useState('')
   const [description, setDescription] = useState('')
   const [attributes, setAttributes] = useState<DynamicAttributeInput[]>([])
+  const [variantAttributes, setVariantAttributes] = useState<
+    DynamicAttributeInput[]
+  >([])
   const [saving, setSaving] = useState(false)
 
   useEffect(() => {
@@ -55,7 +59,14 @@ export default function AddCategoryModal({
         key: attribute.key,
         label: attribute.label,
         dataType: attribute.dataType,
-        isRequired: attribute.isRequired ?? true,
+        options: attribute.options?.map((option) => String(option)) ?? [],
+      })) ?? [],
+    )
+    setVariantAttributes(
+      category?.variantAttributes?.map((attribute) => ({
+        key: attribute.key,
+        label: attribute.label,
+        dataType: attribute.dataType,
         options: attribute.options?.map((option) => String(option)) ?? [],
       })) ?? [],
     )
@@ -87,6 +98,7 @@ export default function AddCategoryModal({
           slug,
           description,
           dynamicAttributes: attributes,
+          variantAttributes,
         }
 
         const result = await categoryService.updateCategory(
@@ -101,6 +113,7 @@ export default function AddCategoryModal({
           description,
           isActive: true,
           dynamicAttributes: attributes,
+          variantAttributes,
         }
 
         const result = await categoryService.createCategory(payload)
@@ -123,45 +136,70 @@ export default function AddCategoryModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogOverlay className="bg-[#002366]/5 backdrop-blur-md" />
-      <DialogContent className="flex h-[90vh] flex-col overflow-hidden sm:max-w-175 lg:max-w-250">
+      <DialogOverlay className="bg-slate-900/40 backdrop-blur-md" />
+      <DialogContent className="glass-surface flex h-[90vh] max-h-[850px] flex-col overflow-hidden p-0 sm:max-w-175 lg:max-w-250">
         {/* Header */}
-        <DialogHeader className="border-b pb-4 text-2xl font-bold">
-          <DialogTitle className="text-2xl font-bold">
-            {category ? 'Cập nhật danh mục' : 'Thêm danh mục mới'}
-          </DialogTitle>
-          <DialogDescription className="font-medium">
-            {category
-              ? 'Chỉnh sửa thông tin danh mục sản phẩm'
-              : 'Tạo một danh mục sản phẩm mới'}
-          </DialogDescription>
+        <DialogHeader className="shrink-0 border-b border-slate-100 px-8 py-6">
+          <div className="flex items-center gap-4">
+            <div className="icon-box-premium h-12 w-12 border-blue-100 bg-blue-50 text-blue-600">
+              <FolderPlus size={24} />
+            </div>
+            <div>
+              <DialogTitle className="font-display text-2xl font-black text-slate-900">
+                {category ? 'Cập nhật danh mục' : 'Thêm danh mục mới'}
+              </DialogTitle>
+              <DialogDescription className="text-sm font-medium text-slate-500">
+                {category
+                  ? 'Chỉnh sửa thông tin và cấu trúc danh mục sản phẩm'
+                  : 'Tạo một danh mục sản phẩm mới với các thuộc tính tùy chỉnh'}
+              </DialogDescription>
+            </div>
+          </div>
         </DialogHeader>
 
-        {/* Body */}
-        <div className="flex min-h-0 flex-1 flex-col gap-4 px-4">
-          <GeneralInformation
-            name={name}
-            slug={slug}
-            description={description}
-            onNameChange={handleNameChange}
-            onSlugChange={setSlug}
-            onDescriptionChange={setDescription}
-          />
+        {/* Body - Single Scrollable Area */}
+        <div className="scrollbar-premium min-h-0 flex-1 overflow-y-auto px-8 py-6">
+          <div className="flex flex-col gap-12">
+            <GeneralInformation
+              name={name}
+              slug={slug}
+              description={description}
+              onNameChange={handleNameChange}
+              onSlugChange={setSlug}
+              onDescriptionChange={setDescription}
+            />
 
-          <AttributeInformation
-            attributes={attributes}
-            setAttributes={setAttributes}
-          />
+            <AttributeInformation
+              title="Thuộc tính động"
+              attributes={attributes}
+              setAttributes={setAttributes}
+            />
+
+            <AttributeInformation
+              title="Thuộc tính biến thể"
+              attributes={variantAttributes}
+              setAttributes={setVariantAttributes}
+            />
+          </div>
         </div>
 
         {/* Footer */}
-        <DialogFooter className="shrink-0 border-t px-6 py-5">
+        <DialogFooter className="shrink-0 border-t border-slate-100 bg-slate-50/50 px-8 py-5">
           <DialogClose asChild>
-            <Button type="button" variant="outline" disabled={saving}>
+            <Button
+              type="button"
+              variant="outline"
+              disabled={saving}
+              className="btn-premium-secondary h-11 px-8"
+            >
               Hủy
             </Button>
           </DialogClose>
-          <Button onClick={handleSave} disabled={saving}>
+          <Button
+            onClick={handleSave}
+            disabled={saving}
+            className="btn-premium-primary h-11 px-10 shadow-lg shadow-slate-900/10"
+          >
             {saving ? 'Đang lưu...' : 'Lưu danh mục'}
           </Button>
         </DialogFooter>

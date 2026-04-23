@@ -55,7 +55,7 @@ class OrderService {
 
         // Deduct stock
         await client.query(
-          `UPDATE INVENTORY SET stockQuantity = stockQuantity - $1, lastUpdated = NOW() WHERE sku = $2`,
+          `UPDATE INVENTORY SET stockQuantity = stockQuantity - $1, updated_at = NOW() WHERE sku = $2`,
           [item.quantity, item.sku]
         )
 
@@ -158,9 +158,9 @@ class OrderService {
     }
 
     const result = await query(
-      `UPDATE ORDERS SET status = $1
+      `UPDATE ORDERS SET status = $1, updated_at = NOW()
        WHERE orderID = $2
-       RETURNING orderID AS "orderID", status`,
+       RETURNING orderID AS "orderID", status, updated_at AS "updatedAt"`,
       [newStatus, orderId]
     )
 
@@ -177,28 +177,54 @@ class OrderService {
     return result.rows[0]
   }
 
-  // Admin: Get all orders with pagination
-  async getAllOrdersAdmin(limit: number = 10, page: number = 1) {
+  // Admin: Get all orders with pagination & search & filter & sort
+  async getAllOrdersAdmin(limit: number = 10, page: number = 1, search?: string, status?: string, sort?: string) {
     const offset = (page - 1) * limit
+    const searchPattern = search ? `%${search}%` : null
+    const sortOrder = sort === 'oldest' ? 'ASC' : 'DESC'
 
-    // 1. Lấy danh sách orders kèm thông tin User (nếu cần)
-    // Tôi sử dụng "userid" thay vì "userID" dựa trên lỗi database trước đó của bạn
-    const result = await query(
-      `SELECT 
+    // Build WHERE clause
+    const whereClauses: string[] = []
+    const params: any[] = []
+    let paramIndex = 1
+
+    if (searchPattern) {
+      whereClauses.push(`CAST(orderid AS TEXT) LIKE $${paramIndex}`)
+      params.push(searchPattern)
+      paramIndex++
+    }
+
+    if (status && status !== 'ALL') {
+      whereClauses.push(`status = $${paramIndex}`)
+      params.push(status)
+      paramIndex++
+    }
+
+    const whereClause = whereClauses.length > 0 ? ` WHERE ${whereClauses.join(' AND ')}` : ''
+
+    // 1. Lấy danh sách orders
+    const queryStr = `
+      SELECT 
         orderid AS "orderID", 
         userid AS "userID", 
         status, 
         totalamount AS "totalAmount", 
         createdat AS "createdAt",
         shippingaddr AS "shippingAddr"
-       FROM ORDERS
-       ORDER BY createdat DESC
-       LIMIT $1 OFFSET $2`,
-      [limit, offset]
-    )
+      FROM ORDERS
+      ${whereClause}
+      ORDER BY createdat ${sortOrder}
+      LIMIT $${paramIndex}
+      OFFSET $${paramIndex + 1}
+    `
 
-    // 2. Lấy tổng số lượng để Frontend làm phân trang
-    const countResult = await query(`SELECT COUNT(*) FROM ORDERS`)
+    params.push(limit, offset)
+    const result = await query(queryStr, params)
+
+    // 2. Lấy tổng số lượng
+    const countQuery = `SELECT COUNT(*) FROM ORDERS${whereClause}`
+    const countParams = params.slice(0, paramIndex - 1)
+    const countResult = await query(countQuery, countParams)
     const totalOrders = parseInt(countResult.rows[0].count)
 
     return {

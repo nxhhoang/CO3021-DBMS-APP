@@ -84,7 +84,7 @@ const Header = () => {
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-white/40 bg-white/80 shadow-xs backdrop-blur-xl transition-all duration-300">
-      <div className="container mx-auto flex h-16 items-center justify-between px-4 md:h-20 md:px-10">
+      <div className="container mx-auto flex h-14 items-center justify-between px-4 md:h-16 md:px-6">
         {/* Logo - Căn trái và tạo khoảng trống */}
         <div className="shrink-0 transition-all duration-300 hover:scale-105 active:scale-95">
           <Logo />

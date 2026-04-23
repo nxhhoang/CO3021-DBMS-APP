@@ -85,9 +85,7 @@ export const useCart = () => {
   useEffect(() => {
     const syncCart = () => setItems(readCartFromSessionStorage())
 
-    setLoading(true)
     syncCart()
-    setLoading(false)
 
     window.addEventListener('cart:updated', syncCart)
     window.addEventListener('storage', syncCart)

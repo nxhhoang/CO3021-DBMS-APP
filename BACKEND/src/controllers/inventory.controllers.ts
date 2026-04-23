@@ -1,14 +1,15 @@
 import { Request, Response } from 'express'
 import { ParamsDictionary } from 'express-serve-static-core'
 import inventoryService from '~/services/inventory.services'
-import { INVENTORY_MESSAGES } from '~/constants/messages'
 import {
   CreateInventoryReqBody,
   UpdateInventoryReqBody,
   InventoryReqParams,
   ProductInventoryReqParams,
-  SkuInventoryReqParams
+  SkuInventoryReqParams,
+  CreateSkuReqBody
 } from '~/models/requests/Inventory.requests'
+import { INVENTORY_MESSAGES, SKU_MESSAGES } from '~/constants/messages'
 
 export const createInventoryController = async (
   req: Request<ParamsDictionary, any, CreateInventoryReqBody>,
@@ -17,6 +18,17 @@ export const createInventoryController = async (
   const result = await inventoryService.createInventory(req.body)
   res.json({
     message: INVENTORY_MESSAGES.CREATE_INVENTORY_SUCCESS,
+    result
+  })
+}
+
+export const createSkuController = async (
+  req: Request<ParamsDictionary, any, CreateSkuReqBody>,
+  res: Response
+) => {
+  const result = await inventoryService.createSku(req.body)
+  res.json({
+    message: SKU_MESSAGES.CREATE_SKU_SUCCESS,
     result
   })
 }

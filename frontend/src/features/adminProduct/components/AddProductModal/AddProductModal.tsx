@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import ImageUrlPreview from './ImageUrlPreview'
 import { toast } from 'sonner'
-import { X } from 'lucide-react'
+import { X, Package, Loader2 } from 'lucide-react'
 import { Dialog, DialogContent } from '@/components/ui/dialog'
 import { useForm, Controller, SubmitHandler } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -18,6 +18,7 @@ import { productService } from '@/services/product.service'
 import GeneralInformation from './GeneralInformation'
 import CategorySelect from './CategorySelect'
 import { Badge } from '@/components/ui/badge'
+import SkuFormSection, { LocalSku } from './SkuFormSection'
 
 interface AddProductModalProps {
   isOpen: boolean
@@ -43,6 +44,7 @@ export default function AddProductModal({
   onSuccess,
 }: AddProductModalProps) {
   const [loading, setLoading] = useState(false)
+  const [skus, setSkus] = useState<LocalSku[]>([])
 
   const {
     register,
@@ -57,15 +59,20 @@ export default function AddProductModal({
     defaultValues: initialProductValues,
   })
 
+  const selectedCategoryId = watch('categoryID')
+  const basePrice = watch('basePrice')
+
   useEffect(() => {
     if (isOpen) {
       reset(initialProductValues)
+      setSkus([])
       setLoading(false)
     }
   }, [isOpen, reset])
 
   const handleClose = () => {
     reset(initialProductValues)
+    setSkus([])
     setLoading(false)
     onClose()
   }
@@ -76,11 +83,13 @@ export default function AddProductModal({
       const payload = {
         ...data,
         images: (data.images || []).filter((url) => url.trim() !== ''),
+        skus: skus,
       }
-      const res = await productService.createProduct(payload)
+      const res = await productService.createProduct(payload as any)
       if (res.data) {
-        toast.success('Tạo sản phẩm thành công!')
+        toast.success('Tạo sản phẩm và các biến thể thành công!')
         reset()
+        setSkus([])
         onSuccess()
         onClose()
       }
@@ -104,10 +113,7 @@ export default function AddProductModal({
         showCloseButton={false}
         className="max-h-[calc(100dvh-2rem)] max-w-[98vw] overflow-hidden rounded-[32px] border-none p-0 shadow-2xl lg:max-w-352"
       >
-        <form
-          onSubmit={handleSubmit(onSubmit)}
-          className="relative grid h-[min(90dvh,920px)] min-h-0 grid-cols-1 items-stretch bg-white lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)]"
-        >
+        <div className="relative flex h-[min(90dvh,920px)] min-h-0 flex-col bg-white lg:flex-row">
           <button
             type="button"
             onClick={handleClose}
@@ -116,7 +122,8 @@ export default function AddProductModal({
             <X className="h-5 w-5 text-slate-500" />
           </button>
 
-          <section className="flex min-h-0 min-w-0 flex-col gap-6 border-b border-slate-100 bg-linear-to-b from-slate-50 to-white p-6 sm:p-8 lg:border-r lg:border-b-0 lg:p-10">
+          {/* LEFT COLUMN - Visuals */}
+          <section className="flex min-h-0 min-w-0 flex-1 flex-col gap-6 border-b border-slate-100 bg-linear-to-b from-slate-50 to-white p-6 sm:p-8 lg:max-w-[40%] lg:border-r lg:border-b-0 lg:p-10">
             <header className="space-y-3">
               <p className="text-[10px] font-bold tracking-[0.24em] text-slate-400 uppercase">
                 Product Visuals
@@ -130,74 +137,97 @@ export default function AddProductModal({
               </p>
             </header>
 
-            <div className="space-y-6">
-              <Controller
-                control={control}
-                name="images"
-                render={({ field }) => (
-                  <ImageUrlPreview
-                    images={field.value || []}
-                    onChange={field.onChange}
-                  />
+            <div className="scrollbar-premium flex-1 overflow-y-auto pr-2">
+              <div className="space-y-6">
+                <Controller
+                  control={control}
+                  name="images"
+                  render={({ field }) => (
+                    <ImageUrlPreview
+                      images={field.value || []}
+                      onChange={field.onChange}
+                    />
+                  )}
+                />
+                {errors.images && (
+                  <p className="text-xs text-red-500">
+                    {errors.images.message}
+                  </p>
                 )}
-              />
-              {errors.images && (
-                <p className="text-xs text-red-500">{errors.images.message}</p>
-              )}
+              </div>
             </div>
           </section>
 
-          <section className="flex min-h-0 min-w-0 flex-col overflow-y-auto p-6 sm:p-8 lg:p-10">
+          {/* RIGHT COLUMN - Form & SKU Creation */}
+          <section className="scrollbar-premium flex min-h-0 min-w-0 flex-[1.5] flex-col overflow-y-auto p-6 sm:p-8 lg:p-10">
             <div className="mb-8 flex flex-wrap items-center justify-between gap-4">
               <div>
                 <p className="text-[10px] font-bold tracking-[0.24em] text-slate-400 uppercase">
                   Product Details
                 </p>
                 <h2 className="mt-2 text-2xl font-semibold tracking-tight text-slate-900 sm:text-[2rem]">
-                  General Information
+                  Create Product
                 </h2>
               </div>
               <Badge
                 variant="secondary"
-                className="border-none bg-[#E2E4FF] px-3 py-1 text-[10px] font-bold text-[#5851D8] uppercase"
+                className="border-none bg-indigo-50 px-3 py-1 text-[10px] font-bold text-indigo-600 uppercase"
               >
-                Required
+                New Entry
               </Badge>
             </div>
 
-            <div className="flex min-h-0 flex-1 flex-col space-y-8">
-              <div className="rounded-[28px] border border-slate-100 bg-slate-100/70 p-5 sm:p-6">
-                <GeneralInformation register={register} errors={errors} />
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-10">
+              <div className="space-y-8">
+                <div className="rounded-[28px] border border-slate-100 bg-slate-100/70 p-5 sm:p-6">
+                  <GeneralInformation register={register} errors={errors} />
+                </div>
+
+                <div className="rounded-[28px] border border-slate-100 bg-slate-100/70 p-5 sm:p-6">
+                  <CategorySelect
+                    control={control}
+                    errors={errors}
+                    categories={categories}
+                    watch={watch}
+                    setValue={setValue}
+                  />
+                </div>
+
+                <div className="rounded-[32px] border border-slate-100 bg-slate-50/50 p-6 sm:p-8">
+                  <SkuFormSection
+                    skus={skus}
+                    setSkus={setSkus}
+                    categories={categories}
+                    selectedCategoryId={selectedCategoryId}
+                    basePrice={basePrice}
+                  />
+                </div>
               </div>
 
-              <div className="rounded-[28px] border border-slate-100 bg-slate-100/70 p-5 sm:p-6">
-                <CategorySelect
-                  control={control}
-                  errors={errors}
-                  categories={categories}
-                  watch={watch}
-                  setValue={setValue}
-                />
-              </div>
-
-              <div className="mt-auto flex flex-col gap-3 border-t border-slate-100 pt-6 sm:flex-row sm:items-center sm:justify-between">
+              <div className="flex flex-col gap-3 border-t border-slate-100 pt-6 sm:flex-row sm:items-center sm:justify-between">
                 <p className="text-sm text-slate-500">
-                  Review the required fields, then publish when the product is
-                  ready.
+                  Review all fields and SKU variations before publishing.
                 </p>
                 <div className="flex items-center gap-3">
                   <Button
                     type="submit"
                     disabled={loading}
-                    className="rounded-2xl bg-[#1A1A1A] px-8 py-6 text-base text-white transition-all hover:bg-black"
+                    className="rounded-2xl bg-[#1A1A1A] px-8 py-6 text-base text-white transition-all hover:bg-black active:scale-95"
                   >
-                    {loading ? 'Processing...' : 'Confirm and Publish'}
+                    {loading ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Publishing...
+                      </>
+                    ) : (
+                      'Confirm and Publish'
+                    )}
                   </Button>
                 </div>
               </div>
-            </div>
+            </form>
           </section>
-        </form>
+        </div>
       </DialogContent>
     </Dialog>
   )

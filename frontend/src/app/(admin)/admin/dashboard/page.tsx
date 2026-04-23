@@ -20,83 +20,7 @@ import FilterSection from '@/features/adminDashboard/components/FilterSection'
 import SummaryCard from '@/features/adminDashboard/components/SummaryCard'
 import { RevenueStat } from '@/types'
 
-// MOCK DATA
-const MOCK_REVENUE_DATA: RevenueStat[] = [
-  { date: '2026-01-01', totalRevenue: 52000000, orderCount: 21 },
-  { date: '2026-01-02', totalRevenue: 48000000, orderCount: 19 },
-  { date: '2026-01-03', totalRevenue: 61000000, orderCount: 26 },
-  { date: '2026-01-04', totalRevenue: 45000000, orderCount: 18 },
-  { date: '2026-01-05', totalRevenue: 70000000, orderCount: 30 },
-  { date: '2026-01-06', totalRevenue: 65000000, orderCount: 28 },
-  { date: '2026-01-07', totalRevenue: 72000000, orderCount: 32 },
-  { date: '2026-01-08', totalRevenue: 68000000, orderCount: 29 },
-  { date: '2026-01-09', totalRevenue: 75000000, orderCount: 33 },
-  { date: '2026-01-10', totalRevenue: 90000000, orderCount: 40 },
-  { date: '2026-01-11', totalRevenue: 85000000, orderCount: 36 },
-  { date: '2026-01-12', totalRevenue: 92000000, orderCount: 42 },
-  { date: '2026-01-13', totalRevenue: 87000000, orderCount: 38 },
-  { date: '2026-01-14', totalRevenue: 95000000, orderCount: 45 },
-  { date: '2026-01-15', totalRevenue: 100000000, orderCount: 50 },
-  { date: '2026-01-16', totalRevenue: 98000000, orderCount: 47 },
-  { date: '2026-01-17', totalRevenue: 105000000, orderCount: 52 },
-  { date: '2026-01-18', totalRevenue: 110000000, orderCount: 55 },
-  { date: '2026-01-19', totalRevenue: 102000000, orderCount: 48 },
-  { date: '2026-01-20', totalRevenue: 115000000, orderCount: 60 },
-  { date: '2026-01-21', totalRevenue: 120000000, orderCount: 65 },
-  { date: '2026-01-22', totalRevenue: 108000000, orderCount: 54 },
-  { date: '2026-01-23', totalRevenue: 125000000, orderCount: 68 },
-  { date: '2026-01-24', totalRevenue: 130000000, orderCount: 70 },
-  { date: '2026-01-25', totalRevenue: 118000000, orderCount: 60 },
-  { date: '2026-01-26', totalRevenue: 135000000, orderCount: 75 },
-  { date: '2026-01-27', totalRevenue: 140000000, orderCount: 80 },
-  { date: '2026-01-28', totalRevenue: 132000000, orderCount: 72 },
-  { date: '2026-01-29', totalRevenue: 145000000, orderCount: 85 },
-  { date: '2026-01-30', totalRevenue: 150000000, orderCount: 90 },
-]
-
-const filterRevenueData = (
-  items: RevenueStat[],
-  startDate: Date,
-  endDate: Date,
-  type: 'day' | 'month',
-) => {
-  const start = startOfDay(startDate)
-  const end = endOfDay(endDate)
-
-  const filteredItems = items.filter((item) => {
-    const itemDate = parseISO(item.date)
-    return itemDate >= start && itemDate <= end
-  })
-
-  if (type === 'day') {
-    return filteredItems
-  }
-
-  const groupedByMonth = new Map<string, RevenueStat>()
-
-  filteredItems.forEach((item) => {
-    const itemDate = parseISO(item.date)
-    const monthKey = format(itemDate, 'yyyy-MM')
-    const existingItem = groupedByMonth.get(monthKey)
-
-    if (existingItem) {
-      groupedByMonth.set(monthKey, {
-        date: existingItem.date,
-        totalRevenue: existingItem.totalRevenue + item.totalRevenue,
-        orderCount: existingItem.orderCount + item.orderCount,
-      })
-      return
-    }
-
-    groupedByMonth.set(monthKey, {
-      date: `${monthKey}-01`,
-      totalRevenue: item.totalRevenue,
-      orderCount: item.orderCount,
-    })
-  })
-
-  return Array.from(groupedByMonth.values())
-}
+import { statsService } from '@/services/stats.service'
 
 const formatRevenueDate = (date: string, type: 'day' | 'month') =>
   type === 'month'
@@ -113,7 +37,8 @@ export default function DashboardPage() {
   const [error, setError] = useState<string | null>(null)
 
   const currentDate = new Date()
-  const [startDate, setStartDate] = useState<Date>(parseISO('2026-01-01'))
+  // Mặc định xem từ đầu tháng hiện tại
+  const [startDate, setStartDate] = useState<Date>(startOfDay(new Date(new Date().getFullYear(), new Date().getMonth(), 1)))
   const [endDate, setEndDate] = useState<Date>(currentDate)
   const [type, setType] = useState<'day' | 'month'>('day')
 
@@ -134,7 +59,7 @@ export default function DashboardPage() {
     )
   }, [startDate, endDate, type, appliedStartDate, appliedEndDate, appliedType])
 
-  const fetchData = () => {
+  const fetchData = async () => {
     if (startDate > endDate) {
       setError('Ngày bắt đầu phải nhỏ hơn hoặc bằng ngày kết thúc')
       return
@@ -148,32 +73,47 @@ export default function DashboardPage() {
     setLoading(true)
     setError(null)
 
-    const filteredData = filterRevenueData(
-      MOCK_REVENUE_DATA,
-      startDate,
-      endDate,
-      type,
-    )
-    const totals = filteredData.reduce(
-      (acc, item) => {
-        acc.totalRevenue += item.totalRevenue || 0
-        acc.totalOrders += item.orderCount || 0
-        return acc
-      },
-      { totalRevenue: 0, totalOrders: 0 },
-    )
+    try {
+      const response = await statsService.getRevenue({
+        startDate: format(startDate, 'yyyy-MM-dd'),
+        endDate: format(endDate, 'yyyy-MM-dd'),
+        type: type,
+      })
 
-    setAppliedStartDate(startDate)
-    setAppliedEndDate(endDate)
-    setAppliedType(type)
-    setData(filteredData)
-    setSummaryTotals(totals)
-    setLoading(false)
+      if (response.data) {
+        // Đảm bảo kiểu dữ liệu là number (backend có thể trả về string cho BIGINT/COUNT)
+        const fetchedData = response.data.map((item) => ({
+          ...item,
+          totalRevenue: Number(item.totalRevenue),
+          orderCount: Number(item.orderCount),
+        }))
+
+        const totals = fetchedData.reduce(
+          (acc, item) => {
+            acc.totalRevenue += item.totalRevenue || 0
+            acc.totalOrders += item.orderCount || 0
+            return acc
+          },
+          { totalRevenue: 0, totalOrders: 0 },
+        )
+
+        setAppliedStartDate(startDate)
+        setAppliedEndDate(endDate)
+        setAppliedType(type)
+        setData(fetchedData)
+        setSummaryTotals(totals)
+      }
+    } catch (err: any) {
+      setError(
+        err.response?.data?.message || 'Đã có lỗi xảy ra khi kết nối server',
+      )
+    } finally {
+      setLoading(false)
+    }
   }
 
   useEffect(() => {
     fetchData()
-    // Initial data should load once; later updates happen only from the action button.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 

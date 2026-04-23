@@ -1,13 +1,13 @@
 import { ObjectId, Filter } from 'mongodb'
 import { PRODUCT_MESSAGES } from '~/constants/messages'
 import Product from '~/models/schemas/Product.schema'
-import mockInventory from '~/models/data/inventory.data'
 import { CreateProductReqBody, SearchProductQuery, UpdateProductReqBody } from '~/models/requests/Product.requests'
 import { ErrorWithStatus } from '~/models/Errors'
 import HTTP_STATUS from '~/constants/httpStatus'
 import { getMongoDB } from '~/utils/mongodb'
 import Category from '~/models/schemas/Category.schema'
 import { query } from '~/utils/postgres'
+import inventoryService from './inventory.services'
 
 class ProductService {
   private get collection() {
@@ -202,7 +202,26 @@ class ProductService {
     })
 
     const result = await this.collection.insertOne(newProduct)
-    return { _id: result.insertedId }
+    const productId = result.insertedId
+
+    // Handle initial SKUs if provided
+    if (body.skus && body.skus.length > 0) {
+      try {
+        for (const skuData of body.skus) {
+          await inventoryService.createSku({
+            ...skuData,
+            productID: productId.toHexString()
+          })
+        }
+      } catch (error) {
+        // Rollback: Delete product AND all SKUs created so far for this product
+        await this.collection.deleteOne({ _id: productId })
+        await inventoryService.deleteSkusByProductId(productId.toHexString())
+        throw error
+      }
+    }
+
+    return { _id: productId }
   }
 
   async updateProduct(id: string, body: UpdateProductReqBody) {

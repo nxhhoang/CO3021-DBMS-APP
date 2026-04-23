@@ -1,11 +1,18 @@
 import { ApiResponse } from './api.types';
 import { STATS_PERIOD } from '@/constants/enum';
 
-// Item trong mảng dữ liệu trả về
+// Item đã qua xử lý ở frontend
 export interface RevenueStat {
   date: string // ISO date string "2026-01-01"
   totalRevenue: number
   orderCount: number
+}
+
+// Item thô từ backend (BIGINT/COUNT có thể trả về string)
+export interface RawRevenueStat {
+  date: string
+  totalRevenue: number | string
+  orderCount: number | string
 }
 
 // Params gửi lên
@@ -16,4 +23,4 @@ export interface GetRevenueStatsRequest {
 }
 
 // Response từ API
-export type GetRevenueStatsResponse = ApiResponse<RevenueStat[]>
+export type GetRevenueStatsResponse = ApiResponse<RawRevenueStat[]>

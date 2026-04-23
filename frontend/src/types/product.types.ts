@@ -75,7 +75,14 @@ export type CreateProductRequest = Pick<
   | 'description'
   | 'images'
   | 'attributes'
->
+> & {
+  skus?: {
+    sku: string
+    skuPrice: number
+    stockQuantity: number
+    attributes: Record<string, any>
+  }[]
+}
 
 export type CreateProductResponse = ApiResponse<{ _id: string }>
 

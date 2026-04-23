@@ -2,9 +2,6 @@ import type { Metadata } from 'next';
 import { Inter, Roboto_Mono, Plus_Jakarta_Sans } from 'next/font/google';
 import './globals.css';
 import MockProvider from '@/components/layout/MockProvider';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { ShoppingCart, User, Search, Store } from 'lucide-react';
 
 const inter = Inter({
   variable: '--font-inter',

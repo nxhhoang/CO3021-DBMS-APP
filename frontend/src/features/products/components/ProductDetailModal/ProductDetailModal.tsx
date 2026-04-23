@@ -8,8 +8,6 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { Textarea } from '@/components/ui/textarea'
 import {
   Loader2,
   ShoppingCart,
@@ -54,9 +52,6 @@ export const ProductDetailModal = ({
   const [activeImageIndex, setActiveImageIndex] = useState(0)
   const [reviews, setReviews] = useState<Review[]>([])
   const [reviewsLoading, setReviewsLoading] = useState(false)
-  const [reviewSubmitting, setReviewSubmitting] = useState(false)
-  const [reviewRating, setReviewRating] = useState(5)
-  const [reviewComment, setReviewComment] = useState('')
   const [activeTab, setActiveTab] = useState<'info' | 'reviews'>('info')
 
   const getSkuDisplayPrice = (item: Inventory | null) => {
@@ -73,20 +68,6 @@ export const ProductDetailModal = ({
     })
   }
 
-  const fetchReviews = async () => {
-    if (!productId) return
-    setReviewsLoading(true)
-    try {
-      const response = await reviewService.getReviews({ productId })
-      setReviews(response.data || [])
-    } catch (error) {
-      console.error(error)
-      setReviews([])
-      toast.error('Không thể tải đánh giá sản phẩm')
-    } finally {
-      setReviewsLoading(false)
-    }
-  }
 
   // Fetch product detail
   useEffect(() => {
@@ -96,8 +77,6 @@ export const ProductDetailModal = ({
       setQuantity(1)
       setActiveImageIndex(0)
       setReviews([])
-      setReviewRating(5)
-      setReviewComment('')
       return
     }
 
@@ -132,7 +111,7 @@ export const ProductDetailModal = ({
     }
 
     fetchDetail()
-  }, [isOpen, productId, onClose])
+  }, [isOpen, productId])
 
   useEffect(() => setQuantity(1), [selectedSku])
 
@@ -215,43 +194,6 @@ export const ProductDetailModal = ({
     }
   }
 
-  const handleSubmitReview = async () => {
-    const trimmedComment = reviewComment.trim()
-
-    if (!productId) return
-    if (!trimmedComment) {
-      toast.error('Vui lòng nhập nội dung đánh giá')
-      return
-    }
-
-    if (trimmedComment.length < 10) {
-      toast.error('Vui lòng nhập ít nhất 10 ký tự cho nội dung đánh giá')
-      return
-    }
-
-    setReviewSubmitting(true)
-    try {
-      await reviewService.createReview(
-        { productId },
-        {
-          rating: reviewRating,
-          comment: trimmedComment,
-        },
-      )
-
-      toast.success('Gửi đánh giá thành công')
-      setReviewComment('')
-      setReviewRating(5)
-      await fetchReviews()
-    } catch (error: any) {
-      const message =
-        error?.response?.data?.message ||
-        'Bạn cần đăng nhập và mua sản phẩm trước khi đánh giá'
-      toast.error(message)
-    } finally {
-      setReviewSubmitting(false)
-    }
-  }
 
   if (loading) {
     return (
@@ -345,12 +287,6 @@ export const ProductDetailModal = ({
                     avgRating={product.avgRating || 0}
                     reviews={reviews}
                     reviewsLoading={reviewsLoading}
-                    reviewRating={reviewRating}
-                    setReviewRating={setReviewRating}
-                    reviewComment={reviewComment}
-                    setReviewComment={setReviewComment}
-                    reviewSubmitting={reviewSubmitting}
-                    onSubmitReview={handleSubmitReview}
                     formatReviewDate={formatReviewDate}
                   />
                 )}

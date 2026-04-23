@@ -3,9 +3,9 @@ import { ApiResponse } from './api.types';
 import { Product } from './product.types'
 
 export interface CartItem {
-  // Backend/OpenAPI field
+  /** Canonical product ID field. Preferred over productID. */
   productId: string
-  // Legacy field kept for backward compatibility with existing session data
+  /** Legacy field kept for backward compatibility with existing session data. Use productId instead. */
   productID?: string
   sku: string
 

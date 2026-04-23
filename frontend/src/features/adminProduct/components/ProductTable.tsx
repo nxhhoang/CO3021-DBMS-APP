@@ -148,29 +148,31 @@ export default function ProductTable({
   }
 
   return (
-    <Card className="bg-surface-container-lowest border-outline-variant/10 overflow-hidden rounded-xl border shadow-sm">
-      <CardHeader className="space-y-4 pb-4">
-        <CardTitle className="text-xl font-bold">Danh sách sản phẩm</CardTitle>
+    <div className="glass-card overflow-hidden border-white/40 bg-white/40 shadow-2xl backdrop-blur-xl">
+      <div className="border-b border-slate-100 bg-slate-50/30 px-8 py-6">
+        <h2 className="text-lg font-bold text-slate-900">Danh sách sản phẩm</h2>
+      </div>
 
+      <div className="p-8">
         <form
           onSubmit={onSearchSubmit}
-          className="grid grid-cols-1 gap-3 xl:grid-cols-[minmax(0,1fr)_220px_220px_auto_auto] xl:items-center"
+          className="mb-8 grid grid-cols-1 gap-4 lg:grid-cols-[1fr_200px_200px_auto_auto] lg:items-center"
         >
-          <div className="relative">
-            <Search className="text-muted-foreground pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
+          <div className="group relative">
+            <Search className="absolute top-1/2 left-4 h-4 w-4 -translate-y-1/2 text-slate-400 transition-colors group-focus-within:text-indigo-500" />
             <Input
               value={keywordInput}
               onChange={(event) => onKeywordChange(event.target.value)}
               placeholder="Tìm kiếm theo tên hoặc mô tả..."
-              className="pl-9"
+              className="h-12 rounded-xl border-slate-100 bg-white/80 pl-11 shadow-sm transition-all focus:bg-white focus:ring-2 focus:ring-indigo-100"
             />
           </div>
 
           <Select value={categoryFilter} onValueChange={onCategoryChange}>
-            <SelectTrigger>
+            <SelectTrigger className="h-12 rounded-xl border-slate-100 bg-white/80 shadow-sm transition-all focus:ring-2 focus:ring-indigo-100">
               <SelectValue placeholder="Danh mục" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="rounded-xl border-slate-100 shadow-xl">
               <SelectItem value="all">Tất cả danh mục</SelectItem>
               {categories.map((category) => (
                 <SelectItem
@@ -184,10 +186,10 @@ export default function ProductTable({
           </Select>
 
           <Select value={sortFilter} onValueChange={onSortChange}>
-            <SelectTrigger>
+            <SelectTrigger className="h-12 rounded-xl border-slate-100 bg-white/80 shadow-sm transition-all focus:ring-2 focus:ring-indigo-100">
               <SelectValue placeholder="Sắp xếp" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="rounded-xl border-slate-100 shadow-xl">
               {ADMIN_SORT_OPTIONS.map((option) => (
                 <SelectItem key={option.value} value={option.value}>
                   {option.label}
@@ -196,36 +198,39 @@ export default function ProductTable({
             </SelectContent>
           </Select>
 
-          <Button type="submit">Áp dụng</Button>
+          <button
+            type="submit"
+            className="flex h-12 items-center justify-center rounded-xl bg-slate-900 px-8 font-bold text-white transition-all hover:bg-black active:scale-95"
+          >
+            Áp dụng
+          </button>
 
-          <Button type="button" variant="outline" onClick={onResetFilters}>
+          <button
+            type="button"
+            onClick={onResetFilters}
+            className="flex h-12 w-12 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-500 transition-all hover:bg-slate-50 hover:text-slate-900 active:scale-95"
+          >
             <RotateCcw className="h-4 w-4" />
-            Đặt lại
-          </Button>
+          </button>
         </form>
-      </CardHeader>
 
-      <CardContent>
-        <div className="overflow-hidden rounded-md border">
+        <div className="overflow-hidden rounded-2xl border border-slate-100 bg-white/50 shadow-sm">
           <table className="w-full text-sm">
             <thead>
-              <tr className="bg-muted/50 border-b transition-colors">
-                <th className="text-muted-foreground h-12 px-4 text-left font-medium">
+              <tr className="border-b border-slate-100 bg-slate-50/50">
+                <th className="h-14 px-6 text-left text-[10px] font-black tracking-widest text-slate-400 uppercase">
                   Sản phẩm
                 </th>
-                <th className="text-muted-foreground h-12 px-4 text-left font-medium">
+                <th className="h-14 px-6 text-left text-[10px] font-black tracking-widest text-slate-400 uppercase">
                   Danh mục
                 </th>
-                <th className="text-muted-foreground h-12 px-4 text-right font-medium">
+                <th className="h-14 px-6 text-right text-[10px] font-black tracking-widest text-slate-400 uppercase">
                   Giá cơ bản
                 </th>
-                <th className="text-muted-foreground h-12 px-4 text-center font-medium">
-                  Đã bán
+                <th className="h-14 px-6 text-center text-[10px] font-black tracking-widest text-slate-400 uppercase">
+                  Thống kê
                 </th>
-                <th className="text-muted-foreground h-12 px-4 text-center font-medium">
-                  Đánh giá
-                </th>
-                <th className="text-muted-foreground h-12 px-4 text-right font-medium">
+                <th className="h-14 px-6 text-right text-[10px] font-black tracking-widest text-slate-400 uppercase">
                   Thao tác
                 </th>
               </tr>
@@ -246,11 +251,11 @@ export default function ProductTable({
                 products.map((product) => (
                   <tr
                     key={product._id}
-                    className="hover:bg-muted/50 border-b transition-colors"
+                    className="border-b border-slate-50 transition-colors hover:bg-slate-50/50"
                   >
-                    <td className="p-4">
+                    <td className="px-6 py-5">
                       <div className="flex items-center gap-4">
-                        <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-lg border">
+                        <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-2xl border border-slate-100 shadow-sm">
                           <Image
                             src={
                               product.images?.[0] ?? '/placeholder-product.png'
@@ -260,79 +265,80 @@ export default function ProductTable({
                             className="object-cover"
                           />
                         </div>
-                        <div className="max-w-50">
+                        <div className="max-w-64 space-y-1">
                           <p
-                            className="truncate text-sm font-medium"
+                            className="truncate text-sm font-bold text-slate-900"
                             title={product.name}
                           >
                             {product.name}
                           </p>
-                          <p className="text-muted-foreground font-mono text-[10px]">
-                            ID: {product._id.slice(-6).toUpperCase()}
+                          <p className="text-[10px] font-bold tracking-wider text-slate-400 uppercase">
+                            ID: {product._id.slice(-8).toUpperCase()}
                           </p>
                         </div>
                       </div>
                     </td>
-                    <td className="p-4 text-left">
-                      <Badge
-                        variant="secondary"
-                        className="text-[10px] font-normal uppercase"
-                      >
+                    <td className="px-6 py-5">
+                      <span className="glass-badge-blue inline-flex items-center rounded-full px-3 py-1 text-[10px] font-black uppercase">
                         {product.category?.name || 'N/A'}
-                      </Badge>
+                      </span>
                     </td>
-                    <td className="p-4 text-right font-semibold">
-                      {product.basePrice.toLocaleString()}đ
+                    <td className="px-6 py-5 text-right">
+                      <p className="text-sm font-bold text-slate-900">
+                        {product.basePrice.toLocaleString()}đ
+                      </p>
                     </td>
-                    <td className="p-4 text-center font-medium">
-                      {product.totalSold}
-                    </td>
-                    <td className="p-4">
-                      <div className="flex items-center justify-center gap-1">
-                        <Star
-                          className="fill-yellow-500 text-yellow-500"
-                          size={14}
-                        />
-                        <span className="font-medium">{product.avgRating}</span>
-                        <span className="text-muted-foreground/60 text-[11px]">
-                          ({product.totalReviews})
-                        </span>
+                    <td className="px-6 py-5">
+                      <div className="flex flex-col items-center gap-1">
+                        <div className="flex items-center gap-1.5">
+                          <Star
+                            className="fill-amber-400 text-amber-400"
+                            size={12}
+                          />
+                          <span className="text-xs font-bold text-slate-700">
+                            {product.avgRating}
+                          </span>
+                        </div>
+                        <p className="text-[10px] font-medium text-slate-400">
+                          {product.totalSold} đã bán • {product.totalReviews} HV
+                        </p>
                       </div>
                     </td>
-                    <td className="p-4">
-                      <div className="flex justify-end gap-1">
-                        <Button
-                          variant="ghost"
-                          size="icon"
+                    <td className="px-6 py-5 text-right">
+                      <div className="flex justify-end gap-2">
+                        <button
                           onClick={() => onEdit(product)}
+                          className="flex h-9 w-9 items-center justify-center rounded-full border border-slate-100 bg-white text-slate-600 shadow-sm transition-all hover:border-indigo-100 hover:bg-indigo-50 hover:text-indigo-600 active:scale-90"
                         >
-                          <Edit2 className="h-4 w-4" />
-                        </Button>
+                          <Edit2 size={16} />
+                        </button>
 
                         <AlertDialog>
                           <AlertDialogTrigger asChild>
-                            <Button variant="ghost" size="icon">
-                              <Trash2 className="h-4 w-4 text-red-500" />
-                            </Button>
+                            <button className="flex h-9 w-9 items-center justify-center rounded-full border border-slate-100 bg-white text-slate-400 shadow-sm transition-all hover:border-red-100 hover:bg-red-50 hover:text-red-500 active:scale-90">
+                              <Trash2 size={16} />
+                            </button>
                           </AlertDialogTrigger>
-                          <AlertDialogContent>
+                          <AlertDialogContent className="rounded-3xl border-none shadow-2xl">
                             <AlertDialogHeader>
-                              <AlertDialogTitle>
-                                Xác nhận xóa sản phẩm
+                              <AlertDialogTitle className="text-xl font-bold">
+                                Ngừng kinh doanh sản phẩm?
                               </AlertDialogTitle>
-                              <AlertDialogDescription>
-                                Bạn có chắc chắn muốn ngừng bán sản phẩm &quot;
-                                {product.name}&quot;? Hành động này không thể
-                                hoàn tác.
+                              <AlertDialogDescription className="text-slate-500">
+                                Sản phẩm &quot;{product.name}&quot; sẽ bị ẩn
+                                khỏi cửa hàng. Bạn có thể kích hoạt lại sau
+                                trong phần cài đặt.
                               </AlertDialogDescription>
                             </AlertDialogHeader>
-                            <AlertDialogFooter>
-                              <AlertDialogCancel>Hủy</AlertDialogCancel>
+                            <AlertDialogFooter className="mt-4">
+                              <AlertDialogCancel className="rounded-xl border-slate-200">
+                                Hủy bỏ
+                              </AlertDialogCancel>
                               <AlertDialogAction
-                                className="bg-red-500 hover:bg-red-600"
+                                className="rounded-xl bg-red-500 font-bold text-white hover:bg-red-600"
                                 onClick={() => handleDelete(product._id)}
                               >
-                                Xác nhận
+                                Xác nhận ngừng bán
                               </AlertDialogAction>
                             </AlertDialogFooter>
                           </AlertDialogContent>
@@ -357,54 +363,51 @@ export default function ProductTable({
           </table>
         </div>
 
-        {/* FOOTER & PAGINATION */}
-        <div className="mt-4 flex flex-col items-center justify-between gap-4 md:flex-row">
-          <p className="text-muted-foreground text-xs italic">
+      <div className="border-t border-slate-100 bg-slate-50/30 px-8 py-5">
+        <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
+          <p className="text-[11px] font-bold tracking-wider text-slate-400 uppercase">
             Hiển thị {pagination?.itemCount ?? 0} trên{' '}
             {pagination?.totalItems ?? 0} sản phẩm
           </p>
 
           {pagination && pagination.totalPages > 1 && (
             <Pagination className="mx-0 w-auto">
-              <PaginationContent>
+              <PaginationContent className="gap-1">
                 <PaginationItem>
-                  <PaginationPrevious
-                    href="#"
+                  <button
                     onClick={(e) => {
                       e.preventDefault()
                       if (pagination.currentPage > 1)
                         onPageChange(pagination.currentPage - 1)
                     }}
-                    className={
-                      pagination.currentPage <= 1
-                        ? 'pointer-events-none opacity-50'
-                        : 'cursor-pointer'
-                    }
-                  />
+                    disabled={pagination.currentPage <= 1}
+                    className="flex h-9 items-center gap-1 rounded-xl px-3 text-xs font-bold text-slate-600 transition-colors hover:bg-white hover:text-slate-900 disabled:opacity-30"
+                  >
+                    Trước
+                  </button>
                 </PaginationItem>
 
                 {renderPaginationItems()}
 
                 <PaginationItem>
-                  <PaginationNext
-                    href="#"
+                  <button
                     onClick={(e) => {
                       e.preventDefault()
                       if (pagination.hasNextPage)
                         onPageChange(pagination.currentPage + 1)
                     }}
-                    className={
-                      !pagination.hasNextPage
-                        ? 'pointer-events-none opacity-50'
-                        : 'cursor-pointer'
-                    }
-                  />
+                    disabled={!pagination.hasNextPage}
+                    className="flex h-9 items-center gap-1 rounded-xl px-3 text-xs font-bold text-slate-600 transition-colors hover:bg-white hover:text-slate-900 disabled:opacity-30"
+                  >
+                    Sau
+                  </button>
                 </PaginationItem>
               </PaginationContent>
             </Pagination>
           )}
         </div>
-      </CardContent>
-    </Card>
-  )
+      </div>
+    </div>
+  </div>
+)
 }

@@ -151,7 +151,7 @@ body {
   .glass-sidebar,
   .glass-container,
   .glass-container-full {
-    @apply border border-white/40 bg-neutral-50/10 shadow-xl ring-1 ring-black/5 backdrop-blur-3xl transition-all duration-300 ease-in-out;
+    @apply border border-white/40 bg-white/40 shadow-xl ring-1 ring-black/5 backdrop-blur-3xl transition-all duration-300 ease-in-out;
   }
 
   .glass-card {
@@ -198,7 +198,7 @@ body {
   }
 
   .input-premium {
-    @apply rounded-xl border border-slate-100 bg-slate-50/50 text-slate-700 transition-all focus:border-blue-200 focus:bg-white focus:ring-2 focus:ring-blue-500/20 dark:border-white/5 dark:bg-slate-900/50 dark:text-slate-300;
+    @apply rounded-xl border border-slate-200/60 bg-white/60 text-slate-900 transition-all placeholder:text-slate-400 focus:border-blue-400 focus:bg-white focus:ring-4 focus:ring-blue-500/10 dark:border-white/10 dark:bg-slate-900/40 dark:text-white dark:placeholder:text-slate-500;
   }
 
   .card-premium {
@@ -206,11 +206,15 @@ body {
   }
 
   .icon-box-premium {
-    @apply flex items-center justify-center rounded-2xl bg-white border border-slate-100 text-slate-600 shadow-sm transition-all duration-300;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 1rem;
+    @apply bg-white border border-slate-100 text-slate-600 shadow-sm transition-all duration-300;
   }
 
   .select-premium-trigger {
-    @apply h-14 w-full rounded-full border-slate-100 bg-white font-bold text-slate-700 shadow-sm transition-all hover:bg-slate-50 focus:ring-2 focus:ring-blue-500/10 dark:border-white/5 dark:bg-slate-900 dark:text-slate-300;
+    @apply h-11 w-full rounded-xl border border-slate-200/60 bg-white/60 font-bold text-slate-900 shadow-sm transition-all hover:bg-white focus:ring-4 focus:ring-blue-500/10 dark:border-white/10 dark:bg-slate-900/40 dark:text-white;
   }
   .select-premium-content {
     @apply rounded-[2rem] border-slate-100 p-3 shadow-2xl dark:border-white/10 dark:bg-slate-900;
@@ -283,5 +287,23 @@ body {
   /* --- Layout & Spacing --- */
   .section-padding {
     @apply py-24 sm:py-32;
+  }
+
+  /* --- Premium Scrollbar --- */
+  .scrollbar-premium {
+    scrollbar-width: thin;
+    scrollbar-color: oklch(0.922 0 0) transparent;
+  }
+
+  .scrollbar-premium::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .scrollbar-premium::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .scrollbar-premium::-webkit-scrollbar-thumb {
+    @apply rounded-full bg-slate-200 transition-colors hover:bg-slate-300;
   }
 }

@@ -86,12 +86,71 @@ export const orderHandlers = [
     return HttpResponse.json(newOrder)
   }),
   // GET /admin/orders
-  http.get(`${BASE_URL}/admin/orders`, async () => {
+  http.get(`${BASE_URL}/admin/orders`, async ({ request }) => {
     console.log('MSW ADMIN ORDERS HIT')
+    
+    const url = new URL(request.url)
+    const page = parseInt(url.searchParams.get('page') || '1')
+    const limit = parseInt(url.searchParams.get('limit') || '10')
+    const search = url.searchParams.get('search')
+    const status = url.searchParams.get('status')
+    const sort = url.searchParams.get('sort')
+
+    // Tạo danh sách đơn hàng giả lập lớn hơn để test lọc/sắp xếp
+    // Trong thực tế MOCK_ORDERS có thể được mở rộng
+    let allOrders = [...MOCK_ORDERS]
+    
+    // Nếu MOCK_ORDERS quá ít, hãy tạo thêm giả lập dựa trên MOCK_ORDERS
+    if (allOrders.length < 50) {
+      const statuses = ['PENDING', 'PROCESSING', 'SHIPPED', 'DELIVERED', 'CANCELLED']
+      for (let i = 1; i <= 100; i++) {
+        allOrders.push({
+          orderID: 2000 + i,
+          totalAmount: Math.floor(Math.random() * 500000) * 1000,
+          status: statuses[Math.floor(Math.random() * statuses.length)] as any,
+          createdAt: new Date(Date.now() - Math.random() * 10000000000).toISOString(),
+          userID: `user-${Math.floor(Math.random() * 1000)}`
+        })
+      }
+    }
+
+    // 1. Lọc theo search
+    if (search) {
+      allOrders = allOrders.filter(o => 
+        o.orderID.toString().includes(search) || 
+        o.userID?.includes(search)
+      )
+    }
+
+    // 2. Lọc theo status
+    if (status && status !== 'ALL') {
+      allOrders = allOrders.filter(o => o.status === status)
+    }
+
+    // 3. Sắp xếp
+    allOrders.sort((a, b) => {
+      const timeA = new Date(a.createdAt).getTime()
+      const timeB = new Date(b.createdAt).getTime()
+      return sort === 'newest' ? timeB - timeA : timeA - timeB
+    })
+
+    // 4. Phân trang
+    const total = allOrders.length
+    const totalPages = Math.ceil(total / limit)
+    const startIndex = (page - 1) * limit
+    const paginatedOrders = allOrders.slice(startIndex, startIndex + limit)
 
     const response: GetAdminOrdersResponse = {
       message: 'Danh sách tất cả đơn hàng (admin)',
-      data: MOCK_ORDERS,
+      data: {
+        orders: paginatedOrders as any,
+        pagination: {
+          total,
+          page,
+          limit,
+          totalPages
+        }
+      },
     }
 
     return HttpResponse.json(response)

@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react'
 import { getUserRole } from '@/utils/getUserRole'
 import '@/lib/axios'
 
-import { LayoutDashboard, Package, Folder } from 'lucide-react'
+import { LayoutDashboard, Package, Folder, ShoppingBag, ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
@@ -43,7 +43,7 @@ export default function AdminLayout({
     {
       name: 'Orders',
       href: '/admin/orders',
-      icon: Package,
+      icon: ShoppingBag,
     },
     {
       name: 'Categories',
@@ -53,12 +53,12 @@ export default function AdminLayout({
   ]
 
   return (
-    <div className="bg-surface flex min-h-screen">
+    <div className="bg-surface min-h-screen">
       {/* SIDEBAR */}
-      <aside className="fixed top-0 left-0 z-50 flex h-screen w-64 flex-col border-r border-slate-200 bg-slate-50 p-6 dark:border-slate-800 dark:bg-slate-950">
+      <aside className="fixed top-0 left-0 z-50 flex h-screen w-60 flex-col border-r border-slate-200 bg-slate-50 p-4 dark:border-slate-800 dark:bg-slate-950">
         {/* LOGO */}
-        <div className="mb-10">
-          <h1 className="text-primary text-lg font-black">BKShop Admin</h1>
+        <div className="mb-6">
+          <h1 className="text-primary text-base font-black">BKShop Admin</h1>
           <p className="text-xs tracking-widest text-slate-400 uppercase">
             Management
           </p>
@@ -74,9 +74,9 @@ export default function AdminLayout({
               <Link
                 key={item.href}
                 href={item.href}
-                className={`flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium transition ${
+                className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition ${
                   isActive
-                    ? 'bg-primary text-white shadow'
+                    ? 'bg-primary text-white shadow-sm'
                     : 'text-slate-600 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800'
                 }`}
               >
@@ -86,12 +86,21 @@ export default function AdminLayout({
             )
           })}
         </nav>
+        <div className="mt-auto pt-4 border-t border-slate-200 dark:border-slate-800">
+          <Link
+            href="/"
+            className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-slate-600 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800 transition"
+          >
+            <ArrowLeft size={18} />
+            Back to Store
+          </Link>
+        </div>
       </aside>
 
       {/* MAIN CONTENT */}
-      <main className="ml-64 w-full">
+      <main className="ml-60">
         {/* PAGE CONTENT */}
-        <div className="p-8">{children}</div>
+        <div>{children}</div>
       </main>
     </div>
   )

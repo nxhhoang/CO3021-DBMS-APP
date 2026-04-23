@@ -28,3 +28,6 @@ const reviewService = {
 }
 
 export default reviewService
+
+
+// privateApi.post<CreateReviewResponse>(`products/${productId}/reviews`, data)

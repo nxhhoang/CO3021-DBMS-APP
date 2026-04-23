@@ -14,7 +14,7 @@ import {
 } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
-import { authService } from '@/services/auth.service';
+import { authService } from '@/features/auth/services/auth.service';
 import Link from 'next/link';
 import { useForm } from '@/hooks/useForm';
 // import { Phone } from 'lucide-react';

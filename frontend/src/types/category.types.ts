@@ -1,20 +1,16 @@
 import { ApiResponse } from './api.types';
 
-export type AttributeOptionValue = string | number | boolean
-
 export interface DynamicAttribute {
   key: string
   label: string
   dataType: 'string' | 'number' | 'boolean'
-  isRequired?: boolean
-  options: AttributeOptionValue[]
+  options: string[]
 }
 
 export interface DynamicAttributeInput {
   key: string
   label: string
   dataType: 'string' | 'number' | 'boolean'
-  isRequired: boolean
   options?: string[]
 }
 
@@ -27,6 +23,8 @@ export interface Category {
   isActive: boolean
   dynamicAttributes: DynamicAttribute[]
   variantAttributes?: DynamicAttribute[]
+  createdAt?: string
+  updatedAt?: string
 }
 
 // GET /categories
@@ -40,6 +38,7 @@ export interface CreateCategoryRequest {
   description?: string
   isActive?: boolean
   dynamicAttributes?: DynamicAttributeInput[]
+  variantAttributes?: DynamicAttributeInput[]
 }
 export type CreateCategoryResponse = ApiResponse<{ _id: string }>;
 

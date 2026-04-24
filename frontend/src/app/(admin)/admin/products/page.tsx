@@ -11,7 +11,6 @@ import AddProductModal from '@/features/adminProduct/components/AddProductModal/
 import AddCategoryModal from '@/features/adminProduct/components/AddCategoryModal/AddCategoryModal'
 import EditProductModal from '@/features/adminProduct/components/EditProductModal/EditProductModal'
 import { Button } from '@/components/ui/button'
-import { MeshBackground } from '@/components/common/MeshBackground'
 
 export default function AdminProductsPage() {
   const {
@@ -44,7 +43,6 @@ export default function AdminProductsPage() {
 
   return (
     <div className="relative isolate min-h-screen">
-      <MeshBackground variant="admin" />
 
       <div className="mx-auto max-w-7xl px-4 py-4 md:px-6 md:py-8">
         {/* HEADER */}

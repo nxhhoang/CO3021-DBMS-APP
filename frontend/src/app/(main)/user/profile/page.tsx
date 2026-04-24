@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import { User, Mail, Phone, ShieldCheck } from 'lucide-react';
+import { User, Mail, Phone, ShieldCheck, Edit2, Save, X, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -18,7 +18,6 @@ import { userService } from '@/services/user.service';
 import type { GetProfileResponse } from '@/types';
 import { cn } from '@/lib/utils';
 
-// Định nghĩa kiểu dữ liệu thực tế bên trong lóp data
 type ProfileData = NonNullable<GetProfileResponse['data']>;
 
 const EMPTY_PROFILE: ProfileData = {
@@ -31,41 +30,59 @@ const EMPTY_PROFILE: ProfileData = {
 
 export default function ProfilePage() {
   const [profile, setProfile] = useState<ProfileData>(EMPTY_PROFILE);
+  const [tempProfile, setTempProfile] = useState<ProfileData>(EMPTY_PROFILE);
+  const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [isUpdating, setIsUpdating] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchProfile = async () => {
-      setIsLoading(true);
-      setErrorMessage(null);
-
-      try {
-        const response = await userService.getProfile();
-        if (response && response.data) {
-          setProfile(response.data);
-        } else {
-          setErrorMessage('Không tìm thấy dữ liệu người dùng trong hệ thống.');
-        }
-      } catch (error: any) {
-        console.error('Profile Fetch Error:', error);
-        const serverMessage = error?.response?.data?.message;
-        setErrorMessage(
-          serverMessage ||
-            'Không thể tải thông tin người dùng. Vui lòng kiểm tra kết nối.',
-        );
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
     fetchProfile();
   }, []);
 
-  const initials = useMemo(() => {
-    if (!profile.fullName || !profile.fullName.trim()) {
-      return '?';
+  const fetchProfile = async () => {
+    setIsLoading(true);
+    setErrorMessage(null);
+    try {
+      const response = await userService.getProfile();
+      if (response && response.data) {
+        setProfile(response.data);
+        setTempProfile(response.data);
+      } else {
+        setErrorMessage('Không tìm thấy dữ liệu người dùng.');
+      }
+    } catch (error: any) {
+      setErrorMessage(error?.response?.data?.message || 'Không thể tải thông tin người dùng.');
+    } finally {
+      setIsLoading(false);
     }
+  };
 
+  const handleSave = async () => {
+    setIsUpdating(true);
+    setErrorMessage(null);
+    try {
+      await userService.updateProfile({
+        fullName: tempProfile.fullName,
+        phoneNum: tempProfile.phoneNum,
+      });
+      setProfile({ ...profile, ...tempProfile });
+      setIsEditing(false);
+    } catch (error: any) {
+      setErrorMessage(error?.response?.data?.message || 'Cập nhật thất bại. Vui lòng thử lại.');
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
+  const handleCancel = () => {
+    setTempProfile(profile);
+    setIsEditing(false);
+    setErrorMessage(null);
+  };
+
+  const initials = useMemo(() => {
+    if (!profile.fullName || !profile.fullName.trim()) return '?';
     return profile.fullName
       .split(' ')
       .filter(Boolean)
@@ -76,72 +93,87 @@ export default function ProfilePage() {
   }, [profile.fullName]);
 
   return (
-    <div className="animate-in fade-in slide-in-from-bottom-8 grid gap-8 duration-700 md:grid-cols-3">
+    <div className="animate-in fade-in slide-in-from-bottom-8 grid gap-8 duration-700 lg:grid-cols-3">
       {/* LEFT SIDE - Profile Summary */}
-      <Card className="glass-card md:col-span-1">
-        <CardContent className="flex flex-col items-center gap-6 pt-12">
+      <Card className="glass-card border-none bg-white/50 shadow-xl lg:col-span-1">
+        <CardContent className="flex flex-col items-center gap-6 pt-12 pb-10">
           <div className="relative">
-            <Avatar className="h-32 w-32 border-4 border-white shadow-2xl text-3xl">
-              <AvatarFallback className="bg-slate-900 font-display font-black text-white">
+            <div className="absolute inset-0 animate-pulse bg-blue-500/20 blur-2xl rounded-full" />
+            <Avatar className="relative h-32 w-32 border-4 border-white shadow-2xl">
+              <AvatarFallback className="bg-slate-900 font-display text-2xl font-black text-white">
                 {isLoading ? '...' : initials}
               </AvatarFallback>
             </Avatar>
-            <div className="absolute -bottom-2 -right-2 flex h-10 w-10 items-center justify-center rounded-2xl bg-blue-600 text-white shadow-lg ring-4 ring-white">
-              <ShieldCheck size={20} strokeWidth={2.5} />
-            </div>
           </div>
 
-          <div className="space-y-2 text-center">
-            <h3 className="font-display text-xl font-black tracking-tight text-slate-900">
+          <div className="space-y-1.5 text-center">
+            <h3 className="font-display text-2xl font-black tracking-tight text-slate-900">
               {isLoading ? 'Đang tải...' : profile.fullName || 'Chưa cập nhật'}
             </h3>
-            <p className="font-medium text-slate-500 italic">
+            <p className="font-medium text-slate-500">
               {isLoading ? 'Đang tải...' : profile.email || 'Chưa cập nhật'}
             </p>
           </div>
 
-          <div className="w-full border-t border-slate-100 pt-6">
-             <div className="flex items-center justify-between text-sm">
-                <span className="font-display font-black text-slate-400 uppercase tracking-widest text-[10px]">Trạng thái</span>
-                <span className="rounded-full bg-emerald-50 px-3 py-1 font-display text-[10px] font-black uppercase tracking-widest text-emerald-600 ring-1 ring-emerald-200/50">Đã xác thực</span>
-             </div>
+          <div className="mt-4 flex w-full flex-col gap-3 rounded-2xl bg-slate-50/50 p-4">
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">Loại tài khoản</span>
+              <span className="text-[10px] font-black uppercase tracking-widest text-blue-600">Khách hàng thân thiết</span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">Thành viên từ</span>
+              <span className="text-[10px] font-black uppercase tracking-widest text-slate-900">2024</span>
+            </div>
           </div>
         </CardContent>
       </Card>
 
       {/* RIGHT SIDE - Edit Form */}
-      <Card className="glass-card md:col-span-2">
-        <CardHeader className="pb-8 pt-10">
-          <div className="flex items-center gap-3">
-             <div className="h-1.5 w-6 rounded-full bg-blue-600" />
-             <CardTitle className="font-display text-2xl font-black tracking-tight text-slate-900">Thông tin cá nhân</CardTitle>
+      <Card className="glass-card border-none bg-white/50 shadow-xl lg:col-span-2">
+        <CardHeader className="px-8 pb-8 pt-10 flex flex-row items-center justify-between">
+          <div className="space-y-1">
+            <CardTitle className="font-display text-2xl font-black tracking-tight text-slate-900">
+              Thông tin cá nhân
+            </CardTitle>
+            <CardDescription className="font-medium text-slate-500">
+              Quản lý thông tin tài khoản và cài đặt bảo mật của bạn.
+            </CardDescription>
           </div>
-          <CardDescription className="font-medium text-slate-500">Dữ liệu hồ sơ của bạn được bảo mật trong hệ thống.</CardDescription>
+          {!isEditing && !isLoading && (
+            <Button 
+              onClick={() => setIsEditing(true)}
+              variant="outline" 
+              className="h-10 rounded-xl border-blue-100 bg-blue-50/50 px-4 font-display text-[10px] font-black uppercase tracking-widest text-blue-600 hover:bg-blue-600 hover:text-white"
+            >
+              <Edit2 size={14} className="mr-2" />
+              Chỉnh sửa
+            </Button>
+          )}
         </CardHeader>
 
         <CardContent className="space-y-8 px-8">
-          {errorMessage ? (
-            <div className="bg-rose-50 border border-rose-100 rounded-2xl p-4 flex items-center gap-3">
+          {errorMessage && (
+            <div className="flex items-center gap-3 rounded-2xl border border-rose-100 bg-rose-50/50 p-4">
               <div className="h-2 w-2 rounded-full bg-rose-500" />
-              <p className="text-rose-600 text-sm font-bold">
-                {errorMessage}
-              </p>
+              <p className="text-sm font-bold text-rose-600">{errorMessage}</p>
             </div>
-          ) : null}
+          )}
 
-          <div className="grid gap-8">
-            <div className="grid gap-3">
-              <Label htmlFor="name" className="font-display text-[11px] font-black tracking-[0.2em] text-slate-400 uppercase">Họ và tên</Label>
+          <div className="grid gap-8 sm:grid-cols-2">
+            <div className="space-y-3">
+              <Label htmlFor="fullName" className="text-[10px] font-black uppercase tracking-widest text-slate-400">
+                Họ và tên
+              </Label>
               <div className="group relative">
-                <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 transition-colors group-focus-within:text-blue-600">
-                  <User size={18} strokeWidth={2.5} />
-                </div>
+                <User className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 transition-colors group-focus-within:text-blue-600" size={18} />
                 <Input
-                  id="name"
-                  value={profile.fullName}
-                  readOnly
+                  id="fullName"
+                  value={isEditing ? tempProfile.fullName || '' : profile.fullName || ''}
+                  onChange={(e) => setTempProfile({ ...tempProfile, fullName: e.target.value })}
+                  readOnly={!isEditing}
                   className={cn(
-                    "input-premium h-14 pl-12 font-medium",
+                    "input-premium h-12 pl-12 font-bold transition-all",
+                    isEditing ? "border-blue-200 bg-white ring-2 ring-blue-500/10" : "bg-slate-50/50 cursor-default",
                     isLoading && "animate-pulse"
                   )}
                   placeholder="Họ tên người dùng"
@@ -149,18 +181,20 @@ export default function ProfilePage() {
               </div>
             </div>
 
-            <div className="grid gap-3">
-              <Label htmlFor="phone" className="font-display text-[11px] font-black tracking-[0.2em] text-slate-400 uppercase">Số điện thoại</Label>
+            <div className="space-y-3">
+              <Label htmlFor="phoneNum" className="text-[10px] font-black uppercase tracking-widest text-slate-400">
+                Số điện thoại
+              </Label>
               <div className="group relative">
-                <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 transition-colors group-focus-within:text-blue-600">
-                  <Phone size={18} strokeWidth={2.5} />
-                </div>
+                <Phone className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 transition-colors group-focus-within:text-blue-600" size={18} />
                 <Input
-                  id="phone"
-                  value={profile.phoneNum}
-                  readOnly
+                  id="phoneNum"
+                  value={isEditing ? tempProfile.phoneNum || '' : profile.phoneNum || ''}
+                  onChange={(e) => setTempProfile({ ...tempProfile, phoneNum: e.target.value })}
+                  readOnly={!isEditing}
                   className={cn(
-                    "input-premium h-14 pl-12 font-medium",
+                    "input-premium h-12 pl-12 font-bold transition-all",
+                    isEditing ? "border-blue-200 bg-white ring-2 ring-blue-500/10" : "bg-slate-50/50 cursor-default",
                     isLoading && "animate-pulse"
                   )}
                   placeholder="Số điện thoại"
@@ -168,26 +202,58 @@ export default function ProfilePage() {
               </div>
             </div>
 
-            <div className="grid gap-3">
-              <Label className="font-display text-[11px] font-black tracking-[0.2em] text-slate-400 uppercase">Email (Không thể thay đổi)</Label>
+            <div className="space-y-3 sm:col-span-2">
+              <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400">
+                Địa chỉ Email (Cố định)
+              </Label>
               <div className="group relative">
-                <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
-                  <Mail size={18} strokeWidth={2.5} />
-                </div>
+                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
                 <Input
-                  value={profile.email}
+                  value={profile.email || ''}
                   disabled
-                  className="h-14 rounded-2xl border-slate-100 bg-slate-50/50 pl-12 font-medium text-slate-500 cursor-not-allowed opacity-70"
+                  className="h-12 rounded-xl border-slate-100 bg-slate-50/80 pl-12 font-bold text-slate-400 cursor-not-allowed"
                 />
               </div>
             </div>
           </div>
         </CardContent>
 
-        <CardFooter className="mt-8 border-t border-slate-100 px-8 py-6">
-          <Button disabled variant="outline" className="h-12 rounded-full border-slate-200 font-display text-[11px] font-black tracking-widest text-slate-400 uppercase">
-            Dữ liệu đã được đồng bộ
-          </Button>
+        <CardFooter className="mt-8 border-t border-slate-100 bg-slate-50/30 px-8 py-6">
+          <div className="flex w-full items-center justify-between">
+            <div className="flex items-center gap-2 text-[11px] font-bold text-slate-400 uppercase tracking-tight">
+              <ShieldCheck size={14} className="text-emerald-500" />
+              Dữ liệu cá nhân của bạn được bảo mật tuyệt đối
+            </div>
+            {isEditing ? (
+              <div className="flex gap-3">
+                <Button 
+                  onClick={handleCancel}
+                  variant="ghost" 
+                  disabled={isUpdating}
+                  className="h-10 rounded-xl px-6 text-[10px] font-black uppercase tracking-widest text-slate-500 hover:bg-slate-100"
+                >
+                  <X size={14} className="mr-2" />
+                  Hủy
+                </Button>
+                <Button 
+                  onClick={handleSave}
+                  disabled={isUpdating}
+                  className="btn-premium-primary h-10 rounded-xl px-6 text-[10px] font-black uppercase tracking-widest"
+                >
+                  {isUpdating ? (
+                    <Loader2 size={14} className="mr-2 animate-spin" />
+                  ) : (
+                    <Save size={14} className="mr-2" />
+                  )}
+                  Lưu thay đổi
+                </Button>
+              </div>
+            ) : (
+              <Button disabled variant="outline" className="h-10 rounded-xl border-slate-200 bg-white px-6 text-[10px] font-black uppercase tracking-widest text-slate-400">
+                Đã đồng bộ
+              </Button>
+            )}
+          </div>
         </CardFooter>
       </Card>
     </div>

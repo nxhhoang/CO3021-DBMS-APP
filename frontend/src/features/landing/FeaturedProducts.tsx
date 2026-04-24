@@ -5,6 +5,7 @@ import { ShoppingCart, Heart, Eye } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import MOCK_PRODUCTS from '@/mocks/data/products'
 import { cn } from '@/lib/utils'
+import ProductCard from '../products/components/ProductCard'
 
 const TABS = [
   { id: 'bestseller', label: 'Bán chạy' },
@@ -66,73 +67,11 @@ export default function FeaturedProducts() {
 
       <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
         {products.map((product) => (
-          <div
+          <ProductCard
             key={product._id}
-            className="card-premium group relative flex flex-col p-2"
-          >
-            {/* IMAGE WRAPPER */}
-            <div className="relative aspect-[4/5] overflow-hidden rounded-[1.5rem] bg-slate-50">
-              <img
-                src={product.images?.[0]}
-                alt={product.name}
-                className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
-              />
-
-              {/* HOVER ACTIONS */}
-              <div className="absolute inset-0 flex items-center justify-center gap-3 bg-black/10 opacity-0 backdrop-blur-[2px] transition-opacity group-hover:opacity-100">
-                <Button
-                  size="icon"
-                  variant="secondary"
-                  className="rounded-full shadow-lg hover:bg-blue-600 hover:text-white"
-                >
-                  <Heart size={18} />
-                </Button>
-                <Button
-                  size="icon"
-                  variant="secondary"
-                  className="rounded-full shadow-lg hover:bg-blue-600 hover:text-white"
-                >
-                  <Eye size={18} />
-                </Button>
-              </div>
-
-              {product.totalSold > 100 && (
-                <div className="absolute top-4 left-4">
-                  <span className="rounded-full bg-blue-600 px-3 py-1 text-[10px] font-bold text-white shadow-lg">
-                    HOT
-                  </span>
-                </div>
-              )}
-            </div>
-
-            {/* CONTENT */}
-            <div className="flex flex-1 flex-col p-4">
-              <div className="mb-2 flex items-center justify-between">
-                <span className="text-[10px] font-bold tracking-widest text-slate-400 uppercase">
-                  {(product.attributes.brand as string) || 'Premium'}
-                </span>
-                <div className="flex items-center gap-1">
-                  <span className="text-[10px] font-bold text-slate-900">
-                    {product.avgRating}
-                  </span>
-                  <ShoppingCart size={10} className="text-blue-600" />
-                </div>
-              </div>
-
-              <h3 className="font-display line-clamp-1 flex-1 text-lg font-bold text-slate-900 group-hover:text-blue-600">
-                {product.name}
-              </h3>
-
-              <div className="mt-4 flex items-center justify-between">
-                <span className="text-xl font-bold text-slate-900">
-                  {product.basePrice.toLocaleString('vi-VN')}đ
-                </span>
-                <Button className="btn-premium-primary rounded-xl px-4 text-xs">
-                  Mua ngay
-                </Button>
-              </div>
-            </div>
-          </div>
+            product={product as any}
+            className="h-full"
+          />
         ))}
       </div>
     </section>

@@ -55,7 +55,7 @@ class OrderService {
 
         // Deduct stock
         await client.query(
-          `UPDATE INVENTORY SET stockQuantity = stockQuantity - $1, updated_at = NOW() WHERE sku = $2`,
+          `UPDATE INVENTORY SET stockQuantity = stockQuantity - $1, lastUpdated = NOW() WHERE sku = $2`,
           [item.quantity, item.sku]
         )
 
@@ -158,9 +158,9 @@ class OrderService {
     }
 
     const result = await query(
-      `UPDATE ORDERS SET status = $1, updated_at = NOW()
+      `UPDATE ORDERS SET status = $1
        WHERE orderID = $2
-       RETURNING orderID AS "orderID", status, updated_at AS "updatedAt"`,
+       RETURNING orderID AS "orderID", status, NOW() AS "updatedAt"`,
       [newStatus, orderId]
     )
 

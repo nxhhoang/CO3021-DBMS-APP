@@ -7,7 +7,9 @@ import { DropdownProfile } from './DropdownProfile';
 import { useCartStore } from '@/store/cartStore'
 import { CartItem } from '@/types'
 import { CartButton } from './CartButton';
+import { MobileMenu } from './MobileMenu';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { cn } from '@/lib/utils';
 
 const Header = () => {
   const [query, setQuery] = useState('');
@@ -66,12 +68,10 @@ const Header = () => {
 
   const handleSearchSubmit = (value: string, blurActiveElement = false) => {
     const keyword = value.trim()
-    const params = new URLSearchParams(searchParams.toString())
+    const params = new URLSearchParams()
 
     if (keyword) {
       params.set('keyword', keyword)
-    } else {
-      params.delete('keyword')
     }
 
     if (blurActiveElement && document.activeElement instanceof HTMLElement) {
@@ -83,15 +83,15 @@ const Header = () => {
   }
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-white/40 bg-white/80 shadow-xs backdrop-blur-xl transition-all duration-300">
-      <div className="container mx-auto flex h-14 items-center justify-between px-4 md:h-16 md:px-6">
-        {/* Logo - Căn trái và tạo khoảng trống */}
+    <header className="sticky top-0 z-50 w-full border-b border-white/40 bg-white/70 shadow-sm backdrop-blur-xl transition-all duration-300">
+      <div className="container mx-auto flex h-16 items-center justify-between px-6 lg:px-8">
+        {/* Logo */}
         <div className="shrink-0 transition-all duration-300 hover:scale-105 active:scale-95">
           <Logo />
         </div>
 
-        {/* Search bar - Được đặt giữa, mở rộng hơn để tạo vẻ hiện đại */}
-        <div className="hidden max-w-xl flex-1 px-8 md:block">
+        {/* Search bar */}
+        <div className="hidden max-w-xl flex-1 px-12 md:block">
           <SearchBar
             value={query}
             onChange={setQuery}
@@ -99,27 +99,29 @@ const Header = () => {
               handleSearchSubmit(value, true)
             }}
             className="w-full"
+            variant="header"
           />
         </div>
 
-        {/* Actions - Cụm nút bên phải */}
-        <div className="flex items-center gap-3 md:gap-6">
+        {/* Actions */}
+        <div className="flex items-center gap-4 lg:gap-8">
           <div className="relative transform transition-all active:scale-95">
             <CartButton count={cartCount} animate={isCartBumping} />
           </div>
 
           <div
-            className="hidden h-6 w-px bg-slate-200 md:block"
+            className="hidden h-6 w-px bg-slate-200/60 md:block"
             aria-hidden="true"
           />
 
           <div className="flex items-center gap-2">
-            <DropdownProfile />
+            <div className="hidden md:block">
+              <DropdownProfile />
+            </div>
+            <MobileMenu />
           </div>
         </div>
       </div>
-
-
     </header>
   )
 };

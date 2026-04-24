@@ -12,6 +12,7 @@ import {
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
+import { cn } from '@/lib/utils'
 import CATEGORIES from '@/mocks/data/categories'
 
 const categoryMetadata: Record<
@@ -55,7 +56,7 @@ export default function CategoriesSection() {
     >
       {/* HEADER */}
       <div className="mb-16 flex flex-col items-center text-center sm:flex-row sm:items-end sm:justify-between sm:text-left">
-        <div className="max-w-2xl">
+        <div className="max-w-2xl animate-in fade-in slide-in-from-left-8 duration-1000">
           <span className="glass-badge-blue">
             Khám phá danh mục
           </span>
@@ -95,9 +96,10 @@ export default function CategoriesSection() {
           return (
             <div
               key={cat.slug}
-              className={`glass-card group relative p-0 overflow-hidden ${
+              className={cn(
+                "glass-card group relative p-0 overflow-hidden hover:-translate-y-2 hover:shadow-2xl animate-in fade-in slide-in-from-bottom-8 duration-700",
                 isFeatured ? 'lg:col-span-3' : 'lg:col-span-2'
-              } hover:-translate-y-2 hover:shadow-2xl`}
+              )}
             >
               {/* IMAGE BACKGROUND */}
               <div className="absolute inset-0 z-0">
@@ -142,13 +144,15 @@ export default function CategoriesSection() {
                 </div>
 
                 <div className="mt-10">
-                  <Button className="btn-premium-primary group/btn relative w-full justify-between rounded-2xl py-7 text-xs tracking-wide uppercase">
-                    Khám phá ngay
-                    <ChevronRight
-                      size={18}
-                      className="transition-transform group-hover/btn:translate-x-1"
-                    />
-                  </Button>
+                  <Link href={`/products?category=${cat.slug}`} className="block">
+                    <Button className="btn-premium-primary group/btn relative w-full justify-between rounded-2xl py-7 text-xs tracking-wide uppercase">
+                      Khám phá ngay
+                      <ChevronRight
+                        size={18}
+                        className="transition-transform group-hover/btn:translate-x-1"
+                      />
+                    </Button>
+                  </Link>
                 </div>
               </div>
             </div>

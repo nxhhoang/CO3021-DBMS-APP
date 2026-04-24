@@ -17,9 +17,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { Search } from 'lucide-react'
-import { Input } from '@/components/ui/input'
-import { MeshBackground } from '@/components/common/MeshBackground'
+import { SearchBar } from '@/components/common/SearchBar'
 
 export default function AdminOrdersPage() {
   const {
@@ -50,7 +48,6 @@ export default function AdminOrdersPage() {
 
   return (
     <div className="relative isolate min-h-screen">
-      <MeshBackground variant="admin" />
 
       <div className="mx-auto max-w-7xl px-4 py-4 md:px-6 md:py-8">
         <div className="animate-in fade-in slide-in-from-top-4 mb-6 flex flex-col gap-4 duration-700 lg:flex-row lg:items-end lg:justify-between">
@@ -92,15 +89,13 @@ export default function AdminOrdersPage() {
           {/* SEARCH, FILTER & SORT BAR */}
           <div className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-slate-200 bg-white p-3 shadow-sm dark:border-white/10 dark:bg-slate-900/50">
             <div className="flex min-w-[300px] flex-1 items-center gap-3">
-              <div className="relative w-full max-w-md">
-                <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-slate-400" />
-                <Input
-                  placeholder="Tìm theo mã đơn hàng (vd: 10001)..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="h-10 rounded-xl border-slate-200 pr-4 pl-10 font-medium transition-all focus:ring-2 focus:ring-blue-500/10 dark:border-white/10"
-                />
-              </div>
+              <SearchBar
+                variant="admin"
+                value={searchQuery}
+                onChange={setSearchQuery}
+                placeholder="Tìm theo mã đơn hàng (vd: 10001)..."
+                className="max-w-md"
+              />
             </div>
 
             <div className="flex flex-wrap items-center gap-4">

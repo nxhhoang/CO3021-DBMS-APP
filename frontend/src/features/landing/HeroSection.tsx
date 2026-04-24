@@ -14,6 +14,7 @@ import {
 import { Button } from '@/components/ui/button'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import { cn } from '@/lib/utils'
 
 const HERO_SPEED_OPTIONS = [
   { label: 'Nhanh', duration: 3000 },
@@ -130,20 +131,20 @@ export default function HeroSection() {
             <div className="absolute top-1/2 -right-10 h-48 w-48 rounded-full bg-cyan-100/30 blur-3xl" />
           </div>
 
-          <div className="relative">
+          <div className="relative animate-in fade-in slide-in-from-left-8 duration-1000">
             <span className="glass-badge-blue">Danh mục nổi bật</span>
 
-            <h1 className="font-display mt-5 text-4xl leading-[1.1] font-bold tracking-tight text-slate-900 sm:text-5xl lg:mt-6 lg:text-6xl xl:text-[3.8rem]">
+            <h1 className="font-display mt-5 text-4xl leading-[1.1] font-bold tracking-tight text-slate-900 sm:text-5xl lg:mt-6 lg:text-6xl xl:text-[3.8rem] animate-in fade-in slide-in-from-left-12 duration-1000 delay-150">
               Nâng tầm phong cách <br />
               <span className="text-gradient-primary">Sống hiện đại</span>
             </h1>
 
-            <p className="mt-5 max-w-xl text-sm leading-7 text-slate-600 sm:text-base lg:mt-6 lg:text-lg lg:leading-8">
+            <p className="mt-5 max-w-xl text-sm leading-7 text-slate-600 sm:text-base lg:mt-6 lg:text-lg lg:leading-8 animate-in fade-in slide-in-from-left-16 duration-1000 delay-300">
               Từ công nghệ đột phá đến thời trang đẳng cấp — Khám phá hệ sinh
               thái sản phẩm cao cấp được tuyển chọn dành riêng cho bạn.
             </p>
 
-            <div className="mt-8 flex flex-wrap gap-4 lg:mt-10">
+            <div className="mt-8 flex flex-wrap gap-4 lg:mt-10 animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-500">
               <Button
                 onClick={handleExploreProducts}
                 className="btn-premium-primary group relative h-12 px-8 text-sm sm:h-14 sm:px-10"
@@ -272,7 +273,14 @@ export default function HeroSection() {
           <Link
             key={index}
             href={item.href}
-            className="group flex flex-col items-center text-center transition-transform hover:-translate-y-1"
+            className={cn(
+              "group flex flex-col items-center text-center transition-transform hover:-translate-y-1 animate-in fade-in slide-in-from-bottom-8 duration-700",
+              index === 0 && "delay-100",
+              index === 1 && "delay-200",
+              index === 2 && "delay-300",
+              index === 3 && "delay-400",
+              index === 4 && "delay-500"
+            )}
           >
             <div className="icon-box-premium mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-white border border-slate-100 text-slate-600 shadow-sm transition-all duration-300 group-hover:bg-blue-600 group-hover:text-white group-hover:shadow-xl group-hover:shadow-blue-500/20 group-hover:border-transparent">
               <item.icon size={28} strokeWidth={2} className="transition-transform group-hover:scale-110" />

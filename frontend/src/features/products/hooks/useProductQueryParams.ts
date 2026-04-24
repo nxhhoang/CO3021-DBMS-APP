@@ -36,9 +36,7 @@ export default function useProductQueryParams(): GetProductsRequest {
 
     return {
       keyword: keyword || undefined,
-
-      // Nếu có keyword thì bỏ category theo spec API
-      category: keyword ? undefined : category,
+      category: category,
 
       page: Number.isFinite(page) && page > 0 ? page : 1,
 

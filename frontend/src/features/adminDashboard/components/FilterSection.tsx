@@ -1,7 +1,7 @@
 'use client'
 
 import { format } from 'date-fns'
-import { CalendarIcon } from 'lucide-react'
+import { CalendarIcon, Filter, CheckCircle2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Calendar } from '@/components/ui/calendar'
@@ -45,21 +45,29 @@ export default function FilterSection({
   onApply,
 }: FilterSectionProps) {
   return (
-    <Card className="shadow-sm">
-      <CardHeader className="flex flex-row items-center justify-between gap-3 space-y-0 pb-2">
-        <CardTitle className="text-sm font-semibold">Bộ lọc báo cáo</CardTitle>
+    <Card className="card-premium border-none bg-white/70 shadow-xl shadow-slate-200/40 backdrop-blur-md">
+      <CardHeader className="flex flex-row items-center justify-between border-b border-slate-100 p-6">
+        <div className="flex items-center gap-3">
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-50 text-blue-600">
+            <Filter size={18} strokeWidth={2.5} />
+          </div>
+          <CardTitle className="font-display text-lg font-black tracking-tight text-slate-900">
+            Bộ lọc báo cáo
+          </CardTitle>
+        </div>
         <Button
           onClick={onApply}
-          className="bg-primary text-primary-foreground px-6"
           disabled={loading || !hasFilterChanges}
+          className="btn-premium-primary h-10 px-6 shadow-lg shadow-slate-900/10"
         >
-          Lọc báo cáo
+          {loading ? 'Đang cập nhật...' : 'Áp dụng bộ lọc'}
         </Button>
       </CardHeader>
-      <CardContent className="pt-0 pb-4">
-        <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          <div className="flex flex-col gap-1.5">
-            <label className="text-muted-foreground text-xs font-medium">
+      <CardContent className="p-6">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+          {/* Start Date */}
+          <div className="space-y-2.5">
+            <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">
               Từ ngày
             </label>
             <Popover>
@@ -67,32 +75,30 @@ export default function FilterSection({
                 <Button
                   variant="outline"
                   className={cn(
-                    'w-full justify-start text-left font-normal',
-                    !startDate && 'text-muted-foreground',
+                    'input-premium h-12 w-full justify-start text-left font-bold',
+                    !startDate && 'text-slate-400',
                   )}
                 >
-                  <CalendarIcon className="mr-2 h-4 w-4" />
-                  {startDate ? (
-                    format(startDate, 'dd/MM/yyyy')
-                  ) : (
-                    <span>Chọn ngày</span>
-                  )}
+                  <CalendarIcon className="mr-3 h-4 w-4 text-blue-600" />
+                  {startDate ? format(startDate, 'dd/MM/yyyy') : <span>Chọn ngày</span>}
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" align="start">
+              <PopoverContent className="w-auto rounded-3xl p-0 shadow-2xl" align="start">
                 <Calendar
                   mode="single"
                   selected={startDate}
                   onSelect={(date) => date && onStartDateChange(date)}
                   disabled={(date) => date > currentDate || date > endDate}
                   initialFocus
+                  className="p-3"
                 />
               </PopoverContent>
             </Popover>
           </div>
 
-          <div className="flex flex-col gap-1.5">
-            <label className="text-muted-foreground text-xs font-medium">
+          {/* End Date */}
+          <div className="space-y-2.5">
+            <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">
               Đến ngày
             </label>
             <Popover>
@@ -100,41 +106,49 @@ export default function FilterSection({
                 <Button
                   variant="outline"
                   className={cn(
-                    'w-full justify-start text-left font-normal',
-                    !endDate && 'text-muted-foreground',
+                    'input-premium h-12 w-full justify-start text-left font-bold',
+                    !endDate && 'text-slate-400',
                   )}
                 >
-                  <CalendarIcon className="mr-2 h-4 w-4" />
-                  {endDate ? (
-                    format(endDate, 'dd/MM/yyyy')
-                  ) : (
-                    <span>Chọn ngày</span>
-                  )}
+                  <CalendarIcon className="mr-3 h-4 w-4 text-blue-600" />
+                  {endDate ? format(endDate, 'dd/MM/yyyy') : <span>Chọn ngày</span>}
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" align="start">
+              <PopoverContent className="w-auto rounded-3xl p-0 shadow-2xl" align="start">
                 <Calendar
                   mode="single"
                   selected={endDate}
                   onSelect={(date) => date && onEndDateChange(date)}
                   disabled={(date) => date < startDate || date > currentDate}
                   initialFocus
+                  className="p-3"
                 />
               </PopoverContent>
             </Popover>
           </div>
 
-          <div className="flex flex-col gap-1.5">
-            <label className="text-muted-foreground text-xs font-medium">
-              Chế độ
+          {/* Mode Select */}
+          <div className="space-y-2.5">
+            <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">
+              Chế độ hiển thị
             </label>
             <Select value={type} onValueChange={onTypeChange}>
-              <SelectTrigger className="w-full">
+              <SelectTrigger className="select-premium-trigger h-12 border-slate-200">
                 <SelectValue placeholder="Chọn loại" />
               </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="day">Theo ngày</SelectItem>
-                <SelectItem value="month">Theo tháng</SelectItem>
+              <SelectContent className="select-premium-content">
+                <SelectItem value="day" className="select-premium-item">
+                  <div className="flex items-center gap-2">
+                    <CheckCircle2 size={14} className="text-blue-600" />
+                    Theo ngày
+                  </div>
+                </SelectItem>
+                <SelectItem value="month" className="select-premium-item">
+                  <div className="flex items-center gap-2">
+                    <CheckCircle2 size={14} className="text-blue-600" />
+                    Theo tháng
+                  </div>
+                </SelectItem>
               </SelectContent>
             </Select>
           </div>

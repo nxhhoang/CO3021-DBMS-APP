@@ -5,13 +5,11 @@ import { FolderPlus, FolderTree } from 'lucide-react'
 // Components & Hooks
 import AddCategoryModal from '@/features/adminProduct/components/AddCategoryModal/AddCategoryModal'
 import {
-  Table,
-  TableBody,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table'
-import { MeshBackground } from '@/components/common/MeshBackground'
+  PremiumTable,
+  PremiumTableHeader,
+  PremiumTableRow,
+  PremiumTableHead
+} from '@/components/common/PremiumTable'
 import { LoadingState } from '@/components/common/LoadingState'
 import { EmptyState } from '@/components/common/EmptyState'
 
@@ -42,7 +40,6 @@ export default function AdminCategoriesPage() {
 
   return (
     <div className="relative isolate min-h-screen">
-      <MeshBackground variant="admin" />
 
       <div className="mx-auto max-w-7xl px-4 py-4 md:px-6 md:py-8 lg:px-12">
         <div className="animate-in fade-in slide-in-from-top-4 mb-8 flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between duration-700">
@@ -87,29 +84,19 @@ export default function AdminCategoriesPage() {
               action={{ label: 'Thêm danh mục', onClick: openCreateModal }}
             />
           ) : (
-            <Table>
-              <TableHeader className="bg-slate-50/50">
-                <TableRow className="hover:bg-transparent">
-                  <TableHead className="w-16" />
-                  <TableHead className="font-display py-6 text-xs font-black tracking-widest text-slate-400 uppercase">
-                    Danh mục
-                  </TableHead>
-                  <TableHead className="font-display text-xs font-black tracking-widest text-slate-400 uppercase">
-                    Slug
-                  </TableHead>
-                  <TableHead className="font-display text-xs font-black tracking-widest text-slate-400 uppercase">
-                    Trạng thái
-                  </TableHead>
-                  <TableHead className="font-display text-xs font-black tracking-widest text-slate-400 uppercase">
-                    Cấu trúc
-                  </TableHead>
-                  <TableHead className="font-display text-right text-xs font-black tracking-widest text-slate-400 uppercase">
-                    Thao tác
-                  </TableHead>
-                </TableRow>
-              </TableHeader>
+            <PremiumTable>
+              <PremiumTableHeader>
+                <PremiumTableRow>
+                  <PremiumTableHead className="w-16" />
+                  <PremiumTableHead>Danh mục</PremiumTableHead>
+                  <PremiumTableHead>Slug</PremiumTableHead>
+                  <PremiumTableHead>Trạng thái</PremiumTableHead>
+                  <PremiumTableHead>Cấu trúc</PremiumTableHead>
+                  <PremiumTableHead className="text-right">Thao tác</PremiumTableHead>
+                </PremiumTableRow>
+              </PremiumTableHeader>
 
-              <TableBody>
+              <tbody>
                 {categories.map((category) => {
                   const categoryId = getCategoryId(category)
                   return (
@@ -128,8 +115,8 @@ export default function AdminCategoriesPage() {
                     />
                   )
                 })}
-              </TableBody>
-            </Table>
+              </tbody>
+            </PremiumTable>
           )}
         </div>
       </div>

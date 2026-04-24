@@ -3,7 +3,7 @@
 import { GetProductsRequest } from '@/types/product.types'
 import useProducts from '@/features/products/hooks/useProducts'
 import ProductList from '@/features/products/components/ProductList'
-import ProductPagination from '@/features/products/components/ProductPagination'
+import { DataPagination } from '@/components/common/DataPagination'
 import FilterSidebar from '@/features/products/components/FilterSidebar'
 import useProductQueryParams from '@/features/products/hooks/useProductQueryParams'
 import useCategories from '@/features/products/hooks/useCategories'
@@ -117,9 +117,13 @@ export default function ProductsPage() {
             <ProductList products={products} loading={loading} />
             
             {pagination && pagination.totalPages > 1 && (
-              <div className="flex justify-center pt-8">
-                <ProductPagination
-                  pagination={pagination}
+              <div className="pt-8">
+                <DataPagination
+                  variant="glass"
+                  currentPage={pagination.currentPage}
+                  totalPages={pagination.totalPages}
+                  totalItems={pagination.totalItems}
+                  itemCount={pagination.itemCount}
                   onPageChange={handlePageChange}
                 />
               </div>

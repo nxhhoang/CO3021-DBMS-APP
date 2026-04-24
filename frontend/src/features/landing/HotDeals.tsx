@@ -15,7 +15,7 @@ export default function HotDeals() {
     <section className="container mx-auto px-4 section-padding">
       {/* Section: Hot Deals */}
       <div className="mb-10 flex flex-col items-center justify-between gap-4 sm:flex-row">
-        <div>
+        <div className="animate-in fade-in slide-in-from-left-8 duration-1000">
           <span className="glass-badge-red">
             Đừng bỏ lỡ
           </span>
@@ -35,7 +35,7 @@ export default function HotDeals() {
         </Link>
       </div>
 
-      <div className="flex gap-6 overflow-x-auto pb-8 scrollbar-hide">
+      <div className="flex gap-6 overflow-x-auto pb-8 scrollbar-hide animate-in fade-in slide-in-from-bottom-12 duration-1000 delay-300">
         {hotProducts.map((product) => (
           <ProductCard
             key={product._id}

@@ -11,13 +11,14 @@ import { ORDER_STATUS } from '@/constants/enum'
 import { toast } from 'sonner'
 
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table'
+  PremiumTable,
+  PremiumTableBody,
+  PremiumTableCell,
+  PremiumTableHead,
+  PremiumTableHeader,
+  PremiumTableRow,
+} from '@/components/common/PremiumTable'
+import { StatusBadge } from '@/components/common/StatusBadge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -63,16 +64,6 @@ export default function OrderTable({
   }
 
   // Hàm helper để render màu sắc cho Badge trạng thái
-  const getStatusBadge = (status: OrderStatus) => {
-    const statusMap: Record<OrderStatus, string> = {
-      PENDING: 'bg-yellow-100 text-yellow-700 hover:bg-yellow-100',
-      PROCESSING: 'bg-blue-100 text-blue-700 hover:bg-blue-100',
-      SHIPPED: 'bg-purple-100 text-purple-700 hover:bg-purple-100',
-      DELIVERED: 'bg-green-100 text-green-700 hover:bg-green-100',
-      CANCELLED: 'bg-red-100 text-red-700 hover:bg-red-100',
-    }
-    return statusMap[status] || 'bg-gray-100 text-gray-700'
-  }
 
   if (loading) {
     return (
@@ -88,80 +79,60 @@ export default function OrderTable({
     <Card>
       <CardContent className="p-0">
         {orders.length > 0 ? (
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead className="w-[100px]">Mã đơn</TableHead>
-                <TableHead>Ngày đặt</TableHead>
-                <TableHead>Tổng tiền</TableHead>
-                <TableHead>Trạng thái</TableHead>
-                <TableHead className="text-right">Hành động</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
+          <PremiumTable>
+            <PremiumTableHeader>
+              <PremiumTableRow>
+                <PremiumTableHead className="w-[120px]">Mã đơn</PremiumTableHead>
+                <PremiumTableHead>Ngày đặt</PremiumTableHead>
+                <PremiumTableHead>Tổng tiền</PremiumTableHead>
+                <PremiumTableHead>Trạng thái</PremiumTableHead>
+                <PremiumTableHead className="text-right">Hành động</PremiumTableHead>
+              </PremiumTableRow>
+            </PremiumTableHeader>
+            <tbody>
               {orders.map((order) => (
-                <TableRow key={order.orderID}>
-                  <TableCell className="font-bold">#{order.orderID}</TableCell>
+                <PremiumTableRow key={order.orderID}>
+                  <PremiumTableCell>
+                    <span className="font-mono font-black text-blue-600">#{order.orderID}</span>
+                  </PremiumTableCell>
 
-                  <TableCell>
-                    {format(new Date(order.createdAt), 'dd/MM/yyyy HH:mm', {
-                      locale: vi,
-                    })}
-                  </TableCell>
-
-                  <TableCell className="text-primary font-semibold">
-                    {order.totalAmount.toLocaleString()}đ
-                  </TableCell>
-
-                  <TableCell>
-                    <div className="flex items-center gap-2">
-                      <Select
-                        disabled={updatingId === order.orderID}
-                        defaultValue={order.status}
-                        onValueChange={(value) =>
-                          handleStatusChange(
-                            order.orderID,
-                            value as OrderStatus,
-                          )
-                        }
-                      >
-                        <SelectTrigger
-                          className={`h-8 w-[140px] text-xs font-medium ${getStatusBadge(order.status)}`}
-                        >
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {Object.keys(ORDER_STATUS).map((status) => (
-                            <SelectItem key={status} value={status}>
-                              {status}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      {updatingId === order.orderID && (
-                        <Loader2 className="h-3 w-3 animate-spin" />
-                      )}
+                  <PremiumTableCell>
+                    <div className="font-sans text-sm font-bold text-slate-900">
+                      {format(new Date(order.createdAt), 'dd/MM/yyyy')}
                     </div>
-                  </TableCell>
+                    <p className="mt-0.5 font-mono text-[10px] font-bold text-slate-400">
+                      {format(new Date(order.createdAt), 'HH:mm')}
+                    </p>
+                  </PremiumTableCell>
 
-                  <TableCell className="text-right">
-                    <div className="flex justify-end gap-2">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() =>
-                          (window.location.href = `/admin/orders/${order.orderID}`)
-                        }
-                      >
-                        <Eye className="mr-1 h-4 w-4" />
-                        Chi tiết
-                      </Button>
+                  <PremiumTableCell>
+                    <div className="font-mono text-base font-black tracking-tighter text-slate-900">
+                      {order.totalAmount.toLocaleString()}
+                      <span className="ml-1 text-[10px] font-bold uppercase text-slate-400">đ</span>
                     </div>
-                  </TableCell>
-                </TableRow>
+                  </PremiumTableCell>
+
+                  <PremiumTableCell>
+                    <StatusBadge status={order.status} />
+                  </PremiumTableCell>
+
+                  <PremiumTableCell className="text-right">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-9 rounded-xl transition-all hover:bg-blue-50 hover:text-blue-600"
+                      onClick={() =>
+                        (window.location.href = `/admin/orders/${order.orderID}`)
+                      }
+                    >
+                      <Eye className="mr-2 h-4 w-4" />
+                      Chi tiết
+                    </Button>
+                  </PremiumTableCell>
+                </PremiumTableRow>
               ))}
-            </TableBody>
-          </Table>
+            </tbody>
+          </PremiumTable>
         ) : (
           <div className="text-muted-foreground flex flex-col items-center justify-center py-20">
             <PackageSearch className="mb-4 h-12 w-12 opacity-30" />

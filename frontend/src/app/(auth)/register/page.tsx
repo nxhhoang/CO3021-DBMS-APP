@@ -1,7 +1,5 @@
 'use client';
 
-import { Button } from '@/components/ui/button';
-// import { Checkbox } from '@/components/ui/checkbox';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import {
@@ -12,18 +10,19 @@ import {
   CardTitle,
   CardFooter,
 } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { authService } from '@/features/auth/services/auth.service';
 import Link from 'next/link';
 import { useForm } from '@/hooks/useForm';
-// import { Phone } from 'lucide-react';
+import { toast } from 'sonner';
+import { UserPlus, Mail, Lock, User, Phone, Loader2, ArrowRight } from 'lucide-react';
 
 const RegisterPage = () => {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
 
-  // Gom tất cả useState cũ vào 1 Hook duy nhất
   const { values, handleChange } = useForm({
     email: '',
     password: '',
@@ -33,105 +32,175 @@ const RegisterPage = () => {
   });
 
   const handleRegister = async () => {
+    if (!values.email || !values.password || !values.fullName || !values.phoneNum) {
+      toast.error('Vui lòng điền đầy đủ các thông tin bắt buộc');
+      return;
+    }
+
     if (values.password !== values.confirmPassword) {
-      alert('Passwords do not match')
-      return
+      toast.error('Mật khẩu xác nhận không khớp');
+      return;
     }
 
     try {
-      setLoading(true)
+      setLoading(true);
 
-      // Chỉ gửi những field backend yêu cầu
       const payload = {
         email: values.email,
         password: values.password,
         fullName: values.fullName,
         phoneNum: values.phoneNum,
-      }
+      };
 
-      await authService.register(payload)
-      alert('Register success')
-      router.push('/login')
+      await authService.register(payload);
+      toast.success('Đăng ký thành công! Đang chuyển đến trang đăng nhập...');
+      
+      setTimeout(() => {
+        router.push('/login');
+      }, 1500);
     } catch (err: any) {
-      alert(err?.response?.data?.message || 'Register failed')
+      toast.error(err?.response?.data?.message || 'Đăng ký thất bại. Vui lòng thử lại.');
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
+
   return (
-    <Card className="w-full max-w-md">
-      <CardHeader className="space-y-1">
-        <CardTitle className="text-2xl">Register</CardTitle>
-        <CardDescription>Create new account</CardDescription>
+    <Card className="card-premium border-none bg-white/70 shadow-2xl backdrop-blur-xl">
+      <CardHeader className="space-y-3 pb-8 text-center">
+        <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-600 text-white shadow-lg shadow-blue-200/50">
+          <UserPlus size={24} />
+        </div>
+        <div className="space-y-1">
+          <CardTitle className="font-display text-3xl font-black tracking-tight text-slate-900">
+            Tạo tài khoản
+          </CardTitle>
+          <CardDescription className="font-medium text-slate-500">
+            Tham gia cộng đồng mua sắm BKShop ngay hôm nay
+          </CardDescription>
+        </div>
       </CardHeader>
 
-      <CardContent className="grid gap-4">
-        {/* Email */}
-        <div className="grid gap-2">
-          <Label htmlFor="email">Email</Label>
-          <Input
-            id="email"
-            type="email"
-            placeholder="name@example.com"
-            value={values.email}
-            onChange={handleChange}
-          />
-        </div>
-
-        {/* Password */}
-        <div className="grid gap-2">
-          <Label htmlFor="password">Password</Label>
-          <Input
-            id="password"
-            type="password"
-            value={values.password}
-            onChange={handleChange}
-          />
-        </div>
-
-        <div className="grid gap-2">
-          <Label htmlFor="password-confirm">Confirm Password</Label>
-          <Input
-            id="confirmPassword"
-            type="password"
-            value={values.confirmPassword}
-            onChange={handleChange}
-          />
-        </div>
-
+      <CardContent className="space-y-4">
         {/* Fullname */}
-        <div className="grid gap-2">
-          <Label htmlFor="fullName">Full name</Label>
-          <Input
-            id="fullName"
-            value={values.fullName}
-            onChange={handleChange}
-          />
+        <div className="space-y-2">
+          <Label htmlFor="fullName" className="text-xs font-black uppercase tracking-widest text-slate-400">
+            Họ và tên
+          </Label>
+          <div className="relative">
+            <User className="absolute top-1/2 left-4 h-4 w-4 -translate-y-1/2 text-slate-400" />
+            <Input
+              id="fullName"
+              placeholder="Nguyễn Văn A"
+              value={values.fullName}
+              onChange={handleChange}
+              disabled={loading}
+              className="input-premium h-11 pl-11"
+            />
+          </div>
+        </div>
+
+        {/* Email */}
+        <div className="space-y-2">
+          <Label htmlFor="email" className="text-xs font-black uppercase tracking-widest text-slate-400">
+            Địa chỉ Email
+          </Label>
+          <div className="relative">
+            <Mail className="absolute top-1/2 left-4 h-4 w-4 -translate-y-1/2 text-slate-400" />
+            <Input
+              id="email"
+              type="email"
+              placeholder="vidu@email.com"
+              value={values.email}
+              onChange={handleChange}
+              disabled={loading}
+              className="input-premium h-11 pl-11"
+            />
+          </div>
         </div>
 
         {/* Phone number */}
-        <div className="grid gap-2">
-          <Label htmlFor="phoneNum">Phone number</Label>
-          <Input
-            id="phoneNum"
-            value={values.phoneNum}
-            onChange={handleChange}
-          />
+        <div className="space-y-2">
+          <Label htmlFor="phoneNum" className="text-xs font-black uppercase tracking-widest text-slate-400">
+            Số điện thoại
+          </Label>
+          <div className="relative">
+            <Phone className="absolute top-1/2 left-4 h-4 w-4 -translate-y-1/2 text-slate-400" />
+            <Input
+              id="phoneNum"
+              placeholder="0912 xxx xxx"
+              value={values.phoneNum}
+              onChange={handleChange}
+              disabled={loading}
+              className="input-premium h-11 pl-11"
+            />
+          </div>
+        </div>
+
+        <div className="grid grid-cols-2 gap-4">
+          {/* Password */}
+          <div className="space-y-2">
+            <Label htmlFor="password" className="text-xs font-black uppercase tracking-widest text-slate-400">
+              Mật khẩu
+            </Label>
+            <div className="relative">
+              <Lock className="absolute top-1/2 left-4 h-4 w-4 -translate-y-1/2 text-slate-400" />
+              <Input
+                id="password"
+                type="password"
+                value={values.password}
+                onChange={handleChange}
+                disabled={loading}
+                className="input-premium h-11 pl-11"
+              />
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="confirmPassword" className="text-xs font-black uppercase tracking-widest text-slate-400">
+              Xác nhận
+            </Label>
+            <div className="relative">
+              <Lock className="absolute top-1/2 left-4 h-4 w-4 -translate-y-1/2 text-slate-400" />
+              <Input
+                id="confirmPassword"
+                type="password"
+                value={values.confirmPassword}
+                onChange={handleChange}
+                disabled={loading}
+                className="input-premium h-11 pl-11"
+              />
+            </div>
+          </div>
         </div>
       </CardContent>
 
-      <CardFooter className="flex flex-col gap-4">
-        <Button onClick={handleRegister} className="w-full" disabled={loading}>
-          {loading ? 'Creating account...' : 'Create new account'}
+      <CardFooter className="flex flex-col gap-6 pt-6">
+        <Button 
+          onClick={handleRegister} 
+          disabled={loading}
+          className="btn-premium-primary h-12 w-full text-sm shadow-xl shadow-blue-200/20 transition-all hover:translate-y-[-2px] active:translate-y-0"
+        >
+          {loading ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Đang tạo tài khoản...
+            </>
+          ) : (
+            <>
+              Đăng ký tài khoản
+              <ArrowRight className="ml-2 h-4 w-4" />
+            </>
+          )}
         </Button>
 
-        <p className="text-muted-foreground text-center text-sm">
-          Already have an account?{' '}
+        <p className="text-center text-sm font-medium text-slate-500">
+          Bạn đã có tài khoản?{' '}
           <Link
             href="/login"
-            className="text-primary font-medium hover:underline"
+            className="font-bold text-blue-600 transition-colors hover:text-blue-700 hover:underline"
           >
-            Sign in
+            Đăng nhập ngay
           </Link>
         </p>
       </CardFooter>

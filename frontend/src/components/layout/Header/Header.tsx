@@ -4,10 +4,10 @@ import Logo from '@/components/common/Logo'
 import { ProductSearch } from '@/features/products'
 import { DropdownProfile } from './DropdownProfile'
 import { useCartStore } from '@/store/cartStore'
-import { CartItem } from '@/types'
 import { CartButton } from './CartButton'
 import { MobileMenu } from './MobileMenu'
 import { useEffect, useState } from 'react'
+import { cartStorage } from '@/services/cartStorage'
 
 const Header = () => {
   const [isCartBumping, setIsCartBumping] = useState(false)
@@ -17,43 +17,20 @@ const Header = () => {
 
   const cartCount = cartItems.reduce((sum, item) => sum + item.quantity, 0)
 
+  // Populate store from storage on mount so the badge is correct on any page.
   useEffect(() => {
-    const syncCartFromSession = () => {
-      try {
-        const rawCart = sessionStorage.getItem('cart')
-        if (!rawCart) {
-          setCartItems([])
-          return
-        }
+    setCartItems(cartStorage.getItems())
+  }, [setCartItems])
 
-        const parsed = JSON.parse(rawCart)
-        const items = Array.isArray(parsed)
-          ? parsed
-          : Array.isArray(parsed?.items)
-            ? parsed.items
-            : []
-
-        setCartItems(items as CartItem[])
-      } catch {
-        setCartItems([])
-      }
-    }
-
+  // Bump animation on cart updates.
+  useEffect(() => {
     const handleCartUpdated = () => {
-      syncCartFromSession()
       setIsCartBumping(true)
       window.setTimeout(() => setIsCartBumping(false), 300)
     }
-
-    syncCartFromSession()
-    window.addEventListener('storage', syncCartFromSession)
     window.addEventListener('cart:updated', handleCartUpdated)
-
-    return () => {
-      window.removeEventListener('storage', syncCartFromSession)
-      window.removeEventListener('cart:updated', handleCartUpdated)
-    }
-  }, [setCartItems])
+    return () => window.removeEventListener('cart:updated', handleCartUpdated)
+  }, [])
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-white/40 bg-white/70 shadow-sm backdrop-blur-xl transition-all duration-300">

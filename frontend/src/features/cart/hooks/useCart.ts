@@ -4,56 +4,7 @@ import { useCallback, useEffect, useMemo } from 'react'
 import { toast } from 'sonner'
 import { useCartStore } from '@/store/cartStore'
 import { CartItem } from '@/types'
-
-const CART_STORAGE_KEY = 'cart'
-
-const normalizeCartItem = (raw: Partial<CartItem>): CartItem | null => {
-  if (!raw.sku || !raw.productName) return null
-
-  const normalizedQuantity = Number.isFinite(raw.quantity)
-    ? Math.max(1, Math.floor(raw.quantity as number))
-    : 1
-
-  const productId = raw.productId || raw.productID
-  if (!productId) return null
-
-  return {
-    productId,
-    productID: raw.productID || productId,
-    sku: raw.sku,
-    quantity: normalizedQuantity,
-    productName: raw.productName,
-    image: raw.image || '',
-    basePrice: Number(raw.basePrice) || 0,
-    skuPrice: Number(raw.skuPrice) || 0,
-    stockQuantity:
-      raw.stockQuantity !== undefined
-        ? Math.max(0, Number(raw.stockQuantity) || 0)
-        : undefined,
-    attributes: raw.attributes,
-  }
-}
-
-const readCartFromSessionStorage = (): CartItem[] => {
-  try {
-    const rawData = sessionStorage.getItem(CART_STORAGE_KEY)
-    if (!rawData) return []
-
-    const parsed = JSON.parse(rawData)
-    const cartItems = Array.isArray(parsed)
-      ? parsed
-      : Array.isArray(parsed?.items)
-        ? parsed.items
-        : []
-
-    return cartItems
-      .map((item) => normalizeCartItem(item as Partial<CartItem>))
-      .filter((item): item is CartItem => item !== null)
-  } catch (error) {
-    console.error('Failed to parse cart from sessionStorage:', error)
-    return []
-  }
-}
+import { cartStorage } from '@/services/cartStorage'
 
 export const useCart = () => {
   const items = useCartStore((s) => s.items)
@@ -61,29 +12,18 @@ export const useCart = () => {
   const loading = useCartStore((s) => s.loading)
 
   const setItems = useCartStore((s) => s.setItems)
-  const setLoading = useCartStore((s) => s.setLoading)
   const removeItemStore = useCartStore((s) => s.removeItem)
   const removeMultipleItemsStore = useCartStore((s) => s.removeMultipleItems)
   const toggleItemSelection = useCartStore((s) => s.toggleItemSelection)
   const toggleAllSelection = useCartStore((s) => s.toggleAllSelection)
 
-  const persistCart = useCallback((nextItems: CartItem[]) => {
-    sessionStorage.setItem(
-      CART_STORAGE_KEY,
-      JSON.stringify({ items: nextItems }),
-    )
-    window.dispatchEvent(
-      new CustomEvent('cart:updated', {
-        detail: {
-          totalItems: nextItems.reduce((sum, item) => sum + item.quantity, 0),
-        },
-      }),
-    )
+  const persist = useCallback((nextItems: CartItem[]) => {
+    cartStorage.setItems(nextItems)
+    window.dispatchEvent(new CustomEvent('cart:updated'))
   }, [])
 
-  // Initialize cart data once and sync updates from other cart write points.
   useEffect(() => {
-    const syncCart = () => setItems(readCartFromSessionStorage())
+    const syncCart = () => setItems(cartStorage.getItems())
 
     syncCart()
 
@@ -94,7 +34,59 @@ export const useCart = () => {
       window.removeEventListener('cart:updated', syncCart)
       window.removeEventListener('storage', syncCart)
     }
-  }, [setItems, setLoading])
+  }, [setItems])
+
+  const addItem = useCallback(
+    (
+      fields: {
+        productId: string
+        sku: string
+        productName: string
+        image: string
+        skuPrice: number
+        basePrice: number
+        stockQuantity?: number
+        attributes?: Record<string, string | number | boolean>
+      },
+      quantity: number,
+    ) => {
+      const maxQty = Math.min(fields.stockQuantity || 99, 99)
+      const existingIndex = items.findIndex(
+        (item) =>
+          (item.productId || item.productID) === fields.productId &&
+          item.sku === fields.sku,
+      )
+
+      let nextItems: CartItem[]
+
+      if (existingIndex >= 0) {
+        nextItems = items.map((item, idx) =>
+          idx === existingIndex
+            ? { ...item, quantity: Math.min(item.quantity + quantity, maxQty) }
+            : item,
+        )
+      } else {
+        const newItem: CartItem = {
+          productId: fields.productId,
+          productID: fields.productId,
+          sku: fields.sku,
+          quantity: Math.min(quantity, maxQty),
+          productName: fields.productName,
+          image: fields.image,
+          skuPrice: fields.skuPrice,
+          basePrice: fields.basePrice,
+          stockQuantity: fields.stockQuantity,
+          attributes: fields.attributes,
+        }
+        nextItems = [...items, newItem]
+      }
+
+      setItems(nextItems)
+      persist(nextItems)
+      toast.success(`Đã thêm ${quantity} sản phẩm vào giỏ hàng`)
+    },
+    [items, setItems, persist],
+  )
 
   const updateQuantity = (sku: string, delta: number) => {
     if (delta === 0) return
@@ -111,13 +103,13 @@ export const useCart = () => {
       i.sku === sku ? { ...i, quantity: newQty } : i,
     )
     setItems(nextItems)
-    persistCart(nextItems)
+    persist(nextItems)
   }
 
   const removeItem = (sku: string) => {
     const nextItems = items.filter((i) => i.sku !== sku)
     removeItemStore(sku)
-    persistCart(nextItems)
+    persist(nextItems)
     toast.success('Đã xóa sản phẩm khỏi giỏ hàng')
   }
 
@@ -126,7 +118,7 @@ export const useCart = () => {
 
     const nextItems = items.filter((i) => !skus.includes(i.sku))
     removeMultipleItemsStore(skus)
-    persistCart(nextItems)
+    persist(nextItems)
     toast.success(`Đã xóa ${skus.length} sản phẩm khỏi giỏ hàng`)
   }
 
@@ -151,6 +143,7 @@ export const useCart = () => {
     toggleItemSelection,
     toggleAllSelection,
     loading,
+    addItem,
     updateQuantity,
     removeItem,
     removeMultipleItems,

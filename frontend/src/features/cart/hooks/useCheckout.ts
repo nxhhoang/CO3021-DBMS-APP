@@ -7,6 +7,7 @@ import { PAYMENT_METHOD } from '@/constants/enum'
 import { CartItem } from '@/types/cart.types'
 import { Address, PaymentMethod } from '@/types'
 import { useCartStore } from '@/store/cartStore'
+import { cartStorage } from '@/services/cartStorage'
 
 type CheckoutApiError = {
   message?: string
@@ -82,17 +83,8 @@ export const useCheckout = (selectedItems: CartItem[]) => {
         )
 
         removeMultipleItemsStore(skusToRemove)
-        sessionStorage.setItem('cart', JSON.stringify({ items: nextItems }))
-        window.dispatchEvent(
-          new CustomEvent('cart:updated', {
-            detail: {
-              totalItems: nextItems.reduce(
-                (sum, item) => sum + item.quantity,
-                0,
-              ),
-            },
-          }),
-        )
+        cartStorage.setItems(nextItems)
+        window.dispatchEvent(new CustomEvent('cart:updated'))
 
         // Cập nhật ID mới
         setOrderID(res.data.orderID)

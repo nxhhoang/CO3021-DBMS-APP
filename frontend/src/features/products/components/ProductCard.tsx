@@ -7,6 +7,7 @@ import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 import { cn, formatPrice } from '@/lib/utils'
 import { useRouter } from 'next/navigation'
+import { useCart } from '@/features/cart/hooks/useCart'
 
 export interface ProductCardProps {
   product: ProductResponse
@@ -28,6 +29,7 @@ export function ProductCard({
       : product.basePrice
   const originalPrice = product.basePrice
   const router = useRouter()
+  const { addItem } = useCart()
 
   return (
     <>
@@ -110,6 +112,17 @@ export function ProductCard({
               className="h-10 w-10 rounded-xl bg-slate-900 transition-all hover:bg-blue-600 active:scale-90"
               onClick={(e) => {
                 e.stopPropagation()
+                addItem(
+                  {
+                    sku: product.sku ?? '',
+                    productId: product._id,
+                    productName: product.name,
+                    image: product.images?.[0] || '/images/default-product.png',
+                    basePrice: product.basePrice,
+                    skuPrice: displayPrice,
+                  },
+                  1,
+                )
               }}
             >
               <Plus size={18} />

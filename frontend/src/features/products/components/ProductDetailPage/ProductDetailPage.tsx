@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
-import { Loader2, ShoppingCart, CheckCircle2, ChevronLeft } from 'lucide-react'
+import { Loader2, ShoppingCart, ChevronLeft } from 'lucide-react'
 import { toast } from 'sonner'
 import Link from 'next/link'
 
@@ -10,8 +10,7 @@ import { productService } from '@/services/product.service'
 import reviewService from '@/services/review.service'
 import { ProductDetail, Inventory, Review } from '@/types'
 import { cn } from '@/lib/utils'
-import { useCartStore } from '@/store/cartStore'
-import { CartItem } from '@/types/cart.types'
+import { useCart } from '@/features/cart/hooks/useCart'
 
 import PageBackground from '@/components/layout/PageBackground'
 import { ImageGallery } from './ImageGallery'
@@ -25,7 +24,7 @@ interface ProductDetailPageProps {
 }
 
 export const ProductDetailPage = ({ productId }: ProductDetailPageProps) => {
-  const setItems = useCartStore((state) => state.setItems)
+  const { addItem } = useCart()
   const [product, setProduct] = useState<ProductDetail | null>(null)
   const [loading, setLoading] = useState<boolean>(false)
   const [selectedSku, setSelectedSku] = useState<Inventory | null>(null)
@@ -99,72 +98,6 @@ export const ProductDetailPage = ({ productId }: ProductDetailPageProps) => {
       Math.min(Math.max(prev, 1), selectedSku.stockQuantity || 1),
     )
   }, [selectedSku])
-
-  const handleAddToCart = () => {
-    if (!product || !selectedSku) return
-    if (selectedSku.stockQuantity <= 0) {
-      toast.error('Phiên bản đã chọn hiện đang hết hàng')
-      return
-    }
-
-    try {
-      const cartKey = 'cart'
-      const rawCart = sessionStorage.getItem(cartKey)
-      let cartData: { items: CartItem[] } = { items: [] }
-
-      if (rawCart) {
-        try {
-          const parsed = JSON.parse(rawCart)
-          cartData = parsed.items
-            ? parsed
-            : { items: Array.isArray(parsed) ? parsed : [] }
-        } catch {
-          cartData = { items: [] }
-        }
-      }
-
-      const existingIndex = cartData.items.findIndex(
-        (item) =>
-          (item.productId || item.productID) === product._id &&
-          item.sku === selectedSku.sku,
-      )
-
-      if (existingIndex >= 0) {
-        const nextQty = cartData.items[existingIndex].quantity + quantity
-        cartData.items[existingIndex].quantity = Math.min(
-          selectedSku.stockQuantity,
-          nextQty,
-        )
-      } else {
-        cartData.items.push({
-          productId: product._id,
-          productID: product._id,
-          sku: selectedSku.sku,
-          quantity,
-          productName: product.name,
-          image: product.images?.[0] || '/images/default-product.png',
-          skuPrice: getSkuDisplayPrice(selectedSku),
-          basePrice: product.basePrice,
-          attributes: selectedSku.attributes,
-          stockQuantity: selectedSku.stockQuantity,
-        })
-      }
-
-      sessionStorage.setItem(cartKey, JSON.stringify(cartData))
-      setItems(cartData.items)
-      window.dispatchEvent(
-        new CustomEvent('cart:updated', {
-          detail: { productId: product._id, sku: selectedSku.sku, quantity },
-        }),
-      )
-      toast.success(`Đã thêm ${quantity} sản phẩm vào giỏ hàng`, {
-        icon: <CheckCircle2 className="h-4 w-4 text-green-500" />,
-      })
-    } catch (error) {
-      console.error(error)
-      toast.error('Có lỗi xảy ra khi thêm vào giỏ hàng')
-    }
-  }
 
   return (
     <PageBackground>
@@ -289,7 +222,26 @@ export const ProductDetailPage = ({ productId }: ProductDetailPageProps) => {
                   size="lg"
                   className="btn-premium-primary group relative h-16 w-full overflow-hidden shadow-xl"
                   disabled={!selectedSku || selectedSku.stockQuantity <= 0}
-                  onClick={handleAddToCart}
+                  onClick={() => {
+                    if (!product || !selectedSku) return
+                    if ((selectedSku.stockQuantity ?? 0) <= 0) {
+                      toast.error('Phiên bản đã chọn hiện đang hết hàng')
+                      return
+                    }
+                    addItem(
+                      {
+                        productId: product._id,
+                        sku: selectedSku.sku,
+                        productName: product.name,
+                        image: product.images?.[0] || '/images/default-product.png',
+                        skuPrice: getSkuDisplayPrice(selectedSku),
+                        basePrice: product.basePrice,
+                        stockQuantity: selectedSku.stockQuantity ?? 0,
+                        attributes: selectedSku.attributes,
+                      },
+                      quantity,
+                    )
+                  }}
                 >
                   <span className="relative z-10 flex items-center justify-center gap-3">
                     <ShoppingCart className="h-5 w-5" strokeWidth={2.5} />

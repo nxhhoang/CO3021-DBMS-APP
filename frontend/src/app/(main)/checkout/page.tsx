@@ -1,6 +1,7 @@
 'use client'
 
 import React from 'react'
+import PageBackground from '@/components/layout/PageBackground'
 import { useCart } from '@/features/cart/hooks/useCart'
 import { useCheckout } from '@/features/cart/hooks/useCheckout'
 import { Button } from '@/components/ui/button'
@@ -35,15 +36,8 @@ export default function CheckoutPage() {
 
   if (selectedItems.length === 0 && !dialogState.success) {
     return (
-      <div className="relative isolate flex min-h-screen w-full flex-col items-center justify-center overflow-hidden">
-        {/* REUSABLE BACKGROUND SYSTEM */}
-        <div className="mesh-gradient-container">
-          <div className="mesh-gradient-base" />
-          <div className="mesh-gradient-dots" />
-          <div className="mesh-gradient-spotlight" />
-        </div>
-
-        <div className="z-10 flex flex-col items-center gap-10 px-4 text-center">
+      <PageBackground variant="minimal" className="flex flex-col items-center justify-center overflow-hidden">
+        <div className="flex flex-col items-center gap-10 px-4 text-center">
           <div className="relative">
             <div className="bg-slate-100 rounded-full p-10 dark:bg-slate-800">
               <Truck className="h-16 w-16 text-slate-300" strokeWidth={1.5} />
@@ -62,24 +56,12 @@ export default function CheckoutPage() {
             <Link href="/cart">Quay lại giỏ hàng</Link>
           </Button>
         </div>
-      </div>
+      </PageBackground>
     )
   }
 
   return (
-    <div className="relative isolate min-h-screen w-full overflow-hidden">
-      {/* REUSABLE BACKGROUND SYSTEM */}
-      <div className="mesh-gradient-container">
-        <div className="mesh-gradient-base" />
-        <div className="mesh-gradient-dots" />
-        <div className="mesh-gradient-spotlight" />
-        
-        <div className="absolute inset-0 overflow-hidden">
-          <div className="mesh-gradient-blob -top-[10%] left-[5%] h-[800px] w-[800px] bg-blue-400/5 dark:bg-blue-900/10" />
-          <div className="mesh-gradient-blob top-[30%] -right-[10%] h-[600px] w-[600px] bg-cyan-400/5 dark:bg-cyan-900/10" />
-        </div>
-      </div>
-
+    <PageBackground variant="subtle" className="overflow-hidden">
       <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8 lg:py-20">
         {/* HEADER */}
         <div className="animate-in fade-in slide-in-from-top-6 mb-16 space-y-6 duration-1000">
@@ -314,6 +296,6 @@ export default function CheckoutPage() {
         orderID={orderID}
         setOrderID={setOrderID}
       />
-    </div>
+    </PageBackground>
   )
 }

@@ -1,12 +1,12 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
 import { Loader2, ShoppingBag } from 'lucide-react';
 import { useCart } from '@/features/cart/hooks/useCart';
 import Link from 'next/link';
 import ItemsList from '@/features/cart/components/ItemList/ItemsList';
 import OrderSummary from '@/features/cart/components/OrderSummary/OrderSummary';
+import PageBackground from '@/components/layout/PageBackground';
 
 export default function CartPage() {
   const {
@@ -41,19 +41,7 @@ export default function CartPage() {
   }
 
   return (
-    <div className="relative isolate min-h-screen w-full overflow-hidden">
-      {/* REUSABLE BACKGROUND SYSTEM */}
-      <div className="mesh-gradient-container">
-        <div className="mesh-gradient-base" />
-        <div className="mesh-gradient-dots" />
-        <div className="mesh-gradient-spotlight" />
-        
-        <div className="absolute inset-0 overflow-hidden">
-          <div className="mesh-gradient-blob -top-[10%] left-[5%] h-[800px] w-[800px] bg-blue-400/5 dark:bg-blue-900/10" />
-          <div className="mesh-gradient-blob top-[40%] -right-[10%] h-[600px] w-[600px] bg-cyan-400/5 dark:bg-cyan-900/10" />
-        </div>
-      </div>
-
+    <PageBackground variant="subtle" className="overflow-hidden">
       <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 lg:py-12">
         <div className="animate-in fade-in slide-in-from-top-4 mb-8 flex items-baseline gap-3 duration-500">
           <h1 className="font-display text-4xl font-black tracking-tight text-slate-900 dark:text-white sm:text-5xl">
@@ -115,6 +103,6 @@ export default function CartPage() {
           </div>
         )}
       </div>
-    </div>
+    </PageBackground>
   )
 }

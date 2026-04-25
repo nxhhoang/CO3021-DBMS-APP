@@ -2,11 +2,11 @@
 
 import React, { useState } from 'react'
 import { ProductResponse } from '@/types/product.types'
-import { Star, ShoppingCart, Eye } from 'lucide-react'
+import { Star, Plus, Eye, PlusSquareIcon } from 'lucide-react'
 import Image from 'next/image'
 import { Button } from '@/components/ui/button'
-import { ProductDetailModal } from './ProductDetailModal/ProductDetailModal'
-import { cn } from '@/lib/utils'
+import { cn, formatPrice } from '@/lib/utils'
+import { useRouter } from 'next/navigation'
 
 export interface ProductCardProps {
   product: ProductResponse
@@ -21,14 +21,13 @@ export function ProductCard({
   discountPercent,
   className,
 }: ProductCardProps) {
-  const [isModalOpen, setIsModalOpen] = useState(false)
-
   // Calculate prices if discount is present
   const displayPrice =
     showDiscount && discountPercent
       ? product.basePrice * (1 - discountPercent / 100)
       : product.basePrice
   const originalPrice = product.basePrice
+  const router = useRouter()
 
   return (
     <>
@@ -37,10 +36,10 @@ export function ProductCard({
           'card-premium group relative flex cursor-pointer flex-col p-4',
           className,
         )}
-        onClick={() => setIsModalOpen(true)}
+        onClick={() => router.push(`/products/${product._id}`)}
       >
         {/* BADGE */}
-        <div className="absolute top-4 left-4 z-10 flex flex-col gap-2">
+        <div className="absolute top-6 left-6 z-10 flex flex-col gap-2">
           {showDiscount && discountPercent && (
             <span className="w-fit rounded-full bg-red-600 px-2.5 py-1 text-[10px] font-bold tracking-wider text-white uppercase shadow-lg">
               -{discountPercent}%
@@ -97,11 +96,11 @@ export function ProductCard({
             <div className="flex flex-col">
               <div className="flex items-center gap-2">
                 <span className="text-lg font-bold text-slate-900">
-                  {displayPrice.toLocaleString('vi-VN')}₫
+                  {formatPrice(displayPrice)}₫
                 </span>
                 {showDiscount && (
                   <span className="text-xs text-slate-400 line-through">
-                    {originalPrice.toLocaleString('vi-VN')}₫
+                    {formatPrice(originalPrice)}₫
                   </span>
                 )}
               </div>
@@ -113,18 +112,11 @@ export function ProductCard({
                 e.stopPropagation()
               }}
             >
-              <ShoppingCart size={18} />
+              <Plus size={18} />
             </Button>
           </div>
         </div>
       </div>
-
-      {/* Modal chi tiết sản phẩm */}
-      <ProductDetailModal
-        productId={product._id}
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-      />
     </>
   )
 }

@@ -1,10 +1,11 @@
-'use client';
-export default function ProductDetailPage({params}: {params: {id: string}}) {
-    const { id } = params;
+import { use } from 'react'
+import { ProductDetailPage } from '@/features/products'
 
-    return (
-        <div>
-            Product Detail Page - ID: {id}
-        </div>
-    );
+export default function ProductPage({
+  params,
+}: {
+  params: Promise<{ id: string }>
+}) {
+  const { id } = use(params)
+  return <ProductDetailPage productId={id} />
 }

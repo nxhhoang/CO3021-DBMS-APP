@@ -19,8 +19,8 @@ export const ImageGallery = ({
   const displayImages = images?.length ? images : ['/images/default-product.png']
 
   return (
-    <div className="relative w-full bg-slate-50 lg:w-[480px] lg:shrink-0">
-      <div className="relative aspect-square w-full lg:aspect-auto lg:h-full">
+    <div className="relative w-full bg-slate-50">
+      <div className="relative aspect-square w-full">
         <Image
           src={displayImages[activeImageIndex]}
           alt={productName}

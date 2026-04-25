@@ -18,25 +18,27 @@ async function seedAdmin() {
   await connectPostgres()
 
   // Check if admin already exists
-  const existing = await query('SELECT user_id FROM users WHERE email = $1', [email])
+  const existing = await query('SELECT userid FROM users WHERE email = $1', [email])
   if (existing.rows.length > 0) {
-    console.log(`Admin account already exists (user_id=${existing.rows[0].user_id}). Skipping.`)
+    console.log(`Admin account already exists (userid=${existing.rows[0].userid}). Skipping.`)
     process.exit(0)
   }
 
   // Hash the password the same way the API does
   const hashedPassword = hashPassword(password)
 
+  const userid = `admin-${Date.now()}`
+
   const result = await query(
-    `INSERT INTO users (email, password_hash, full_name, role)
-     VALUES ($1, $2, $3, 'ADMIN')
-     RETURNING user_id, email, role`,
-    [email, hashedPassword, fullName]
+    `INSERT INTO users (userid, email, password, fullname, role)
+     VALUES ($1, $2, $3, $4, 'ADMIN')
+     RETURNING userid, email, role`,
+    [userid, email, hashedPassword, fullName]
   )
 
   const admin = result.rows[0]
   console.log('Admin account created successfully!')
-  console.log(`   user_id : ${admin.user_id}`)
+  console.log(`   userid : ${admin.userid}`)
 
   process.exit(0)
 }

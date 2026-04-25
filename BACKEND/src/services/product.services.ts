@@ -37,11 +37,14 @@ class ProductService {
       matchQuery.categoryID = cat._id
     }
 
+    // if (query.keyword) {
+    //   matchQuery.$or = [
+    //     { name: { $regex: query.keyword, $options: 'i' } },
+    //     { description: { $regex: query.keyword, $options: 'i' } }
+    //   ]
+    // }
     if (query.keyword) {
-      matchQuery.$or = [
-        { name: { $regex: query.keyword, $options: 'i' } },
-        { description: { $regex: query.keyword, $options: 'i' } }
-      ]
+      matchQuery.$text = { $search: query.keyword as string }
     }
 
     if (query.priceMin !== undefined || query.priceMax !== undefined) {

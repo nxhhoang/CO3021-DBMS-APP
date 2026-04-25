@@ -1,11 +1,12 @@
 import { http, HttpResponse } from 'msw'
 import { BASE_URL } from '@/constants/api'
-import { MOCK_PRODUCTS } from '../data/products'
+import { MOCK_PRODUCTS, MOCK_PRODUCT_DETAILS } from '../data/products'
 import { MOCK_CATEGORIES } from '../data/categories'
 import {
   ProductResponse,
   GetProductsRequest,
   GetProductsResponse,
+  GetProductDetailResponse,
   CreateProductRequest,
   UpdateProductRequest,
   UpdateProductResponse,
@@ -90,7 +91,51 @@ export const productHandlers = [
     } as GetProductsResponse)
   }),
 
-  // 2. POST /admin/products (Admin: Thêm sản phẩm)
+  // 2. GET /products/:id (Chi tiết sản phẩm)
+  http.get(`${BASE_URL}/products/:id`, ({ params }) => {
+    const { id } = params as { id: string }
+
+    // Use pre-populated detail data if available
+    if (MOCK_PRODUCT_DETAILS[id]) {
+      return HttpResponse.json({
+        message: 'Lấy thông tin sản phẩm thành công',
+        data: MOCK_PRODUCT_DETAILS[id],
+      } as GetProductDetailResponse)
+    }
+
+    const product = dynamicProducts.find((p) => p._id === id)
+    if (!product) {
+      return HttpResponse.json(
+        { message: 'Không tìm thấy sản phẩm' },
+        { status: 404 },
+      )
+    }
+
+    const cat = MOCK_CATEGORIES.find((c) => c._id === product.categoryID)
+    const { categoryID, ...rest } = product
+    void categoryID
+
+    const detail = {
+      ...rest,
+      category: cat ? { _id: cat._id, name: cat.name, slug: cat.slug } : null,
+      inventory: [
+        {
+          sku: `${id}-default`,
+          skuPrice: product.basePrice,
+          sku_price: product.basePrice,
+          attributes: product.attributes,
+          stockQuantity: 10,
+        },
+      ],
+    }
+
+    return HttpResponse.json({
+      message: 'Lấy thông tin sản phẩm thành công',
+      data: detail,
+    } as GetProductDetailResponse)
+  }),
+
+  // 3. POST /admin/products (Admin: Thêm sản phẩm)
   http.post(`${BASE_URL}/admin/products`, async ({ request }) => {
     const body = (await request.json()) as CreateProductRequest
 
@@ -169,5 +214,30 @@ export const productHandlers = [
         isActive: false,
       },
     } as DeleteProductResponse)
+  }),
+
+  // 5 GET /products/:id/reviews (Danh sách đánh giá)
+  http.get(`${BASE_URL}/products/:id/reviews`, ({ params }) => {
+    const { id } = params
+    // Trả về dữ liệu giả lập (có thể mở rộng thêm logic để tạo review động nếu cần)
+    return HttpResponse.json({
+      message: 'Lấy danh sách đánh giá thành công',
+      data: [
+        {
+          _id: `review-${id}-1`,
+          productId: id as string,
+          rating: 4,
+          comment: 'Sản phẩm tốt, đáng tiền!',
+          reviewerName: 'Nguyen Van A',
+        },
+        {
+          _id: `review-${id}-2`,
+          productId: id as string,
+          rating: 5,
+          comment: 'Tuyệt vời, sẽ mua lại!',
+          reviewerName: 'Tran Thi B',
+        },
+      ],
+    })
   }),
 ]

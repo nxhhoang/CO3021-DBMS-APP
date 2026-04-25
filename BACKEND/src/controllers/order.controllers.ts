@@ -57,3 +57,19 @@ export const getRevenueStatsController = async (
   const result = await statService.getRevenueStats(req.query)
   res.status(HTTP_STATUS.OK).json({ message: STAT_MESSAGES.GET_REVENUE_SUCCESS, data: result })
 }
+
+export const getAllOrdersAdminController = async (req: Request, res: Response) => {
+  // Lấy page, limit, search, status và sort từ query string
+  const page = parseInt(req.query.page as string) || 1
+  const limit = parseInt(req.query.limit as string) || 10
+  const search = req.query.search as string
+  const status = req.query.status as string
+  const sort = req.query.sort as string
+
+  const result = await orderService.getAllOrdersAdmin(limit, page, search, status, sort)
+
+  res.status(HTTP_STATUS.OK).json({
+    message: ORDER_MESSAGES.GET_ORDERS_SUCCESS,
+    data: result
+  })
+}

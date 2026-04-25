@@ -22,8 +22,13 @@ export interface CreateProductReqBody {
   basePrice: number
   description?: string
   images?: string[]
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   attributes: Record<string, any>
+  skus?: {
+    sku: string
+    skuPrice: number
+    stockQuantity: number
+    attributes: Record<string, any>
+  }[]
 }
 
 export interface UpdateProductReqBody {

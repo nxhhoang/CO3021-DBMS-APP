@@ -1,4 +1,4 @@
-'use client';
+'use client'
 
 import {
   ProductCard,
@@ -6,30 +6,30 @@ import {
   ProductSort,
   useProducts,
   ProductPagination,
-} from '@/features/products';
-import { Skeleton } from '@/components/ui/skeleton';
-import { useMemo } from 'react';
-import { useCategories } from '@/features/categories';
+} from '@/features/products'
+import { Skeleton } from '@/components/ui/skeleton'
+import { useMemo } from 'react'
+import { useCategories } from '@/features/categories'
 
 export default function ProductsPage() {
-  const { products, params, loading, pagination } = useProducts();
-  const { categories } = useCategories();
+  const { products, params, loading, pagination } = useProducts()
+  const { categories } = useCategories()
 
   const categoryName = useMemo(() => {
-    return categories?.find((c) => c.slug === params.category)?.name;
-  }, [categories, params.category]);
+    return categories?.find((c) => c.slug === params.category)?.name
+  }, [categories, params.category])
 
   const title = useMemo(() => {
     if (params.keyword) {
-      return `Kết quả tìm kiếm cho "${params.keyword}"`;
+      return `Kết quả tìm kiếm cho "${params.keyword}"`
     }
 
     if (params.category) {
-      return `Danh mục: ${categoryName || params.category}`;
+      return `Danh mục: ${categoryName || params.category}`
     }
 
-    return 'Tất cả sản phẩm';
-  }, [params.keyword, params.category, categoryName]);
+    return 'Tất cả sản phẩm'
+  }, [params.keyword, params.category, categoryName])
 
   return (
     <div className="container mx-auto py-8">
@@ -55,15 +55,20 @@ export default function ProductsPage() {
               ))}
             </div>
           ) : (
-            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {products.map((product) => (
-                <ProductCard key={product._id} product={product} />
-              ))}
+            <div className="space-y-4 text-center md:text-left">
+              <div className="glass-badge-blue">Cửa hàng trực tuyến</div>
+              <h1 className="font-display text-4xl font-bold tracking-tight text-slate-900 lg:text-5xl">
+                Khám phá <span className="text-gradient-primary">Sản phẩm</span>
+              </h1>
+              <p className="mx-auto max-w-2xl text-lg text-slate-500 md:mx-0">
+                Tìm kiếm những thiết bị công nghệ và phụ kiện cao cấp được tuyển
+                chọn kỹ lưỡng để nâng tầm cuộc sống của bạn.
+              </p>
             </div>
           )}
           <ProductPagination />
         </main>
       </div>
     </div>
-  );
+  )
 }

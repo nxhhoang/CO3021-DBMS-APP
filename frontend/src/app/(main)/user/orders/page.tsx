@@ -1,131 +1,200 @@
-import {
-  Package,
-  Truck,
-  CheckCircle2,
-  XCircle,
-  Clock,
-  Eye,
-} from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-  CardFooter,
-} from '@/components/ui/card';
-import { OrderStatusBadge } from '@/features/orders/components/order-status-badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+'use client'
+
+import { useEffect, useState } from 'react'
+import { Package, Eye, Search } from 'lucide-react'
+import Link from 'next/link'
+import { Button } from '@/components/ui/button'
+import { OrderStatusBadge } from '@/features/orders/components/order-status-badge'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { orderService } from '@/services/order.service'
+import type { Order } from '@/types'
+import { format } from 'date-fns'
+import { vi } from 'date-fns/locale'
+import { OrderDetailModal } from '@/features/orders/components/OrderDetailModal'
+import { OrderCardSkeleton } from '@/features/orders/components/OrderCardSkeleton'
 
 export default function OrdersPage() {
-  // Giả lập dữ liệu đơn hàng
-  const orders = [
-    {
-      id: 'ORD-9921',
-      date: '2026-02-28',
-      total: '2,450,000đ',
-      status: 'PROCESSING', // Đang xử lý
-      items: ['Bàn phím cơ AKKO 3087', 'Chuột Logitech G304'],
-    },
-    {
-      id: 'ORD-8812',
-      date: '2026-02-15',
-      total: '15,200,000đ',
-      status: 'DELIVERED', // Đã giao
-      items: ['iPhone 13 128GB - Blue'],
-    },
-    {
-      id: 'ORD-7705',
-      date: '2026-01-10',
-      total: '450,000đ',
-      status: 'CANCELLED', // Đã hủy
-      items: ['Cáp sạc USB-C to Lightning'],
-    },
-  ];
+  const [orders, setOrders] = useState<Order[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [selectedOrderId, setSelectedOrderId] = useState<number | null>(null)
+  const [isModalOpen, setIsModalOpen] = useState(false)
 
-  const processingOrders = orders.filter((o) => o.status === 'PROCESSING');
+  useEffect(() => {
+    const fetchOrders = async () => {
+      try {
+        const response = await orderService.getOrders()
+        if (response && response.data) {
+          setOrders(response.data)
+        }
+      } catch (error) {
+        console.error('Failed to fetch orders:', error)
+      } finally {
+        setIsLoading(false)
+      }
+    }
 
-  const historyOrders = orders.filter((o) => o.status !== 'PROCESSING');
+    fetchOrders()
+  }, [])
+
+  const handleViewDetail = (orderId: number) => {
+    setSelectedOrderId(orderId)
+    setIsModalOpen(true)
+  }
+
+  const processingOrders = orders.filter(
+    (o) => o.status === 'PROCESSING' || o.status === 'PENDING',
+  )
+  const historyOrders = orders.filter(
+    (o) => o.status !== 'PROCESSING' && o.status !== 'PENDING',
+  )
+
+  if (isLoading) {
+    return (
+      <div className="space-y-6">
+        {[1, 2, 3].map((i) => (
+          <OrderCardSkeleton key={i} />
+        ))}
+      </div>
+    )
+  }
 
   return (
-    <div className="space-y-6">
-      <div className="space-y-0.5">
-        <h3 className="text-lg font-medium">Đơn hàng của tôi</h3>
-        <p className="text-muted-foreground text-sm">
-          {' '}
-          Theo dõi trạng thái và xem lại lịch sử mua sắm của bạn.
-        </p>
-      </div>
-
-      <Tabs defaultValue="current" className="w-full">
-        <TabsList className="mb-4 grid w-full grid-cols-2">
-          <TabsTrigger value="current">Đang xử lý</TabsTrigger>
-          <TabsTrigger value="history">Lịch sử đơn hàng</TabsTrigger>
+    <div className="animate-in fade-in slide-in-from-bottom-8 space-y-10 duration-700">
+      <Tabs defaultValue="current" className="w-full space-y-10">
+        <TabsList className="h-12 w-full max-w-md gap-1 rounded-2xl bg-slate-100/80 p-1 dark:bg-slate-800/50">
+          <TabsTrigger
+            value="current"
+            className="font-display h-full flex-1 rounded-xl text-[11px] font-bold tracking-tight transition-all data-[state=active]:bg-white data-[state=active]:text-slate-900 data-[state=active]:shadow-sm dark:data-[state=active]:bg-slate-900 dark:data-[state=active]:text-white"
+          >
+            Đang thực hiện ({processingOrders.length})
+          </TabsTrigger>
+          <TabsTrigger
+            value="history"
+            className="font-display h-full flex-1 rounded-xl text-[11px] font-bold tracking-tight transition-all data-[state=active]:bg-white data-[state=active]:text-slate-900 data-[state=active]:shadow-sm dark:data-[state=active]:bg-slate-900 dark:data-[state=active]:text-white"
+          >
+            Lịch sử ({historyOrders.length})
+          </TabsTrigger>
         </TabsList>
 
-        {/* Tab Đơn hàng hiện tại */}
-        <TabsContent value="current" className="space-y-4">
+        <TabsContent value="current" className="space-y-6 outline-none">
           {processingOrders.map((order) => (
-            <OrderCard key={order.id} order={order} />
+            <OrderCard
+              key={order.orderID}
+              order={order}
+              onViewDetail={handleViewDetail}
+            />
           ))}
           {processingOrders.length === 0 && <EmptyOrderState />}
         </TabsContent>
 
-        {/* Tab Lịch sử */}
-        <TabsContent value="history" className="space-y-4">
+        <TabsContent value="history" className="space-y-6 outline-none">
           {historyOrders.map((order) => (
-            <OrderCard key={order.id} order={order} />
+            <OrderCard
+              key={order.orderID}
+              order={order}
+              onViewDetail={handleViewDetail}
+            />
           ))}
+          {historyOrders.length === 0 && <EmptyOrderState />}
         </TabsContent>
       </Tabs>
+
+      <OrderDetailModal
+        orderId={selectedOrderId}
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+      />
     </div>
-  );
+  )
 }
 
-// Component phụ cho từng dòng đơn hàng
-function OrderCard({ order, getStatusBadge }: any) {
+function OrderCard({
+  order,
+  onViewDetail,
+}: {
+  order: Order
+  onViewDetail: (id: number) => void
+}) {
+  const formattedDate = format(new Date(order.createdAt), 'dd MMMM, yyyy', {
+    locale: vi,
+  })
+  const formattedAmount = new Intl.NumberFormat('vi-VN', {
+    style: 'currency',
+    currency: 'VND',
+  }).format(order.totalAmount)
+
   return (
-    <Card>
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <div className="space-y-1">
-          <CardTitle className="text-sm font-bold">{order.id}</CardTitle>
-          <CardDescription>Ngày đặt: {order.date}</CardDescription>
+    <div
+      className="glass-card group relative cursor-pointer p-8 transition-all duration-300 hover:border-blue-200 hover:shadow-2xl hover:shadow-blue-500/5 active:scale-[0.99]"
+      onClick={() => onViewDetail(order.orderID)}
+    >
+      <div className="flex flex-col gap-8 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex items-start gap-6">
+          <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-3xl bg-slate-900 text-white shadow-2xl transition-transform duration-500 group-hover:scale-105">
+            <Package size={28} strokeWidth={2.5} />
+          </div>
+          <div className="space-y-2">
+            <div className="flex items-center gap-3">
+              <span className="font-mono text-lg font-black tracking-tighter text-blue-600">
+                #{order.orderID}
+              </span>
+              <OrderStatusBadge status={order.status} />
+            </div>
+            <p className="font-sans text-sm font-bold text-slate-500 italic">
+              Đặt ngày:{' '}
+              <span className="font-mono text-slate-900 not-italic">
+                {formattedDate}
+              </span>
+            </p>
+          </div>
         </div>
-        <OrderStatusBadge status={order.status} />
-      </CardHeader>
-      <CardContent>
-        <div className="text-muted-foreground text-sm">
-          <p className="text-foreground mb-1 font-medium">Sản phẩm:</p>
-          <ul className="list-inside list-disc">
-            {order.items.map((item: string, i: number) => (
-              <li key={i}>{item}</li>
-            ))}
-          </ul>
+
+        <div className="flex items-center gap-8">
+          <div className="text-right">
+            <p className="font-display text-[10px] font-black tracking-widest text-slate-400 uppercase">
+              Tổng cộng
+            </p>
+            <p className="font-mono text-2xl font-black tracking-tighter text-slate-900">
+              {formattedAmount}
+            </p>
+          </div>
+          <Button
+            className="btn-premium-primary h-14 px-8 shadow-none group-hover:shadow-lg group-hover:shadow-blue-500/20"
+            onClick={(e) => {
+              e.stopPropagation()
+              onViewDetail(order.orderID)
+            }}
+          >
+            <Eye className="mr-2 h-4 w-4" strokeWidth={2.5} />
+            Chi tiết
+          </Button>
         </div>
-      </CardContent>
-      <CardFooter className="mt-2 flex items-center justify-between border-t pt-4">
-        <div className="text-sm">
-          Tổng cộng: <span className="text-lg font-bold">{order.total}</span>
-        </div>
-        <Button variant="outline" size="sm" className="gap-2">
-          <Eye className="h-4 w-4" /> Chi tiết
-        </Button>
-      </CardFooter>
-    </Card>
-  );
+      </div>
+    </div>
+  )
 }
 
 function EmptyOrderState() {
   return (
-    <div className="flex flex-col items-center justify-center rounded-lg border-2 border-dashed py-20">
-      <Package className="text-muted-foreground mb-4 h-12 w-12 opacity-20" />
-      <p className="text-muted-foreground font-medium">
-        Bạn không có đơn hàng nào đang xử lý.
+    <div className="flex flex-col items-center justify-center rounded-[3rem] border border-slate-100 bg-white/40 py-24 shadow-sm backdrop-blur-xl dark:bg-slate-900/40">
+      <div className="relative mb-8">
+        <div className="flex h-24 w-24 items-center justify-center rounded-full bg-slate-50 text-slate-200 dark:bg-slate-800">
+          <Package className="h-10 w-10" />
+        </div>
+        <div className="absolute inset-0 animate-pulse rounded-full bg-blue-500/5 blur-[40px]" />
+      </div>
+      <h3 className="font-display text-xl font-black text-slate-900 dark:text-white">
+        Trống trải quá...
+      </h3>
+      <p className="mt-2 max-w-[280px] text-center leading-relaxed font-medium text-slate-400">
+        Bạn chưa có đơn hàng nào trong danh sách này. Hãy bắt đầu mua sắm ngay!
       </p>
-      <Button variant="link" className="text-primary mt-2">
-        Tiếp tục mua sắm
+      <Button className="btn-premium-primary mt-10 h-14 px-10" asChild>
+        <Link href="/products">
+          <Search className="mr-2 h-4 w-4" strokeWidth={2.5} />
+          Khám phá cửa hàng
+        </Link>
       </Button>
     </div>
-  );
+  )
 }

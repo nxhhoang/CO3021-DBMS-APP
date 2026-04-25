@@ -1,60 +1,113 @@
-import { Separator } from '@/components/ui/separator';
-import { User, MapPin, Package } from 'lucide-react';
-import Link from 'next/link';
+'use client'
+
+import { User, MapPin, Package, ChevronRight } from 'lucide-react'
+import Link from 'next/link'
+import { usePathname } from 'next/navigation'
+import { cn } from '@/lib/utils'
+import { MeshBackground } from '@/components/common/MeshBackground'
 
 export default function ProfileLayout({
   children,
 }: {
-  children: React.ReactNode;
+  children: React.ReactNode
 }) {
-  const SIDEBAR_ITEMS: {
-    title: string;
-    href: string;
-    icon: React.ReactNode;
-  }[] = [
+  const pathname = usePathname()
+
+  const sidebarNavItems = [
     {
       title: 'Hồ sơ cá nhân',
       href: '/user/profile',
-      icon: <User className="h-4 w-4" />,
+      icon: <User className="h-5 w-5" />,
     },
     {
       title: 'Sổ địa chỉ',
       href: '/user/addresses',
-      icon: <MapPin className="h-4 w-4" />,
+      icon: <MapPin className="h-5 w-5" />,
     },
     {
       title: 'Đơn hàng',
       href: '/user/orders',
-      icon: <Package className="h-4 w-4" />,
+      icon: <Package className="h-5 w-5" />,
     },
-  ];
+  ]
 
   return (
-    <div className="container mx-auto px-4 py-10">
-      <div className="space-y-0.5">
-        <h2 className="text-2xl font-bold tracking-tight">Cài đặt tài khoản</h2>
-        <p className="text-muted-foreground">
-          Quản lý thông tin cá nhân và địa chỉ giao hàng của bạn.
-        </p>
-      </div>
-      <Separator className="my-6" />
-      <div className="flex flex-col space-y-8 lg:flex-row lg:space-y-0 lg:space-x-12">
-        <aside className="lg:w-1/5">
-          <nav className="flex space-x-2 lg:flex-col lg:space-y-1 lg:space-x-0">
-            {SIDEBAR_ITEMS.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                className="hover:bg-accent flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-all"
-              >
-                {item.icon}
-                {item.title}
-              </Link>
-            ))}
-          </nav>
-        </aside>
-        <div className="flex-1 lg:max-w-3xl">{children}</div>
+    <div className="relative isolate min-h-screen w-full bg-white">
+      {/* Premium Background System */}
+      <MeshBackground />
+
+      <div className="relative z-10 container mx-auto px-4 py-12 md:py-20 lg:px-8">
+        {/* Header Section */}
+        <div className="mb-12 space-y-4">
+          <div className="flex items-center gap-3">
+            <div className="h-1 w-6 rounded-full bg-blue-600" />
+            <span className="font-display text-[11px] font-black tracking-[0.2em] text-blue-600 uppercase">
+              Khu vực khách hàng
+            </span>
+          </div>
+          <h1 className="font-display text-4xl font-black tracking-tight text-slate-900 sm:text-5xl">
+            Tài khoản <span className="text-gradient-primary">của bạn</span>
+          </h1>
+          <p className="max-w-2xl text-lg leading-relaxed font-medium text-slate-500">
+            Quản lý thông tin cá nhân, địa chỉ giao hàng và theo dõi hành trình
+            đơn hàng của bạn một cách dễ dàng.
+          </p>
+        </div>
+
+        <div className="flex flex-col gap-10 lg:flex-row">
+          {/* Sidebar */}
+          <aside className="shrink-0 lg:w-80">
+            <nav className="flex flex-col gap-3">
+              {sidebarNavItems.map((item) => {
+                const isActive = pathname === item.href
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className={cn(
+                      'group flex items-center justify-between rounded-2xl border p-4 transition-all duration-300',
+                      isActive
+                        ? 'border-blue-100 bg-white shadow-xl ring-1 shadow-blue-100/20 ring-blue-50'
+                        : 'border-transparent hover:border-slate-100 hover:bg-white/50',
+                    )}
+                  >
+                    <div className="flex items-center gap-4">
+                      <div
+                        className={cn(
+                          'flex h-12 w-12 items-center justify-center rounded-xl transition-all duration-300',
+                          isActive
+                            ? 'bg-slate-900 text-white shadow-lg shadow-slate-900/20'
+                            : 'bg-slate-100 text-slate-400 group-hover:bg-blue-50 group-hover:text-blue-600',
+                        )}
+                      >
+                        {item.icon}
+                      </div>
+                      <span
+                        className={cn(
+                          'text-sm font-bold tracking-tight transition-colors',
+                          isActive
+                            ? 'text-slate-900'
+                            : 'text-slate-500 group-hover:text-slate-900',
+                        )}
+                      >
+                        {item.title}
+                      </span>
+                    </div>
+                    {isActive && (
+                      <ChevronRight size={18} className="text-blue-600" />
+                    )}
+                  </Link>
+                )
+              })}
+            </nav>
+          </aside>
+
+          {/* Main Content Area */}
+          <main className="min-w-0 flex-1">
+            <div className="h-full">{children}</div>
+          </main>
+        </div>
       </div>
     </div>
-  );
+  )
 }

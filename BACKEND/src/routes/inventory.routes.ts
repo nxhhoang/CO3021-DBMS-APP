@@ -3,11 +3,13 @@ import {
   createInventoryController,
   updateInventoryQuantityController,
   getInventoriesByProductController,
-  getInventoriesBySkuController
+  getInventoriesBySkuController,
+  createSkuController
 } from '~/controllers/inventory.controllers'
 import {
   createInventoryValidator,
-  updateInventoryValidator
+  updateInventoryValidator,
+  createSkuValidator
 } from '~/middlewares/inventory.middlewares'
 import { accessTokenValidator } from '~/middlewares/sample.middlewares'
 import { wrapRequestHandler } from '~/utils/handlers'
@@ -25,6 +27,19 @@ inventoryRouter.post(
   accessTokenValidator,
   createInventoryValidator,
   wrapRequestHandler(createInventoryController)
+)
+
+/**
+ * Description: Admin — Create a new SKU variation (Mongo + Postgres Inventory)
+ * Path: /admin/inventories/sku
+ * Method: POST
+ * Body: { productID: string, sku: string, skuPrice: number, attributes: object, stockQuantity: number }
+ */
+inventoryRouter.post(
+  '/sku',
+  accessTokenValidator,
+  createSkuValidator,
+  wrapRequestHandler(createSkuController)
 )
 
 /**

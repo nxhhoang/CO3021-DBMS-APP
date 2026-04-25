@@ -18,6 +18,14 @@ export interface CreateInventoryReqBody {
   stockQuantity: number
 }
 
+export interface CreateSkuReqBody {
+  productID: string
+  sku: string
+  skuPrice: number
+  attributes: Record<string, any>
+  stockQuantity: number
+}
+
 export interface UpdateInventoryReqBody {
   stockQuantity: number
 }

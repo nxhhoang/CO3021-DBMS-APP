@@ -1,12 +1,13 @@
 import { ObjectId, Filter } from 'mongodb'
 import { PRODUCT_MESSAGES } from '~/constants/messages'
 import Product from '~/models/schemas/Product.schema'
-import mockInventory from '~/models/data/inventory.data'
 import { CreateProductReqBody, SearchProductQuery, UpdateProductReqBody } from '~/models/requests/Product.requests'
 import { ErrorWithStatus } from '~/models/Errors'
 import HTTP_STATUS from '~/constants/httpStatus'
 import { getMongoDB } from '~/utils/mongodb'
 import Category from '~/models/schemas/Category.schema'
+import { query } from '~/utils/postgres'
+import inventoryService from './inventory.services'
 
 class ProductService {
   private get collection() {
@@ -29,8 +30,14 @@ class ProductService {
         return {
           products: [],
           pagination: {
-            totalItems: 0, itemCount: 0, itemsPerPage: limit, totalPages: 0,
-            currentPage: page, nextPage: null, hasPrevPage: false, hasNextPage: false
+            totalItems: 0,
+            itemCount: 0,
+            itemsPerPage: limit,
+            totalPages: 0,
+            currentPage: page,
+            nextPage: null,
+            hasPrevPage: false,
+            hasNextPage: false
           }
         }
       }
@@ -75,12 +82,14 @@ class ProductService {
     const results = await this.collection.find(matchQuery).sort(sortObject).skip(skip).limit(limit).toArray()
 
     // Populate category info
-    const categoryIDs = [...new Set(results.map(p => p.categoryID))]
-    const categories = await getMongoDB().collection<Category>('categories')
-      .find({ _id: { $in: categoryIDs } }).toArray()
+    const categoryIDs = [...new Set(results.map((p) => p.categoryID))]
+    const categories = await getMongoDB()
+      .collection<Category>('categories')
+      .find({ _id: { $in: categoryIDs } })
+      .toArray()
 
-    const mappedResults = results.map(p => {
-      const cat = categories.find(c => c._id.toHexString() === p.categoryID.toHexString())
+    const mappedResults = results.map((p) => {
+      const cat = categories.find((c) => c._id.toHexString() === p.categoryID.toHexString())
       const { categoryID, ...rest } = p as any
       return {
         ...rest,
@@ -104,6 +113,29 @@ class ProductService {
     }
   }
 
+  // async getProductById(id: string) {
+  //   const product = await this.collection.findOne({ _id: new ObjectId(id), isActive: true })
+  //   if (!product) {
+  //     throw new ErrorWithStatus({
+  //       message: PRODUCT_MESSAGES.PRODUCT_NOT_FOUND,
+  //       status: HTTP_STATUS.NOT_FOUND
+  //     })
+  //   }
+
+  //   const cat = await getMongoDB().collection<Category>('categories').findOne({ _id: product.categoryID })
+  //   const { categoryID, ...rest } = product as any
+  //   const mappedProduct = {
+  //     ...rest,
+  //     category: cat ? { _id: cat._id.toHexString(), name: cat.name, slug: cat.slug } : null
+  //   }
+
+  //   // Hybrid: get inventory from PostgreSQL mock (still keeping this part as it uses an external mock array intentionally for now until BE1 migration)
+  //   const inventory = mockInventory
+  //     .filter((inv) => inv.productID === id)
+  //     .map((inv) => ({ sku: inv.sku, stockQuantity: inv.stockQuantity, sku_price: inv.skuPrice }))
+
+  //   return { ...mappedProduct, inventory }
+  // }
   async getProductById(id: string) {
     const product = await this.collection.findOne({ _id: new ObjectId(id), isActive: true })
     if (!product) {
@@ -120,12 +152,40 @@ class ProductService {
       category: cat ? { _id: cat._id.toHexString(), name: cat.name, slug: cat.slug } : null
     }
 
-    // Hybrid: get inventory from PostgreSQL mock (still keeping this part as it uses an external mock array intentionally for now until BE1 migration)
-    const inventory = mockInventory
-      .filter((inv) => inv.productID === id)
-      .map((inv) => ({ sku: inv.sku, stockQuantity: inv.stockQuantity, sku_price: inv.skuPrice }))
+    const { rows } = await query('SELECT sku, stockQuantity AS "stockQuantity" FROM inventory WHERE productID = $1', [
+      id
+    ])
 
-    return { ...mappedProduct, inventory }
+    const mongoSkus = await getMongoDB()
+      .collection('skus')
+      .find({ productID: product._id }, { projection: { _id: 0, sku: 1, skuPrice: 1, attributes: 1 } })
+      .toArray()
+
+    const skuDetailMap = new Map(
+      (Array.isArray(mongoSkus) ? mongoSkus : []).map((mongoSku: any) => [
+        mongoSku.sku,
+        {
+          skuPrice: mongoSku.skuPrice,
+          attributes: mongoSku.attributes ?? {}
+        }
+      ])
+    )
+
+    const inventory = rows.map((row: any) => {
+      const skuDetail = skuDetailMap.get(row.sku)
+      return {
+        sku: row.sku,
+        sku_price: skuDetail?.skuPrice ?? null,
+        skuPrice: skuDetail?.skuPrice ?? null,
+        stockQuantity: Number(row.stockQuantity ?? row.stockquantity ?? 0),
+        attributes: skuDetail?.attributes ?? {}
+      }
+    })
+
+    return {
+      ...mappedProduct,
+      inventory
+    }
   }
 
   // ── Admin mutations ───────────────────────────────────────────────────────────
@@ -142,7 +202,26 @@ class ProductService {
     })
 
     const result = await this.collection.insertOne(newProduct)
-    return { _id: result.insertedId }
+    const productId = result.insertedId
+
+    // Handle initial SKUs if provided
+    if (body.skus && body.skus.length > 0) {
+      try {
+        for (const skuData of body.skus) {
+          await inventoryService.createSku({
+            ...skuData,
+            productID: productId.toHexString()
+          })
+        }
+      } catch (error) {
+        // Rollback: Delete product AND all SKUs created so far for this product
+        await this.collection.deleteOne({ _id: productId })
+        await inventoryService.deleteSkusByProductId(productId.toHexString())
+        throw error
+      }
+    }
+
+    return { _id: productId }
   }
 
   async updateProduct(id: string, body: UpdateProductReqBody) {

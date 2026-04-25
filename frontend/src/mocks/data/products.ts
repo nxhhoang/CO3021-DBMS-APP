@@ -1,122 +1,188 @@
-import { Product, ProductDetail } from '@/types';
+import { Product } from '@/types'
 
-export const MOCK_PRODUCTS: Product[] = [
+const MOCK_PRODUCTS: Product[] = [
+  // LAPTOPS
   {
-    _id: 'product-1',
-    name: 'MacBook Pro M3',
-    basePrice: 2000,
-    categoryId: 'category-1',
-    images: ['/url1.jpg'],
-    attributes: { ram: '16GB', storage: '512GB' },
-    avgRating: 4.5,
-    totalReviews: 100,
-    totalSold: 50,
-  },
-  {
-    _id: 'product-2',
-    name: 'iPhone 14 Pro',
-    basePrice: 999,
-    categoryId: 'category-2',
-    images: ['/url3.jpg'],
-    attributes: { ram: '6GB', storage: '128GB', color: 'Silver' },
-    avgRating: 4.7,
-    totalReviews: 200,
-    totalSold: 150,
-  },
-  {
-    _id: 'product-3',
-    name: 'Shirt',
-    basePrice: 25,
-    categoryId: 'category-3',
-    images: ['/url4.jpg'],
-    attributes: { size: 'M', color: 'Blue' },
-    avgRating: 4.2,
-    totalReviews: 50,
-    totalSold: 30,
-  },
-  {
-    _id: 'product-4',
-    name: 'Running Shoes',
-    basePrice: 100,
-    categoryId: 'category-4',
-    images: ['/url5.jpg'],
-    attributes: { size: '9', color: 'White' },
-    avgRating: 4.3,
-    totalReviews: 80,
-    totalSold: 40,
-  },
-  {
-    _id: 'product-5',
-    name: 'Wireless Headphones',
-    basePrice: 150,
-    categoryId: 'category-5',
-    images: ['/url6.jpg'],
-    attributes: { batteryLife: '20 hours', color: 'Black' },
-    avgRating: 4.6,
-    totalReviews: 120,
-    totalSold: 70,
-  },
-  {
-    _id: 'product-6',
-    name: 'Lenovo ThinkPad X1',
-    basePrice: 1800,
-    categoryId: 'category-1',
-    images: ['/url2.jpg'],
-    attributes: { ram: '16GB', storage: '1TB' },
-    avgRating: 4.4,
-    totalReviews: 80,
-    totalSold: 40,
-  },
-  {
-    _id: 'product-7',
-    name: 'Samsung Galaxy S23',
-    basePrice: 899,
-    categoryId: 'category-2',
-    images: ['/url7.jpg'],
-    attributes: { ram: '8GB', storage: '256GB', color: 'Black' },
-    avgRating: 4.5,
-    totalReviews: 150,
-    totalSold: 120,
-  },
-  {
-    _id: 'product-8',
-    name: 'Jeans',
-    basePrice: 40,
-    categoryId: 'category-3',
-    images: ['/url8.jpg'],
-    attributes: { size: 'L', color: 'Black' },
-    avgRating: 4.1,
-    totalReviews: 60,
-    totalSold: 35,
-  },
-  {
-    _id: 'product-9',
-    name: 'Leather Boots',
-    basePrice: 80,
-    categoryId: 'category-3',
-    images: ['/url9.jpg'],
-    attributes: { size: '9', color: 'Brown' },
-    avgRating: 4.3,
-    totalReviews: 70,
+    _id: 'prod-lp-1',
+    categoryID: 'cat-laptop',
+    name: 'MacBook Pro M3 Max',
+    slug: 'macbook-pro-m3-max',
+    basePrice: 69900000,
+    description: 'Chip M3 Max cực khủng cho đồ họa và lập trình chuyên nghiệp.',
+    images: [
+      'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&q=80&w=800',
+    ],
+    attributes: {
+      brand: 'Apple',
+      cpu: 'M3 Max',
+      ram: '32GB',
+      storage: '1TB',
+    },
+    isActive: true,
+    avgRating: 4.9,
+    totalReviews: 128,
     totalSold: 45,
   },
   {
-    _id: 'product-10',
-    name: 'Smart Watch',
-    basePrice: 200,
-    categoryId: 'category-5',
-    images: ['/url10.jpg'],
-    attributes: { batteryLife: '30 hours', color: 'Silver' },
+    _id: 'prod-lp-2',
+    categoryID: 'cat-laptop',
+    name: 'Dell XPS 15 2024',
+    slug: 'dell-xps-15-2024',
+    basePrice: 45000000,
+    description: 'Thiết kế sang trọng, màn hình OLED 4K tuyệt đẹp.',
+    images: [
+      'https://images.unsplash.com/photo-1593642632823-8f785ba67e45?auto=format&fit=crop&q=80&w=800',
+    ],
+    attributes: {
+      brand: 'Dell',
+      cpu: 'Core i9',
+      ram: '16GB',
+      storage: '512GB',
+    },
+    isActive: true,
     avgRating: 4.7,
-    totalReviews: 90,
-    totalSold: 60,
+    totalReviews: 85,
+    totalSold: 32,
   },
-];
+
+  // ĐIỆN THOẠI
+  {
+    _id: 'prod-ph-1',
+    categoryID: 'cat-dien-thoai',
+    name: 'iPhone 15 Pro Max',
+    slug: 'iphone-15-pro-max',
+    basePrice: 34990000,
+    description: 'Khung viền Titan, chip A17 Pro mạnh mẽ nhất.',
+    images: [
+      'https://images.unsplash.com/photo-1696446701796-da61225697cc?auto=format&fit=crop&q=80&w=800',
+    ],
+    attributes: {
+      brand: 'Apple',
+      os: 'iOS',
+      storage: '256GB',
+    },
+    isActive: true,
+    avgRating: 4.8,
+    totalReviews: 245,
+    totalSold: 120,
+  },
+  {
+    _id: 'prod-ph-2',
+    categoryID: 'cat-dien-thoai',
+    name: 'Samsung Galaxy S24 Ultra',
+    slug: 'samsung-s24-ultra',
+    basePrice: 29990000,
+    description: 'Camera 200MP, tích hợp AI thông minh vượt trội.',
+    images: [
+      'https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?auto=format&fit=crop&q=80&w=800',
+    ],
+    attributes: {
+      brand: 'Samsung',
+      os: 'Android',
+      storage: '512GB',
+    },
+    isActive: true,
+    avgRating: 4.7,
+    totalReviews: 190,
+    totalSold: 88,
+  },
+
+  // ĐỒNG HỒ
+  {
+    _id: 'prod-wt-1',
+    categoryID: 'cat-dong-ho',
+    name: 'Apple Watch Ultra 2',
+    slug: 'apple-watch-ultra-2',
+    basePrice: 21990000,
+    description: 'Bền bỉ, chống nước chuyên dụng cho vận động viên.',
+    images: [
+      'https://images.unsplash.com/photo-1434493907317-a46b59bc043a?auto=format&fit=crop&q=80&w=800',
+    ],
+    attributes: {
+      brand: 'Apple',
+      material: 'Titanium',
+      waterResistance: 100,
+    },
+    isActive: true,
+    avgRating: 4.9,
+    totalReviews: 56,
+    totalSold: 24,
+  },
+  {
+    _id: 'prod-wt-2',
+    categoryID: 'cat-dong-ho',
+    name: 'Rolex Submariner Date',
+    slug: 'rolex-submariner',
+    basePrice: 350000000,
+    description: 'Biểu tượng của sự sang trọng và đẳng cấp vượt thời gian.',
+    images: [
+      'https://images.unsplash.com/photo-1547996160-81dfa63595dd?auto=format&fit=crop&q=80&w=800',
+    ],
+    attributes: {
+      brand: 'Rolex',
+      material: 'Steel',
+      movement: 'Automatic',
+    },
+    isActive: true,
+    avgRating: 5.0,
+    totalReviews: 12,
+    totalSold: 5,
+  },
+
+  // GIÀY
+  {
+    _id: 'prod-sh-1',
+    categoryID: 'cat-giay',
+    name: 'Nike Air Jordan 1 Retro Low',
+    slug: 'nike-air-jordan-1',
+    basePrice: 4200000,
+    description: 'Phong cách huyền thoại, thoải mái cho mọi hoạt động.',
+    images: [
+      'https://images.unsplash.com/photo-1584735175315-9d5df23860e6?auto=format&fit=crop&q=80&w=800',
+    ],
+    attributes: {
+      brand: 'Nike',
+      gender: 'Unisex',
+      sportType: 'Basketball',
+    },
+    isActive: true,
+    avgRating: 4.6,
+    totalReviews: 88,
+    totalSold: 62,
+  },
+  {
+    _id: 'prod-sh-2',
+    categoryID: 'cat-giay',
+    name: 'Adidas Ultraboost Light',
+    slug: 'adidas-ultraboost-light',
+    basePrice: 5000000,
+    description: 'Êm ái tối đa, phản hồi năng lượng tuyệt vời.',
+    images: [
+      'https://images.unsplash.com/photo-1587563871167-1ee9c731aefb?auto=format&fit=crop&q=80&w=800',
+    ],
+    attributes: {
+      brand: 'Adidas',
+      gender: 'Men',
+      sportType: 'Running',
+    },
+    isActive: true,
+    avgRating: 4.7,
+    totalReviews: 120,
+    totalSold: 95,
+  },
+]
 
 export const MOCK_PRODUCT_DETAILS: Record<string, ProductDetail> = {
   'product-1': {
-    ...MOCK_PRODUCTS[0],
-    category: { _id: 'category-1', name: 'Laptops', slug: 'laptops' },
+    _id: 'product-1',
+    name: 'MacBook Pro M3',
+    base_price: 2000,
+    category: { _id: 'category-1', name: 'Laptops', slug: 'laptop' },
+    images: ['/images/macbook.jpg'],
+    attributes: { brand: 'Apple' },
+    avg_rating: 4.5,
+    total_reviews: 100,
+    total_sold: 50,
     description: 'Apple MacBook Pro with M3 chip',
     inventory: [
       { sku: 'MBP-M3-16-512', stockQuantity: 50 },
@@ -125,92 +191,19 @@ export const MOCK_PRODUCT_DETAILS: Record<string, ProductDetail> = {
   },
 
   'product-2': {
-    ...MOCK_PRODUCTS[1],
+    _id: 'product-2',
+    name: 'iPhone 14 Pro',
+    base_price: 999,
     category: { _id: 'category-2', name: 'Smartphones', slug: 'smartphones' },
+    images: ['/images/iphone.jpg'],
+    attributes: { brand: 'Apple' },
+    avg_rating: 4.7,
+    total_reviews: 200,
+    total_sold: 150,
     description: 'Apple iPhone 14 Pro smartphone',
     inventory: [
       { sku: 'IP14P-128-SILVER', stockQuantity: 30 },
       { sku: 'IP14P-256-BLACK', stockQuantity: 20 },
     ],
   },
-
-  'product-3': {
-    ...MOCK_PRODUCTS[2],
-    category: { _id: 'category-3', name: 'Clothing', slug: 'clothing' },
-    description: 'Comfortable cotton shirt',
-    inventory: [
-      { sku: 'SHIRT-M-BLUE', stockQuantity: 100 },
-      { sku: 'SHIRT-L-BLACK', stockQuantity: 50 },
-    ],
-  },
-
-  'product-4': {
-    ...MOCK_PRODUCTS[3],
-    category: { _id: 'category-4', name: 'Footwear', slug: 'footwear' },
-    description: 'Lightweight running shoes',
-    inventory: [
-      { sku: 'SHOES-9-WHITE', stockQuantity: 40 },
-      { sku: 'SHOES-10-BLACK', stockQuantity: 20 },
-    ],
-  },
-
-  'product-5': {
-    ...MOCK_PRODUCTS[4],
-    category: { _id: 'category-5', name: 'Accessories', slug: 'accessories' },
-    description: 'Noise-cancelling wireless headphones',
-    inventory: [
-      { sku: 'HEADPHONES-BLACK', stockQuantity: 70 },
-      { sku: 'HEADPHONES-SILVER', stockQuantity: 30 },
-    ],
-  },
-
-  'product-6': {
-    ...MOCK_PRODUCTS[5],
-    category: { _id: 'category-1', name: 'Laptops', slug: 'laptops' },
-    description: 'Lenovo ThinkPad X1 Carbon laptop',
-    inventory: [
-      { sku: 'TPX1-16-1TB', stockQuantity: 20 },
-      { sku: 'TPX1-32-2TB', stockQuantity: 5 },
-    ],
-  },
-
-  'product-7': {
-    ...MOCK_PRODUCTS[6],
-    category: { _id: 'category-2', name: 'Smartphones', slug: 'smartphones' },
-    description: 'Samsung Galaxy S23 smartphone',
-    inventory: [
-      { sku: 'SGS23-256-BLACK', stockQuantity: 50 },
-      { sku: 'SGS23-512-SILVER', stockQuantity: 20 },
-    ],
-  },
-
-  'product-8': {
-    ...MOCK_PRODUCTS[7],
-    category: { _id: 'category-3', name: 'Clothing', slug: 'clothing' },
-    description: 'Stylish denim jeans',
-    inventory: [
-      { sku: 'JEANS-L-BLACK', stockQuantity: 60 },
-      { sku: 'JEANS-M-BLUE', stockQuantity: 80 },
-    ],
-  },
-
-  'product-9': {
-    ...MOCK_PRODUCTS[8],
-    category: { _id: 'category-3', name: 'Clothing', slug: 'clothing' },
-    description: 'Durable leather boots',
-    inventory: [
-      { sku: 'BOOTS-9-BROWN', stockQuantity: 45 },
-      { sku: 'BOOTS-10-BLACK', stockQuantity: 25 },
-    ],
-  },
-
-  'product-10': {
-    ...MOCK_PRODUCTS[9],
-    category: { _id: 'category-5', name: 'Accessories', slug: 'accessories' },
-    description: 'Feature-rich smart watch',
-    inventory: [
-      { sku: 'SMARTWATCH-SILVER', stockQuantity: 60 },
-      { sku: 'SMARTWATCH-GOLD', stockQuantity: 20 },
-    ],
-  },
-};
+}

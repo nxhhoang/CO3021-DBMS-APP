@@ -43,9 +43,10 @@ class OrderService {
 
       //  Step 2: Lock & validate inventory for each item
       for (const item of items) {
-        const invResult = await client.query(`SELECT stockQuantity AS "stockQuantity" FROM INVENTORY WHERE sku = $1 FOR UPDATE`, [
-          item.sku
-        ])
+        const invResult = await client.query(
+          `SELECT stockQuantity AS "stockQuantity" FROM INVENTORY WHERE sku = $1 FOR UPDATE`,
+          [item.sku]
+        )
 
         if (invResult.rows.length === 0 || invResult.rows[0].stockQuantity < item.quantity) {
           await client.query('ROLLBACK')
@@ -159,7 +160,7 @@ class OrderService {
     const result = await query(
       `UPDATE ORDERS SET status = $1
        WHERE orderID = $2
-       RETURNING orderID AS "orderID", status`,
+       RETURNING orderID AS "orderID", status, NOW() AS "updatedAt"`,
       [newStatus, orderId]
     )
 
@@ -174,6 +175,67 @@ class OrderService {
     }
 
     return result.rows[0]
+  }
+
+  // Admin: Get all orders with pagination & search & filter & sort
+  async getAllOrdersAdmin(limit: number = 10, page: number = 1, search?: string, status?: string, sort?: string) {
+    const offset = (page - 1) * limit
+    const searchPattern = search ? `%${search}%` : null
+    const sortOrder = sort === 'oldest' ? 'ASC' : 'DESC'
+
+    // Build WHERE clause
+    const whereClauses: string[] = []
+    const params: any[] = []
+    let paramIndex = 1
+
+    if (searchPattern) {
+      whereClauses.push(`CAST(orderid AS TEXT) LIKE $${paramIndex}`)
+      params.push(searchPattern)
+      paramIndex++
+    }
+
+    if (status && status !== 'ALL') {
+      whereClauses.push(`status = $${paramIndex}`)
+      params.push(status)
+      paramIndex++
+    }
+
+    const whereClause = whereClauses.length > 0 ? ` WHERE ${whereClauses.join(' AND ')}` : ''
+
+    // 1. Lấy danh sách orders
+    const queryStr = `
+      SELECT 
+        orderid AS "orderID", 
+        userid AS "userID", 
+        status, 
+        totalamount AS "totalAmount", 
+        createdat AS "createdAt",
+        shippingaddr AS "shippingAddr"
+      FROM ORDERS
+      ${whereClause}
+      ORDER BY createdat ${sortOrder}
+      LIMIT $${paramIndex}
+      OFFSET $${paramIndex + 1}
+    `
+
+    params.push(limit, offset)
+    const result = await query(queryStr, params)
+
+    // 2. Lấy tổng số lượng
+    const countQuery = `SELECT COUNT(*) FROM ORDERS${whereClause}`
+    const countParams = params.slice(0, paramIndex - 1)
+    const countResult = await query(countQuery, countParams)
+    const totalOrders = parseInt(countResult.rows[0].count)
+
+    return {
+      orders: result.rows,
+      pagination: {
+        total: totalOrders,
+        page,
+        limit,
+        totalPages: Math.ceil(totalOrders / limit)
+      }
+    }
   }
 }
 

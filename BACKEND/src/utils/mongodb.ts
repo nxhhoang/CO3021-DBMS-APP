@@ -19,7 +19,7 @@ export const connectMongo = async (): Promise<void> => {
 
     await clientInstance.connect()
 
-    dbInstance = clientInstance.db()
+    dbInstance = clientInstance.db(mongoDatabase)
     
     // Ping to verify
     await dbInstance.command({ ping: 1 })

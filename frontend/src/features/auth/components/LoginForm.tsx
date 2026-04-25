@@ -13,8 +13,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import Link from 'next/link';
 import { useLogin } from '@/features/auth/hooks/useLogin';
-import { useRouter } from 'next/navigation';
-import { FieldError } from '@/components/ui/field';
+import { useRouter } from 'next/navigation'
 
 export function LoginForm() {
   const [email, setEmail] = useState<string>('');
@@ -36,12 +35,8 @@ export function LoginForm() {
     setError('');
     setLoading(true);
     try {
-      await login({
-        email,
-        password,
-      });
-      alert('Login success');
-      router.push('/'); // Redirect depends on user role, but for now just go to home page
+      await login({ email, password })
+      router.push('/')
     } catch (err: any) {
       setError(err.message);
     } finally {
@@ -50,62 +45,76 @@ export function LoginForm() {
   };
 
   return (
-    <form
-      onSubmit={handleLogin}
-      className="flex flex-1 items-center justify-center"
-    >
-      <Card className="w-full max-w-md flex-col gap-2">
-        <CardHeader className="mb-2 space-y-1">
-          <CardTitle className="text-2xl">Login</CardTitle>
-          <CardDescription>
-            Enter your email below to login to your account
+    <form onSubmit={handleLogin}>
+      <Card className="w-full border-white/60 bg-white/80 shadow-xl shadow-slate-900/5 backdrop-blur-sm">
+        <CardHeader className="space-y-1">
+          <CardTitle className="font-display text-3xl font-black tracking-tight text-slate-900">
+            Đăng nhập
+          </CardTitle>
+          <CardDescription className="text-slate-500">
+            Nhập thông tin tài khoản để tiếp tục
           </CardDescription>
         </CardHeader>
 
         <CardContent className="grid gap-4">
-          {/* Email */}
           <div className="grid gap-2">
-            <Label htmlFor="email">Email</Label>
+            <Label
+              htmlFor="email"
+              className="text-sm font-semibold text-slate-700"
+            >
+              Email
+            </Label>
             <Input
               id="email"
               type="email"
               placeholder="name@example.com"
+              className="text-slate-900 placeholder:text-slate-400"
+              value={email}
               onChange={(e) => setEmail(e.target.value)}
+              autoComplete="email"
             />
           </div>
 
-          {/* Password */}
           <div className="grid gap-2">
-            <Label htmlFor="password">Password</Label>
+            <Label
+              htmlFor="password"
+              className="text-sm font-semibold text-slate-700"
+            >
+              Mật khẩu
+            </Label>
             <Input
               id="password"
               type="password"
+              placeholder="Nhập mật khẩu"
+              className="text-slate-900 placeholder:text-slate-400"
+              value={password}
               onChange={(e) => setPassword(e.target.value)}
+              autoComplete="current-password"
             />
           </div>
         </CardContent>
 
-        <CardFooter className="flex flex-col gap-2">
-          <FieldError>
-            <div className="min-h-6">
-              {error && <p className="text-destructive text-sm">{error}</p>}
-            </div>
-          </FieldError>
-          <Button className="w-full" type="submit" disabled={loading}>
-            {loading ? 'Signing in...' : 'Sign in'}
+        <CardFooter className="flex flex-col gap-3">
+          {error && (
+            <p className="text-destructive w-full text-sm" role="alert">
+              {error}
+            </p>
+          )}
+          <Button className="w-full" type="submit" disabled={loading} size="lg">
+            {loading ? 'Đang đăng nhập...' : 'Đăng nhập'}
           </Button>
 
-          <p className="text-muted-foreground mt-2 text-center text-sm">
-            Don’t have an account?{' '}
+          <p className="text-muted-foreground text-center text-sm">
+            Chưa có tài khoản?{' '}
             <Link
               href="/register"
-              className="text-primary font-medium hover:underline"
+              className="text-primary font-semibold hover:underline"
             >
-              Sign up
+              Đăng ký ngay
             </Link>
           </p>
         </CardFooter>
       </Card>
     </form>
-  );
+  )
 }

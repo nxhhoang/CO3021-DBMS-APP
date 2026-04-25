@@ -15,8 +15,7 @@ import Link from 'next/link';
 import { useForm } from '@/hooks/useForm';
 import { useRegister } from '../hooks/useRegister';
 import { RegisterRequest } from '../../../types/auth.types';
-import { useRouter } from 'next/navigation';
-import { FieldError } from '@/components/ui/field';
+import { useRouter } from 'next/navigation'
 
 type RegisterFormValues = RegisterRequest & {
   confirmPassword: string;
@@ -39,34 +38,35 @@ const REGISTER_FIELDS: RegisterFormFields[] = [
     placeholder: 'name@example.com',
   },
   {
-    label: 'Password',
+    label: 'Mật khẩu',
     id: 'password',
     name: 'password',
     type: 'password',
-    placeholder: 'Enter your password',
+    placeholder: 'Nhập mật khẩu',
   },
   {
-    label: 'Confirm password',
+    label: 'Xác nhận mật khẩu',
     id: 'confirmPassword',
     name: 'confirmPassword',
     type: 'password',
-    placeholder: 'Confirm your password',
+    placeholder: 'Nhập lại mật khẩu',
   },
   {
-    label: 'Full name',
+    label: 'Họ và tên',
     id: 'fullName',
     name: 'fullName',
     type: 'text',
-    placeholder: 'Enter your full name',
+    placeholder: 'Nhập họ và tên',
   },
   {
-    label: 'Phone number',
+    label: 'Số điện thoại',
     id: 'phoneNum',
     name: 'phoneNum',
     type: 'text',
-    placeholder: 'Enter your phone number',
+    placeholder: 'Nhập số điện thoại',
   },
-];
+]
+
 export function RegisterForm() {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>('');
@@ -86,25 +86,24 @@ export function RegisterForm() {
     e.preventDefault();
     setError('');
 
-    if (values.password !== values.confirmPassword) {
-      setError('Password and confirm password do not match');
-      return;
-    }
-
     if (
       !values.email ||
       !values.password ||
       !values.fullName ||
       !values.phoneNum
     ) {
-      setError('Please fill in all required fields');
-      return;
+      setError('Vui lòng điền đầy đủ thông tin')
+      return
+    }
+
+    if (values.password !== values.confirmPassword) {
+      setError('Mật khẩu xác nhận không khớp')
+      return
     }
 
     try {
       setLoading(true);
-      await register(values);
-      alert('Register success');
+      await register(values)
       router.push('/login');
     } catch (err: any) {
       setError(err.message);
@@ -114,52 +113,59 @@ export function RegisterForm() {
   };
 
   return (
-    <form
-      onSubmit={handleRegister}
-      className="flex flex-1 items-center justify-center"
-    >
-      <Card className="w-full max-w-md flex-col gap-2">
-        <CardHeader className="mb-2 space-y-1">
-          <CardTitle className="text-2xl">Register</CardTitle>
-          <CardDescription>Create new account</CardDescription>
+    <form onSubmit={handleRegister}>
+      <Card className="w-full border-white/60 bg-white/80 shadow-xl shadow-slate-900/5 backdrop-blur-sm">
+        <CardHeader className="space-y-1">
+          <CardTitle className="font-display text-3xl font-black tracking-tight text-slate-900">
+            Đăng ký
+          </CardTitle>
+          <CardDescription className="text-slate-500">
+            Tạo tài khoản mới để bắt đầu mua sắm
+          </CardDescription>
         </CardHeader>
 
         <CardContent className="grid gap-4">
           {REGISTER_FIELDS.map((field: RegisterFormFields) => (
             <div className="grid gap-2" key={field.id}>
-              <Label htmlFor={field.id}>{field.label}</Label>
+              <Label
+                htmlFor={field.id}
+                className="text-sm font-semibold text-slate-700"
+              >
+                {field.label}
+              </Label>
               <Input
                 id={field.id}
                 type={field.type || 'text'}
                 placeholder={field.placeholder}
                 value={values[field.name]}
                 onChange={handleChange}
+                className="text-slate-900 placeholder:text-slate-400"
               />
             </div>
           ))}
         </CardContent>
 
-        <CardFooter className="flex flex-col gap-2">
-          <FieldError>
-            <div className="min-h-6">
-              {error && <p className="text-destructive text-sm">{error}</p>}
-            </div>
-          </FieldError>
-          <Button type="submit" className="w-full" disabled={loading}>
-            {loading ? 'Creating account...' : 'Create new account'}
+        <CardFooter className="flex flex-col gap-3">
+          {error && (
+            <p className="text-destructive w-full text-sm" role="alert">
+              {error}
+            </p>
+          )}
+          <Button type="submit" className="w-full" disabled={loading} size="lg">
+            {loading ? 'Đang tạo tài khoản...' : 'Tạo tài khoản'}
           </Button>
 
           <p className="text-muted-foreground text-center text-sm">
-            Already have an account?{' '}
+            Đã có tài khoản?{' '}
             <Link
               href="/login"
-              className="text-primary font-medium hover:underline"
+              className="text-primary font-semibold hover:underline"
             >
-              Sign in
+              Đăng nhập
             </Link>
           </p>
         </CardFooter>
       </Card>
     </form>
-  );
+  )
 }

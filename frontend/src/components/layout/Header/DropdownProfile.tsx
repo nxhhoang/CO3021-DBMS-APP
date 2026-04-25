@@ -14,13 +14,25 @@ import Link from 'next/link'
 import { useAuthContext } from '@/features/auth'
 
 const NAV_ITEMS = [
-  { label: 'Profile', href: '/user/profile' },
-  { label: 'Addresses', href: '/user/addresses' },
-  { label: 'Orders', href: '/user/orders' },
+  { label: 'Hồ sơ cá nhân', href: '/user/profile' },
+  { label: 'Sổ địa chỉ', href: '/user/addresses' },
+  { label: 'Đơn hàng', href: '/user/orders' },
 ]
 
 export const DropdownProfile = () => {
-  const { logout } = useAuthContext()
+  const { logout, isAuthenticated, isLoading } = useAuthContext()
+
+  if (isLoading) return null
+
+  if (!isAuthenticated) {
+    return (
+      <div className="hidden md:block">
+        <Button variant="ghost" size="sm" asChild>
+          <Link href="/login">Đăng nhập</Link>
+        </Button>
+      </div>
+    )
+  }
 
   return (
     <div className="hidden md:block">
@@ -31,7 +43,7 @@ export const DropdownProfile = () => {
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-52">
-          <DropdownMenuLabel>My Account</DropdownMenuLabel>
+          <DropdownMenuLabel>Tài khoản của tôi</DropdownMenuLabel>
           <DropdownMenuSeparator />
           {NAV_ITEMS.map((item) => (
             <DropdownMenuItem key={item.href} asChild>
@@ -44,7 +56,7 @@ export const DropdownProfile = () => {
             className="text-destructive cursor-pointer"
           >
             <LogOut className="mr-2 h-4 w-4" />
-            Log out
+            Đăng xuất
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

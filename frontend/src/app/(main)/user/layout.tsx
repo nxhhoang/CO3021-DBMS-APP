@@ -2,9 +2,11 @@
 
 import { User, MapPin, Package, ChevronRight } from 'lucide-react'
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import { cn } from '@/lib/utils'
 import { MeshBackground } from '@/components/common/MeshBackground'
+import { useAuthContext } from '@/features/auth'
+import { useEffect } from 'react'
 
 export default function ProfileLayout({
   children,
@@ -12,6 +14,16 @@ export default function ProfileLayout({
   children: React.ReactNode
 }) {
   const pathname = usePathname()
+  const router = useRouter()
+  const { isAuthenticated, isLoading } = useAuthContext()
+
+  useEffect(() => {
+    if (!isLoading && !isAuthenticated) {
+      router.push('/login')
+    }
+  }, [isAuthenticated, isLoading, router])
+
+  if (isLoading || !isAuthenticated) return null
 
   const sidebarNavItems = [
     {

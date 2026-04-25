@@ -15,9 +15,10 @@ import {
   MapPin,
   Package,
   ChevronRight,
+  LogIn,
+  UserPlus,
 } from 'lucide-react'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
 import { useAuthContext } from '@/features/auth'
 import { ProductSearch } from '@/features/products'
 import { useState } from 'react'
@@ -28,15 +29,18 @@ const NAV_ITEMS = [
   { label: 'Đơn hàng', href: '/user/orders', icon: Package },
 ]
 
+const GUEST_ITEMS = [
+  { label: 'Đăng nhập', href: '/login', icon: LogIn },
+  { label: 'Đăng ký', href: '/register', icon: UserPlus },
+]
+
 export const MobileMenu = () => {
-  const router = useRouter()
   const [isOpen, setIsOpen] = useState(false)
-  const { logout } = useAuthContext()
+  const { logout, isAuthenticated } = useAuthContext()
 
   const handleLogout = async () => {
-    await logout()
     setIsOpen(false)
-    router.push('/login')
+    await logout()
   }
 
   return (
@@ -77,9 +81,9 @@ export const MobileMenu = () => {
             {/* Nav Links */}
             <nav className="flex flex-col gap-2">
               <span className="mb-2 text-[10px] font-black tracking-widest text-slate-400 uppercase">
-                Tài khoản
+                {isAuthenticated ? 'Tài khoản' : 'Truy cập'}
               </span>
-              {NAV_ITEMS.map((item) => {
+              {(isAuthenticated ? NAV_ITEMS : GUEST_ITEMS).map((item) => {
                 const Icon = item.icon
                 return (
                   <Link
@@ -105,17 +109,19 @@ export const MobileMenu = () => {
               })}
             </nav>
 
-            <div className="mt-auto space-y-4 pt-8">
-              <button
-                onClick={handleLogout}
-                className="group flex w-full items-center gap-3 rounded-2xl p-4 text-sm font-bold text-rose-500 transition-all hover:bg-rose-50 hover:text-rose-600"
-              >
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-rose-50 transition-colors group-hover:bg-rose-100 group-hover:text-rose-600">
-                  <LogOut size={18} strokeWidth={2.5} />
-                </div>
-                Đăng xuất
-              </button>
-            </div>
+            {isAuthenticated && (
+              <div className="mt-auto space-y-4 pt-8">
+                <button
+                  onClick={handleLogout}
+                  className="group flex w-full items-center gap-3 rounded-2xl p-4 text-sm font-bold text-rose-500 transition-all hover:bg-rose-50 hover:text-rose-600"
+                >
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-rose-50 transition-colors group-hover:bg-rose-100 group-hover:text-rose-600">
+                    <LogOut size={18} strokeWidth={2.5} />
+                  </div>
+                  Đăng xuất
+                </button>
+              </div>
+            )}
           </div>
 
           {/* Footer Branding */}

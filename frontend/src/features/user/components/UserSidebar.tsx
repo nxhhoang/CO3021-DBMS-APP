@@ -3,7 +3,7 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
-import { useAuth } from '@/features/auth';
+import { useAuthContext } from '@/features/auth';
 import { User, Home, MapPin, LogOut } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -34,7 +34,7 @@ function SidebarItem({
 
 export function UserSidebar() {
   const pathname = usePathname();
-  const { logout } = useAuth();
+  const { logout } = useAuthContext();
 
   const SIDEBAR_ITEMS: {
     icon: React.ReactNode;

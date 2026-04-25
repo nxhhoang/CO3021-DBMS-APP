@@ -1,4 +1,4 @@
-'use client';
+'use client'
 
 import { SORT_BY } from '@/constants/enum'
 import {
@@ -7,11 +7,11 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
+} from '@/components/ui/select'
 
 interface SortSelectProps {
-  value: string;
-  onChange: (value: string) => void;
+  value: string
+  onChange: (value: string) => void
 }
 
 const SortSelect = ({ value, onChange }: SortSelectProps) => {
@@ -37,6 +37,6 @@ const SortSelect = ({ value, onChange }: SortSelectProps) => {
       </SelectContent>
     </Select>
   )
-};
+}
 
-export default SortSelect;
+export default SortSelect

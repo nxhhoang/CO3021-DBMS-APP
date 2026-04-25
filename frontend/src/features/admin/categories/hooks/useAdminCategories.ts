@@ -8,9 +8,13 @@ import { toast } from 'sonner'
 export function useAdminCategories() {
   const [categories, setCategories] = useState<Category[]>([])
   const [loading, setLoading] = useState(false)
-  const [selectedCategory, setSelectedCategory] = useState<Category | null>(null)
+  const [selectedCategory, setSelectedCategory] = useState<Category | null>(
+    null,
+  )
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false)
-  const [expandedCategoryId, setExpandedCategoryId] = useState<string | null>(null)
+  const [expandedCategoryId, setExpandedCategoryId] = useState<string | null>(
+    null,
+  )
   const [updatingStatusIds, setUpdatingStatusIds] = useState<string[]>([])
 
   const getCategoryId = (category: Category) => {

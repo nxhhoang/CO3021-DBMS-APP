@@ -1,5 +1,5 @@
 // types/cart.types.ts
-import { ApiResponse } from './api.types';
+import { ApiResponse } from './api.types'
 import { Product } from './product.types'
 
 export interface CartItem {
@@ -20,8 +20,8 @@ export interface CartItem {
 }
 
 export interface Cart {
-  cartTotal: number;
-  items: CartItem[];
+  cartTotal: number
+  items: CartItem[]
 }
 
 // POST /cart/sync
@@ -34,15 +34,15 @@ export interface SyncCartRequest {
   }>
 }
 
-export type SyncCartResponse = ApiResponse<Cart>;
+export type SyncCartResponse = ApiResponse<Cart>
 
 // DELETE /cart/items/:sku
 // export type RemoveCartItemRequest = { productID: string };
-export type RemoveCartItemResponse = ApiResponse<null>;
+export type RemoveCartItemResponse = ApiResponse<null>
 
 // // PUT /cart/items/:sku
 export type UpdateCartItemRequest = {
-  newSku?: string;
-  quantity?: number;
-};
-export type UpdateCartItemResponse = ApiResponse<null>;
+  newSku?: string
+  quantity?: number
+}
+export type UpdateCartItemResponse = ApiResponse<null>

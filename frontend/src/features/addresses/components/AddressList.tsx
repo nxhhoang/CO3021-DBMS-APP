@@ -1,15 +1,15 @@
-'use client';
+'use client'
 
-import AddressCard from './AddressCard';
+import { AddressCard } from './AddressCard'
 
 interface Props {
-  addresses: any[];
-  onEdit: (addr: any) => void;
-  onDelete: (id: number) => void;
-  onSetDefault: (id: number) => void;
+  addresses: any[]
+  onEdit: (addr: any) => void
+  onDelete: (id: number) => void
+  onSetDefault: (id: number) => void
 }
 
-export default function AddressList({
+export function AddressList({
   addresses,
   onEdit,
   onDelete,
@@ -27,5 +27,5 @@ export default function AddressList({
         />
       ))}
     </div>
-  );
+  )
 }

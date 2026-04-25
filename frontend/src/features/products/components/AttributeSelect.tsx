@@ -1,4 +1,4 @@
-'use client';
+'use client'
 
 import {
   Select,
@@ -6,13 +6,13 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import { Category } from '@/types/category.types';
+} from '@/components/ui/select'
+import { Category } from '@/types/category.types'
 
 interface AttributeSelectProps {
-  category?: Category;
-  localAttrs: Record<string, string>;
-  setLocalAttrs: (attrs: Record<string, string>) => void;
+  category?: Category
+  localAttrs: Record<string, string>
+  setLocalAttrs: (attrs: Record<string, string>) => void
 }
 
 const AttributeSelect = ({
@@ -58,7 +58,10 @@ const AttributeSelect = ({
               </SelectTrigger>
 
               <SelectContent className="rounded-2xl border-slate-100 p-2 shadow-2xl dark:border-white/10 dark:bg-slate-900">
-                <SelectItem value="all" className="rounded-xl text-xs font-bold transition-colors focus:bg-blue-50 focus:text-blue-600 dark:focus:bg-blue-900/30">
+                <SelectItem
+                  value="all"
+                  className="rounded-xl text-xs font-bold transition-colors focus:bg-blue-50 focus:text-blue-600 dark:focus:bg-blue-900/30"
+                >
                   Tất cả {attr.label.toLowerCase()}
                 </SelectItem>
 
@@ -78,6 +81,6 @@ const AttributeSelect = ({
       })}
     </div>
   )
-};
+}
 
-export default AttributeSelect;
+export default AttributeSelect

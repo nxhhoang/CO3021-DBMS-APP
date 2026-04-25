@@ -12,7 +12,6 @@ import { toast } from 'sonner'
 
 import {
   PremiumTable,
-  PremiumTableBody,
   PremiumTableCell,
   PremiumTableHead,
   PremiumTableHeader,
@@ -36,11 +35,7 @@ interface OrderTableProps {
   onRefresh: () => void
 }
 
-export default function OrderTable({
-  orders,
-  loading,
-  onRefresh,
-}: OrderTableProps) {
+export function OrderTable({ orders, loading, onRefresh }: OrderTableProps) {
   const [updatingId, setUpdatingId] = useState<number | null>(null)
 
   const handleStatusChange = async (
@@ -82,18 +77,24 @@ export default function OrderTable({
           <PremiumTable>
             <PremiumTableHeader>
               <PremiumTableRow>
-                <PremiumTableHead className="w-[120px]">Mã đơn</PremiumTableHead>
+                <PremiumTableHead className="w-[120px]">
+                  Mã đơn
+                </PremiumTableHead>
                 <PremiumTableHead>Ngày đặt</PremiumTableHead>
                 <PremiumTableHead>Tổng tiền</PremiumTableHead>
                 <PremiumTableHead>Trạng thái</PremiumTableHead>
-                <PremiumTableHead className="text-right">Hành động</PremiumTableHead>
+                <PremiumTableHead className="text-right">
+                  Hành động
+                </PremiumTableHead>
               </PremiumTableRow>
             </PremiumTableHeader>
             <tbody>
               {orders.map((order) => (
                 <PremiumTableRow key={order.orderID}>
                   <PremiumTableCell>
-                    <span className="font-mono font-black text-blue-600">#{order.orderID}</span>
+                    <span className="font-mono font-black text-blue-600">
+                      #{order.orderID}
+                    </span>
                   </PremiumTableCell>
 
                   <PremiumTableCell>
@@ -108,7 +109,9 @@ export default function OrderTable({
                   <PremiumTableCell>
                     <div className="font-mono text-base font-black tracking-tighter text-slate-900">
                       {order.totalAmount.toLocaleString()}
-                      <span className="ml-1 text-[10px] font-bold uppercase text-slate-400">đ</span>
+                      <span className="ml-1 text-[10px] font-bold text-slate-400 uppercase">
+                        đ
+                      </span>
                     </div>
                   </PremiumTableCell>
 

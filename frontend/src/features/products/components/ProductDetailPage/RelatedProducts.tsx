@@ -10,8 +10,14 @@ interface RelatedProductsProps {
   currentProductId: string
 }
 
-export const RelatedProducts = ({ categorySlug, currentProductId }: RelatedProductsProps) => {
-  const { products, loading } = useProducts({ category: categorySlug, limit: 8 })
+export const RelatedProducts = ({
+  categorySlug,
+  currentProductId,
+}: RelatedProductsProps) => {
+  const { products, loading } = useProducts({
+    category: categorySlug,
+    limit: 8,
+  })
   const related = products.filter((p) => p._id !== currentProductId).slice(0, 4)
 
   if (!loading && related.length === 0) return null
@@ -23,9 +29,7 @@ export const RelatedProducts = ({ categorySlug, currentProductId }: RelatedProdu
         <h2 className="font-display text-3xl font-bold tracking-tight text-slate-900">
           Sản phẩm <span className="text-gradient-primary">Liên quan</span>
         </h2>
-        <p className="text-slate-500">
-          Khám phá thêm sản phẩm cùng danh mục.
-        </p>
+        <p className="text-slate-500">Khám phá thêm sản phẩm cùng danh mục.</p>
       </div>
 
       {loading ? (
@@ -36,7 +40,11 @@ export const RelatedProducts = ({ categorySlug, currentProductId }: RelatedProdu
         <>
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {related.map((product) => (
-              <ProductCard key={product._id} product={product} className="h-full" />
+              <ProductCard
+                key={product._id}
+                product={product}
+                className="h-full"
+              />
             ))}
           </div>
           <div className="mt-10 flex justify-center">

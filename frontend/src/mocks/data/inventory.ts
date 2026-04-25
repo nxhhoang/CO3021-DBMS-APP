@@ -1,5 +1,5 @@
-import { SKU, Inventory } from '@/types/product.types';
-import { Battery } from 'lucide-react';
+import { SKU, Inventory } from '@/types/product.types'
+import { Battery } from 'lucide-react'
 
 const MOCK_SKU: SKU[] = [
   {
@@ -62,11 +62,11 @@ const MOCK_SKU: SKU[] = [
     sku_price: 1200,
     attributes: { color: 'White', type: 'Wired' },
   },
-];
+]
 
 const MOCK_INVENTORY: Inventory[] = MOCK_SKU.map((sku) => ({
   ...sku,
   stockQuantity: Math.floor(Math.random() * 20) + 1, // Random stock between 1 and 20
-}));
+}))
 
-export { MOCK_SKU, MOCK_INVENTORY };
+export { MOCK_SKU, MOCK_INVENTORY }

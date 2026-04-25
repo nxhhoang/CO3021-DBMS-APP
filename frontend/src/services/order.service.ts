@@ -1,4 +1,4 @@
-import { api, privateApi } from '../lib/axios';
+import { api, privateApi } from '../lib/axios'
 import {
   CreateOrderRequest,
   CreateOrderResponse,
@@ -55,7 +55,6 @@ export const orderService = {
 //     },
 //   ],
 // });
-
 
 // privateApi.put('admin/orders/123/status', { status: 'DELIVERED' })
 

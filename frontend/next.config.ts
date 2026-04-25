@@ -1,4 +1,4 @@
-import type { NextConfig } from 'next';
+import type { NextConfig } from 'next'
 
 const nextConfig: NextConfig = {
   /* Cấu hình cho phép hiển thị ảnh từ via.placeholder.com */
@@ -32,8 +32,8 @@ const nextConfig: NextConfig = {
         source: '/api/v1/:path*',
         destination: '/api/:path*',
       },
-    ];
+    ]
   },
-};
+}
 
-export default nextConfig;
+export default nextConfig

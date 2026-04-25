@@ -3,9 +3,11 @@
 import { useState, FormEvent } from 'react'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { GetProductsRequest, ProductResponse } from '@/types/product.types'
-import { useProducts } from '@/features/products/hooks/useProducts'
-import useProductQueryParams from '@/features/products/hooks/useProductQueryParams'
-import useCategories from '@/features/products/hooks/useCategories'
+import {
+  useProducts,
+  useProductQueryParams,
+  useCategories,
+} from '@/features/products'
 import { SORT_BY } from '@/constants/enum'
 
 type ProductSortValue = Exclude<GetProductsRequest['sort'], undefined>

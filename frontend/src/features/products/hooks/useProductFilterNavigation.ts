@@ -1,12 +1,12 @@
-'use client';
+'use client'
 
-import { useRouter, useSearchParams } from 'next/navigation';
-import { buildProductFilterParams } from '../utils/buildProductFilterParams';
+import { useRouter, useSearchParams } from 'next/navigation'
+import { buildProductFilterParams } from '../utils/buildProductFilterParams'
 import { DEFAULT_MAX_PRICE } from '@/constants/enum'
 
 export function useProductFilterNavigation() {
-  const router = useRouter();
-  const searchParams = useSearchParams();
+  const router = useRouter()
+  const searchParams = useSearchParams()
 
   const applyFilters = (
     category: string,

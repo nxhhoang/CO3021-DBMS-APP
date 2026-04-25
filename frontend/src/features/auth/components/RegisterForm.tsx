@@ -1,6 +1,6 @@
-'use client';
-import { Button } from '@/components/ui/button';
-import { useState } from 'react';
+'use client'
+import { Button } from '@/components/ui/button'
+import { useState } from 'react'
 import {
   Card,
   CardHeader,
@@ -8,26 +8,26 @@ import {
   CardDescription,
   CardTitle,
   CardFooter,
-} from '@/components/ui/card';
-import { Label } from '@/components/ui/label';
-import { Input } from '@/components/ui/input';
-import Link from 'next/link';
-import { useForm } from '@/hooks/useForm';
-import { useRegister } from '../hooks/useRegister';
-import { RegisterRequest } from '../../../types/auth.types';
+} from '@/components/ui/card'
+import { Label } from '@/components/ui/label'
+import { Input } from '@/components/ui/input'
+import Link from 'next/link'
+import { useForm } from '@/hooks/useForm'
+import { useRegister } from '../hooks/useRegister'
+import { RegisterRequest } from '../../../types/auth.types'
 import { useRouter } from 'next/navigation'
 
 type RegisterFormValues = RegisterRequest & {
-  confirmPassword: string;
-};
+  confirmPassword: string
+}
 
 type RegisterFormFields = {
-  label: string;
-  id: string;
-  name: keyof RegisterFormValues;
-  type?: string;
-  placeholder?: string;
-};
+  label: string
+  id: string
+  name: keyof RegisterFormValues
+  type?: string
+  placeholder?: string
+}
 
 const REGISTER_FIELDS: RegisterFormFields[] = [
   {
@@ -68,23 +68,23 @@ const REGISTER_FIELDS: RegisterFormFields[] = [
 ]
 
 export function RegisterForm() {
-  const [loading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string>('');
+  const [loading, setLoading] = useState<boolean>(false)
+  const [error, setError] = useState<string>('')
 
-  const router = useRouter();
+  const router = useRouter()
   const { values, handleChange } = useForm<RegisterFormValues>({
     email: '',
     password: '',
     confirmPassword: '',
     fullName: '',
     phoneNum: '',
-  });
+  })
 
-  const { register } = useRegister();
+  const { register } = useRegister()
 
   const handleRegister = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setError('');
+    e.preventDefault()
+    setError('')
 
     if (
       !values.email ||
@@ -102,15 +102,15 @@ export function RegisterForm() {
     }
 
     try {
-      setLoading(true);
+      setLoading(true)
       await register(values)
-      router.push('/login');
+      router.push('/login')
     } catch (err: any) {
-      setError(err.message);
+      setError(err.message)
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
   return (
     <form onSubmit={handleRegister}>

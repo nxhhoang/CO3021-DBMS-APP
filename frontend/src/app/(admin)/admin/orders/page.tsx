@@ -48,7 +48,6 @@ export default function AdminOrdersPage() {
 
   return (
     <div className="relative isolate min-h-screen">
-
       <div className="mx-auto max-w-7xl px-4 py-4 md:px-6 md:py-8">
         <div className="animate-in fade-in slide-in-from-top-4 mb-6 flex flex-col gap-4 duration-700 lg:flex-row lg:items-end lg:justify-between">
           <div className="space-y-3">

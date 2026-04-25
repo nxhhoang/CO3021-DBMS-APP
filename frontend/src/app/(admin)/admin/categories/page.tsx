@@ -8,7 +8,7 @@ import {
   PremiumTable,
   PremiumTableHeader,
   PremiumTableRow,
-  PremiumTableHead
+  PremiumTableHead,
 } from '@/components/common/PremiumTable'
 import { LoadingState } from '@/components/common/LoadingState'
 import { EmptyState } from '@/components/common/EmptyState'
@@ -40,9 +40,8 @@ export default function AdminCategoriesPage() {
 
   return (
     <div className="relative isolate min-h-screen">
-
       <div className="mx-auto max-w-7xl px-4 py-4 md:px-6 md:py-8 lg:px-12">
-        <div className="animate-in fade-in slide-in-from-top-4 mb-8 flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between duration-700">
+        <div className="animate-in fade-in slide-in-from-top-4 mb-8 flex flex-col gap-6 duration-700 lg:flex-row lg:items-end lg:justify-between">
           <div className="space-y-3">
             <div className="inline-flex items-center gap-4">
               <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-white shadow-sm ring-1 ring-slate-100">
@@ -92,7 +91,9 @@ export default function AdminCategoriesPage() {
                   <PremiumTableHead>Slug</PremiumTableHead>
                   <PremiumTableHead>Trạng thái</PremiumTableHead>
                   <PremiumTableHead>Cấu trúc</PremiumTableHead>
-                  <PremiumTableHead className="text-right">Thao tác</PremiumTableHead>
+                  <PremiumTableHead className="text-right">
+                    Thao tác
+                  </PremiumTableHead>
                 </PremiumTableRow>
               </PremiumTableHeader>
 

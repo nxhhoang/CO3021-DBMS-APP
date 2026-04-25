@@ -43,10 +43,9 @@ export default function AdminProductsPage() {
 
   return (
     <div className="relative isolate min-h-screen">
-
       <div className="mx-auto max-w-7xl px-4 py-4 md:px-6 md:py-8">
         {/* HEADER */}
-        <div className="mb-8 flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between animate-in fade-in slide-in-from-top-4 duration-700">
+        <div className="animate-in fade-in slide-in-from-top-4 mb-8 flex flex-col gap-6 duration-700 lg:flex-row lg:items-end lg:justify-between">
           <div className="space-y-3">
             <div className="inline-flex items-center gap-2 rounded-full border border-blue-100 bg-blue-50/50 px-4 py-1.5 text-[11px] font-black tracking-widest text-blue-600 uppercase backdrop-blur-sm dark:border-blue-900/30 dark:bg-blue-900/20 dark:text-blue-400">
               Quản lý kho hàng
@@ -71,7 +70,7 @@ export default function AdminProductsPage() {
               type="button"
               variant="outline"
               onClick={() => setIsCategoryModalOpen(true)}
-              className="rounded-full px-6 btn-premium-secondary"
+              className="btn-premium-secondary rounded-full px-6"
             >
               <FolderPlus size={18} />
               Thêm danh mục
@@ -80,7 +79,7 @@ export default function AdminProductsPage() {
             <Button
               type="button"
               onClick={() => setIsProductModalOpen(true)}
-              className="rounded-full px-8 btn-premium-primary shadow-lg shadow-blue-500/20"
+              className="btn-premium-primary rounded-full px-8 shadow-lg shadow-blue-500/20"
             >
               <Plus size={18} />
               Thêm sản phẩm
@@ -89,7 +88,7 @@ export default function AdminProductsPage() {
         </div>
 
         {error && (
-          <p className="mb-4 text-sm text-red-500 bg-red-50 border border-red-100 p-3 rounded-xl">
+          <p className="mb-4 rounded-xl border border-red-100 bg-red-50 p-3 text-sm text-red-500">
             Không thể tải danh sách sản phẩm: {error}
           </p>
         )}

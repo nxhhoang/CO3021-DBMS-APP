@@ -1,4 +1,4 @@
-'use client';
+'use client'
 
 import {
   Dialog,
@@ -6,24 +6,31 @@ import {
   DialogHeader,
   DialogTitle,
   DialogFooter,
-} from '@/components/ui/dialog';
+} from '@/components/ui/dialog'
 
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { MapPin, Home, Building2, Landmark, CheckCircle2, X } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import {
+  MapPin,
+  Home,
+  Building2,
+  Landmark,
+  CheckCircle2,
+  X,
+} from 'lucide-react'
+import { cn } from '@/lib/utils'
 
 interface Props {
-  open: boolean;
-  onOpenChange: (v: boolean) => void;
-  formData: any;
-  setFormData: any;
-  editingAddressId: number | null;
-  onSubmit: () => void;
+  open: boolean
+  onOpenChange: (v: boolean) => void
+  formData: any
+  setFormData: any
+  editingAddressId: number | null
+  onSubmit: () => void
 }
 
-export default function AddressFormDialog({
+export function AddressFormDialog({
   open,
   onOpenChange,
   formData,
@@ -31,7 +38,7 @@ export default function AddressFormDialog({
   editingAddressId,
   onSubmit,
 }: Props) {
-  const isEditing = !!editingAddressId;
+  const isEditing = !!editingAddressId
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -39,7 +46,7 @@ export default function AddressFormDialog({
         {/* Custom Close Button */}
         <button
           onClick={() => onOpenChange(false)}
-          className="absolute right-6 top-6 z-10 rounded-full bg-slate-100 p-2 text-slate-400 transition-all hover:bg-slate-200 hover:text-slate-600 active:scale-90"
+          className="absolute top-6 right-6 z-10 rounded-full bg-slate-100 p-2 text-slate-400 transition-all hover:bg-slate-200 hover:text-slate-600 active:scale-90"
         >
           <X size={16} strokeWidth={3} />
         </button>
@@ -47,18 +54,24 @@ export default function AddressFormDialog({
         <div className="relative overflow-hidden p-8 pt-10">
           {/* Header Section */}
           <div className="mb-8 flex flex-col items-center text-center">
-            <div className={cn(
-              "mb-4 flex h-16 w-16 items-center justify-center rounded-3xl shadow-xl transition-all duration-500",
-              isEditing ? "bg-slate-900 text-white" : "bg-blue-600 text-white"
-            )}>
+            <div
+              className={cn(
+                'mb-4 flex h-16 w-16 items-center justify-center rounded-3xl shadow-xl transition-all duration-500',
+                isEditing
+                  ? 'bg-slate-900 text-white'
+                  : 'bg-blue-600 text-white',
+              )}
+            >
               {isEditing ? <Building2 size={28} /> : <MapPin size={28} />}
             </div>
-            
+
             <DialogTitle className="font-display text-2xl font-black tracking-tight text-slate-900">
               {isEditing ? 'Chỉnh sửa địa chỉ' : 'Thêm địa chỉ mới'}
             </DialogTitle>
             <p className="mt-2 text-sm font-medium text-slate-500">
-              {isEditing ? 'Cập nhật thông tin nhận hàng của bạn' : 'Cung cấp thông tin giao hàng chính xác'}
+              {isEditing
+                ? 'Cập nhật thông tin nhận hàng của bạn'
+                : 'Cung cấp thông tin giao hàng chính xác'}
             </p>
           </div>
 
@@ -67,7 +80,7 @@ export default function AddressFormDialog({
             <div className="space-y-2">
               <div className="flex items-center gap-2 px-1">
                 <Home size={14} className="text-slate-400" />
-                <Label className="font-display text-[11px] font-black uppercase tracking-widest text-slate-400">
+                <Label className="font-display text-[11px] font-black tracking-widest text-slate-400 uppercase">
                   Tên địa chỉ (Ví dụ: Nhà riêng, Công ty)
                 </Label>
               </div>
@@ -85,7 +98,7 @@ export default function AddressFormDialog({
             <div className="space-y-2">
               <div className="flex items-center gap-2 px-1">
                 <MapPin size={14} className="text-slate-400" />
-                <Label className="font-display text-[11px] font-black uppercase tracking-widest text-slate-400">
+                <Label className="font-display text-[11px] font-black tracking-widest text-slate-400 uppercase">
                   Địa chỉ cụ thể
                 </Label>
               </div>
@@ -104,7 +117,7 @@ export default function AddressFormDialog({
               <div className="space-y-2">
                 <div className="flex items-center gap-2 px-1">
                   <Building2 size={14} className="text-slate-400" />
-                  <Label className="font-display text-[11px] font-black uppercase tracking-widest text-slate-400">
+                  <Label className="font-display text-[11px] font-black tracking-widest text-slate-400 uppercase">
                     Quận/Huyện
                   </Label>
                 </div>
@@ -122,7 +135,7 @@ export default function AddressFormDialog({
               <div className="space-y-2">
                 <div className="flex items-center gap-2 px-1">
                   <Landmark size={14} className="text-slate-400" />
-                  <Label className="font-display text-[11px] font-black uppercase tracking-widest text-slate-400">
+                  <Label className="font-display text-[11px] font-black tracking-widest text-slate-400 uppercase">
                     Thành phố
                   </Label>
                 </div>
@@ -139,14 +152,14 @@ export default function AddressFormDialog({
           </div>
 
           <div className="mt-10 flex gap-3">
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               onClick={() => onOpenChange(false)}
-              className="h-14 flex-1 rounded-full border-slate-200 font-display text-[11px] font-black uppercase tracking-widest transition-all hover:bg-slate-50"
+              className="font-display h-14 flex-1 rounded-full border-slate-200 text-[11px] font-black tracking-widest uppercase transition-all hover:bg-slate-50"
             >
               Hủy
             </Button>
-            <Button 
+            <Button
               onClick={onSubmit}
               className="btn-premium-primary h-14 flex-1 shadow-xl shadow-blue-200/50"
             >
@@ -157,5 +170,5 @@ export default function AddressFormDialog({
         </div>
       </DialogContent>
     </Dialog>
-  );
+  )
 }

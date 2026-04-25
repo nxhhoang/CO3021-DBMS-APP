@@ -1,10 +1,10 @@
-import React from 'react';
-import Header from '@/components/layout/Header/Header';
-import Footer from '@/components/layout/Footer';
+import React from 'react'
+import Header from '@/components/layout/Header/Header'
+import Footer from '@/components/layout/Footer'
 
 type MainLayoutProps = {
-  children: React.ReactNode;
-};
+  children: React.ReactNode
+}
 
 export default function MainLayout({ children }: MainLayoutProps) {
   return (
@@ -16,5 +16,5 @@ export default function MainLayout({ children }: MainLayoutProps) {
 
       <Footer />
     </div>
-  );
+  )
 }

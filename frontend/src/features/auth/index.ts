@@ -1,11 +1,11 @@
 // Components
-export * from './components/RegisterForm';
-export * from './components/LoginForm';
+export * from './components/RegisterForm'
+export * from './components/LoginForm'
 
 // Hooks
-export * from './hooks/useLogin';
-export * from './hooks/useRegister';
-export * from './hooks/useAuth';
+export * from './hooks/useLogin'
+export * from './hooks/useRegister'
+export * from './hooks/useAuth'
 
 // Context
-export * from './context/AuthProvider';
+export * from './context/AuthProvider'

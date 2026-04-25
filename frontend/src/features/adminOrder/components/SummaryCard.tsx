@@ -15,10 +15,7 @@ interface SummaryCardProps {
   statusCounts: SummaryStatusCard[]
 }
 
-const SummaryCard = ({
-  totalOrders,
-  statusCounts,
-}: SummaryCardProps) => {
+const SummaryCard = ({ totalOrders, statusCounts }: SummaryCardProps) => {
   return (
     <div className="mb-4 grid grid-cols-1 gap-4 xl:grid-cols-[250px_minmax(0,1fr)]">
       <Card className="group relative overflow-hidden rounded-2xl border-none bg-slate-900 p-4 text-white shadow-md">
@@ -33,7 +30,7 @@ const SummaryCard = ({
             <div className="font-mono text-4xl font-black tracking-tighter text-blue-400">
               {totalOrders.toLocaleString()}
             </div>
-            <p className="mt-0.5 font-display text-sm font-bold text-slate-300">
+            <p className="font-display mt-0.5 text-sm font-bold text-slate-300">
               Đơn hàng hệ thống
             </p>
           </div>
@@ -58,7 +55,9 @@ const SummaryCard = ({
               <p className="font-display text-[9px] font-black tracking-widest text-slate-400 uppercase">
                 {item.label}
               </p>
-              <div className={`mt-1.5 font-mono text-xl font-black tracking-tighter ${item.textColor}`}>
+              <div
+                className={`mt-1.5 font-mono text-xl font-black tracking-tighter ${item.textColor}`}
+              >
                 {item.count.toLocaleString()}
               </div>
             </div>

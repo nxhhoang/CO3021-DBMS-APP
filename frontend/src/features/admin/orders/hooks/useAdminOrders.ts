@@ -29,29 +29,32 @@ export function useAdminOrders() {
   const [currentPage, setCurrentPage] = useState(1)
   const LIMIT = 10
 
-  const fetchOrders = useCallback(async (page: number = 1) => {
-    try {
-      setLoading(true)
-      const response = await orderService.getAdminOrders({
-        page,
-        limit: LIMIT,
-        search: debouncedSearchQuery || undefined,
-        status: filterStatus === 'ALL' ? undefined : filterStatus,
-        sort: sortOrder,
-      })
+  const fetchOrders = useCallback(
+    async (page: number = 1) => {
+      try {
+        setLoading(true)
+        const response = await orderService.getAdminOrders({
+          page,
+          limit: LIMIT,
+          search: debouncedSearchQuery || undefined,
+          status: filterStatus === 'ALL' ? undefined : filterStatus,
+          sort: sortOrder,
+        })
 
-      if (response.data) {
-        setOrders(response.data.orders)
-        setPagination(response.data.pagination)
-        setCurrentPage(page)
+        if (response.data) {
+          setOrders(response.data.orders)
+          setPagination(response.data.pagination)
+          setCurrentPage(page)
+        }
+      } catch (error) {
+        toast.error('Không thể tải danh sách đơn hàng')
+        console.error(error)
+      } finally {
+        setLoading(false)
       }
-    } catch (error) {
-      toast.error('Không thể tải danh sách đơn hàng')
-      console.error(error)
-    } finally {
-      setLoading(false)
-    }
-  }, [debouncedSearchQuery, filterStatus, sortOrder])
+    },
+    [debouncedSearchQuery, filterStatus, sortOrder],
+  )
 
   useEffect(() => {
     fetchOrders(1)

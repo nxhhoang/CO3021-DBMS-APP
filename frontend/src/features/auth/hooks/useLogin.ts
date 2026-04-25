@@ -1,36 +1,36 @@
-'use client';
+'use client'
 
-import { authService } from '../services/auth.service';
-import { LoginRequest } from '@/types';
-import { tokenStorage } from '@/services/tokenStorage';
-import { useAuthContext } from '../context/AuthProvider';
-import { getErrorMessage } from '@/lib/utils';
+import { authService } from '../services/auth.service'
+import { LoginRequest } from '@/types'
+import { tokenStorage } from '@/services/tokenStorage'
+import { useAuthContext } from '../context/AuthProvider'
+import { getErrorMessage } from '@/lib/utils'
 
 export const useLogin = () => {
-  const { setUser } = useAuthContext();
+  const { setUser } = useAuthContext()
 
   const login = async (data: Omit<LoginRequest, 'userAgent'>) => {
     try {
       const result = await authService.login({
         ...data,
         userAgent: navigator.userAgent,
-      });
+      })
 
       if (result === null) {
-        throw new Error('Login failed');
+        throw new Error('Login failed')
       }
-      const { accessToken, refreshToken } = result;
+      const { accessToken, refreshToken } = result
 
-      setUser(result.user);
+      setUser(result.user)
 
-      tokenStorage.setAccessToken(accessToken);
-      tokenStorage.setRefreshToken(refreshToken);
+      tokenStorage.setAccessToken(accessToken)
+      tokenStorage.setRefreshToken(refreshToken)
     } catch (error: unknown) {
-      throw new Error(getErrorMessage(error, 'Invalid email or password'));
+      throw new Error(getErrorMessage(error, 'Invalid email or password'))
     }
-  };
+  }
 
   return {
     login,
-  };
-};
+  }
+}

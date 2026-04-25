@@ -45,7 +45,7 @@ const heroSlides = [
   },
 ]
 
-export default function HeroSection() {
+export function HeroSection() {
   const router = useRouter()
   const [activeHeroSlide, setActiveHeroSlide] = useState(0)
   const [heroProgress, setHeroProgress] = useState(0)
@@ -131,20 +131,20 @@ export default function HeroSection() {
             <div className="absolute top-1/2 -right-10 h-48 w-48 rounded-full bg-cyan-100/30 blur-3xl" />
           </div>
 
-          <div className="relative animate-in fade-in slide-in-from-left-8 duration-1000">
+          <div className="animate-in fade-in slide-in-from-left-8 relative duration-1000">
             <span className="glass-badge-blue">Danh mục nổi bật</span>
 
-            <h1 className="font-display mt-5 text-4xl leading-[1.1] font-bold tracking-tight text-slate-900 sm:text-5xl lg:mt-6 lg:text-6xl xl:text-[3.8rem] animate-in fade-in slide-in-from-left-12 duration-1000 delay-150">
+            <h1 className="font-display animate-in fade-in slide-in-from-left-12 mt-5 text-4xl leading-[1.1] font-bold tracking-tight text-slate-900 delay-150 duration-1000 sm:text-5xl lg:mt-6 lg:text-6xl xl:text-[3.8rem]">
               Nâng tầm phong cách <br />
               <span className="text-gradient-primary">Sống hiện đại</span>
             </h1>
 
-            <p className="mt-5 max-w-xl text-sm leading-7 text-slate-600 sm:text-base lg:mt-6 lg:text-lg lg:leading-8 animate-in fade-in slide-in-from-left-16 duration-1000 delay-300">
+            <p className="animate-in fade-in slide-in-from-left-16 mt-5 max-w-xl text-sm leading-7 text-slate-600 delay-300 duration-1000 sm:text-base lg:mt-6 lg:text-lg lg:leading-8">
               Từ công nghệ đột phá đến thời trang đẳng cấp — Khám phá hệ sinh
               thái sản phẩm cao cấp được tuyển chọn dành riêng cho bạn.
             </p>
 
-            <div className="mt-8 flex flex-wrap gap-4 lg:mt-10 animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-500">
+            <div className="animate-in fade-in slide-in-from-bottom-8 mt-8 flex flex-wrap gap-4 delay-500 duration-1000 lg:mt-10">
               <Button
                 onClick={handleExploreProducts}
                 className="btn-premium-primary group relative h-12 px-8 text-sm sm:h-14 sm:px-10"
@@ -274,21 +274,25 @@ export default function HeroSection() {
             key={index}
             href={item.href}
             className={cn(
-              "group flex flex-col items-center text-center transition-transform hover:-translate-y-1 animate-in fade-in slide-in-from-bottom-8 duration-700",
-              index === 0 && "delay-100",
-              index === 1 && "delay-200",
-              index === 2 && "delay-300",
-              index === 3 && "delay-400",
-              index === 4 && "delay-500"
+              'group animate-in fade-in slide-in-from-bottom-8 flex flex-col items-center text-center transition-transform duration-700 hover:-translate-y-1',
+              index === 0 && 'delay-100',
+              index === 1 && 'delay-200',
+              index === 2 && 'delay-300',
+              index === 3 && 'delay-400',
+              index === 4 && 'delay-500',
             )}
           >
-            <div className="icon-box-premium mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-white border border-slate-100 text-slate-600 shadow-sm transition-all duration-300 group-hover:bg-blue-600 group-hover:text-white group-hover:shadow-xl group-hover:shadow-blue-500/20 group-hover:border-transparent">
-              <item.icon size={28} strokeWidth={2} className="transition-transform group-hover:scale-110" />
+            <div className="icon-box-premium mb-4 flex h-16 w-16 items-center justify-center rounded-2xl border border-slate-100 bg-white text-slate-600 shadow-sm transition-all duration-300 group-hover:border-transparent group-hover:bg-blue-600 group-hover:text-white group-hover:shadow-xl group-hover:shadow-blue-500/20">
+              <item.icon
+                size={28}
+                strokeWidth={2}
+                className="transition-transform group-hover:scale-110"
+              />
             </div>
             <h3 className="text-[13px] font-bold text-slate-800 transition-colors group-hover:text-blue-600">
               {item.label}
             </h3>
-            <p className="mt-1.5 text-[10px] font-medium text-slate-500 opacity-0 transition-all duration-300 group-hover:translate-y-0 translate-y-2 group-hover:opacity-100">
+            <p className="mt-1.5 translate-y-2 text-[10px] font-medium text-slate-500 opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100">
               {item.description}
             </p>
           </Link>

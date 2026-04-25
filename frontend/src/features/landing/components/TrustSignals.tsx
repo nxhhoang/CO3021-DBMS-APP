@@ -26,14 +26,14 @@ const signals = [
   },
 ]
 
-export default function TrustSignals() {
+export function TrustSignals() {
   return (
     <section className="container mx-auto px-4 py-12">
       <div className="grid grid-cols-2 gap-8 md:grid-cols-4">
         {signals.map((signal, index) => (
           <div
             key={index}
-            className="flex flex-col items-center text-center group"
+            className="group flex flex-col items-center text-center"
           >
             <div className="icon-box-premium mb-4 h-16 w-16 group-hover:bg-blue-600 group-hover:text-white group-hover:shadow-lg group-hover:shadow-blue-200">
               <signal.icon size={28} />

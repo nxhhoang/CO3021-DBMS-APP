@@ -16,7 +16,9 @@ export const ImageGallery = ({
   activeImageIndex,
   onImageChange,
 }: ImageGalleryProps) => {
-  const displayImages = images?.length ? images : ['/images/default-product.png']
+  const displayImages = images?.length
+    ? images
+    : ['/images/default-product.png']
 
   return (
     <div className="relative w-full bg-slate-50">
@@ -44,7 +46,12 @@ export const ImageGallery = ({
                   : 'border-transparent opacity-70 hover:opacity-100',
               )}
             >
-              <Image src={img} alt={`Thumb ${idx}`} fill className="object-cover" />
+              <Image
+                src={img}
+                alt={`Thumb ${idx}`}
+                fill
+                className="object-cover"
+              />
             </button>
           ))}
         </div>

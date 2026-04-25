@@ -148,16 +148,18 @@ export default function OrderDetailModal({
                   </p>
                 </div>
 
-                <div className="sm:col-span-2 space-y-2">
+                <div className="space-y-2 sm:col-span-2">
                   <p className="text-[10px] font-black tracking-widest text-slate-400 uppercase">
                     Địa chỉ nhận hàng
                   </p>
                   <div className="rounded-2xl bg-slate-50 p-4 dark:bg-slate-900/50">
-                    <p className="text-sm font-medium leading-relaxed text-slate-700 dark:text-slate-300">
+                    <p className="text-sm leading-relaxed font-medium text-slate-700 dark:text-slate-300">
                       {addressLoading
                         ? 'Đang tải thông tin địa chỉ...'
-                        : getShippingAddressText(order.shippingAddr, addresses) ||
-                          'Thông tin địa chỉ không khả dụng'}
+                        : getShippingAddressText(
+                            order.shippingAddr,
+                            addresses,
+                          ) || 'Thông tin địa chỉ không khả dụng'}
                     </p>
                   </div>
                 </div>
@@ -194,7 +196,7 @@ export default function OrderDetailModal({
                         className={`inline-flex items-center gap-3 rounded-full px-5 py-2 ${status.bgColor} border border-white/40 shadow-sm`}
                       >
                         <span
-                          className={`h-2 w-2 rounded-full animate-pulse ${status.dotColor}`}
+                          className={`h-2 w-2 animate-pulse rounded-full ${status.dotColor}`}
                         />
                         <span
                           className={`text-xs font-black tracking-widest uppercase ${status.textColor}`}
@@ -235,7 +237,7 @@ export default function OrderDetailModal({
                         !selectedStatus ||
                         selectedStatus === order.status
                       }
-                      className="h-12 rounded-xl bg-slate-900 font-black tracking-widest text-white uppercase transition-all hover:bg-slate-800 active:scale-95 disabled:bg-slate-100 disabled:text-slate-400 dark:bg-white dark:text-slate-900 text-xs"
+                      className="h-12 rounded-xl bg-slate-900 text-xs font-black tracking-widest text-white uppercase transition-all hover:bg-slate-800 active:scale-95 disabled:bg-slate-100 disabled:text-slate-400 dark:bg-white dark:text-slate-900"
                     >
                       {updatingStatus ? (
                         <Loader2 className="mr-2 h-5 w-5 animate-spin" />
@@ -254,7 +256,7 @@ export default function OrderDetailModal({
           <Button
             onClick={onClose}
             variant="ghost"
-            className="rounded-full px-8 font-bold text-slate-500 active:scale-95 transition-all hover:bg-slate-100"
+            className="rounded-full px-8 font-bold text-slate-500 transition-all hover:bg-slate-100 active:scale-95"
           >
             Đóng
           </Button>

@@ -1,19 +1,19 @@
-'use client';
+'use client'
 
-import React from 'react';
-import { LucideIcon, Package } from 'lucide-react';
-import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
+import React from 'react'
+import { LucideIcon, Package } from 'lucide-react'
+import { cn } from '@/lib/utils'
+import { Button } from '@/components/ui/button'
 
 interface EmptyStateProps {
-  icon?: LucideIcon;
-  title: string;
-  description?: string;
+  icon?: LucideIcon
+  title: string
+  description?: string
   action?: {
-    label: string;
-    onClick: () => void;
-  };
-  className?: string;
+    label: string
+    onClick: () => void
+  }
+  className?: string
 }
 
 export const EmptyState = ({
@@ -26,8 +26,8 @@ export const EmptyState = ({
   return (
     <div
       className={cn(
-        'flex min-h-[400px] flex-col items-center justify-center rounded-3xl border border-dashed border-slate-200 bg-slate-50/50 p-8 text-center animate-in fade-in zoom-in duration-500',
-        className
+        'animate-in fade-in zoom-in flex min-h-[400px] flex-col items-center justify-center rounded-3xl border border-dashed border-slate-200 bg-slate-50/50 p-8 text-center duration-500',
+        className,
       )}
     >
       <div className="mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-white shadow-sm ring-1 ring-slate-100">
@@ -46,5 +46,5 @@ export const EmptyState = ({
         </Button>
       )}
     </div>
-  );
-};
+  )
+}

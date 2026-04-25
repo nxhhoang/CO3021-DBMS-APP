@@ -67,7 +67,7 @@ export default function FilterSection({
         <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
           {/* Start Date */}
           <div className="space-y-2.5">
-            <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">
+            <label className="text-[10px] font-black tracking-widest text-slate-400 uppercase">
               Từ ngày
             </label>
             <Popover>
@@ -80,10 +80,17 @@ export default function FilterSection({
                   )}
                 >
                   <CalendarIcon className="mr-3 h-4 w-4 text-blue-600" />
-                  {startDate ? format(startDate, 'dd/MM/yyyy') : <span>Chọn ngày</span>}
+                  {startDate ? (
+                    format(startDate, 'dd/MM/yyyy')
+                  ) : (
+                    <span>Chọn ngày</span>
+                  )}
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="w-auto rounded-3xl p-0 shadow-2xl" align="start">
+              <PopoverContent
+                className="w-auto rounded-3xl p-0 shadow-2xl"
+                align="start"
+              >
                 <Calendar
                   mode="single"
                   selected={startDate}
@@ -98,7 +105,7 @@ export default function FilterSection({
 
           {/* End Date */}
           <div className="space-y-2.5">
-            <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">
+            <label className="text-[10px] font-black tracking-widest text-slate-400 uppercase">
               Đến ngày
             </label>
             <Popover>
@@ -111,10 +118,17 @@ export default function FilterSection({
                   )}
                 >
                   <CalendarIcon className="mr-3 h-4 w-4 text-blue-600" />
-                  {endDate ? format(endDate, 'dd/MM/yyyy') : <span>Chọn ngày</span>}
+                  {endDate ? (
+                    format(endDate, 'dd/MM/yyyy')
+                  ) : (
+                    <span>Chọn ngày</span>
+                  )}
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="w-auto rounded-3xl p-0 shadow-2xl" align="start">
+              <PopoverContent
+                className="w-auto rounded-3xl p-0 shadow-2xl"
+                align="start"
+              >
                 <Calendar
                   mode="single"
                   selected={endDate}
@@ -129,7 +143,7 @@ export default function FilterSection({
 
           {/* Mode Select */}
           <div className="space-y-2.5">
-            <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">
+            <label className="text-[10px] font-black tracking-widest text-slate-400 uppercase">
               Chế độ hiển thị
             </label>
             <Select value={type} onValueChange={onTypeChange}>

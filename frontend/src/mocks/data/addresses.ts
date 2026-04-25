@@ -1,4 +1,4 @@
-import { Address } from '@/types';
+import { Address } from '@/types'
 
 export const MOCK_ADDRESSES: Address[] = [
   {
@@ -17,4 +17,4 @@ export const MOCK_ADDRESSES: Address[] = [
     district: '8',
     isDefault: false,
   },
-];
+]

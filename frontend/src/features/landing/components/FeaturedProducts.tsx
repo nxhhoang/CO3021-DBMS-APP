@@ -5,7 +5,7 @@ import { ShoppingCart, Heart, Eye } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { MOCK_PRODUCTS } from '@/mocks/data/products'
 import { cn } from '@/lib/utils'
-import { ProductCard } from '@/features/products'
+import { ProductCard, useProducts } from '@/features/products'
 
 const TABS = [
   { id: 'bestseller', label: 'Bán chạy' },
@@ -13,7 +13,7 @@ const TABS = [
   { id: 'toprated', label: 'Đánh giá cao' },
 ]
 
-export default function FeaturedProducts() {
+export function FeaturedProducts() {
   const [activeTab, setActiveTab] = useState('bestseller')
 
   // Filter logic for tabs
@@ -37,13 +37,10 @@ export default function FeaturedProducts() {
   const products = getFilteredProducts()
 
   return (
-    <section className="container mx-auto px-4 section-padding">
+    <section className="section-padding container mx-auto px-4">
       <div className="mb-12 text-center">
         <h2 className="text-4xl font-bold tracking-tight text-slate-900">
-          Sản phẩm{' '}
-          <span className="text-gradient-primary">
-            Đặc sắc
-          </span>
+          Sản phẩm <span className="text-gradient-primary">Đặc sắc</span>
         </h2>
         <p className="mt-4 text-slate-500">
           Tổng hợp những sản phẩm tốt nhất từ mọi danh mục dành riêng cho bạn.
@@ -56,7 +53,9 @@ export default function FeaturedProducts() {
               onClick={() => setActiveTab(tab.id)}
               className={cn(
                 'tab-premium',
-                activeTab === tab.id ? 'tab-premium-active' : 'tab-premium-inactive'
+                activeTab === tab.id
+                  ? 'tab-premium-active'
+                  : 'tab-premium-inactive',
               )}
             >
               {tab.label}

@@ -1,18 +1,18 @@
-import { ListFilter } from 'lucide-react';
+import { ListFilter } from 'lucide-react'
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import { useState } from 'react';
-import { Category } from '@/types/category.types';
+} from '@/components/ui/select'
+import { useState } from 'react'
+import { Category } from '@/types/category.types'
 
 interface CategorySelectProps {
-  value: string;
-  onChange: (value: string) => void;
-  categories: Category[];
+  value: string
+  onChange: (value: string) => void
+  categories: Category[]
 }
 
 const CategorySelect = ({
@@ -35,8 +35,8 @@ const CategorySelect = ({
         </SelectItem>
 
         {categories?.map((cat) => (
-          <SelectItem 
-            key={cat.slug} 
+          <SelectItem
+            key={cat.slug}
             value={cat.slug}
             className="select-premium-item"
           >
@@ -45,7 +45,7 @@ const CategorySelect = ({
         ))}
       </SelectContent>
     </Select>
-  );
-};
+  )
+}
 
-export default CategorySelect;
+export default CategorySelect

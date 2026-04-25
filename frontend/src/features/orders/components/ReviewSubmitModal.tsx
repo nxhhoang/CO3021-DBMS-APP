@@ -72,7 +72,7 @@ export const ReviewSubmitModal = ({
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && handleClose()}>
       <DialogContent className="max-w-md overflow-hidden border-none bg-white/95 p-0 shadow-2xl backdrop-blur-3xl sm:rounded-[2rem] dark:bg-slate-900/95">
-        <DialogHeader className="border-b border-slate-100 p-6 dark:border-white/5 shrink-0">
+        <DialogHeader className="shrink-0 border-b border-slate-100 p-6 dark:border-white/5">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-600 text-white shadow-lg">
@@ -82,7 +82,7 @@ export const ReviewSubmitModal = ({
                 <DialogTitle className="font-display text-lg font-bold tracking-tight text-slate-900 dark:text-white">
                   Đánh giá sản phẩm
                 </DialogTitle>
-                <p className="max-w-[200px] truncate text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                <p className="max-w-[200px] truncate text-[10px] font-bold tracking-widest text-slate-400 uppercase">
                   {productName}
                 </p>
               </div>
@@ -99,7 +99,7 @@ export const ReviewSubmitModal = ({
           </div>
         </DialogHeader>
 
-        <div className="p-8 space-y-8">
+        <div className="space-y-8 p-8">
           {/* Star Rating */}
           <div className="flex flex-col items-center gap-4">
             <div className="flex items-center gap-2">
@@ -149,7 +149,7 @@ export const ReviewSubmitModal = ({
               className="min-h-[150px] resize-none rounded-2xl border-slate-100 bg-slate-50/50 p-4 text-sm font-medium transition-all focus:ring-2 focus:ring-blue-600/20 dark:border-white/5 dark:bg-white/5"
               maxLength={500}
             />
-            <div className="flex justify-between text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+            <div className="flex justify-between text-[10px] font-bold tracking-widest text-slate-400 uppercase">
               <span>Tối thiểu 10 ký tự</span>
               <span>{comment.length}/500</span>
             </div>
@@ -162,14 +162,14 @@ export const ReviewSubmitModal = ({
               variant="ghost"
               disabled={isSubmitting}
               onClick={handleClose}
-              className="flex-1 h-12 rounded-xl font-display text-[10px] font-bold tracking-widest uppercase text-slate-500"
+              className="font-display h-12 flex-1 rounded-xl text-[10px] font-bold tracking-widest text-slate-500 uppercase"
             >
               Hủy bỏ
             </Button>
             <Button
               disabled={isSubmitting || comment.trim().length < 10}
               onClick={handleSubmit}
-              className="btn-premium-primary flex-2 h-12 rounded-xl"
+              className="btn-premium-primary h-12 flex-2 rounded-xl"
             >
               {isSubmitting ? (
                 <Loader2 className="h-4 w-4 animate-spin" />

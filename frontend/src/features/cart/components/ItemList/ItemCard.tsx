@@ -4,8 +4,8 @@ import { Button } from '@/components/ui/button'
 import { CartItem } from '@/types/cart.types'
 import { Card, CardContent } from '@/components/ui/card'
 import { Trash } from 'lucide-react'
-import formatVND from '@/features/cart/utils/formatVND'
-import QuantitySelector from './QuantitySelector'
+import { formatPrice } from '@/lib/utils'
+import { QuantitySelector } from './QuantitySelector'
 import { Checkbox } from '@/components/ui/checkbox'
 import Image from 'next/image'
 import { cn } from '@/lib/utils'
@@ -40,7 +40,7 @@ const ItemCard = ({
           'glass-card group relative cursor-pointer overflow-hidden border-transparent transition-all duration-300',
           isSelected
             ? 'border-blue-500/50 bg-blue-50/5 shadow-lg dark:bg-blue-900/5'
-            : 'hover:border-slate-200 dark:hover:border-white/10'
+            : 'hover:border-slate-200 dark:hover:border-white/10',
         )}
       >
         <CardContent className="p-4 sm:p-5">
@@ -73,10 +73,10 @@ const ItemCard = ({
             </div>
 
             {/* Product Info */}
-            <div className="flex flex-1 flex-col min-w-0">
-              <div className="flex justify-between items-start gap-2">
+            <div className="flex min-w-0 flex-1 flex-col">
+              <div className="flex items-start justify-between gap-2">
                 <div className="min-w-0 flex-1">
-                  <h2 className="font-display truncate text-lg font-bold text-slate-900 dark:text-white sm:text-xl">
+                  <h2 className="font-display truncate text-lg font-bold text-slate-900 sm:text-xl dark:text-white">
                     {item.productName}
                   </h2>
                   <p className="mt-1 font-mono text-[10px] font-medium tracking-tight text-slate-400 uppercase">
@@ -99,20 +99,26 @@ const ItemCard = ({
 
               <div className="mt-auto flex items-end justify-between pt-4">
                 <div className="space-y-1.5">
-                  <p className="font-mono text-xl font-bold tracking-tighter text-blue-600 dark:text-blue-400 sm:text-2xl">
-                    {formatVND(item.skuPrice)}
+                  <p className="font-mono text-xl font-bold tracking-tighter text-blue-600 sm:text-2xl dark:text-blue-400">
+                    {formatPrice(item.skuPrice)}
                   </p>
-                  
+
                   <div className="flex items-center gap-2">
-                    <div className={cn(
-                      "h-1.5 w-1.5 rounded-full",
-                      stockQuantity <= 3 ? 'bg-rose-500' : 'bg-emerald-500'
-                    )} />
-                    <span className={cn(
-                      "text-[10px] font-bold uppercase tracking-wide",
-                      stockQuantity <= 3 ? 'text-rose-500' : 'text-slate-400'
-                    )}>
-                      {stockQuantity <= 3 ? `Sắp hết (${stockQuantity})` : 'Sẵn hàng'}
+                    <div
+                      className={cn(
+                        'h-1.5 w-1.5 rounded-full',
+                        stockQuantity <= 3 ? 'bg-rose-500' : 'bg-emerald-500',
+                      )}
+                    />
+                    <span
+                      className={cn(
+                        'text-[10px] font-bold tracking-wide uppercase',
+                        stockQuantity <= 3 ? 'text-rose-500' : 'text-slate-400',
+                      )}
+                    >
+                      {stockQuantity <= 3
+                        ? `Sắp hết (${stockQuantity})`
+                        : 'Sẵn hàng'}
                     </span>
                   </div>
                 </div>
@@ -133,4 +139,4 @@ const ItemCard = ({
   )
 }
 
-export default ItemCard
+export { ItemCard }

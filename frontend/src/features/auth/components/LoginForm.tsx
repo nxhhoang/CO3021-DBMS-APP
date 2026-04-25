@@ -1,5 +1,5 @@
-'use client';
-import { useState } from 'react';
+'use client'
+import { useState } from 'react'
 import {
   Card,
   CardHeader,
@@ -7,42 +7,42 @@ import {
   CardDescription,
   CardContent,
   CardFooter,
-} from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import Link from 'next/link';
-import { useLogin } from '@/features/auth/hooks/useLogin';
+} from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import Link from 'next/link'
+import { useLogin } from '@/features/auth'
 import { useRouter } from 'next/navigation'
 
 export function LoginForm() {
-  const [email, setEmail] = useState<string>('');
-  const [password, setPassword] = useState<string>('');
-  const [error, setError] = useState<string>('');
-  const [loading, setLoading] = useState<boolean>(false);
+  const [email, setEmail] = useState<string>('')
+  const [password, setPassword] = useState<string>('')
+  const [error, setError] = useState<string>('')
+  const [loading, setLoading] = useState<boolean>(false)
 
-  const { login } = useLogin();
-  const router = useRouter();
+  const { login } = useLogin()
+  const router = useRouter()
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+    e.preventDefault()
 
     if (!email || !password) {
-      setError('Please enter both email and password');
-      return;
+      setError('Please enter both email and password')
+      return
     }
 
-    setError('');
-    setLoading(true);
+    setError('')
+    setLoading(true)
     try {
       await login({ email, password })
       router.push('/')
     } catch (err: any) {
-      setError(err.message);
+      setError(err.message)
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
   return (
     <form onSubmit={handleLogin}>

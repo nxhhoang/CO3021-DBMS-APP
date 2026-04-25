@@ -10,7 +10,7 @@ import { productService } from '@/services/product.service'
 import reviewService from '@/services/review.service'
 import { ProductDetail, Inventory, Review } from '@/types'
 import { cn } from '@/lib/utils'
-import { useCart } from '@/features/cart/hooks/useCart'
+import { useCart } from '@/features/cart'
 
 import PageBackground from '@/components/layout/PageBackground'
 import { ImageGallery } from './ImageGallery'
@@ -233,7 +233,8 @@ export const ProductDetailPage = ({ productId }: ProductDetailPageProps) => {
                         productId: product._id,
                         sku: selectedSku.sku,
                         productName: product.name,
-                        image: product.images?.[0] || '/images/default-product.png',
+                        image:
+                          product.images?.[0] || '/images/default-product.png',
                         skuPrice: getSkuDisplayPrice(selectedSku),
                         basePrice: product.basePrice,
                         stockQuantity: selectedSku.stockQuantity ?? 0,

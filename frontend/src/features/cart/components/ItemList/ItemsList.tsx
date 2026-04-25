@@ -1,8 +1,8 @@
-import { CartItem } from '@/types/cart.types';
+import { CartItem } from '@/types/cart.types'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Trash2 } from 'lucide-react'
-import ItemCard from './ItemCard';
+import { ItemCard } from './ItemCard'
 
 interface ItemsListProps {
   items: CartItem[]
@@ -46,7 +46,7 @@ const ItemsList = ({
               variant="ghost"
               size="sm"
               onClick={() => removeMultipleItems(selectedSkus)}
-              className="h-9 rounded-full px-4 font-display text-[10px] font-bold tracking-wider text-rose-500 uppercase hover:bg-rose-50 dark:hover:bg-rose-900/10"
+              className="font-display h-9 rounded-full px-4 text-[10px] font-bold tracking-wider text-rose-500 uppercase hover:bg-rose-50 dark:hover:bg-rose-900/10"
             >
               <Trash2 className="mr-2 h-3.5 w-3.5" />
               Xóa mục chọn
@@ -69,4 +69,4 @@ const ItemsList = ({
   )
 }
 
-export default ItemsList;
+export { ItemsList }

@@ -2,14 +2,7 @@
 
 import { FormEvent } from 'react'
 import Image from 'next/image'
-import {
-  Box,
-  Edit2,
-  Loader2,
-  RotateCcw,
-  Star,
-  Trash2,
-} from 'lucide-react'
+import { Box, Edit2, Loader2, RotateCcw, Star, Trash2 } from 'lucide-react'
 import { toast } from 'sonner'
 import { SearchBar } from '@/components/common/SearchBar'
 
@@ -105,7 +98,6 @@ export default function ProductTable({
     }
   }
 
-
   return (
     <div className="glass-card overflow-hidden border-white/40 bg-white/40 shadow-2xl backdrop-blur-xl">
       <div className="border-b border-slate-100 bg-slate-50/30 px-8 py-6">
@@ -176,9 +168,15 @@ export default function ProductTable({
             <PremiumTableRow>
               <PremiumTableHead>Sản phẩm</PremiumTableHead>
               <PremiumTableHead>Danh mục</PremiumTableHead>
-              <PremiumTableHead className="text-right">Giá cơ bản</PremiumTableHead>
-              <PremiumTableHead className="text-center">Thống kê</PremiumTableHead>
-              <PremiumTableHead className="text-right">Thao tác</PremiumTableHead>
+              <PremiumTableHead className="text-right">
+                Giá cơ bản
+              </PremiumTableHead>
+              <PremiumTableHead className="text-center">
+                Thống kê
+              </PremiumTableHead>
+              <PremiumTableHead className="text-right">
+                Thao tác
+              </PremiumTableHead>
             </PremiumTableRow>
           </PremiumTableHeader>
           <tbody>
@@ -198,14 +196,19 @@ export default function ProductTable({
                     <div className="flex items-center gap-4">
                       <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-2xl border border-slate-100 shadow-sm">
                         <Image
-                          src={product.images?.[0] ?? '/placeholder-product.png'}
+                          src={
+                            product.images?.[0] ?? '/placeholder-product.png'
+                          }
                           alt={product.name}
                           fill
                           className="object-cover"
                         />
                       </div>
                       <div className="max-w-64 space-y-1">
-                        <p className="truncate text-sm font-bold text-slate-900" title={product.name}>
+                        <p
+                          className="truncate text-sm font-bold text-slate-900"
+                          title={product.name}
+                        >
                           {product.name}
                         </p>
                         <p className="text-[10px] font-bold tracking-wider text-slate-400 uppercase">
@@ -227,8 +230,13 @@ export default function ProductTable({
                   <PremiumTableCell>
                     <div className="flex flex-col items-center gap-1">
                       <div className="flex items-center gap-1.5">
-                        <Star className="fill-amber-400 text-amber-400" size={12} />
-                        <span className="text-xs font-bold text-slate-700">{product.avgRating}</span>
+                        <Star
+                          className="fill-amber-400 text-amber-400"
+                          size={12}
+                        />
+                        <span className="text-xs font-bold text-slate-700">
+                          {product.avgRating}
+                        </span>
                       </div>
                       <p className="text-[10px] font-medium text-slate-400">
                         {product.totalSold} đã bán • {product.totalReviews} HV
@@ -256,7 +264,9 @@ export default function ProductTable({
                               Ngừng kinh doanh sản phẩm?
                             </AlertDialogTitle>
                             <AlertDialogDescription className="text-slate-500">
-                              Sản phẩm &quot;{product.name}&quot; sẽ bị ẩn khỏi cửa hàng. Bạn có thể kích hoạt lại sau trong phần cài đặt.
+                              Sản phẩm &quot;{product.name}&quot; sẽ bị ẩn khỏi
+                              cửa hàng. Bạn có thể kích hoạt lại sau trong phần
+                              cài đặt.
                             </AlertDialogDescription>
                           </AlertDialogHeader>
                           <AlertDialogFooter className="mt-4">
@@ -281,7 +291,9 @@ export default function ProductTable({
                 <PremiumTableCell colSpan={6} className="py-20 text-center">
                   <div className="flex flex-col items-center justify-center">
                     <Box className="mb-4 h-12 w-12 opacity-20" />
-                    <p className="text-muted-foreground">Không tìm thấy sản phẩm nào trong kho</p>
+                    <p className="text-muted-foreground">
+                      Không tìm thấy sản phẩm nào trong kho
+                    </p>
                   </div>
                 </PremiumTableCell>
               </PremiumTableRow>
@@ -289,19 +301,19 @@ export default function ProductTable({
           </tbody>
         </PremiumTable>
 
-      <div className="border-t border-slate-100 bg-slate-50/30 px-8 py-5">
-        {pagination && pagination.totalPages > 1 && (
-          <DataPagination
-            variant="minimal"
-            currentPage={pagination.currentPage}
-            totalPages={pagination.totalPages}
-            totalItems={pagination.totalItems}
-            onPageChange={onPageChange}
-            className="w-full"
-          />
-        )}
+        <div className="border-t border-slate-100 bg-slate-50/30 px-8 py-5">
+          {pagination && pagination.totalPages > 1 && (
+            <DataPagination
+              variant="minimal"
+              currentPage={pagination.currentPage}
+              totalPages={pagination.totalPages}
+              totalItems={pagination.totalItems}
+              onPageChange={onPageChange}
+              className="w-full"
+            />
+          )}
+        </div>
       </div>
     </div>
-  </div>
-)
+  )
 }

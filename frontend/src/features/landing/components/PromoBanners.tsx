@@ -4,9 +4,9 @@ import React from 'react'
 import { ArrowRight } from 'lucide-react'
 import Link from 'next/link'
 
-export default function PromoBanners() {
+export function PromoBanners() {
   return (
-    <section className="container mx-auto px-4 section-padding">
+    <section className="section-padding container mx-auto px-4">
       <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
         {/* BANNER 1 */}
         <div className="group relative h-[400px] overflow-hidden rounded-[2.5rem] bg-slate-900">
@@ -16,7 +16,7 @@ export default function PromoBanners() {
             className="absolute inset-0 h-full w-full object-cover opacity-60 transition-transform duration-700 group-hover:scale-105"
           />
           <div className="absolute inset-0 bg-linear-to-r from-slate-900 via-slate-900/40 to-transparent" />
-          
+
           <div className="relative flex h-full flex-col justify-center p-10 md:p-12">
             <span className="text-sm font-bold tracking-widest text-blue-400 uppercase">
               Bộ sưu tập mới
@@ -44,7 +44,7 @@ export default function PromoBanners() {
             className="absolute inset-0 h-full w-full object-cover opacity-60 transition-transform duration-700 group-hover:scale-105"
           />
           <div className="absolute inset-0 bg-linear-to-r from-cyan-950 via-cyan-900/40 to-transparent" />
-          
+
           <div className="relative flex h-full flex-col justify-center p-10 md:p-12">
             <span className="text-sm font-bold tracking-widest text-cyan-400 uppercase">
               Đẳng cấp thời gian

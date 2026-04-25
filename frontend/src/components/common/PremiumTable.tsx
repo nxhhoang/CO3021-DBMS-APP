@@ -1,7 +1,7 @@
-'use client';
+'use client'
 
-import React from 'react';
-import { cn } from '@/lib/utils';
+import React from 'react'
+import { cn } from '@/lib/utils'
 import {
   Table,
   TableBody,
@@ -9,66 +9,86 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table';
+} from '@/components/ui/table'
 
 interface PremiumTableProps extends React.HTMLAttributes<HTMLDivElement> {
-  children: React.ReactNode;
+  children: React.ReactNode
 }
 
-export const PremiumTable = ({ children, className, ...props }: PremiumTableProps) => {
+export const PremiumTable = ({
+  children,
+  className,
+  ...props
+}: PremiumTableProps) => {
   return (
-    <div 
+    <div
       className={cn(
         'overflow-hidden rounded-2xl border border-slate-100 bg-white/50 shadow-sm backdrop-blur-md',
-        className
-      )} 
+        className,
+      )}
       {...props}
     >
       <Table>{children}</Table>
     </div>
-  );
-};
+  )
+}
 
-export const PremiumTableHeader = ({ children, className, ...props }: React.HTMLAttributes<HTMLTableSectionElement>) => {
+export const PremiumTableHeader = ({
+  children,
+  className,
+  ...props
+}: React.HTMLAttributes<HTMLTableSectionElement>) => {
   return (
     <TableHeader className={cn('bg-slate-50/50', className)} {...props}>
       {children}
     </TableHeader>
-  );
-};
+  )
+}
 
-export const PremiumTableHead = ({ children, className, ...props }: React.ThHTMLAttributes<HTMLTableCellElement>) => {
+export const PremiumTableHead = ({
+  children,
+  className,
+  ...props
+}: React.ThHTMLAttributes<HTMLTableCellElement>) => {
   return (
-    <TableHead 
+    <TableHead
       className={cn(
-        'h-14 px-6 text-left text-[10px] font-black tracking-widest uppercase text-slate-400',
-        className
-      )} 
+        'h-14 px-6 text-left text-[10px] font-black tracking-widest text-slate-400 uppercase',
+        className,
+      )}
       {...props}
     >
       {children}
     </TableHead>
-  );
-};
+  )
+}
 
-export const PremiumTableRow = ({ children, className, ...props }: React.HTMLAttributes<HTMLTableRowElement>) => {
+export const PremiumTableRow = ({
+  children,
+  className,
+  ...props
+}: React.HTMLAttributes<HTMLTableRowElement>) => {
   return (
-    <TableRow 
+    <TableRow
       className={cn(
         'border-b border-slate-50 transition-colors hover:bg-slate-50/50',
-        className
-      )} 
+        className,
+      )}
       {...props}
     >
       {children}
     </TableRow>
-  );
-};
+  )
+}
 
-export const PremiumTableCell = ({ children, className, ...props }: React.TdHTMLAttributes<HTMLTableCellElement>) => {
+export const PremiumTableCell = ({
+  children,
+  className,
+  ...props
+}: React.TdHTMLAttributes<HTMLTableCellElement>) => {
   return (
     <TableCell className={cn('px-6 py-5', className)} {...props}>
       {children}
     </TableCell>
-  );
-};
+  )
+}

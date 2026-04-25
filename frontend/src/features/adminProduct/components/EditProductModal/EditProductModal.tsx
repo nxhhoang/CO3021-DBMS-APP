@@ -182,7 +182,9 @@ export default function EditProductModal({
                 </h2>
               </div>
               <div className="flex items-center gap-2">
-                {refreshing && <Loader2 className="h-4 w-4 animate-spin text-slate-400" />}
+                {refreshing && (
+                  <Loader2 className="h-4 w-4 animate-spin text-slate-400" />
+                )}
                 <Badge
                   variant="secondary"
                   className="border-none bg-indigo-50 px-3 py-1 text-[10px] font-bold text-indigo-600 uppercase"

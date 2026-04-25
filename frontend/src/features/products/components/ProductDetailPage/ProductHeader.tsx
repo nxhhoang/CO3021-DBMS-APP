@@ -2,7 +2,7 @@
 
 import { Star } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import formatVND from '@/features/cart/utils/formatVND'
+import { formatPrice } from '@/lib/utils'
 
 interface ProductHeaderProps {
   name: string
@@ -27,8 +27,12 @@ export const ProductHeader = ({
         <div className="glass-badge-blue">{categoryName || 'Sản phẩm'}</div>
         <div className="flex items-center gap-1.5">
           <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-          <span className="text-sm font-bold text-slate-900">{avgRating || 5}</span>
-          <span className="text-sm text-slate-400">({totalReviews || 0} đánh giá)</span>
+          <span className="text-sm font-bold text-slate-900">
+            {avgRating || 5}
+          </span>
+          <span className="text-sm text-slate-400">
+            ({totalReviews || 0} đánh giá)
+          </span>
         </div>
       </div>
 
@@ -38,7 +42,7 @@ export const ProductHeader = ({
 
       <div className="flex items-center gap-6 pt-2">
         <div className="font-mono text-4xl font-black tracking-tighter text-blue-600 dark:text-blue-400">
-          {formatVND(displayPrice)}
+          {formatPrice(displayPrice)}
         </div>
         <div className="h-10 w-px bg-slate-100 dark:bg-white/10" />
         <div className="flex flex-col">
@@ -48,10 +52,14 @@ export const ProductHeader = ({
           <span
             className={cn(
               'text-sm font-bold',
-              stockQuantity > 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-500',
+              stockQuantity > 0
+                ? 'text-emerald-600 dark:text-emerald-400'
+                : 'text-rose-500',
             )}
           >
-            {stockQuantity > 0 ? `Còn ${stockQuantity} sản phẩm` : 'Đã hết hàng'}
+            {stockQuantity > 0
+              ? `Còn ${stockQuantity} sản phẩm`
+              : 'Đã hết hàng'}
           </span>
         </div>
       </div>

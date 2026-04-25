@@ -7,7 +7,7 @@ import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 import { cn, formatPrice } from '@/lib/utils'
 import { useRouter } from 'next/navigation'
-import { useCart } from '@/features/cart/hooks/useCart'
+import { useCart } from '@/features/cart'
 
 export interface ProductCardProps {
   product: ProductResponse

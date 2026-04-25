@@ -71,7 +71,9 @@ export default function SkuFormSection({
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Package className="h-5 w-5 text-slate-400" />
-          <h3 className="text-lg font-semibold text-slate-900">Biến thể sản phẩm (SKU)</h3>
+          <h3 className="text-lg font-semibold text-slate-900">
+            Biến thể sản phẩm (SKU)
+          </h3>
         </div>
         {!isAdding && selectedCategoryId && (
           <Button
@@ -98,7 +100,9 @@ export default function SkuFormSection({
       {isAdding && (
         <div className="animate-in fade-in slide-in-from-top-2 rounded-3xl border border-indigo-100 bg-indigo-50/30 p-6 duration-300">
           <div className="mb-4 flex items-center justify-between">
-            <h4 className="text-sm font-bold text-indigo-900">Cấu hình biến thể mới</h4>
+            <h4 className="text-sm font-bold text-indigo-900">
+              Cấu hình biến thể mới
+            </h4>
             <Button
               type="button"
               variant="ghost"
@@ -154,7 +158,7 @@ export default function SkuFormSection({
                   <select
                     value={attributes[attr.key] || ''}
                     onChange={(e) => handleAttrChange(attr.key, e.target.value)}
-                    className="flex h-11 w-full rounded-xl border-none bg-white px-3 py-2 text-sm shadow-sm ring-1 ring-slate-200 focus:outline-hidden focus:ring-2 focus:ring-indigo-500"
+                    className="flex h-11 w-full rounded-xl border-none bg-white px-3 py-2 text-sm shadow-sm ring-1 ring-slate-200 focus:ring-2 focus:ring-indigo-500 focus:outline-hidden"
                   >
                     <option value="">Chọn {attr.label}</option>
                     {attr.options.map((opt) => (
@@ -205,7 +209,9 @@ export default function SkuFormSection({
                 </button>
                 <div className="flex items-start justify-between">
                   <div className="space-y-1">
-                    <p className="text-sm font-bold text-slate-900">{item.sku}</p>
+                    <p className="text-sm font-bold text-slate-900">
+                      {item.sku}
+                    </p>
                     <div className="flex flex-wrap gap-1">
                       {Object.entries(item.attributes).map(([k, v]) => (
                         <Badge

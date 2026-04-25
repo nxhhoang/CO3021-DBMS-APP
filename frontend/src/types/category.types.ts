@@ -1,4 +1,4 @@
-import { ApiResponse } from './api.types';
+import { ApiResponse } from './api.types'
 
 export interface DynamicAttribute {
   key: string
@@ -28,8 +28,8 @@ export interface Category {
 }
 
 // GET /categories
-export type GetCategoriesRequest = { isActive?: boolean };
-export type GetCategoriesResponse = ApiResponse<Category[]>;
+export type GetCategoriesRequest = { isActive?: boolean }
+export type GetCategoriesResponse = ApiResponse<Category[]>
 
 // POST /admin/categories
 export interface CreateCategoryRequest {
@@ -40,7 +40,7 @@ export interface CreateCategoryRequest {
   dynamicAttributes?: DynamicAttributeInput[]
   variantAttributes?: DynamicAttributeInput[]
 }
-export type CreateCategoryResponse = ApiResponse<{ _id: string }>;
+export type CreateCategoryResponse = ApiResponse<{ _id: string }>
 
 // PUT /admin/categories/:id
 export type UpdateCategoryRequest = Partial<CreateCategoryRequest>
@@ -48,10 +48,10 @@ export type UpdateCategoryResponse = ApiResponse<{
   _id: string
   name: string
   isActive: boolean
-}>;
+}>
 
 // DELETE /admin/categories/:id
 export type DeleteCategoryResponse = ApiResponse<{
   _id: string
   isActive: boolean
-}>;
+}>

@@ -147,7 +147,7 @@ export default function SkuManagement({
                   <select
                     value={attributes[attr.key] || ''}
                     onChange={(e) => handleAttrChange(attr.key, e.target.value)}
-                    className="flex h-11 w-full rounded-xl border-none bg-white px-3 py-2 text-sm shadow-sm ring-1 ring-slate-200 focus:outline-hidden focus:ring-2 focus:ring-indigo-500"
+                    className="flex h-11 w-full rounded-xl border-none bg-white px-3 py-2 text-sm shadow-sm ring-1 ring-slate-200 focus:ring-2 focus:ring-indigo-500 focus:outline-hidden"
                   >
                     <option value="">Chọn {attr.label}</option>
                     {attr.options.map((opt) => (

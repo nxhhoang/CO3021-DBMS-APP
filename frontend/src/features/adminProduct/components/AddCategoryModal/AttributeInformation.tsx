@@ -132,7 +132,9 @@ export default function AttributeInformation({
               <div className="col-span-3">
                 <OptionsInput
                   value={attr.options || []}
-                  onChange={(newOptions) => updateAttr(idx, 'options', newOptions)}
+                  onChange={(newOptions) =>
+                    updateAttr(idx, 'options', newOptions)
+                  }
                 />
               </div>
             )}
@@ -178,7 +180,7 @@ function OptionsInput({
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setInputValue(currentJoined)
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [value])
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {

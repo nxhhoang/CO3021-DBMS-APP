@@ -1,5 +1,5 @@
-import { ApiResponse } from './api.types';
-import { STATS_PERIOD } from '@/constants/enum';
+import { ApiResponse } from './api.types'
+import { STATS_PERIOD } from '@/constants/enum'
 
 // Item đã qua xử lý ở frontend
 export interface RevenueStat {

@@ -1,10 +1,10 @@
-import { Slider } from '@/components/ui/slider';
+import { Slider } from '@/components/ui/slider'
 
 interface PriceRangeSliderProps {
-  priceRange: [number, number];
-  min: number;
-  max: number;
-  setPriceRange: (value: [number, number]) => void;
+  priceRange: [number, number]
+  min: number
+  max: number
+  setPriceRange: (value: [number, number]) => void
 }
 
 const PriceRangeSlider = ({
@@ -37,11 +37,13 @@ const PriceRangeSlider = ({
     <div className="space-y-6">
       <div className="flex items-center gap-3">
         <div className="relative flex-1">
-          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[10px] font-bold text-slate-400">₫</span>
+          <span className="absolute top-1/2 left-3 -translate-y-1/2 text-[10px] font-bold text-slate-400">
+            ₫
+          </span>
           <input
             type="number"
             value={priceRange[0]}
-            className="input-premium w-full py-2 pl-7 pr-3 text-xs font-bold"
+            className="input-premium w-full py-2 pr-3 pl-7 text-xs font-bold"
             min={min}
             max={priceRange[1]}
             onChange={(e) => handleMinInput(e.target.value)}
@@ -51,11 +53,13 @@ const PriceRangeSlider = ({
         <span className="text-slate-300">—</span>
 
         <div className="relative flex-1">
-          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[10px] font-bold text-slate-400">₫</span>
+          <span className="absolute top-1/2 left-3 -translate-y-1/2 text-[10px] font-bold text-slate-400">
+            ₫
+          </span>
           <input
             type="number"
             value={priceRange[1]}
-            className="input-premium w-full py-2 pl-7 pr-3 text-xs font-bold"
+            className="input-premium w-full py-2 pr-3 pl-7 text-xs font-bold"
             min={priceRange[0]}
             max={max}
             onChange={(e) => handleMaxInput(e.target.value)}
@@ -75,6 +79,6 @@ const PriceRangeSlider = ({
       </div>
     </div>
   )
-};
+}
 
-export default PriceRangeSlider;
+export default PriceRangeSlider

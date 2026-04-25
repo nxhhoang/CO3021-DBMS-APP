@@ -1,5 +1,5 @@
-import { cva, type VariantProps } from 'class-variance-authority';
-import { cn } from '@/lib/utils';
+import { cva, type VariantProps } from 'class-variance-authority'
+import { cn } from '@/lib/utils'
 
 const placeholderVariants = cva(
   'flex items-center justify-center rounded-lg border-2 border-dashed text-sm font-medium tracking-wide',
@@ -20,13 +20,13 @@ const placeholderVariants = cva(
       tone: 'default',
     },
   },
-);
+)
 
 export interface PlaceholderProps
   extends
     React.HTMLAttributes<HTMLDivElement>,
     VariantProps<typeof placeholderVariants> {
-  label: string;
+  label: string
 }
 
 export function Placeholder({
@@ -37,7 +37,7 @@ export function Placeholder({
   ...props
 }: PlaceholderProps) {
   if (process.env.NODE_ENV === 'production') {
-    return null;
+    return null
   }
 
   return (
@@ -47,5 +47,5 @@ export function Placeholder({
     >
       <span className="opacity-70">{label}</span>
     </div>
-  );
+  )
 }

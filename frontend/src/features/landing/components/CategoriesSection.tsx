@@ -48,7 +48,7 @@ const categoryMetadata: Record<
   },
 }
 
-export default function CategoriesSection() {
+export function CategoriesSection() {
   return (
     <section
       className="section-padding container mx-auto px-4"

@@ -1,58 +1,58 @@
-'use client';
+'use client'
 
-import { User } from '@/types';
-import { userService } from '../../user/services/user.service';
-import { authService } from '../services/auth.service';
-import { useEffect, useState } from 'react';
-import { tokenStorage } from '@/services/tokenStorage';
-import { useRouter } from 'next/navigation';
+import { User } from '@/types'
+import { userService } from '../../user/services/user.service'
+import { authService } from '../services/auth.service'
+import { useEffect, useState } from 'react'
+import { tokenStorage } from '@/services/tokenStorage'
+import { useRouter } from 'next/navigation'
 
 export const useAuth = () => {
-  const [user, setUser] = useState<Pick<User, 'userId' | 'role'> | null>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  const router = useRouter();
+  const [user, setUser] = useState<Pick<User, 'userId' | 'role'> | null>(null)
+  const [isLoading, setIsLoading] = useState<boolean>(true)
+  const router = useRouter()
 
-  const isAuthenticated = !!user;
+  const isAuthenticated = !!user
 
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const token = tokenStorage.getAccessToken();
+        const token = tokenStorage.getAccessToken()
         if (!token) {
-          setIsLoading(false);
-          return;
+          setIsLoading(false)
+          return
         }
 
-        const res = await userService.getProfile();
-        setUser(res);
+        const res = await userService.getProfile()
+        setUser(res)
       } catch (error) {
         tokenStorage.clear()
-        setUser(null);
+        setUser(null)
       } finally {
-        setIsLoading(false);
+        setIsLoading(false)
       }
-    };
+    }
 
-    fetchProfile();
-  }, []);
+    fetchProfile()
+  }, [])
 
   const logout = async () => {
     try {
-      const refreshToken = tokenStorage.getRefreshToken();
+      const refreshToken = tokenStorage.getRefreshToken()
       if (refreshToken) {
-        await authService.logout({ refreshToken });
+        await authService.logout({ refreshToken })
       } else {
-        router.push('/login');
-        return;
+        router.push('/login')
+        return
       }
     } catch (error) {
-      console.error('Error during logout:', error);
+      console.error('Error during logout:', error)
     } finally {
-      tokenStorage.clear();
-      setUser(null);
-      router.push('/login');
+      tokenStorage.clear()
+      setUser(null)
+      router.push('/login')
     }
-  };
+  }
 
   return {
     user,
@@ -60,5 +60,5 @@ export const useAuth = () => {
     isLoading,
     logout,
     setUser,
-  };
-};
+  }
+}

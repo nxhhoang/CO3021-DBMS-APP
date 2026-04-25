@@ -2,7 +2,7 @@
 
 import { cn } from '@/lib/utils'
 import { Inventory } from '@/types'
-import QuantitySelector from '@/features/cart/components/ItemList/QuantitySelector'
+import { QuantitySelector } from '@/features/cart'
 
 interface ProductInfoTabProps {
   inventory: Inventory[]

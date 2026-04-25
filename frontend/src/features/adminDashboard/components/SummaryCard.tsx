@@ -55,14 +55,16 @@ export default function SummaryCard({
                 <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/10 text-emerald-400">
                   <DollarSign size={18} strokeWidth={2.5} />
                 </div>
-                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">
+                <span className="text-[10px] font-black tracking-[0.2em] text-slate-400 uppercase">
                   Tổng doanh thu
                 </span>
               </div>
               <div className="space-y-1">
                 <h3 className="font-mono text-3xl font-black tracking-tighter text-white sm:text-4xl">
                   {animatedRevenue.toLocaleString()}
-                  <span className="ml-2 text-sm font-bold uppercase text-emerald-400/60">đ</span>
+                  <span className="ml-2 text-sm font-bold text-emerald-400/60 uppercase">
+                    đ
+                  </span>
                 </h3>
                 <p className="text-xs font-bold text-slate-400">
                   Từ {startDateLabel} đến {endDateLabel}
@@ -85,14 +87,16 @@ export default function SummaryCard({
                 <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-50 text-blue-600">
                   <ShoppingBag size={18} strokeWidth={2.5} />
                 </div>
-                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">
+                <span className="text-[10px] font-black tracking-[0.2em] text-slate-400 uppercase">
                   Tổng đơn hàng
                 </span>
               </div>
               <div className="space-y-1">
                 <h3 className="font-mono text-4xl font-black tracking-tighter text-slate-900">
                   {animatedOrders.toLocaleString()}
-                  <span className="ml-2 text-sm font-bold uppercase text-slate-400">đơn</span>
+                  <span className="ml-2 text-sm font-bold text-slate-400 uppercase">
+                    đơn
+                  </span>
                 </h3>
                 <p className="text-xs font-bold text-slate-400">
                   Từ {startDateLabel} đến {endDateLabel}

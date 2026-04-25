@@ -11,7 +11,7 @@ interface QuantitySelectorProps {
   size?: 'sm' | 'md' | 'lg'
 }
 
-export default function QuantitySelector({
+export function QuantitySelector({
   quantity,
   stockQuantity,
   onDecrease,
@@ -47,16 +47,13 @@ export default function QuantitySelector({
       className={cn(
         'quantity-selector-premium',
         currentSize.container,
-        className
+        className,
       )}
     >
       <Button
         variant="ghost"
         size="icon"
-        className={cn(
-          'quantity-selector-btn',
-          currentSize.button
-        )}
+        className={cn('quantity-selector-btn', currentSize.button)}
         disabled={quantity <= 1}
         onClick={(e) => {
           e.stopPropagation()
@@ -69,7 +66,7 @@ export default function QuantitySelector({
       <span
         className={cn(
           'text-center font-mono font-black text-slate-900 dark:text-white',
-          currentSize.text
+          currentSize.text,
         )}
       >
         {quantity}
@@ -78,10 +75,7 @@ export default function QuantitySelector({
       <Button
         variant="ghost"
         size="icon"
-        className={cn(
-          'quantity-selector-btn',
-          currentSize.button
-        )}
+        className={cn('quantity-selector-btn', currentSize.button)}
         disabled={quantity >= stockQuantity}
         onClick={(e) => {
           e.stopPropagation()

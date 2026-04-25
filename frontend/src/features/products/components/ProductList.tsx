@@ -1,17 +1,15 @@
-import { ProductCard } from './ProductCard';
-import { Skeleton } from '@/components/ui/skeleton';
-import { ProductResponse } from '@/types/product.types';
+import { ProductCard } from './ProductCard'
+import { Skeleton } from '@/components/ui/skeleton'
+import { ProductResponse } from '@/types/product.types'
 
 type Props = {
-  products: ProductResponse[];
-  loading: boolean;
-};
+  products: ProductResponse[]
+  loading: boolean
+}
 
 const ProductList = ({ products, loading }: Props) => {
   if (!loading && products.length === 0) {
-    return (
-      <div className="py-20 text-center">Không tìm thấy sản phẩm nào!</div>
-    );
+    return <div className="py-20 text-center">Không tìm thấy sản phẩm nào!</div>
   }
   return (
     <main className="flex-1">
@@ -29,7 +27,7 @@ const ProductList = ({ products, loading }: Props) => {
         </div>
       )}
     </main>
-  );
-};
+  )
+}
 
-export default ProductList;
+export default ProductList

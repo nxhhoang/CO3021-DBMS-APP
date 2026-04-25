@@ -25,7 +25,6 @@ interface OrderTableProps {
   onViewDetails: (order: AdminOrder) => void // Thêm prop để mở Modal
 }
 
-
 const OrderTable = ({
   orders,
   loading,
@@ -50,7 +49,7 @@ const OrderTable = ({
           variant="outline"
           onClick={onRefresh}
           disabled={loading}
-          className="h-9 rounded-xl border-slate-200 bg-white px-4 font-bold shadow-sm transition-all hover:bg-slate-50 active:scale-95 text-[11px]"
+          className="h-9 rounded-xl border-slate-200 bg-white px-4 text-[11px] font-bold shadow-sm transition-all hover:bg-slate-50 active:scale-95"
         >
           <RefreshCw
             className={`mr-2 h-3.5 w-3.5 text-blue-600 ${loading ? 'animate-spin' : ''}`}
@@ -67,8 +66,12 @@ const OrderTable = ({
               <PremiumTableHead>Khách hàng</PremiumTableHead>
               <PremiumTableHead>Thời gian</PremiumTableHead>
               <PremiumTableHead>Trạng thái</PremiumTableHead>
-              <PremiumTableHead className="text-right">Tổng tiền</PremiumTableHead>
-              <PremiumTableHead className="text-center">Thao tác</PremiumTableHead>
+              <PremiumTableHead className="text-right">
+                Tổng tiền
+              </PremiumTableHead>
+              <PremiumTableHead className="text-center">
+                Thao tác
+              </PremiumTableHead>
             </PremiumTableRow>
           </PremiumTableHeader>
 
@@ -126,7 +129,9 @@ const OrderTable = ({
                   <PremiumTableCell className="text-right">
                     <div className="font-mono text-base font-black tracking-tighter text-slate-900">
                       {new Intl.NumberFormat('vi-VN').format(order.totalAmount)}
-                      <span className="ml-1 text-[10px] font-bold uppercase text-slate-400">đ</span>
+                      <span className="ml-1 text-[10px] font-bold text-slate-400 uppercase">
+                        đ
+                      </span>
                     </div>
                   </PremiumTableCell>
 

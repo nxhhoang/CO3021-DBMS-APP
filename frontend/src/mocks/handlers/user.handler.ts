@@ -1,12 +1,12 @@
-import { http, HttpResponse } from 'msw';
-import { BASE_URL } from '@/constants/api';
-import { MOCK_USERS, MOCK_SESSIONS } from '../data/users';
+import { http, HttpResponse } from 'msw'
+import { BASE_URL } from '@/constants/api'
+import { MOCK_USERS, MOCK_SESSIONS } from '../data/users'
 import {
   GetProfileResponse,
   UpdateProfileRequest,
   UpdateProfileResponse,
-} from '@/types/user.types';
-import { api } from '@/lib/axios';
+} from '@/types/user.types'
+import { api } from '@/lib/axios'
 
 export const userHandlers = [
   // GET /users/profile
@@ -14,31 +14,31 @@ export const userHandlers = [
     `${BASE_URL}/users/profile`,
     ({ request }) => {
       // 1. Lấy Token từ Header (Chuẩn Bearer Token)
-      const authHeader = request.headers.get('Authorization');
-      const token = authHeader?.split(' ')[1];
+      const authHeader = request.headers.get('Authorization')
+      const token = authHeader?.split(' ')[1]
 
       // 2. Kiểm tra tính hợp lệ của Token
       if (!token) {
         return HttpResponse.json(
           { message: 'Bạn chưa đăng nhập', data: null },
           { status: 401 },
-        );
+        )
       }
 
       // 3. Giả lập logic tìm đúng User dựa trên Token
       // Trong thực tế, Token sẽ chứa userId. Ở đây ta giả lập logic map token -> user
       // 1️⃣ Tìm session từ token
-      const session = MOCK_SESSIONS.find((s) => s.accessToken === token);
+      const session = MOCK_SESSIONS.find((s) => s.accessToken === token)
 
       if (!session) {
         return HttpResponse.json(
           { message: 'Token không hợp lệ', data: null },
           { status: 403 },
-        );
+        )
       }
 
       // 2️⃣ Tìm user từ userId
-      const user = MOCK_USERS.find((u) => u.userId === session.userId);
+      const user = MOCK_USERS.find((u) => u.userId === session.userId)
 
       if (!user) {
         return HttpResponse.json(
@@ -47,7 +47,7 @@ export const userHandlers = [
             data: null,
           },
           { status: 403 },
-        );
+        )
       }
 
       // 4. Trả về dữ liệu của đúng người dùng đó
@@ -63,7 +63,7 @@ export const userHandlers = [
           },
         },
         { status: 200 },
-      );
+      )
     },
   ),
 
@@ -72,41 +72,39 @@ export const userHandlers = [
     `${BASE_URL}/users/profile`,
     async ({ request }) => {
       // 1. Lấy Token từ Header
-      const authHeader = request.headers.get('Authorization');
-      const token = authHeader?.split(' ')[1];
+      const authHeader = request.headers.get('Authorization')
+      const token = authHeader?.split(' ')[1]
 
       // 2. Kiểm tra token có tồn tại trong "Bảng Sessions" không
-      const session = MOCK_SESSIONS.find((s) => s.accessToken === token);
+      const session = MOCK_SESSIONS.find((s) => s.accessToken === token)
 
       if (!session || token === 'expired-token') {
         return HttpResponse.json(
           { message: 'Phiên đăng nhập hết hạn hoặc không hợp lệ', data: null },
           { status: 401 },
-        );
+        )
       }
 
       // 3. Tìm User dựa trên userId từ session vừa tìm được
-      const userIndex = MOCK_USERS.findIndex(
-        (u) => u.userId === session.userId,
-      );
-      const user = MOCK_USERS[userIndex];
+      const userIndex = MOCK_USERS.findIndex((u) => u.userId === session.userId)
+      const user = MOCK_USERS[userIndex]
 
       if (!user) {
         return HttpResponse.json(
           { message: 'Người dùng không tồn tại', data: null },
           { status: 404 },
-        );
+        )
       }
 
       // 4. Update logic
-      const body = await request.json();
+      const body = await request.json()
 
       // Cập nhật vào mảng mock (lưu ý: cách này chỉ lưu vào bộ nhớ tạm của trình duyệt)
       MOCK_USERS[userIndex] = {
         ...user,
         fullName: body.fullName ?? user.fullName,
         phoneNum: body.phoneNum ?? user.phoneNum,
-      };
+      }
 
       return HttpResponse.json({
         message: 'Cập nhật thành công',
@@ -114,10 +112,10 @@ export const userHandlers = [
           userId: MOCK_USERS[userIndex].userId,
           fullName: MOCK_USERS[userIndex].fullName,
         },
-      });
+      })
     },
   ),
-];
+]
 
 // Example for GET /users/profile
 // fetch('http://localhost:3000/api/users/profile', {

@@ -4,20 +4,20 @@ import {
   DialogHeader,
   DialogTitle,
   DialogFooter,
-} from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { Skeleton } from '@/components/ui/skeleton';
+} from '@/components/ui/dialog'
+import { Button } from '@/components/ui/button'
+import { Skeleton } from '@/components/ui/skeleton'
 import {
   ShieldCheck,
   MapPin,
   Loader2,
   CheckCircle2,
   AlertCircle,
-} from 'lucide-react';
-import { OrderItemsList } from '../OrderSummary/OrderItemsList';
-import { PaymentMethodSelector } from './PaymentMethodSelector';
-import formatVND from '@/features/cart/utils/formatVND';
-import { useRouter } from 'next/navigation';
+} from 'lucide-react'
+import { OrderItemsList } from '../OrderSummary/OrderItemsList'
+import { PaymentMethodSelector } from './PaymentMethodSelector'
+import { formatPrice } from '@/lib/utils'
+import { useRouter } from 'next/navigation'
 import { Address, CartItem, PaymentMethod } from '@/types'
 import { Dispatch, SetStateAction } from 'react'
 
@@ -52,12 +52,12 @@ export const CheckoutDialogs = ({
   orderID,
   setOrderID,
 }: Props) => {
-  const router = useRouter();
+  const router = useRouter()
 
   const handleCloseSuccess = () => {
     setState((prev) => ({ ...prev, success: false }))
-    setOrderID(null);
-  };
+    setOrderID(null)
+  }
 
   return (
     <>
@@ -131,7 +131,7 @@ export const CheckoutDialogs = ({
                 Tổng thanh toán
               </p>
               <span className="font-mono text-3xl font-black tracking-tighter text-blue-600 dark:text-blue-400">
-                {formatVND(totalPrice)}
+                {formatPrice(totalPrice)}
               </span>
             </div>
           </div>
@@ -228,4 +228,4 @@ export const CheckoutDialogs = ({
       </Dialog>
     </>
   )
-};
+}

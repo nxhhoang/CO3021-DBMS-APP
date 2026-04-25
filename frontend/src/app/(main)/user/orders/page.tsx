@@ -4,14 +4,16 @@ import { useEffect, useState } from 'react'
 import { Package, Eye, Search } from 'lucide-react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
-import { OrderStatusBadge } from '@/features/orders/components/order-status-badge'
+import {
+  OrderStatusBadge,
+  OrderDetailModal,
+  OrderCardSkeleton,
+} from '@/features/orders'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { orderService } from '@/services/order.service'
 import type { Order } from '@/types'
 import { format } from 'date-fns'
 import { vi } from 'date-fns/locale'
-import { OrderDetailModal } from '@/features/orders/components/OrderDetailModal'
-import { OrderCardSkeleton } from '@/features/orders/components/OrderCardSkeleton'
 
 export default function OrdersPage() {
   const [orders, setOrders] = useState<Order[]>([])

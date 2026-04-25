@@ -128,8 +128,8 @@ export const CategoryRow = ({
                 <AlertDialogHeader>
                   <AlertDialogTitle>Xác nhận xóa danh mục</AlertDialogTitle>
                   <AlertDialogDescription>
-                    Bạn có chắc chắn muốn xóa danh mục &quot;{category.name}&quot;?
-                    Hành động này không thể hoàn tác.
+                    Bạn có chắc chắn muốn xóa danh mục &quot;{category.name}
+                    &quot;? Hành động này không thể hoàn tác.
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>

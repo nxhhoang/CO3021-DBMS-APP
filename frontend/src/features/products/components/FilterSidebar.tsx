@@ -12,7 +12,6 @@ import AttributeSelect from './AttributeSelect';
 
 import { useProductFilterNavigation } from '../hooks/useProductFilterNavigation';
 import { DEFAULT_MAX_PRICE } from '@/constants/enum';
-import { GetProductsRequest } from '@/types/product.types'
 
 interface FilterBarProps {
   initialCategory: string
@@ -37,9 +36,7 @@ const FilterSidebar = ({
     useState<Record<string, string>>(initialAttrs)
   const [priceRange, setPriceRange] =
     useState<[number, number]>(initialPriceRange)
-  const [sort, setSort] = useState<GetProductsRequest['sort'] | string>(
-    initialSort,
-  )
+  const [sort, setSort] = useState<string>(initialSort)
   const debounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const hasUserInteractedRef = useRef(false)
 

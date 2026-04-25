@@ -3,7 +3,7 @@
 import { useState, FormEvent } from 'react'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { GetProductsRequest, ProductResponse } from '@/types/product.types'
-import useProducts from '@/features/products/hooks/useProducts'
+import { useProducts } from '@/features/products/hooks/useProducts'
 import useProductQueryParams from '@/features/products/hooks/useProductQueryParams'
 import useCategories from '@/features/products/hooks/useCategories'
 import { SORT_BY } from '@/constants/enum'
@@ -23,7 +23,7 @@ export function useAdminProducts() {
   const [keywordInput, setKeywordInput] = useState(params.keyword ?? '')
   const [categoryFilter, setCategoryFilter] = useState(params.category ?? 'all')
   const [sortFilter, setSortFilter] = useState<ProductSortValue>(
-    params.sort ?? SORT_BY.POPULARITY,
+    params.sort ?? SORT_BY.SOLD_DESC,
   )
 
   // State Modals
@@ -106,7 +106,7 @@ export function useAdminProducts() {
   const handleResetFilters = () => {
     setKeywordInput('')
     setCategoryFilter('all')
-    setSortFilter(SORT_BY.POPULARITY)
+    setSortFilter(SORT_BY.SOLD_DESC)
 
     const nextParams = new URLSearchParams(searchParams.toString())
     nextParams.delete('keyword')

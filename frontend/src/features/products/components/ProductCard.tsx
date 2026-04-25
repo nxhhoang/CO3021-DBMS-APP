@@ -15,7 +15,7 @@ export interface ProductCardProps {
   className?: string
 }
 
-export default function ProductCard({
+export function ProductCard({
   product,
   showDiscount,
   discountPercent,

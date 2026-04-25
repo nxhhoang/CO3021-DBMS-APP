@@ -7,25 +7,15 @@ import { useCartStore } from '@/store/cartStore'
 import { CartItem } from '@/types'
 import { CartButton } from './CartButton'
 import { MobileMenu } from './MobileMenu'
-import { useRouter, useSearchParams } from 'next/navigation'
-import { cn } from '@/lib/utils'
+import { useEffect, useState } from 'react'
 
 const Header = () => {
-  const [query, setQuery] = useState('')
   const [isCartBumping, setIsCartBumping] = useState(false)
-
-  const router = useRouter()
-  const searchParams = useSearchParams()
 
   const cartItems = useCartStore((state) => state.items)
   const setCartItems = useCartStore((state) => state.setItems)
 
-  const urlKeyword = searchParams.get('keyword') || ''
   const cartCount = cartItems.reduce((sum, item) => sum + item.quantity, 0)
-
-  useEffect(() => {
-    setQuery(urlKeyword)
-  }, [urlKeyword])
 
   useEffect(() => {
     const syncCartFromSession = () => {
@@ -65,22 +55,6 @@ const Header = () => {
     }
   }, [setCartItems])
 
-  const handleSearchSubmit = (value: string, blurActiveElement = false) => {
-    const keyword = value.trim()
-    const params = new URLSearchParams()
-
-    if (keyword) {
-      params.set('keyword', keyword)
-    }
-
-    if (blurActiveElement && document.activeElement instanceof HTMLElement) {
-      document.activeElement.blur()
-    }
-
-    const queryString = params.toString()
-    router.push(queryString ? `/products?${queryString}` : '/products')
-  }
-
   return (
     <header className="sticky top-0 z-50 w-full border-b border-white/40 bg-white/70 shadow-sm backdrop-blur-xl transition-all duration-300">
       <div className="container mx-auto flex h-16 items-center justify-between px-6 lg:px-8">
@@ -89,17 +63,9 @@ const Header = () => {
           <Logo />
         </div>
 
-        {/* Search bar */}
+        {/* Search */}
         <div className="hidden max-w-xl flex-1 px-12 md:block">
-          <SearchBar
-            value={query}
-            onChange={setQuery}
-            onSubmit={(value: string) => {
-              handleSearchSubmit(value, true)
-            }}
-            className="w-full"
-            variant="header"
-          />
+          <ProductSearch variant="header" className="w-full" />
         </div>
 
         {/* Actions */}

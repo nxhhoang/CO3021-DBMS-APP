@@ -10,6 +10,7 @@ import {
   UpdateProductRequest,
   UpdateProductResponse,
   DeleteProductResponse,
+  Product,
 } from '@/types/product.types'
 
 // Biến tạm để lưu trữ state sản phẩm (giả lập database thay vì dùng hằng số MOCK trực tiếp)
@@ -104,9 +105,9 @@ export const productHandlers = [
       ...body,
       _id: `product-${Date.now()}`,
       isActive: true,
-      avg_rating: 0,
-      total_reviews: 0,
-      total_sold: 0,
+      avgRating: 0,
+      totalReviews: 0,
+      totalSold: 0,
     }
 
     dynamicProducts.push(newProduct)

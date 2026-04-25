@@ -109,8 +109,9 @@ export default function DashboardPage() {
         setData(fetchedData)
         setSummaryTotals(totals)
       }
-    } catch (err: any) {
-      setError(err.response?.data?.message || 'Đã có lỗi xảy ra khi kết nối server')
+    } catch (err: unknown) {
+      const msg = (err as { response?: { data?: { message?: string } } }).response?.data?.message;
+      setError(msg || 'Đã có lỗi xảy ra khi kết nối server')
     } finally {
       setLoading(false)
     }
@@ -118,6 +119,7 @@ export default function DashboardPage() {
 
   useEffect(() => {
     fetchData()
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   return (
@@ -238,7 +240,7 @@ export default function DashboardPage() {
                   }}
                   itemStyle={{ fontWeight: 800, fontSize: '12px' }}
                   labelStyle={{ fontWeight: 800, color: '#94a3b8', marginBottom: '4px', fontSize: '10px', textTransform: 'uppercase' }}
-                  formatter={(value: any, name: any) => {
+                  formatter={(value: number | string, name: string) => {
                     const label = name === 'totalRevenue' ? 'Doanh thu' : 'Số đơn'
                     const formattedValue = name === 'totalRevenue'
                         ? `${Number(value).toLocaleString()}đ`

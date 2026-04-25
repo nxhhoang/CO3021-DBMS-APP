@@ -9,14 +9,6 @@ import { User } from '@/types';
 export const useProfile = () => {
   const [profile, setProfile] = useState<User | null>(null);
 
-  useEffect(() => {
-    getProfile()
-      .then(setProfile)
-      .catch((error) => {
-        console.error('Error fetching profile:', error);
-      });
-  }, []);
-
   const getProfile = async () => {
     try {
       const res = await userService.getProfile();
@@ -31,6 +23,13 @@ export const useProfile = () => {
       throw new Error(errorMessage);
     }
   };
+
+  useEffect(() => {
+    getProfile().catch((error) => {
+      console.error('Error fetching profile:', error);
+    });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const updateProfile = async (data: UpdateProfileRequest) => {
     try {

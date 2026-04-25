@@ -22,7 +22,7 @@ const SortSelect = ({ value, onChange }: SortSelectProps) => {
       </SelectTrigger>
 
       <SelectContent className="select-premium-content">
-        <SelectItem value={SORT_BY.POPULARITY} className="select-premium-item">
+        <SelectItem value={SORT_BY.SOLD_DESC} className="select-premium-item">
           Phổ biến nhất
         </SelectItem>
         <SelectItem value={SORT_BY.PRICE_ASC} className="select-premium-item">
@@ -31,7 +31,7 @@ const SortSelect = ({ value, onChange }: SortSelectProps) => {
         <SelectItem value={SORT_BY.PRICE_DESC} className="select-premium-item">
           Giá: Cao đến Thấp
         </SelectItem>
-        <SelectItem value={SORT_BY.RATING} className="select-premium-item">
+        <SelectItem value={SORT_BY.RATING_DESC} className="select-premium-item">
           Đánh giá tốt nhất
         </SelectItem>
       </SelectContent>

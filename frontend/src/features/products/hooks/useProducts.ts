@@ -162,4 +162,4 @@ function useProducts(params: GetProductsRequest) {
   }
 }
 
-export default useProducts
+export { useProducts }

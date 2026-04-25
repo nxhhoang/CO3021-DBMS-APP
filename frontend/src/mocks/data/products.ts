@@ -1,4 +1,4 @@
-import { Product } from '@/types'
+import { Product, ProductDetail } from '@/types'
 
 const MOCK_PRODUCTS: Product[] = [
   // LAPTOPS
@@ -176,34 +176,56 @@ export const MOCK_PRODUCT_DETAILS: Record<string, ProductDetail> = {
   'product-1': {
     _id: 'product-1',
     name: 'MacBook Pro M3',
-    base_price: 2000,
+    slug: 'macbook-pro-m3',
+    basePrice: 2000,
+    isActive: true,
     category: { _id: 'category-1', name: 'Laptops', slug: 'laptop' },
     images: ['/images/macbook.jpg'],
     attributes: { brand: 'Apple' },
-    avg_rating: 4.5,
-    total_reviews: 100,
-    total_sold: 50,
+    avgRating: 4.5,
+    totalReviews: 100,
+    totalSold: 50,
     description: 'Apple MacBook Pro with M3 chip',
     inventory: [
-      { sku: 'MBP-M3-16-512', stockQuantity: 50 },
-      { sku: 'MBP-M3-32-1TB', stockQuantity: 10 },
+      {
+        sku: 'MBP-M3-16-512',
+        stockQuantity: 50,
+        attributes: { color: 'Silver', ram: '16GB', storage: '512GB' },
+      },
+      {
+        sku: 'MBP-M3-32-1TB',
+        stockQuantity: 10,
+        attributes: { color: 'Space Gray', ram: '32GB', storage: '1TB' },
+      },
     ],
   },
 
   'product-2': {
     _id: 'product-2',
     name: 'iPhone 14 Pro',
-    base_price: 999,
+    slug: 'iphone-14-pro',
+    basePrice: 999,
+    isActive: true,
     category: { _id: 'category-2', name: 'Smartphones', slug: 'smartphones' },
     images: ['/images/iphone.jpg'],
     attributes: { brand: 'Apple' },
-    avg_rating: 4.7,
-    total_reviews: 200,
-    total_sold: 150,
+    avgRating: 4.7,
+    totalReviews: 200,
+    totalSold: 150,
     description: 'Apple iPhone 14 Pro smartphone',
     inventory: [
-      { sku: 'IP14P-128-SILVER', stockQuantity: 30 },
-      { sku: 'IP14P-256-BLACK', stockQuantity: 20 },
+      {
+        sku: 'IP14P-128-SILVER',
+        stockQuantity: 30,
+        attributes: { color: 'Silver', storage: '128GB' },
+      },
+      {
+        sku: 'IP14P-256-BLACK',
+        stockQuantity: 20,
+        attributes: { color: 'Black', storage: '256GB' },
+      },
     ],
   },
 }
+
+export { MOCK_PRODUCTS }

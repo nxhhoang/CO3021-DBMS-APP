@@ -1,13 +1,13 @@
-import { http, HttpResponse } from 'msw';
-import { BASE_URL } from '@/constants/api';
-import { MOCK_CATEGORIES } from '../data/categories';
+import { http, HttpResponse } from 'msw'
+import { BASE_URL } from '@/constants/api'
+import { MOCK_CATEGORIES } from '../data/categories'
 import {
   Category,
   GetCategoriesRequest,
   GetCategoriesResponse,
   CreateCategoryRequest,
   CreateCategoryResponse,
-} from '@/types/category.types';
+} from '@/types/category.types'
 
 export const categoryHandlers = [
   // 1. GET /categories (Public)

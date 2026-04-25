@@ -1,4 +1,6 @@
-const CATEGORIES = [
+import { Category } from '@/types'
+
+const MOCK_CATEGORIES: Category[] = [
   {
     _id: 'cat-laptop',
     name: 'Laptop',
@@ -10,7 +12,7 @@ const CATEGORIES = [
         key: 'battery',
         label: 'Pin',
         dataType: 'number',
-        options: [40, 50, 60, 70, 80, 90],
+        options: ['40', '50', '60', '70', '80', '90'],
       },
       {
         key: 'brand',
@@ -35,7 +37,7 @@ const CATEGORIES = [
         key: 'screenSize',
         label: 'Kích thước màn hình',
         dataType: 'number',
-        options: [13.3, 14, 15.6, 16],
+        options: ['13.3', '14', '15.6', '16'],
       },
       {
         key: 'os',
@@ -82,7 +84,7 @@ const CATEGORIES = [
         key: 'battery',
         label: 'Pin',
         dataType: 'number',
-        options: [3000, 4000, 5000],
+        options: ['3000', '4000', '5000'],
       },
       {
         key: 'os',
@@ -117,16 +119,19 @@ const CATEGORIES = [
         key: 'brand',
         label: 'Thương hiệu',
         dataType: 'string',
+        options: ['Apple', 'Samsung', 'Garmin', 'Fossil'],
       },
       {
         key: 'gender',
         label: 'Giới tính',
         dataType: 'string',
+        options: ['Nam', 'Nữ', 'Unisex'],
       },
       {
         key: 'material',
         label: 'Chất liệu',
         dataType: 'string',
+        options: ['Thép không gỉ', 'Nhôm', 'Titan'],
       },
       {
         key: 'movement',
@@ -138,6 +143,7 @@ const CATEGORIES = [
         key: 'waterResistance',
         label: 'Chống nước',
         dataType: 'number',
+        options: ['30', '50', '100', '200'],
       },
     ],
     variantAttributes: [
@@ -145,16 +151,25 @@ const CATEGORIES = [
         key: 'color',
         label: 'Màu sắc',
         dataType: 'string',
+        options: ['Black', 'Silver', 'Gold'],
+      },
+      {
+        key: 'strapColor',
+        label: 'Màu dây',
+        dataType: 'string',
+        options: ['Black', 'Brown', 'Silver'],
       },
       {
         key: 'size',
         label: 'Kích thước mặt',
         dataType: 'number',
+        options: ['38', '40', '42', '44'],
       },
       {
         key: 'strapMaterial',
         label: 'Chất liệu dây',
         dataType: 'string',
+        options: ['Leather', 'Metal', 'Silicone'],
       },
     ],
   },
@@ -169,26 +184,31 @@ const CATEGORIES = [
         key: 'brand',
         label: 'Thương hiệu',
         dataType: 'string',
+        options: ['Nike', 'Adidas', 'Puma', 'New Balance'],
       },
       {
         key: 'gender',
         label: 'Giới tính',
         dataType: 'string',
+        options: ['Nam', 'Nữ', 'Unisex'],
       },
       {
         key: 'material',
         label: 'Chất liệu',
         dataType: 'string',
+        options: ['Da', 'Vải', 'Lưới'],
       },
       {
         key: 'soleMaterial',
         label: 'Chất liệu đế',
         dataType: 'string',
+        options: ['Cao su', 'EVA', 'PU'],
       },
       {
         key: 'sportType',
         label: 'Loại thể thao',
         dataType: 'string',
+        options: ['Running', 'Basketball', 'Football', 'Tennis'],
       },
     ],
     variantAttributes: [
@@ -196,12 +216,13 @@ const CATEGORIES = [
         key: 'color',
         label: 'Màu sắc',
         dataType: 'string',
+        options: ['Black', 'White', 'Red', 'Blue'],
       },
       {
         key: 'size',
         label: 'Kích cỡ',
         dataType: 'number',
-        options: [38, 39, 40, 41],
+        options: ['38', '39', '40', '41'],
       },
       {
         key: 'width',
@@ -222,26 +243,31 @@ const CATEGORIES = [
         key: 'brand',
         label: 'Thương hiệu',
         dataType: 'string',
+        options: ['Canon', 'Nikon', 'Sony', 'Fujifilm'],
       },
       {
         key: 'resolution',
         label: 'Độ phân giải',
         dataType: 'string',
+        options: ['20MP', '24MP', '30MP', '45MP'],
       },
       {
         key: 'sensorType',
         label: 'Loại cảm biến',
         dataType: 'string',
+        options: ['CMOS', 'CCD'],
       },
       {
         key: 'lensMount',
         label: 'Ngàm ống kính',
         dataType: 'string',
+        options: ['EF', 'F', 'E', 'X'],
       },
       {
         key: 'videoQuality',
         label: 'Chất lượng video',
         dataType: 'string',
+        options: ['4K', '1080p', '720p'],
       },
     ],
     variantAttributes: [
@@ -249,6 +275,7 @@ const CATEGORIES = [
         key: 'color',
         label: 'Màu sắc',
         dataType: 'string',
+        options: ['Black', 'Silver'],
       },
       {
         key: 'kit',
@@ -260,9 +287,10 @@ const CATEGORIES = [
         key: 'edition',
         label: 'Phiên bản',
         dataType: 'string',
+        options: ['Standard', 'Pro', 'Limited'],
       },
     ],
   },
 ]
 
-export default CATEGORIES
+export { MOCK_CATEGORIES }

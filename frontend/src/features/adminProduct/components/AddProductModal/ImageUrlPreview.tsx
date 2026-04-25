@@ -29,8 +29,10 @@ export default function ImageUrlPreview({
       images.length > 0 &&
       (!selectedImage || !images.includes(selectedImage))
     ) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setSelectedImage(images[images.length - 1])
     } else if (images.length === 0) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setSelectedImage(null)
     }
   }, [images])

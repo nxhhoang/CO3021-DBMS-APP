@@ -1,4 +1,4 @@
-'use client';
+'use client'
 
 import {
   Sheet,
@@ -6,49 +6,45 @@ import {
   SheetContent,
   SheetHeader,
   SheetTitle,
-} from '@/components/ui/sheet';
-import { Button } from '@/components/ui/button';
-import { Menu, LogOut, User, MapPin, Package, ChevronRight, X } from 'lucide-react';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { authService } from '@/features/auth/services/auth.service';
-import { SearchBar } from '@/components/common/SearchBar';
-import { useState } from 'react';
-import { cn } from '@/lib/utils';
+} from '@/components/ui/sheet'
+import { Button } from '@/components/ui/button'
+import {
+  Menu,
+  LogOut,
+  User,
+  MapPin,
+  Package,
+  ChevronRight,
+} from 'lucide-react'
+import Link from 'next/link'
+import { useRouter } from 'next/navigation'
+import { useAuthContext } from '@/features/auth'
+import { ProductSearch } from '@/features/products'
+import { useState } from 'react'
 
 const NAV_ITEMS = [
   { label: 'Hồ sơ cá nhân', href: '/user/profile', icon: User },
   { label: 'Sổ địa chỉ', href: '/user/addresses', icon: MapPin },
   { label: 'Đơn hàng', href: '/user/orders', icon: Package },
-];
+]
 
 export const MobileMenu = () => {
-  const router = useRouter();
-  const [isOpen, setIsOpen] = useState(false);
+  const router = useRouter()
+  const [isOpen, setIsOpen] = useState(false)
+  const { logout } = useAuthContext()
 
-
-    try {
-      if (refreshToken) {
-        await authService.logout({ refreshToken });
-      }
-    } catch (error) {
-      console.error(error);
-    } finally {
-      localStorage.removeItem('accessToken');
-      localStorage.removeItem('refreshToken');
-      localStorage.removeItem('user');
-      setIsOpen(false);
-      router.push('/login');
-      router.refresh();
-    }
-  };
+  const handleLogout = async () => {
+    await logout()
+    setIsOpen(false)
+    router.push('/login')
+  }
 
   return (
     <Sheet open={isOpen} onOpenChange={setIsOpen}>
       <SheetTrigger asChild>
-        <Button 
-          variant="ghost" 
-          size="icon" 
+        <Button
+          variant="ghost"
+          size="icon"
           className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-50 text-slate-900 transition-all hover:bg-slate-100 active:scale-90 md:hidden"
         >
           <Menu size={20} strokeWidth={2.5} />
@@ -68,19 +64,23 @@ export const MobileMenu = () => {
           <div className="flex flex-col gap-8 p-6">
             {/* Search */}
             <div className="space-y-3">
-              <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">Tìm kiếm</span>
-              <SearchBar 
-                variant="admin" 
-                onSubmit={() => setIsOpen(false)}
+              <span className="text-[10px] font-black tracking-widest text-slate-400 uppercase">
+                Tìm kiếm
+              </span>
+              <ProductSearch
+                variant="admin"
+                onAfterSearch={() => setIsOpen(false)}
                 className="w-full"
               />
             </div>
 
             {/* Nav Links */}
             <nav className="flex flex-col gap-2">
-              <span className="mb-2 text-[10px] font-black uppercase tracking-widest text-slate-400">Tài khoản</span>
+              <span className="mb-2 text-[10px] font-black tracking-widest text-slate-400 uppercase">
+                Tài khoản
+              </span>
               {NAV_ITEMS.map((item) => {
-                const Icon = item.icon;
+                const Icon = item.icon
                 return (
                   <Link
                     key={item.href}
@@ -92,11 +92,16 @@ export const MobileMenu = () => {
                       <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white text-slate-400 shadow-sm transition-colors group-hover:bg-blue-600 group-hover:text-white">
                         <Icon size={18} strokeWidth={2.5} />
                       </div>
-                      <span className="text-sm font-bold tracking-tight">{item.label}</span>
+                      <span className="text-sm font-bold tracking-tight">
+                        {item.label}
+                      </span>
                     </div>
-                    <ChevronRight size={16} className="text-slate-300 transition-transform group-hover:translate-x-1 group-hover:text-blue-600" />
+                    <ChevronRight
+                      size={16}
+                      className="text-slate-300 transition-transform group-hover:translate-x-1 group-hover:text-blue-600"
+                    />
                   </Link>
-                );
+                )
               })}
             </nav>
 
@@ -112,13 +117,15 @@ export const MobileMenu = () => {
               </button>
             </div>
           </div>
-          
+
           {/* Footer Branding */}
           <div className="absolute bottom-8 left-0 w-full px-6 text-center">
-            <p className="text-[10px] font-black uppercase tracking-widest text-slate-300">BKShop © 2026</p>
+            <p className="text-[10px] font-black tracking-widest text-slate-300 uppercase">
+              BKShop © 2026
+            </p>
           </div>
         </div>
       </SheetContent>
     </Sheet>
-  );
-};
+  )
+}

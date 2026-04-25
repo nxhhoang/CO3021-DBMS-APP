@@ -2,9 +2,9 @@
 
 import React from 'react'
 import { ChevronRight } from 'lucide-react'
-import MOCK_PRODUCTS from '@/mocks/data/products'
+import { MOCK_PRODUCTS } from '@/mocks/data/products'
 import Link from 'next/link'
-import ProductCard from '@/features/products/components/ProductCard'
+import { ProductCard } from '@/features/products/components/ProductCard'
 import { ProductResponse } from '@/types/product.types'
 
 export default function HotDeals() {

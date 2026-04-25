@@ -1,4 +1,4 @@
-import ProductCard from './ProductCard';
+import { ProductCard } from './ProductCard';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ProductResponse } from '@/types/product.types';
 

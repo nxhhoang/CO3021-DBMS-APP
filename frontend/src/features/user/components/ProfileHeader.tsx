@@ -9,12 +9,8 @@ import { useMemo } from 'react';
 export function ProfileHeader() {
   const { profile } = useProfile();
 
-  if (!profile) return <Skeleton className="h-24 w-full" />;
-
-  const { fullName, email } = profile;
-
   const initials = useMemo(() => {
-    if (!profile.fullName || !profile.fullName.trim()) {
+    if (!profile?.fullName || !profile.fullName.trim()) {
       return '?';
     }
 
@@ -24,8 +20,12 @@ export function ProfileHeader() {
       .map((word) => word[0])
       .join('')
       .toUpperCase()
-      .slice(0, 2); // Chỉ lấy tối đa 2 ký tự
-  }, [profile.fullName]);
+      .slice(0, 2);
+  }, [profile]);
+
+  if (!profile) return <Skeleton className="h-24 w-full" />;
+
+  const { fullName, email } = profile;
 
   return (
     <Card className="from-primary to-secondary text-primary-foreground bg-linear-to-r">

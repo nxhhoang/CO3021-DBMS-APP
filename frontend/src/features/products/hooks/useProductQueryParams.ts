@@ -7,7 +7,7 @@ function parseSort(value: string | null): GetProductsRequest['sort'] {
   const validSorts = Object.values(SORT_BY) as GetProductsRequest['sort'][]
   return validSorts.includes(value as GetProductsRequest['sort'])
     ? (value as GetProductsRequest['sort'])
-    : SORT_BY.POPULARITY // default = soldDESC
+    : SORT_BY.SOLD_DESC
 }
 
 function parsePositiveNumber(value: string | null) {

@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Address } from '@/types';
 import { useAddresses } from '@/features/addresses/hooks/useAddresses';
 import AddressList from '@/features/addresses/components/AddressList';
 import AddressFormDialog from '@/features/addresses/components/AddressFormDialog';
@@ -40,7 +41,7 @@ export default function AddressesPage() {
     setOpenDialog(false);
   };
 
-  const handleEdit = (addr: any) => {
+  const handleEdit = (addr: Address) => {
     setEditingAddressId(addr.addressID);
     setFormData(addr);
     setOpenDialog(true);

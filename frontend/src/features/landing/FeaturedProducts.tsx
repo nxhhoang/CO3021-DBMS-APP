@@ -3,9 +3,9 @@
 import React, { useState } from 'react'
 import { ShoppingCart, Heart, Eye } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import MOCK_PRODUCTS from '@/mocks/data/products'
+import { MOCK_PRODUCTS } from '@/mocks/data/products'
 import { cn } from '@/lib/utils'
-import ProductCard from '../products/components/ProductCard'
+import { ProductCard } from '@/features/products'
 
 const TABS = [
   { id: 'bestseller', label: 'Bán chạy' },

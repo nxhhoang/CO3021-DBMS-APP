@@ -13,7 +13,7 @@ import {
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
 import { cn } from '@/lib/utils'
-import CATEGORIES from '@/mocks/data/categories'
+import { MOCK_CATEGORIES } from '@/mocks/data/categories'
 
 const categoryMetadata: Record<
   string,
@@ -51,20 +51,16 @@ const categoryMetadata: Record<
 export default function CategoriesSection() {
   return (
     <section
-      className="container mx-auto px-4 section-padding"
+      className="section-padding container mx-auto px-4"
       id="featured-categories"
     >
       {/* HEADER */}
       <div className="mb-16 flex flex-col items-center text-center sm:flex-row sm:items-end sm:justify-between sm:text-left">
-        <div className="max-w-2xl animate-in fade-in slide-in-from-left-8 duration-1000">
-          <span className="glass-badge-blue">
-            Khám phá danh mục
-          </span>
+        <div className="animate-in fade-in slide-in-from-left-8 max-w-2xl duration-1000">
+          <span className="glass-badge-blue">Khám phá danh mục</span>
           <h2 className="font-display mt-5 text-4xl font-bold tracking-tight text-slate-900 sm:text-5xl">
             Sản phẩm{' '}
-            <span className="text-gradient-primary">
-              đáng mong đợi
-            </span>
+            <span className="text-gradient-primary">đáng mong đợi</span>
           </h2>
           <p className="mt-4 text-lg text-slate-600">
             Lựa chọn từ bộ sưu tập công nghệ và thời trang cao cấp nhất của
@@ -85,7 +81,7 @@ export default function CategoriesSection() {
 
       {/* GRID */}
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-6 lg:grid-rows-2">
-        {CATEGORIES.map((cat) => {
+        {MOCK_CATEGORIES.map((cat) => {
           const meta = categoryMetadata[cat.slug] || {
             icon: Laptop,
             image: '',
@@ -97,8 +93,8 @@ export default function CategoriesSection() {
             <div
               key={cat.slug}
               className={cn(
-                "glass-card group relative p-0 overflow-hidden hover:-translate-y-2 hover:shadow-2xl animate-in fade-in slide-in-from-bottom-8 duration-700",
-                isFeatured ? 'lg:col-span-3' : 'lg:col-span-2'
+                'glass-card group animate-in fade-in slide-in-from-bottom-8 relative overflow-hidden p-0 duration-700 hover:-translate-y-2 hover:shadow-2xl',
+                isFeatured ? 'lg:col-span-3' : 'lg:col-span-2',
               )}
             >
               {/* IMAGE BACKGROUND */}
@@ -144,7 +140,10 @@ export default function CategoriesSection() {
                 </div>
 
                 <div className="mt-10">
-                  <Link href={`/products?category=${cat.slug}`} className="block">
+                  <Link
+                    href={`/products?category=${cat.slug}`}
+                    className="block"
+                  >
                     <Button className="btn-premium-primary group/btn relative w-full justify-between rounded-2xl py-7 text-xs tracking-wide uppercase">
                       Khám phá ngay
                       <ChevronRight

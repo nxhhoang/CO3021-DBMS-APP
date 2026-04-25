@@ -1,44 +1,52 @@
 'use client';
 
-import { Input } from '@/components/ui/input';
-import React, { useEffect, useState } from 'react';
-import { Search } from 'lucide-react';
-import { useProductsQuery } from '../hooks/useProductsQuery';
-import { Button } from '@/components/ui/button';
+import { useEffect, useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { SearchBar } from '@/components/common/SearchBar';
 
-export function ProductSearch() {
-  const { params, handleSearch: baseHandleSearch } = useProductsQuery();
-  const [keyword, setKeyword] = useState<string>(params.keyword || '');
+interface ProductSearchProps {
+  variant?: 'header' | 'filter' | 'admin';
+  className?: string;
+  onAfterSearch?: () => void;
+}
+
+export function ProductSearch({ variant = 'filter', className, onAfterSearch }: ProductSearchProps) {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const [keyword, setKeyword] = useState(searchParams.get('keyword') || '');
 
   useEffect(() => {
-    setKeyword(params.keyword || '');
-  }, [params.keyword]);
+    setKeyword(searchParams.get('keyword') || '');
+  }, [searchParams]);
 
-  const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    baseHandleSearch(keyword);
+  const handleSubmit = (value: string) => {
+    if (document.activeElement instanceof HTMLElement) {
+      document.activeElement.blur();
+    }
+
+    const params = new URLSearchParams(searchParams.toString());
+    if (value.trim()) {
+      params.set('keyword', value.trim());
+    } else {
+      params.delete('keyword');
+    }
+    params.delete('category');
+    params.set('page', '1');
+    Array.from(params.keys()).forEach((key) => {
+      if (key.startsWith('attrs[')) params.delete(key);
+    });
+
+    router.push(`/products?${params.toString()}`);
+    onAfterSearch?.();
   };
 
   return (
-    <form
-      onSubmit={handleSearch}
-      className={`relative mx-auto w-full max-w-2xl`}
-    >
-      <Input
-        type="text"
-        value={keyword}
-        placeholder="Search products..."
-        onChange={(e) => setKeyword(e.target.value)}
-        className="focus:border-primary focus:ring-primary w-full rounded-full border border-gray-300 bg-white px-4 py-2 focus:ring-2 focus:ring-offset-2"
-      />
-      <Button
-        type="submit"
-        size="icon-sm"
-        variant="ghost"
-        className="absolute top-1/2 right-3 -translate-y-1/2 rounded-full"
-      >
-        <Search className="text-muted-foreground" />
-      </Button>
-    </form>
+    <SearchBar
+      value={keyword}
+      onChange={setKeyword}
+      onSubmit={handleSubmit}
+      variant={variant}
+      className={className}
+    />
   );
 }

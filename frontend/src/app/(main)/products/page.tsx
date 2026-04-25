@@ -1,58 +1,84 @@
 'use client'
 
+import { GetProductsRequest } from '@/types/product.types'
 import {
-  ProductCard,
-  ProductFilter,
-  ProductSort,
   useProducts,
-  ProductPagination,
+  ProductList,
+  FilterSidebar,
+  useProductQueryParams,
+  useCategories,
 } from '@/features/products'
-import { Skeleton } from '@/components/ui/skeleton'
-import { useMemo } from 'react'
-import { useCategories } from '@/features/categories'
+import { DataPagination } from '@/components/common/DataPagination'
+import { useEffect, useMemo } from 'react'
+import { getUserRole } from '../../../utils/getUserRole'
+import { usePathname, useRouter, useSearchParams } from 'next/navigation'
+import { DEFAULT_MAX_PRICE } from '@/constants/enum'
 
 export default function ProductsPage() {
-  const { products, params, loading, pagination } = useProducts()
+  const router = useRouter()
+  const pathname = usePathname()
+  const searchParams = useSearchParams()
+
+  const params: GetProductsRequest = useProductQueryParams()
+  const { products, loading, message, pagination } = useProducts(params)
   const { categories } = useCategories()
 
-  const categoryName = useMemo(() => {
-    return categories?.find((c) => c.slug === params.category)?.name
-  }, [categories, params.category])
+  const initialAttrs = useMemo(() => {
+    const attrs: Record<string, string> = {}
+    searchParams.forEach((value, key) => {
+      const match = key.match(/^attrs\[(.*)\]$/)
+      if (match) attrs[match[1]] = value
+    })
+    return attrs
+  }, [searchParams])
 
-  const title = useMemo(() => {
-    if (params.keyword) {
-      return `Kết quả tìm kiếm cho "${params.keyword}"`
+  useEffect(() => {
+    const userRole = getUserRole()
+
+    // 🔥 Redirect nếu là ADMIN
+    if (userRole === 'ADMIN') {
+      router.replace('/admin/products')
     }
+  }, [router])
 
-    if (params.category) {
-      return `Danh mục: ${categoryName || params.category}`
-    }
-
-    return 'Tất cả sản phẩm'
-  }, [params.keyword, params.category, categoryName])
+  const handlePageChange = (page: number) => {
+    const nextParams = new URLSearchParams(searchParams.toString())
+    nextParams.set('page', String(page))
+    router.push(`${pathname}?${nextParams.toString()}`)
+  }
 
   return (
-    <div className="container mx-auto py-8">
-      <div className="flex flex-col gap-1">
-        <h1 className="text-xl font-semibold">{title}</h1>
-        <span className="text-muted-foreground text-sm">
-          {pagination.totalItems} sản phẩm
-        </span>
+    <div className="relative isolate min-h-screen w-full overflow-clip bg-white text-slate-900">
+      {/* REUSABLE BACKGROUND SYSTEM */}
+      <div className="mesh-gradient-container">
+        <div className="mesh-gradient-base" />
+        <div className="mesh-gradient-dots" />
+        <div className="mesh-gradient-spotlight" />
+
+        <div className="absolute inset-0 overflow-hidden">
+          <div className="mesh-gradient-blob -top-[5%] left-[15%] h-[600px] w-[600px] animate-pulse bg-blue-300/20 blur-[120px]" />
+          <div className="mesh-gradient-blob top-[10%] right-[10%] h-[500px] w-[500px] bg-cyan-300/20 blur-[100px]" />
+          <div className="mesh-gradient-blob top-[40%] left-[5%] h-[400px] w-[400px] bg-sky-200/20 blur-[90px]" />
+        </div>
+
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,white_100%)] opacity-20" />
       </div>
 
-      <div className="flex flex-col gap-8 md:flex-row">
-        <aside className="bg-primary/20 w-full space-y-6 md:w-64">
-          <ProductSort />
-          <ProductFilter />
-        </aside>
-
-        {/* Danh sách sản phẩm */}
-        <main className="flex-1">
-          {loading ? (
-            <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-              {[...Array(6)].map((_, i) => (
-                <Skeleton key={i} className="h-64 rounded-2xl" />
-              ))}
+      <div className="relative z-10 container mx-auto px-4 py-8 md:py-16">
+        {/* HEADER SECTION */}
+        <div className="mb-12">
+          {params.keyword ? (
+            <div className="space-y-4">
+              <div className="glass-badge-blue">Kết quả tìm kiếm</div>
+              <h1 className="font-display text-4xl font-bold tracking-tight text-slate-900 lg:text-5xl">
+                &quot;{params.keyword}&quot;
+              </h1>
+              <p className="text-lg text-slate-500">
+                {message}{' '}
+                <span className="font-semibold text-slate-900">
+                  ({pagination?.totalItems ?? 0} sản phẩm)
+                </span>
+              </p>
             </div>
           ) : (
             <div className="space-y-4 text-center md:text-left">
@@ -66,8 +92,43 @@ export default function ProductsPage() {
               </p>
             </div>
           )}
-          <ProductPagination />
-        </main>
+        </div>
+
+        {/* MAIN CONTENT AREA */}
+        <div className="flex flex-col gap-8 lg:flex-row xl:gap-12">
+          {/* SIDEBAR FILTERS */}
+          <div className="w-full shrink-0 lg:w-72">
+            <FilterSidebar
+              key={searchParams.toString()}
+              initialCategory={params.category ?? 'all'}
+              initialAttrs={initialAttrs}
+              initialPriceRange={[
+                params.priceMin ?? 0,
+                params.priceMax ?? DEFAULT_MAX_PRICE,
+              ]}
+              initialSort={params.sort ?? ''}
+              categories={categories || []}
+            />
+          </div>
+
+          {/* PRODUCT GRID & PAGINATION */}
+          <div className="flex-1 space-y-12">
+            <ProductList products={products} loading={loading} />
+
+            {pagination && pagination.totalPages > 1 && (
+              <div className="pt-8">
+                <DataPagination
+                  variant="glass"
+                  currentPage={pagination.currentPage}
+                  totalPages={pagination.totalPages}
+                  totalItems={pagination.totalItems}
+                  itemCount={pagination.itemCount}
+                  onPageChange={handlePageChange}
+                />
+              </div>
+            )}
+          </div>
+        </div>
       </div>
     </div>
   )

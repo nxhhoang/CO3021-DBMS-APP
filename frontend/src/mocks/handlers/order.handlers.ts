@@ -1,12 +1,12 @@
-import { http, HttpResponse } from 'msw';
-import { BASE_URL } from '@/constants/api';
+import { http, HttpResponse } from 'msw'
+import { BASE_URL } from '@/constants/api'
 import {
   CreateOrderRequest,
   CreateOrderResponse,
   GetAdminOrdersResponse,
 } from '@/types/order.types'
-import { MOCK_ADDRESSES } from '../data/addresses';
-import { MOCK_INVENTORY } from '../data/inventory';
+import { MOCK_ADDRESSES } from '../data/addresses'
+import { MOCK_INVENTORY } from '../data/inventory'
 import { MOCK_ORDERS } from '../data/orders'
 
 export const orderHandlers = [
@@ -88,7 +88,7 @@ export const orderHandlers = [
   // GET /admin/orders
   http.get(`${BASE_URL}/admin/orders`, async ({ request }) => {
     console.log('MSW ADMIN ORDERS HIT')
-    
+
     const url = new URL(request.url)
     const page = parseInt(url.searchParams.get('page') || '1')
     const limit = parseInt(url.searchParams.get('limit') || '10')
@@ -99,32 +99,40 @@ export const orderHandlers = [
     // Tạo danh sách đơn hàng giả lập lớn hơn để test lọc/sắp xếp
     // Trong thực tế MOCK_ORDERS có thể được mở rộng
     let allOrders = [...MOCK_ORDERS]
-    
+
     // Nếu MOCK_ORDERS quá ít, hãy tạo thêm giả lập dựa trên MOCK_ORDERS
     if (allOrders.length < 50) {
-      const statuses = ['PENDING', 'PROCESSING', 'SHIPPED', 'DELIVERED', 'CANCELLED']
+      const statuses = [
+        'PENDING',
+        'PROCESSING',
+        'SHIPPED',
+        'DELIVERED',
+        'CANCELLED',
+      ]
       for (let i = 1; i <= 100; i++) {
         allOrders.push({
           orderID: 2000 + i,
           totalAmount: Math.floor(Math.random() * 500000) * 1000,
           status: statuses[Math.floor(Math.random() * statuses.length)] as any,
-          createdAt: new Date(Date.now() - Math.random() * 10000000000).toISOString(),
-          userID: `user-${Math.floor(Math.random() * 1000)}`
+          createdAt: new Date(
+            Date.now() - Math.random() * 10000000000,
+          ).toISOString(),
+          // userID: `user-${Math.floor(Math.random() * 1000)}`
         })
       }
     }
 
     // 1. Lọc theo search
     if (search) {
-      allOrders = allOrders.filter(o => 
-        o.orderID.toString().includes(search) || 
-        o.userID?.includes(search)
+      allOrders = allOrders.filter(
+        (o) => o.orderID.toString().includes(search),
+        // || o.userID?.includes(search)
       )
     }
 
     // 2. Lọc theo status
     if (status && status !== 'ALL') {
-      allOrders = allOrders.filter(o => o.status === status)
+      allOrders = allOrders.filter((o) => o.status === status)
     }
 
     // 3. Sắp xếp
@@ -148,8 +156,8 @@ export const orderHandlers = [
           total,
           page,
           limit,
-          totalPages
-        }
+          totalPages,
+        },
       },
     }
 

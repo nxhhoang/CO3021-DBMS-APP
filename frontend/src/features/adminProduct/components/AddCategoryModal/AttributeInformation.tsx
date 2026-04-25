@@ -175,8 +175,10 @@ function OptionsInput({
       .join(', ')
 
     if (currentJoined !== normalizedInput) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setInputValue(currentJoined)
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [value])
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {

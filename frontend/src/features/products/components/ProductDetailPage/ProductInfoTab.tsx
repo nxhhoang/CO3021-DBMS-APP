@@ -22,7 +22,7 @@ export const ProductInfoTab = ({
   attributes,
 }: ProductInfoTabProps) => {
   return (
-    <div className="grid grid-cols-1 gap-12 lg:grid-cols-2 animate-in fade-in slide-in-from-bottom-4 duration-700">
+    <div className="animate-in fade-in slide-in-from-bottom-4 grid grid-cols-1 gap-12 duration-700 lg:grid-cols-2">
       {/* LEFT COLUMN: SELECTION */}
       <div className="space-y-10">
         {/* SKU SELECTOR */}
@@ -46,7 +46,7 @@ export const ProductInfoTab = ({
                   className={cn(
                     'group relative flex h-10 items-center justify-center rounded-xl border-2 px-3 transition-all duration-300 active:scale-95',
                     isSelected
-                      ? 'border-slate-900 bg-slate-900 text-white shadow-lg dark:bg-white dark:text-slate-900 dark:border-white'
+                      ? 'border-slate-900 bg-slate-900 text-white shadow-lg dark:border-white dark:bg-white dark:text-slate-900'
                       : 'border-slate-100 bg-white text-slate-600 hover:border-blue-200 hover:bg-blue-50/30 dark:border-white/10 dark:bg-slate-900 dark:hover:border-blue-500/50',
                     isOutOfStock && 'cursor-not-allowed opacity-30 grayscale',
                   )}
@@ -62,7 +62,7 @@ export const ProductInfoTab = ({
                     {item.sku.split('-').join(' • ')}
                   </span>
                   {isOutOfStock && (
-                    <span className="absolute -top-1.5 -right-1.5 rounded-full bg-rose-500 px-1.5 py-0.5 text-[7px] font-black text-white uppercase tracking-tighter">
+                    <span className="absolute -top-1.5 -right-1.5 rounded-full bg-rose-500 px-1.5 py-0.5 text-[7px] font-black tracking-tighter text-white uppercase">
                       Hết
                     </span>
                   )}
@@ -81,7 +81,7 @@ export const ProductInfoTab = ({
                 Số lượng
               </h4>
             </div>
-            <span className="font-mono text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+            <span className="font-mono text-[10px] font-bold tracking-widest text-slate-400 uppercase">
               KHO:{' '}
               <span className="text-slate-900 dark:text-white">
                 {selectedSku?.stockQuantity || 0}
@@ -110,17 +110,17 @@ export const ProductInfoTab = ({
         {/* VARIANT ATTRIBUTES */}
         {selectedSku?.attributes &&
           Object.keys(selectedSku.attributes).length > 0 && (
-            <div className="space-y-5 rounded-[2rem] border border-blue-50 bg-blue-50/30 p-8 dark:border-blue-900/10 dark:bg-blue-900/10">
+            <div className="space-y-5 rounded-[2rem] border border-blue-50 bg-blue-50/30 dark:border-blue-900/10 dark:bg-blue-900/10">
               <div className="flex items-center gap-2">
                 <div className="h-1 w-4 rounded-full bg-blue-400" />
-                <h4 className="font-display text-[11px] font-black tracking-[0.2em] text-blue-700 dark:text-blue-400 uppercase">
+                <h4 className="font-display text-[11px] font-black tracking-[0.2em] text-blue-700 uppercase dark:text-blue-400">
                   Thông số phiên bản
                 </h4>
               </div>
               <div className="grid grid-cols-2 gap-x-6 gap-y-4 sm:grid-cols-2">
                 {Object.entries(selectedSku.attributes).map(([key, value]) => (
                   <div key={key} className="space-y-0.5">
-                    <span className="font-display text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                    <span className="font-display text-[10px] font-black tracking-widest text-slate-400 uppercase">
                       {key}
                     </span>
                     <p className="text-xs font-black text-slate-900 dark:text-white">

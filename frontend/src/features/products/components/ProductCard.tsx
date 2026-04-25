@@ -96,11 +96,11 @@ export function ProductCard({
             <div className="flex flex-col">
               <div className="flex items-center gap-2">
                 <span className="text-lg font-bold text-slate-900">
-                  {formatPrice(displayPrice)}₫
+                  {formatPrice(displayPrice)}
                 </span>
                 {showDiscount && (
                   <span className="text-xs text-slate-400 line-through">
-                    {formatPrice(originalPrice)}₫
+                    {formatPrice(originalPrice)}
                   </span>
                 )}
               </div>

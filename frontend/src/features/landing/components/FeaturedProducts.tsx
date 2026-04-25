@@ -1,11 +1,9 @@
 'use client'
 
-import React, { useState } from 'react'
-import { ShoppingCart, Heart, Eye } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { MOCK_PRODUCTS } from '@/mocks/data/products'
+import { useState } from 'react'
 import { cn } from '@/lib/utils'
 import { ProductCard, useProducts } from '@/features/products'
+import { SORT_BY } from '@/constants/enum'
 
 const TABS = [
   { id: 'bestseller', label: 'Bán chạy' },
@@ -17,24 +15,31 @@ export function FeaturedProducts() {
   const [activeTab, setActiveTab] = useState('bestseller')
 
   // Filter logic for tabs
-  const getFilteredProducts = () => {
+  const getProducts = () => {
     switch (activeTab) {
       case 'bestseller':
-        return [...MOCK_PRODUCTS]
-          .sort((a, b) => b.totalSold - a.totalSold)
-          .slice(0, 8)
+        return useProducts({
+          sort: SORT_BY.SOLD_DESC,
+          limit: 8,
+        })
       case 'new':
-        return MOCK_PRODUCTS.slice(4, 12)
+        return useProducts({
+          sort: SORT_BY.SOLD_ASC,
+          limit: 8,
+        })
       case 'toprated':
-        return [...MOCK_PRODUCTS]
-          .sort((a, b) => b.avgRating - a.avgRating)
-          .slice(0, 8)
+        return useProducts({
+          sort: SORT_BY.RATING_DESC,
+          limit: 8,
+        })
       default:
-        return MOCK_PRODUCTS.slice(0, 8)
+        return useProducts({
+          limit: 8,
+        })
     }
   }
 
-  const products = getFilteredProducts()
+  const { products } = getProducts()
 
   return (
     <section className="section-padding container mx-auto px-4">

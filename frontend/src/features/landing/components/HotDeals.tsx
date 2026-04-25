@@ -2,14 +2,17 @@
 
 import React from 'react'
 import { ChevronRight } from 'lucide-react'
-import { MOCK_PRODUCTS } from '@/mocks/data/products'
 import Link from 'next/link'
-import { ProductCard } from '@/features/products'
+import { ProductCard, useProducts } from '@/features/products'
 import { ProductResponse } from '@/types/product.types'
+import { SORT_BY } from '@/constants/enum'
 
 export function HotDeals() {
   // Just pick some products as "Hot Deals"
-  const hotProducts = MOCK_PRODUCTS.slice(0, 5)
+  const hotProducts = useProducts({
+    sort: SORT_BY.SOLD_DESC,
+    limit: 5,
+  }).products
 
   return (
     <section className="section-padding container mx-auto px-4">

@@ -114,7 +114,7 @@ export function ProductCard({
                 e.stopPropagation()
                 addItem(
                   {
-                    sku: product.sku ?? '',
+                    sku: product.sku || product._id,
                     productId: product._id,
                     productName: product.name,
                     image: product.images?.[0] || '/images/default-product.png',

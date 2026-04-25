@@ -1,3 +1,4 @@
+'use client'
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { GetProductsRequest, ProductResponse } from '@/types/product.types'
 import { PaginationParams } from '@/types'

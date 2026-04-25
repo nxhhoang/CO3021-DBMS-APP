@@ -1,3 +1,4 @@
+'use client'
 import { useMemo } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { GetProductsRequest } from '@/types/product.types'

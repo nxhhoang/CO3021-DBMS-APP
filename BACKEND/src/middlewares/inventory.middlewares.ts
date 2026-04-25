@@ -6,7 +6,7 @@ import { ObjectId } from 'mongodb'
 // Check validate middleware structure
 export const createInventoryValidator = validate(
   checkSchema({
-    product_id: {
+    productID: {
       notEmpty: { errorMessage: INVENTORY_MESSAGES.PRODUCT_ID_IS_REQUIRED },
       isString: { errorMessage: INVENTORY_MESSAGES.PRODUCT_ID_MUST_BE_A_STRING },
       custom: {
@@ -22,7 +22,7 @@ export const createInventoryValidator = validate(
       notEmpty: { errorMessage: INVENTORY_MESSAGES.SKU_IS_REQUIRED },
       isString: { errorMessage: INVENTORY_MESSAGES.SKU_MUST_BE_A_STRING }
     },
-    stock_quantity: {
+    stockQuantity: {
       notEmpty: { errorMessage: INVENTORY_MESSAGES.STOCK_QUANTITY_IS_REQUIRED },
       isInt: {
         options: { min: 0 },
@@ -34,7 +34,7 @@ export const createInventoryValidator = validate(
 
 export const updateInventoryValidator = validate(
   checkSchema({
-    stock_quantity: {
+    stockQuantity: {
       notEmpty: { errorMessage: INVENTORY_MESSAGES.STOCK_QUANTITY_IS_REQUIRED },
       isInt: {
         options: { min: 0 },

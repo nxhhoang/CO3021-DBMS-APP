@@ -9,8 +9,8 @@ class UserService {
 
   async getProfile(userId: string) {
     const result = await query(
-      `SELECT user_id AS "userId", full_name AS "fullName", email, phone_num AS "phoneNum", avatar, role
-       FROM users WHERE user_id = $1`,
+      `SELECT userID AS "userId", fullName AS "fullName", email, phoneNum AS "phoneNum", role
+       FROM USERS WHERE userID = $1`,
       [userId]
     )
     if (result.rows.length === 0) {
@@ -25,25 +25,22 @@ class UserService {
     let idx = 1
 
     if (payload.fullName !== undefined) {
-      fields.push(`full_name = $${idx++}`)
+      fields.push(`fullName = $${idx++}`)
       values.push(payload.fullName)
     }
     if (payload.phoneNum !== undefined) {
-      fields.push(`phone_num = $${idx++}`)
+      fields.push(`phoneNum = $${idx++}`)
       values.push(payload.phoneNum)
     }
-    if (payload.avatar !== undefined) {
-      fields.push(`avatar = $${idx++}`)
-      values.push(payload.avatar)
-    }
+
 
     if (fields.length === 0) return this.getProfile(userId)
 
     values.push(userId)
     const result = await query(
-      `UPDATE users SET ${fields.join(', ')}, updated_at = NOW()
-       WHERE user_id = $${idx}
-       RETURNING user_id AS "userId", full_name AS "fullName"`,
+      `UPDATE USERS SET ${fields.join(', ')}
+       WHERE userID = $${idx}
+       RETURNING userID AS "userId", fullName AS "fullName"`,
       values
     )
     return result.rows[0]
@@ -53,10 +50,10 @@ class UserService {
 
   async getAddresses(userId: string) {
     const result = await query(
-      `SELECT address_id AS "addressID", address_line AS "addressLine", address_name AS "addressName",
-              city, district, is_default AS "isDefault"
-       FROM addresses WHERE user_id = $1
-       ORDER BY is_default DESC, address_id ASC`,
+      `SELECT addressID AS "addressID", addressLine AS "addressLine", addressName AS "addressName",
+              city, district, isDefault AS "isDefault"
+       FROM ADDRESSES WHERE userID = $1
+       ORDER BY isDefault DESC, addressID ASC`,
       [userId]
     )
     return result.rows
@@ -69,13 +66,13 @@ class UserService {
       await client.query('BEGIN')
 
       if (isDefault) {
-        await client.query(`UPDATE addresses SET is_default = false WHERE user_id = $1`, [userId])
+        await client.query(`UPDATE ADDRESSES SET isDefault = false WHERE userID = $1`, [userId])
       }
 
       const result = await client.query(
-        `INSERT INTO addresses (user_id, address_line, address_name, city, district, is_default)
+        `INSERT INTO ADDRESSES (userID, addressLine, addressName, city, district, isDefault)
          VALUES ($1, $2, $3, $4, $5, $6)
-         RETURNING address_id AS "addressID", address_line AS "addressLine"`,
+         RETURNING addressID AS "addressID", addressLine AS "addressLine"`,
         [userId, addressLine, addressName, city, district, isDefault ?? false]
       )
 
@@ -91,7 +88,7 @@ class UserService {
 
   async updateAddress(addressId: number, userId: string, payload: UpdateAddressReqBody) {
     // Verify ownership
-    const check = await query(`SELECT address_id FROM addresses WHERE address_id = $1 AND user_id = $2`, [
+    const check = await query(`SELECT addressID FROM ADDRESSES WHERE addressID = $1 AND userID = $2`, [
       addressId,
       userId
     ])
@@ -104,11 +101,11 @@ class UserService {
     let idx = 1
 
     if (payload.addressLine !== undefined) {
-      fields.push(`address_line = $${idx++}`)
+      fields.push(`addressLine = $${idx++}`)
       values.push(payload.addressLine)
     }
     if (payload.addressName !== undefined) {
-      fields.push(`address_name = $${idx++}`)
+      fields.push(`addressName = $${idx++}`)
       values.push(payload.addressName)
     }
     if (payload.city !== undefined) {
@@ -125,18 +122,18 @@ class UserService {
       await client.query('BEGIN')
 
       if (payload.isDefault === true) {
-        await client.query(`UPDATE addresses SET is_default = false WHERE user_id = $1`, [userId])
-        fields.push(`is_default = $${idx++}`)
+        await client.query(`UPDATE ADDRESSES SET isDefault = false WHERE userID = $1`, [userId])
+        fields.push(`isDefault = $${idx++}`)
         values.push(true)
       } else if (payload.isDefault === false) {
-        fields.push(`is_default = $${idx++}`)
+        fields.push(`isDefault = $${idx++}`)
         values.push(false)
       }
 
       values.push(addressId)
       const result = await client.query(
-        `UPDATE addresses SET ${fields.join(', ')} WHERE address_id = $${idx}
-         RETURNING address_id AS "addressID", city, district`,
+        `UPDATE ADDRESSES SET ${fields.join(', ')} WHERE addressID = $${idx}
+         RETURNING addressID AS "addressID", city, district`,
         values
       )
 
@@ -151,18 +148,18 @@ class UserService {
   }
 
   async deleteAddress(addressId: number, userId: string) {
-    const check = await query(`SELECT address_id FROM addresses WHERE address_id = $1 AND user_id = $2`, [
+    const check = await query(`SELECT addressID FROM ADDRESSES WHERE addressID = $1 AND userID = $2`, [
       addressId,
       userId
     ])
     if (check.rows.length === 0) {
       throw new ErrorWithStatus({ message: USER_MESSAGES.ADDRESS_NOT_FOUND, status: HTTP_STATUS.NOT_FOUND })
     }
-    await query(`DELETE FROM addresses WHERE address_id = $1`, [addressId])
+    await query(`DELETE FROM ADDRESSES WHERE addressID = $1`, [addressId])
   }
 
   async setDefaultAddress(addressId: number, userId: string) {
-    const check = await query(`SELECT address_id FROM addresses WHERE address_id = $1 AND user_id = $2`, [
+    const check = await query(`SELECT addressID FROM ADDRESSES WHERE addressID = $1 AND userID = $2`, [
       addressId,
       userId
     ])
@@ -173,8 +170,8 @@ class UserService {
     const client = await getClient()
     try {
       await client.query('BEGIN')
-      await client.query(`UPDATE addresses SET is_default = false WHERE user_id = $1`, [userId])
-      await client.query(`UPDATE addresses SET is_default = true WHERE address_id = $1`, [addressId])
+      await client.query(`UPDATE ADDRESSES SET isDefault = false WHERE userID = $1`, [userId])
+      await client.query(`UPDATE ADDRESSES SET isDefault = true WHERE addressID = $1`, [addressId])
       await client.query('COMMIT')
     } catch (err) {
       await client.query('ROLLBACK')

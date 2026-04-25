@@ -11,9 +11,9 @@ import { query } from '~/utils/postgres'
  */
 export const getStockByMongoId = async (mongoProductId: string) => {
   const result = await query(
-    `SELECT sku, stock_quantity AS "stockQuantity"
-     FROM inventories
-     WHERE product_id = $1`,
+    `SELECT sku, stockQuantity AS "stockQuantity"
+     FROM INVENTORY
+     WHERE productID = $1`,
     [mongoProductId]
   )
   return result.rows // [{ sku: 'M3-16-512', stockQuantity: 50 }, ...]
@@ -26,8 +26,8 @@ export const getStockByMongoId = async (mongoProductId: string) => {
  */
 export const getStockBySku = async (sku: string) => {
   const result = await query(
-    `SELECT sku, stock_quantity AS "stockQuantity"
-     FROM inventories
+    `SELECT sku, stockQuantity AS "stockQuantity"
+     FROM INVENTORY
      WHERE sku = $1`,
     [sku]
   )

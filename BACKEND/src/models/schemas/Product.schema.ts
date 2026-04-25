@@ -4,52 +4,52 @@ interface ProductType {
   _id?: ObjectId
   name: string
   slug?: string
-  categoryId: ObjectId
-  base_price: number
+  categoryID?: ObjectId | string
+  basePrice: number
   description?: string
   images?: string[]
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   attributes?: Record<string, any>
-  avg_rating?: number
-  total_reviews?: number
-  total_sold?: number
-  is_active?: boolean
-  created_at?: Date
-  updated_at?: Date
+  avgRating?: number
+  totalReviews?: number
+  totalSold?: number
+  isActive?: boolean
+  createdAt?: Date
+  updatedAt?: Date
 }
 
 export default class Product {
   _id: ObjectId
   name: string
   slug: string
-  categoryId: ObjectId
-  base_price: number
+  categoryID?: ObjectId | string
+  basePrice: number
   description: string
   images: string[]
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   attributes: Record<string, any>
-  avg_rating: number
-  total_reviews: number
-  total_sold: number
-  is_active: boolean
-  created_at: Date
-  updated_at: Date
+  avgRating: number
+  totalReviews: number
+  totalSold: number
+  isActive: boolean
+  createdAt: Date
+  updatedAt: Date
 
   constructor(product: ProductType) {
     const date = new Date()
     this._id = product._id || new ObjectId()
     this.name = product.name
     this.slug = product.slug || ''
-    this.categoryId = product.categoryId
-    this.base_price = product.base_price
+    this.categoryID = product.categoryID || undefined
+    this.basePrice = product.basePrice
     this.description = product.description || ''
     this.images = product.images || []
     this.attributes = product.attributes || {}
-    this.avg_rating = product.avg_rating ?? 0
-    this.total_reviews = product.total_reviews ?? 0
-    this.total_sold = product.total_sold ?? 0
-    this.is_active = product.is_active !== undefined ? product.is_active : true
-    this.created_at = product.created_at || date
-    this.updated_at = product.updated_at || date
+    this.avgRating = product.avgRating ?? 0
+    this.totalReviews = product.totalReviews ?? 0
+    this.totalSold = product.totalSold ?? 0
+    this.isActive = product.isActive !== undefined ? product.isActive : true
+    this.createdAt = product.createdAt || date
+    this.updatedAt = product.updatedAt || date
   }
 }

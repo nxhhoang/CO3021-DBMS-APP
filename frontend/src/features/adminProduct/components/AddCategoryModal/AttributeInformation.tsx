@@ -81,7 +81,7 @@ export default function AttributeInformation({
         {attributes.map((attr, idx) => (
           <div
             key={idx}
-            className="grid grid-cols-12 gap-4 rounded-2xl border border-slate-100 bg-slate-50/40 p-5"
+            className="grid grid-cols-12 gap-4 rounded-2xl border border-slate-100 bg-slate-50 p-5"
           >
             {/* Key */}
             <div className="col-span-3">

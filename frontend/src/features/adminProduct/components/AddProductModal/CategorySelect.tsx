@@ -1,12 +1,12 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, useMemo } from 'react'
 import {
   Controller,
   Control,
   FieldErrors,
   UseFormSetValue,
-  UseFormWatch,
+  useWatch,
 } from 'react-hook-form'
 import { Category } from '@/types/category.types'
 import { Field, FieldError } from '@/components/ui/field'
@@ -25,7 +25,6 @@ interface CategoryAndAttributesProps {
   control: Control<ProductFormInput>
   errors: FieldErrors<ProductFormInput>
   categories: Category[]
-  watch: UseFormWatch<ProductFormInput>
   setValue: UseFormSetValue<ProductFormInput>
 }
 
@@ -33,9 +32,11 @@ export default function CategorySelect({
   control,
   errors,
   categories,
-  watch,
   setValue,
 }: CategoryAndAttributesProps) {
+  const categoryID = useWatch({ control, name: 'categoryID' })
+  const attributes = useWatch({ control, name: 'attributes' })
+
   const getCategoryId = (category: Category) =>
     category._id || category.ID || ''
 
@@ -60,13 +61,14 @@ export default function CategorySelect({
     return typeof value === 'string' ? value : ''
   }
 
-  const selectedCategory = categories.find(
-    (cat) => getCategoryId(cat) === watch('categoryID'),
-  )
+  const selectedCategory = useMemo(() => {
+    if (!categoryID) return null
+    return categories.find((cat) => getCategoryId(cat) === categoryID) || null
+  }, [categories, categoryID])
 
   useEffect(() => {
     const categoryAttributes = selectedCategory?.dynamicAttributes ?? []
-    const currentAttributes = watch('attributes') ?? {}
+    const currentAttributes = attributes ?? {}
 
     if (!categoryAttributes.length) {
       if (Object.keys(currentAttributes).length > 0) {
@@ -93,7 +95,7 @@ export default function CategorySelect({
         shouldValidate: true,
       })
     }
-  }, [selectedCategory, setValue, watch])
+  }, [selectedCategory, setValue]) // attributes is intentionally omitted to avoid loops
 
   const labelStyles =
     'text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-2 block'
@@ -108,22 +110,25 @@ export default function CategorySelect({
           control={control}
           name="categoryID"
           render={({ field }) => (
-            <Select
-              value={field.value || undefined}
-              onValueChange={field.onChange}
-            >
+            <Select value={field.value || ''} onValueChange={field.onChange}>
               <SelectTrigger className={`${inputStyles} h-14 bg-white`}>
                 <SelectValue placeholder="Choose a product category" />
               </SelectTrigger>
               <SelectContent className="rounded-xl border-slate-100">
-                {categories.map((cat) => (
-                  <SelectItem
-                    key={getCategoryId(cat)}
-                    value={getCategoryId(cat)}
-                  >
-                    {cat.name}
-                  </SelectItem>
-                ))}
+                {categories.length === 0 ? (
+                  <div className="p-4 text-center text-xs text-slate-400">
+                    No categories available
+                  </div>
+                ) : (
+                  categories.map((cat) => (
+                    <SelectItem
+                      key={getCategoryId(cat)}
+                      value={getCategoryId(cat)}
+                    >
+                      {cat.name}
+                    </SelectItem>
+                  ))
+                )}
               </SelectContent>
             </Select>
           )}

@@ -8,7 +8,9 @@ import { tokenStorage } from '@/services/tokenStorage'
 import { useRouter } from 'next/navigation'
 
 export const useAuth = () => {
-  const [user, setUser] = useState<Pick<User, 'userId' | 'role'> | null>(null)
+  const [user, setUser] = useState<Pick<User, 'userId' | 'role'> | null>(
+    tokenStorage.getUser(),
+  )
   const [isLoading, setIsLoading] = useState<boolean>(true)
   const router = useRouter()
 
@@ -19,12 +21,15 @@ export const useAuth = () => {
       try {
         const token = tokenStorage.getAccessToken()
         if (!token) {
+          tokenStorage.clear()
+          setUser(null)
           setIsLoading(false)
           return
         }
 
         const res = await userService.getProfile()
         setUser(res)
+        tokenStorage.setUser(res)
       } catch (error) {
         tokenStorage.clear()
         setUser(null)

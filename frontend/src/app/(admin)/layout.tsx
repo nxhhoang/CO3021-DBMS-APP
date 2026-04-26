@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react'
 import { getUserRole } from '@/utils/getUserRole'
+import { useAuthContext } from '@/features/auth'
 import '@/lib/axios'
 
 import {
@@ -23,6 +24,7 @@ export default function AdminLayout({
 }: {
   children: React.ReactNode
 }) {
+  const { logout } = useAuthContext()
   const [mounted, setMounted] = useState(false)
   const [role, setRole] = useState<string | null>(null)
 
@@ -156,7 +158,10 @@ export default function AdminLayout({
               </div>
               Về cửa hàng
             </Link>
-            <button className="group flex w-full items-center gap-3.5 rounded-2xl px-4 py-3.5 text-sm font-bold text-rose-500 transition-all hover:bg-rose-50 hover:text-rose-600">
+            <button
+              onClick={logout}
+              className="group flex w-full items-center gap-3.5 rounded-2xl px-4 py-3.5 text-sm font-bold text-rose-500 transition-all hover:bg-rose-50 hover:text-rose-600"
+            >
               <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-rose-50 transition-colors group-hover:bg-rose-100 group-hover:text-rose-600">
                 <LogOut size={18} strokeWidth={2.5} />
               </div>

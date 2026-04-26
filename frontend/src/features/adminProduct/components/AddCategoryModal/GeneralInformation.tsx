@@ -34,7 +34,7 @@ export default function GeneralInformation({
         </h2>
       </div>
 
-      <div className="grid grid-cols-1 gap-8 rounded-[2rem] border border-slate-100 bg-slate-50/40 p-8 md:grid-cols-2">
+      <div className="grid grid-cols-1 gap-8 rounded-[2rem] border border-slate-100 bg-slate-50 p-8 md:grid-cols-2">
         {/* Name */}
         <Field className="gap-2.5">
           <Label className="font-display text-[10px] font-black tracking-[0.2em] text-slate-400 uppercase">

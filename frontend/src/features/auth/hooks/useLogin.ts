@@ -25,6 +25,7 @@ export const useLogin = () => {
 
       tokenStorage.setAccessToken(accessToken)
       tokenStorage.setRefreshToken(refreshToken)
+      tokenStorage.setUser(result.user)
     } catch (error: unknown) {
       throw new Error(getErrorMessage(error, 'Invalid email or password'))
     }

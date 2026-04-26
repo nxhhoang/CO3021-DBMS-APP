@@ -44,10 +44,10 @@ import {
 } from '@/components/ui/select'
 
 const ADMIN_SORT_OPTIONS = [
-  { label: 'Bán chạy nhất', value: SORT_BY.POPULARITY },
+  { label: 'Bán chạy nhất', value: SORT_BY.SOLD_DESC },
   { label: 'Giá tăng dần', value: SORT_BY.PRICE_ASC },
   { label: 'Giá giảm dần', value: SORT_BY.PRICE_DESC },
-  { label: 'Đánh giá cao', value: SORT_BY.RATING },
+  { label: 'Đánh giá cao', value: SORT_BY.RATING_DESC },
 ] as const
 
 interface ProductTableProps {

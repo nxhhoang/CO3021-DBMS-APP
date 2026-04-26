@@ -179,21 +179,20 @@ export default function AddProductModal({
 
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-10">
               <div className="space-y-8">
-                <div className="rounded-[28px] border border-slate-100 bg-slate-100/70 p-5 sm:p-6">
+                <div className="rounded-[28px] border border-slate-100 bg-slate-50 p-5 sm:p-6">
                   <GeneralInformation register={register} errors={errors} />
                 </div>
 
-                <div className="rounded-[28px] border border-slate-100 bg-slate-100/70 p-5 sm:p-6">
+                <div className="rounded-[28px] border border-slate-100 bg-slate-50 p-5 sm:p-6">
                   <CategorySelect
                     control={control}
                     errors={errors}
                     categories={categories}
-                    watch={watch}
                     setValue={setValue}
                   />
                 </div>
 
-                <div className="rounded-[32px] border border-slate-100 bg-slate-50/50 p-6 sm:p-8">
+                <div className="rounded-[32px] border border-slate-100 bg-slate-50 p-6 sm:p-8">
                   <SkuFormSection
                     skus={skus}
                     setSkus={setSkus}

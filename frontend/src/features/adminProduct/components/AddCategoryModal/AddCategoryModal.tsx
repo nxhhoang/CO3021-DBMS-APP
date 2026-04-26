@@ -184,7 +184,7 @@ export default function AddCategoryModal({
         </div>
 
         {/* Footer */}
-        <DialogFooter className="shrink-0 border-t border-slate-100 bg-slate-50/50 px-8 py-5">
+        <DialogFooter className="shrink-0 border-t border-slate-100 bg-slate-50 px-8 py-5">
           <DialogClose asChild>
             <Button
               type="button"

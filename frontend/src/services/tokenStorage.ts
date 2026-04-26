@@ -1,6 +1,6 @@
 import { TOKEN_TYPE } from '@/constants/auth'
 
-const { ACCESS_TOKEN, REFRESH_TOKEN } = TOKEN_TYPE
+const { ACCESS_TOKEN, REFRESH_TOKEN, USER } = TOKEN_TYPE
 
 export const tokenStorage = {
   getAccessToken() {
@@ -33,8 +33,25 @@ export const tokenStorage = {
     localStorage.removeItem(REFRESH_TOKEN)
   },
 
+  setUser(user: any) {
+    if (typeof window === 'undefined') return
+    localStorage.setItem(USER, JSON.stringify(user))
+  },
+
+  getUser() {
+    if (typeof window === 'undefined') return null
+    const user = localStorage.getItem(USER)
+    return user ? JSON.parse(user) : null
+  },
+
+  removeUser() {
+    if (typeof window === 'undefined') return
+    localStorage.removeItem(USER)
+  },
+
   clear() {
     this.removeAccessToken()
     this.removeRefreshToken()
+    this.removeUser()
   },
 }

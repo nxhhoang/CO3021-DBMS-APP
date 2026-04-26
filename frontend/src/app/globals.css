@@ -175,7 +175,7 @@ body {
   .glass-sidebar,
   .glass-container,
   .glass-container-full {
-    @apply border border-white/40 bg-white/40 shadow-xl ring-1 ring-black/5 backdrop-blur-3xl transition-all duration-300 ease-in-out;
+    @apply border border-white/40 bg-white/95 shadow-xl ring-1 ring-black/5 backdrop-blur-3xl transition-all duration-300 ease-in-out;
   }
 
   .glass-card {

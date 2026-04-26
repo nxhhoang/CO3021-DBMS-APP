@@ -9,6 +9,7 @@ interface QuantitySelectorProps {
   onIncrease: () => void
   className?: string
   size?: 'sm' | 'md' | 'lg'
+  disabled?: boolean
 }
 
 export function QuantitySelector({
@@ -18,6 +19,7 @@ export function QuantitySelector({
   onIncrease,
   className,
   size = 'md',
+  disabled = false,
 }: QuantitySelectorProps) {
   const sizes = {
     sm: {
@@ -54,7 +56,7 @@ export function QuantitySelector({
         variant="ghost"
         size="icon"
         className={cn('quantity-selector-btn', currentSize.button)}
-        disabled={quantity <= 1}
+        disabled={disabled || quantity <= 1}
         onClick={(e) => {
           e.stopPropagation()
           onDecrease()
@@ -76,7 +78,7 @@ export function QuantitySelector({
         variant="ghost"
         size="icon"
         className={cn('quantity-selector-btn', currentSize.button)}
-        disabled={quantity >= stockQuantity}
+        disabled={disabled || quantity >= stockQuantity}
         onClick={(e) => {
           e.stopPropagation()
           onIncrease()

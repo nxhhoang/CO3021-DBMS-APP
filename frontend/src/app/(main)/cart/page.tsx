@@ -1,5 +1,6 @@
 'use client'
 
+import { useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Loader2, ShoppingBag } from 'lucide-react'
 import Link from 'next/link'
@@ -18,7 +19,12 @@ export default function CartPage() {
     removeItem,
     totalPrice,
     removeMultipleItems,
+    loadCartWithDetails,
   } = useCart()
+
+  useEffect(() => {
+    loadCartWithDetails()
+  }, [loadCartWithDetails])
 
   const totalItems = items.reduce((sum, i) => sum + i.quantity, 0)
 

@@ -27,6 +27,7 @@ const ItemCard = ({
   onToggle,
 }: ItemCardProps) => {
   const stockQuantity = item.stockQuantity ?? 99
+  const isOutOfStock = item.stockQuantity !== undefined && item.stockQuantity === 0
 
   const handleQuantityChange = (delta: number) => {
     updateQuantity(item.sku, delta)
@@ -35,12 +36,14 @@ const ItemCard = ({
   return (
     <div className="animate-in fade-in slide-in-from-bottom-2 duration-300">
       <Card
-        onClick={() => onToggle(!isSelected)}
+        onClick={() => !isOutOfStock && onToggle(!isSelected)}
         className={cn(
           'glass-card group relative cursor-pointer overflow-hidden border-transparent transition-all duration-300',
-          isSelected
-            ? 'border-blue-500/50 bg-blue-50/5 shadow-lg dark:bg-blue-900/5'
-            : 'hover:border-slate-200 dark:hover:border-white/10',
+          isOutOfStock
+            ? 'cursor-not-allowed opacity-60'
+            : isSelected
+              ? 'border-blue-500/50 bg-blue-50/5 shadow-lg dark:bg-blue-900/5'
+              : 'hover:border-slate-200 dark:hover:border-white/10',
         )}
       >
         <CardContent className="p-4 sm:p-5">
@@ -51,6 +54,7 @@ const ItemCard = ({
                 checked={isSelected}
                 onCheckedChange={(checked) => onToggle(!!checked)}
                 onClick={(e) => e.stopPropagation()}
+                disabled={isOutOfStock}
                 className="checkbox-premium"
               />
             </div>
@@ -107,18 +111,28 @@ const ItemCard = ({
                     <div
                       className={cn(
                         'h-1.5 w-1.5 rounded-full',
-                        stockQuantity <= 3 ? 'bg-rose-500' : 'bg-emerald-500',
+                        isOutOfStock
+                          ? 'bg-rose-600'
+                          : stockQuantity <= 3
+                            ? 'bg-rose-500'
+                            : 'bg-emerald-500',
                       )}
                     />
                     <span
                       className={cn(
                         'text-[10px] font-bold tracking-wide uppercase',
-                        stockQuantity <= 3 ? 'text-rose-500' : 'text-slate-400',
+                        isOutOfStock
+                          ? 'text-rose-600'
+                          : stockQuantity <= 3
+                            ? 'text-rose-500'
+                            : 'text-slate-400',
                       )}
                     >
-                      {stockQuantity <= 3
-                        ? `Sắp hết (${stockQuantity})`
-                        : 'Sẵn hàng'}
+                      {isOutOfStock
+                        ? 'Hết hàng'
+                        : stockQuantity <= 3
+                          ? `Sắp hết (${stockQuantity})`
+                          : 'Sẵn hàng'}
                     </span>
                   </div>
                 </div>
@@ -129,6 +143,7 @@ const ItemCard = ({
                   onDecrease={() => handleQuantityChange(-1)}
                   onIncrease={() => handleQuantityChange(1)}
                   size="sm"
+                  disabled={isOutOfStock}
                 />
               </div>
             </div>

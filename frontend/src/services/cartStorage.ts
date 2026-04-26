@@ -1,36 +1,20 @@
-import { CartItem } from '@/types/cart.types'
+import { StoredCartItem } from '@/types/cart.types'
 
 const CART_STORAGE_KEY = 'cart'
 
-function normalizeCartItem(raw: Partial<CartItem>): CartItem | null {
-  if (!raw.sku || !raw.productName) return null
+function normalizeStoredItem(raw: Record<string, unknown>): StoredCartItem | null {
+  const productId = (raw.productId || raw.productID) as string | undefined
+  if (!productId || !raw.sku) return null
 
-  const productId = raw.productId || raw.productID
-  if (!productId) return null
-
-  const normalizedQuantity = Number.isFinite(raw.quantity)
+  const quantity = Number.isFinite(raw.quantity)
     ? Math.max(1, Math.floor(raw.quantity as number))
     : 1
 
-  return {
-    productId,
-    productID: raw.productID || productId,
-    sku: raw.sku,
-    quantity: normalizedQuantity,
-    productName: raw.productName,
-    image: raw.image || '',
-    basePrice: Number(raw.basePrice) || 0,
-    skuPrice: Number(raw.skuPrice) || 0,
-    stockQuantity:
-      raw.stockQuantity !== undefined
-        ? Math.max(0, Number(raw.stockQuantity) || 0)
-        : undefined,
-    attributes: raw.attributes,
-  }
+  return { productId, sku: raw.sku as string, quantity }
 }
 
 export const cartStorage = {
-  getItems(): CartItem[] {
+  getItems(): StoredCartItem[] {
     if (typeof window === 'undefined') return []
     try {
       const rawData = sessionStorage.getItem(CART_STORAGE_KEY)
@@ -43,16 +27,15 @@ export const cartStorage = {
           ? parsed.items
           : []
 
-      return cartItems
-        .map((item: CartItem) => normalizeCartItem(item as Partial<CartItem>))
-        .filter((item: CartItem): item is CartItem => item !== null)
-    } catch (error) {
-      console.error('Failed to parse cart from sessionStorage:', error)
+      return (cartItems as Record<string, unknown>[])
+        .map((item) => normalizeStoredItem(item))
+        .filter((item): item is StoredCartItem => item !== null)
+    } catch {
       return []
     }
   },
 
-  setItems(items: CartItem[]): void {
+  setItems(items: StoredCartItem[]): void {
     if (typeof window === 'undefined') return
     sessionStorage.setItem(CART_STORAGE_KEY, JSON.stringify({ items }))
   },

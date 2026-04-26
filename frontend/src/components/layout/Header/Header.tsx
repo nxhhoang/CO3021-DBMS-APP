@@ -19,7 +19,18 @@ const Header = () => {
 
   // Populate store from storage on mount so the badge is correct on any page.
   useEffect(() => {
-    setCartItems(cartStorage.getItems())
+    const stored = cartStorage.getItems()
+    setCartItems(
+      stored.map((s) => ({
+        productId: s.productId,
+        sku: s.sku,
+        quantity: s.quantity,
+        productName: '',
+        image: '',
+        basePrice: 0,
+        skuPrice: 0,
+      })),
+    )
   }, [setCartItems])
 
   // Bump animation on cart updates.

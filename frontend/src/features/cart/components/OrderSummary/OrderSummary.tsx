@@ -26,6 +26,8 @@ const OrderSummary = ({ selectedItems, totalPrice }: OrderSummaryProps) => {
     setDialogState,
     handleCheckout,
     defaultAddress,
+    checkoutError,
+    setCheckoutError,
   } = useCheckout(selectedItems)
 
   const hasItems = selectedItems.length > 0
@@ -128,7 +130,9 @@ const OrderSummary = ({ selectedItems, totalPrice }: OrderSummaryProps) => {
         selectedItems={selectedItems}
         totalPrice={totalPrice}
         orderID={orderID}
-        setOrderID={setOrderID} // Truyền xuống để Dialog có thể reset trạng thái đơn hàng
+        setOrderID={setOrderID}
+        checkoutError={checkoutError}
+        onClearError={() => setCheckoutError(null)}
       />
     </div>
   )

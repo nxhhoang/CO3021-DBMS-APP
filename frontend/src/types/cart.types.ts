@@ -2,6 +2,12 @@
 import { ApiResponse } from './api.types'
 import { Product } from './product.types'
 
+export interface StoredCartItem {
+  productId: string
+  sku: string
+  quantity: number
+}
+
 export interface CartItem {
   /** Canonical product ID field. Preferred over productID. */
   productId: string

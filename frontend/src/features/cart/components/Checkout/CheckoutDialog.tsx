@@ -36,6 +36,8 @@ interface Props {
   totalPrice: number
   orderID: number | null
   setOrderID: (id: number | null) => void
+  checkoutError?: string | null
+  onClearError?: () => void
 }
 
 export const CheckoutDialogs = ({
@@ -51,6 +53,8 @@ export const CheckoutDialogs = ({
   totalPrice,
   orderID,
   setOrderID,
+  checkoutError,
+  onClearError,
 }: Props) => {
   const router = useRouter()
 
@@ -137,10 +141,19 @@ export const CheckoutDialogs = ({
           </div>
 
           <DialogFooter className="shrink-0 border-t border-slate-100 bg-slate-50/50 p-6 dark:border-white/10 dark:bg-slate-800/50">
+            {checkoutError && (
+              <div className="mb-3 flex w-full items-start gap-2 rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700 dark:border-rose-800/50 dark:bg-rose-900/20 dark:text-rose-400">
+                <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
+                <span className="font-medium">{checkoutError}</span>
+              </div>
+            )}
             <div className="flex w-full flex-col gap-3 sm:flex-row sm:justify-end">
               <Button
                 variant="ghost"
-                onClick={() => setState({ ...state, confirm: false })}
+                onClick={() => {
+                  setState({ ...state, confirm: false })
+                  onClearError?.()
+                }}
                 className="font-display h-12 rounded-xl px-6 text-[11px] font-bold tracking-wider text-slate-500 uppercase hover:bg-slate-100 dark:hover:bg-white/5"
               >
                 Hủy bỏ
@@ -149,10 +162,7 @@ export const CheckoutDialogs = ({
                 type="button"
                 className="btn-premium-primary group relative h-12 min-w-50 overflow-hidden rounded-xl"
                 disabled={isLoading || !address}
-                onClick={() => {
-                  console.log('[CheckoutDialog] Confirm button clicked')
-                  onConfirm()
-                }}
+                onClick={onConfirm}
               >
                 <span className="relative z-10 flex items-center justify-center gap-2 text-[11px] font-bold tracking-wider uppercase">
                   {isLoading ? (

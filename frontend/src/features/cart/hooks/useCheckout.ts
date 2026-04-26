@@ -28,6 +28,7 @@ export const useCheckout = (selectedItems: CartItem[]) => {
   const [isAddressLoading, setIsAddressLoading] = useState(false)
   const [orderID, setOrderID] = useState<number | null>(null)
   const [defaultAddress, setDefaultAddress] = useState<Address | null>(null)
+  const [checkoutError, setCheckoutError] = useState<string | null>(null)
   const [dialogState, setDialogState] = useState({
     confirm: false,
     success: false,
@@ -56,6 +57,7 @@ export const useCheckout = (selectedItems: CartItem[]) => {
   // Xử lý thanh toán
   const handleCheckout = useCallback(async () => {
     if (!defaultAddress) return toast.error('Vui lòng chọn địa chỉ giao hàng')
+    setCheckoutError(null)
 
     try {
       setIsLoading(true)
@@ -66,7 +68,7 @@ export const useCheckout = (selectedItems: CartItem[]) => {
         shippingAddressId: defaultAddress.addressID,
         paymentMethod,
         items: selectedItems.map((item) => ({
-          productId: item.productId || item.productID,
+          productId: (item.productId || item.productID)!,
           productName: item.productName,
           sku: item.sku,
           quantity: item.quantity,
@@ -127,6 +129,7 @@ export const useCheckout = (selectedItems: CartItem[]) => {
         axiosError?.message ||
         (error instanceof Error ? error.message : 'Lỗi đặt hàng')
 
+      setCheckoutError(message)
       toast.error(`Lỗi thanh toán: ${message}`)
     } finally {
       setIsLoading(false)
@@ -146,12 +149,14 @@ export const useCheckout = (selectedItems: CartItem[]) => {
     isAddressLoading,
     orderID,
     defaultAddress,
+    checkoutError,
     dialogState,
 
     // Setters
     setPaymentMethod,
     setDialogState,
     setOrderID,
+    setCheckoutError,
 
     // Methods
     handleCheckout,

@@ -3,8 +3,9 @@
 import { useCallback, useEffect, useMemo } from 'react'
 import { toast } from 'sonner'
 import { useCartStore } from '@/store/cartStore'
-import { CartItem } from '@/types'
+import { CartItem, StoredCartItem } from '@/types'
 import { cartStorage } from '@/services/cartStorage'
+import { productService } from '@/services/product.service'
 
 export const useCart = () => {
   const items = useCartStore((s) => s.items)
@@ -12,80 +13,149 @@ export const useCart = () => {
   const loading = useCartStore((s) => s.loading)
 
   const setItems = useCartStore((s) => s.setItems)
+  const setLoading = useCartStore((s) => s.setLoading)
   const removeItemStore = useCartStore((s) => s.removeItem)
   const removeMultipleItemsStore = useCartStore((s) => s.removeMultipleItems)
   const toggleItemSelection = useCartStore((s) => s.toggleItemSelection)
   const toggleAllSelection = useCartStore((s) => s.toggleAllSelection)
 
   const persist = useCallback((nextItems: CartItem[]) => {
-    cartStorage.setItems(nextItems)
+    const minimal: StoredCartItem[] = nextItems.map((i) => ({
+      productId: i.productId,
+      sku: i.sku,
+      quantity: i.quantity,
+    }))
+    cartStorage.setItems(minimal)
     window.dispatchEvent(new CustomEvent('cart:updated'))
   }, [])
 
-  useEffect(() => {
-    const syncCart = () => setItems(cartStorage.getItems())
+  // Merges storage into store while preserving enriched data already in memory.
+  // Only quantities/additions/removals are applied — product details are kept.
+  const mergeSyncFromStorage = useCallback(() => {
+    const stored = cartStorage.getItems()
+    const currentItems = useCartStore.getState().items
 
-    syncCart()
+    const merged: CartItem[] = stored.map((storedItem) => {
+      const existing = currentItems.find((i) => i.sku === storedItem.sku)
+      if (existing?.productName) {
+        return { ...existing, quantity: storedItem.quantity }
+      }
+      return {
+        productId: storedItem.productId,
+        sku: storedItem.sku,
+        quantity: storedItem.quantity,
+        productName: '',
+        image: '',
+        basePrice: 0,
+        skuPrice: 0,
+      }
+    })
 
-    window.addEventListener('cart:updated', syncCart)
-    window.addEventListener('storage', syncCart)
-
-    return () => {
-      window.removeEventListener('cart:updated', syncCart)
-      window.removeEventListener('storage', syncCart)
-    }
+    setItems(merged)
   }, [setItems])
 
+  useEffect(() => {
+    mergeSyncFromStorage()
+
+    window.addEventListener('cart:updated', mergeSyncFromStorage)
+    window.addEventListener('storage', mergeSyncFromStorage)
+
+    return () => {
+      window.removeEventListener('cart:updated', mergeSyncFromStorage)
+      window.removeEventListener('storage', mergeSyncFromStorage)
+    }
+  }, [mergeSyncFromStorage])
+
+  // Fetches fresh product details from the API and enriches all cart items.
+  // Call this when rendering the cart page to get current prices and stock.
+  const loadCartWithDetails = useCallback(async () => {
+    const stored = cartStorage.getItems()
+    if (stored.length === 0) {
+      setItems([])
+      return
+    }
+
+    setLoading(true)
+    try {
+      const uniqueProductIds = [...new Set(stored.map((i) => i.productId))]
+      const results = await Promise.all(
+        uniqueProductIds.map((id) =>
+          productService.getProductDetail({ productId: id }).catch(() => null),
+        ),
+      )
+
+      const enriched: CartItem[] = stored.flatMap((storedItem) => {
+        const res = results.find((r) => r?.data?._id === storedItem.productId)
+        const product = res?.data
+        if (!product) return []
+
+        const inv = product.inventory?.find((i) => i.sku === storedItem.sku)
+        return [
+          {
+            productId: storedItem.productId,
+            sku: storedItem.sku,
+            quantity: storedItem.quantity,
+            productName: product.name,
+            image: product.images?.[0] ?? '',
+            basePrice: product.basePrice,
+            skuPrice: inv?.skuPrice ?? inv?.sku_price ?? product.basePrice,
+            stockQuantity: inv?.stockQuantity ?? 0,
+            attributes: inv?.attributes,
+          },
+        ]
+      })
+
+      setItems(enriched)
+
+      // Clean up storage if some products were deleted from the DB
+      if (enriched.length !== stored.length) {
+        const minimal: StoredCartItem[] = enriched.map((i) => ({
+          productId: i.productId,
+          sku: i.sku,
+          quantity: i.quantity,
+        }))
+        cartStorage.setItems(minimal)
+      }
+    } finally {
+      setLoading(false)
+    }
+  }, [setItems, setLoading])
+
   const addItem = useCallback(
-    (
-      fields: {
-        productId: string
-        sku: string
-        productName: string
-        image: string
-        skuPrice: number
-        basePrice: number
-        stockQuantity?: number
-        attributes?: Record<string, string | number | boolean>
-      },
-      quantity: number,
-    ) => {
-      const maxQty = Math.min(fields.stockQuantity || 99, 99)
-      const existingIndex = items.findIndex(
-        (item) =>
-          (item.productId || item.productID) === fields.productId &&
-          item.sku === fields.sku,
+    ({ productId, sku, quantity }: StoredCartItem) => {
+      const currentItems = useCartStore.getState().items
+      const existingIndex = currentItems.findIndex(
+        (item) => item.sku === sku && item.productId === productId,
       )
 
       let nextItems: CartItem[]
 
       if (existingIndex >= 0) {
-        nextItems = items.map((item, idx) =>
+        nextItems = currentItems.map((item, idx) =>
           idx === existingIndex
-            ? { ...item, quantity: Math.min(item.quantity + quantity, maxQty) }
+            ? { ...item, quantity: item.quantity + quantity }
             : item,
         )
       } else {
-        const newItem: CartItem = {
-          productId: fields.productId,
-          productID: fields.productId,
-          sku: fields.sku,
-          quantity: Math.min(quantity, maxQty),
-          productName: fields.productName,
-          image: fields.image,
-          skuPrice: fields.skuPrice,
-          basePrice: fields.basePrice,
-          stockQuantity: fields.stockQuantity,
-          attributes: fields.attributes,
-        }
-        nextItems = [...items, newItem]
+        nextItems = [
+          ...currentItems,
+          {
+            productId,
+            sku,
+            quantity,
+            productName: '',
+            image: '',
+            basePrice: 0,
+            skuPrice: 0,
+          },
+        ]
       }
 
       setItems(nextItems)
       persist(nextItems)
       toast.success(`Đã thêm ${quantity} sản phẩm vào giỏ hàng`)
     },
-    [items, setItems, persist],
+    [setItems, persist],
   )
 
   const updateQuantity = (sku: string, delta: number) => {
@@ -148,5 +218,6 @@ export const useCart = () => {
     removeItem,
     removeMultipleItems,
     totalPrice,
+    loadCartWithDetails,
   }
 }

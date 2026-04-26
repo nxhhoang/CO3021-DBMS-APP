@@ -112,17 +112,11 @@ export function ProductCard({
               className="h-10 w-10 rounded-xl bg-slate-900 transition-all hover:bg-blue-600 active:scale-90"
               onClick={(e) => {
                 e.stopPropagation()
-                addItem(
-                  {
-                    sku: product.sku || product._id,
-                    productId: product._id,
-                    productName: product.name,
-                    image: product.images?.[0] || '/images/default-product.png',
-                    basePrice: product.basePrice,
-                    skuPrice: displayPrice,
-                  },
-                  1,
-                )
+                addItem({
+                  productId: product._id,
+                  sku: product.sku || product._id,
+                  quantity: 1,
+                })
               }}
             >
               <Plus size={18} />

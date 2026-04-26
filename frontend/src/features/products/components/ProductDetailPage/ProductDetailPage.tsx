@@ -228,20 +228,11 @@ export const ProductDetailPage = ({ productId }: ProductDetailPageProps) => {
                       toast.error('Phiên bản đã chọn hiện đang hết hàng')
                       return
                     }
-                    addItem(
-                      {
-                        productId: product._id,
-                        sku: selectedSku.sku,
-                        productName: product.name,
-                        image:
-                          product.images?.[0] || '/images/default-product.png',
-                        skuPrice: getSkuDisplayPrice(selectedSku),
-                        basePrice: product.basePrice,
-                        stockQuantity: selectedSku.stockQuantity ?? 0,
-                        attributes: selectedSku.attributes,
-                      },
+                    addItem({
+                      productId: product._id,
+                      sku: selectedSku.sku,
                       quantity,
-                    )
+                    })
                   }}
                 >
                   <span className="relative z-10 flex items-center justify-center gap-3">

@@ -1,7 +1,7 @@
 'use client'
 
 import { FormEvent } from 'react'
-import Image from 'next/image'
+import { ProductImage } from '@/components/common/ProductImage'
 import { Box, Edit2, Loader2, RotateCcw, Star, Trash2 } from 'lucide-react'
 import { toast } from 'sonner'
 import { SearchBar } from '@/components/common/SearchBar'
@@ -195,10 +195,8 @@ export default function ProductTable({
                   <PremiumTableCell>
                     <div className="flex items-center gap-4">
                       <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-2xl border border-slate-100 shadow-sm">
-                        <Image
-                          src={
-                            product.images?.[0] ?? '/placeholder-product.png'
-                          }
+                        <ProductImage
+                          src={product.images?.[0]}
                           alt={product.name}
                           fill
                           className="object-cover"

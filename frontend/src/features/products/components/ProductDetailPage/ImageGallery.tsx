@@ -1,7 +1,7 @@
 'use client'
 
-import Image from 'next/image'
 import { cn } from '@/lib/utils'
+import { ProductImage } from '@/components/common/ProductImage'
 
 interface ImageGalleryProps {
   images?: string[]
@@ -16,14 +16,12 @@ export const ImageGallery = ({
   activeImageIndex,
   onImageChange,
 }: ImageGalleryProps) => {
-  const displayImages = images?.length
-    ? images
-    : ['/images/default-product.png']
+  const displayImages = images?.length ? images : []
 
   return (
     <div className="relative w-full bg-slate-50">
       <div className="relative aspect-square w-full">
-        <Image
+        <ProductImage
           src={displayImages[activeImageIndex]}
           alt={productName}
           fill
@@ -46,7 +44,7 @@ export const ImageGallery = ({
                   : 'border-transparent opacity-70 hover:opacity-100',
               )}
             >
-              <Image
+              <ProductImage
                 src={img}
                 alt={`Thumb ${idx}`}
                 fill

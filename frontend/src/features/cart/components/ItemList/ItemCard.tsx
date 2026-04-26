@@ -7,8 +7,8 @@ import { Trash } from 'lucide-react'
 import { formatPrice } from '@/lib/utils'
 import { QuantitySelector } from './QuantitySelector'
 import { Checkbox } from '@/components/ui/checkbox'
-import Image from 'next/image'
 import { cn } from '@/lib/utils'
+import { ProductImage } from '@/components/common/ProductImage'
 
 // Đảm bảo dùng đúng các trường thông tin đã lưu từ Modal
 interface ItemCardProps {
@@ -39,11 +39,9 @@ const ItemCard = ({
         onClick={() => !isOutOfStock && onToggle(!isSelected)}
         className={cn(
           'glass-card group relative cursor-pointer overflow-hidden border-transparent transition-all duration-300',
-          isOutOfStock
-            ? 'cursor-not-allowed opacity-60'
-            : isSelected
-              ? 'border-blue-500/50 bg-blue-50/5 shadow-lg dark:bg-blue-900/5'
-              : 'hover:border-slate-200 dark:hover:border-white/10',
+          isSelected
+            ? 'border-blue-500/50 bg-blue-50/5 shadow-lg dark:bg-blue-900/5'
+            : 'hover:border-slate-200 dark:hover:border-white/10',
         )}
       >
         <CardContent className="p-4 sm:p-5">
@@ -61,19 +59,13 @@ const ItemCard = ({
 
             {/* Product Image */}
             <div className="image-container-premium h-24 w-24 shrink-0 sm:h-28 sm:w-28">
-              {item.image ? (
-                <Image
-                  src={item.image}
-                  alt={item.productName}
-                  fill
-                  sizes="(max-width: 640px) 96px, 112px"
-                  className="object-cover transition-transform duration-500 group-hover:scale-105"
-                />
-              ) : (
-                <div className="flex h-full w-full items-center justify-center bg-slate-50 text-[10px] font-bold text-slate-300 uppercase dark:bg-slate-800">
-                  No Image
-                </div>
-              )}
+              <ProductImage
+                src={item.image}
+                alt={item.productName}
+                fill
+                className="object-cover transition-transform duration-500 group-hover:scale-110"
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+              />
             </div>
 
             {/* Product Info */}

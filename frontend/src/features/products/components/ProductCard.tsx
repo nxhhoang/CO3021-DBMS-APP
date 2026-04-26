@@ -3,7 +3,7 @@
 import React, { useState } from 'react'
 import { ProductResponse } from '@/types/product.types'
 import { Star, Plus, Eye, PlusSquareIcon } from 'lucide-react'
-import Image from 'next/image'
+import { ProductImage } from '@/components/common/ProductImage'
 import { Button } from '@/components/ui/button'
 import { cn, formatPrice } from '@/lib/utils'
 import { useRouter } from 'next/navigation'
@@ -56,8 +56,8 @@ export function ProductCard({
 
         {/* IMAGE WRAPPER */}
         <div className="relative mb-4 aspect-square overflow-hidden rounded-2xl bg-slate-50">
-          <Image
-            src={product.images?.[0] || '/images/default-product.png'}
+          <ProductImage
+            src={product.images?.[0]}
             alt={product.name}
             fill
             className="object-cover transition-transform duration-500 group-hover:scale-110"

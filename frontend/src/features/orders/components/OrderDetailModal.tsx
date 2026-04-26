@@ -83,7 +83,10 @@ export const OrderDetailModal = ({ orderId, isOpen, onClose }: Props) => {
   return (
     <>
       <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-        <DialogContent className="flex max-h-[90vh] max-w-xl flex-col overflow-hidden border-none bg-white/95 p-0 shadow-2xl backdrop-blur-3xl sm:rounded-3xl dark:bg-slate-900/95">
+        <DialogContent
+          showCloseButton={false}
+          className="flex max-h-[90vh] max-w-xl flex-col overflow-hidden border-none bg-white/95 p-0 shadow-2xl backdrop-blur-3xl sm:rounded-3xl dark:bg-slate-900/95"
+        >
           <DialogHeader className="shrink-0 border-b border-slate-100 p-6 dark:border-white/5">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-4">
@@ -99,14 +102,6 @@ export const OrderDetailModal = ({ orderId, isOpen, onClose }: Props) => {
                   </p>
                 </div>
               </div>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={onClose}
-                className="rounded-full hover:bg-slate-100 dark:hover:bg-white/5"
-              >
-                <X className="h-4 w-4" />
-              </Button>
             </div>
           </DialogHeader>
 

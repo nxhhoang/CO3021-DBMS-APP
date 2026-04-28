@@ -8,8 +8,7 @@ import rateLimit from 'express-rate-limit'
 // import YAML from 'yaml'
 // import fs from 'fs'
 // import path from 'path'
-import swaggerUi from 'swagger-ui-express'
-import swaggerJsdoc from 'swagger-jsdoc'
+import { setupSwagger } from '~/utils/swagger'
 import { envConfig, isProduction } from '~/constants/config'
 import { connectPostgres } from '~/utils/postgres'
 import { connectMongo } from '~/utils/mongodb'
@@ -26,23 +25,7 @@ import inventoryRouter from '~/routes/inventory.routes'
 // const file = fs.readFileSync(path.resolve('twitter-swagger.yaml'), 'utf8')
 // const swaggerDocument = YAML.parse(file)
 
-//  Swagger
-const options: swaggerJsdoc.Options = {
-  definition: {
-    openapi: '3.0.0',
-    info: { title: 'E-commerce API', version: '1.0.0' },
-    servers: [{ url: '/api/v1', description: 'API v1' }],
-    components: {
-      securitySchemes: {
-        BearerAuth: { type: 'http', scheme: 'bearer', bearerFormat: 'JWT' }
-      }
-    },
-    security: [{ BearerAuth: [] }],
-    persistAuthorization: true
-  },
-  apis: ['./openapi/*.yaml']
-}
-const openapiSpecification = swaggerJsdoc(options)
+
 
 //  App Setup
 const app = express()
@@ -75,7 +58,7 @@ app.use(cors(corsOptions))
 app.use(express.json())
 
 //  Swagger UI
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(openapiSpecification))
+setupSwagger(app)
 
 //  Routes
 const BASE = '/api/v1'

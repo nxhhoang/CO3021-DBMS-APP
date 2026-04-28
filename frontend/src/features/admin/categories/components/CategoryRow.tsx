@@ -2,7 +2,10 @@
 
 import React, { Fragment } from 'react'
 import { Category } from '@/types/category.types'
-import { TableCell, TableRow } from '@/components/ui/table'
+import {
+  PremiumTableCell,
+  PremiumTableRow,
+} from '@/components/common/PremiumTable'
 import { Switch } from '@/components/ui/switch'
 import { Button } from '@/components/ui/button'
 import { ChevronRight, Pencil, Trash2 } from 'lucide-react'
@@ -44,34 +47,34 @@ export const CategoryRow = ({
 
   return (
     <Fragment>
-      <TableRow
+      <PremiumTableRow
         onClick={onToggleExpand}
-        className="cursor-pointer transition-colors hover:bg-slate-50/30"
+        className="cursor-pointer"
       >
-        <TableCell>
+        <PremiumTableCell>
           <ChevronRight
             className={`h-4 w-4 text-slate-400 transition-transform duration-300 ${
               isExpanded ? 'rotate-90' : 'rotate-0'
             }`}
           />
-        </TableCell>
+        </PremiumTableCell>
 
-        <TableCell className="max-w-60 whitespace-normal">
-          <div className="space-y-1 py-4">
-            <p className="font-display text-sm font-black text-slate-900">
+        <PremiumTableCell className="max-w-60 whitespace-normal">
+          <div className="space-y-1">
+            <p className="font-display text-sm font-black text-slate-900 dark:text-white">
               {category.name}
             </p>
             <p className="line-clamp-1 text-[11px] font-medium text-slate-500">
               {category.description || 'Không có mô tả'}
             </p>
           </div>
-        </TableCell>
+        </PremiumTableCell>
 
-        <TableCell className="text-xs font-bold text-slate-600">
+        <PremiumTableCell className="text-xs font-bold text-slate-600 dark:text-slate-400">
           {category.slug}
-        </TableCell>
+        </PremiumTableCell>
 
-        <TableCell onClick={(event) => event.stopPropagation()}>
+        <PremiumTableCell onClick={(event) => event.stopPropagation()}>
           <div className="flex items-center gap-3">
             <Switch
               checked={category.isActive}
@@ -91,16 +94,16 @@ export const CategoryRow = ({
                   : 'Tạm ẩn'}
             </span>
           </div>
-        </TableCell>
+        </PremiumTableCell>
 
-        <TableCell>
-          <div className="text-on-surface-variant text-xs">
+        <PremiumTableCell>
+          <div className="text-[11px] font-bold text-slate-400 uppercase tracking-tight">
             Động: {category.dynamicAttributes.length} | Biến thể:{' '}
             {variantAttributes.length}
           </div>
-        </TableCell>
+        </PremiumTableCell>
 
-        <TableCell
+        <PremiumTableCell
           className="text-right"
           onClick={(event) => event.stopPropagation()}
         >
@@ -108,10 +111,10 @@ export const CategoryRow = ({
             <Button
               variant="ghost"
               size="icon"
-              className="h-10 w-10 rounded-full text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+              className="icon-box-premium h-9 w-9 text-slate-600 hover:text-blue-600"
               onClick={onEdit}
             >
-              <Pencil className="h-4.5 w-4.5" />
+              <Pencil className="h-4 w-4" />
             </Button>
 
             <AlertDialog>
@@ -119,23 +122,23 @@ export const CategoryRow = ({
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="h-10 w-10 rounded-full text-rose-500 hover:bg-rose-50 hover:text-rose-600"
+                  className="icon-box-premium h-9 w-9 text-slate-400 hover:text-rose-600"
                 >
-                  <Trash2 className="h-4.5 w-4.5" />
+                  <Trash2 className="h-4 w-4" />
                 </Button>
               </AlertDialogTrigger>
-              <AlertDialogContent>
+              <AlertDialogContent className="rounded-3xl border-none shadow-2xl dark:bg-slate-900">
                 <AlertDialogHeader>
-                  <AlertDialogTitle>Xác nhận xóa danh mục</AlertDialogTitle>
-                  <AlertDialogDescription>
+                  <AlertDialogTitle className="text-xl font-bold dark:text-white">Xác nhận xóa danh mục</AlertDialogTitle>
+                  <AlertDialogDescription className="text-slate-500">
                     Bạn có chắc chắn muốn xóa danh mục &quot;{category.name}
                     &quot;? Hành động này không thể hoàn tác.
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
-                  <AlertDialogCancel>Hủy</AlertDialogCancel>
+                  <AlertDialogCancel className="rounded-xl border-slate-200 dark:border-white/10 dark:bg-slate-800">Hủy</AlertDialogCancel>
                   <AlertDialogAction
-                    className="bg-red-500 hover:bg-red-600"
+                    className="rounded-xl bg-red-500 font-bold text-white hover:bg-red-600"
                     onClick={onDelete}
                   >
                     Xác nhận
@@ -144,15 +147,15 @@ export const CategoryRow = ({
               </AlertDialogContent>
             </AlertDialog>
           </div>
-        </TableCell>
-      </TableRow>
+        </PremiumTableCell>
+      </PremiumTableRow>
 
       {isExpanded && (
-        <TableRow>
-          <TableCell colSpan={6} className="bg-slate-50/50 px-8 py-8">
+        <PremiumTableRow>
+          <PremiumTableCell colSpan={6} className="bg-slate-50/50 dark:bg-white/5 px-8 py-8">
             <CategoryDetails category={category} />
-          </TableCell>
-        </TableRow>
+          </PremiumTableCell>
+        </PremiumTableRow>
       )}
     </Fragment>
   )

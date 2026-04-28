@@ -1,5 +1,6 @@
 'use client'
 
+import * as React from 'react'
 import { FormEvent } from 'react'
 import { ProductImage } from '@/components/common/ProductImage'
 import { Box, Edit2, Loader2, RotateCcw, Star, Trash2 } from 'lucide-react'
@@ -30,6 +31,7 @@ import {
 import {
   PremiumTable,
   PremiumTableCell,
+  PremiumTableContainer,
   PremiumTableHead,
   PremiumTableHeader,
   PremiumTableRow,
@@ -42,6 +44,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+
+import { PremiumCombobox } from '@/components/ui/premium-combobox'
 
 const ADMIN_SORT_OPTIONS = [
   { label: 'Bán chạy nhất', value: SORT_BY.SOLD_DESC },
@@ -98,12 +102,19 @@ export default function ProductTable({
     }
   }
 
-  return (
-    <div className="glass-card overflow-hidden border-white/40 bg-white/40 shadow-2xl backdrop-blur-xl">
-      <div className="border-b border-slate-100 bg-slate-50/30 px-8 py-6">
-        <h2 className="text-lg font-bold text-slate-900">Danh sách sản phẩm</h2>
-      </div>
+  const categoryOptions = React.useMemo(() => [
+    { label: 'Tất cả danh mục', value: 'all' },
+    ...categories.map((cat) => ({
+      label: cat.name,
+      value: cat.slug,
+    })),
+  ], [categories])
 
+  return (
+    <PremiumTableContainer
+      title="Danh sách sản phẩm"
+      subtitle="Quản lý và theo dõi thông tin chi tiết các sản phẩm trong kho."
+    >
       <div className="p-8">
         <form
           onSubmit={onSearchSubmit}
@@ -117,30 +128,21 @@ export default function ProductTable({
             className="w-full"
           />
 
-          <Select value={categoryFilter} onValueChange={onCategoryChange}>
-            <SelectTrigger className="h-12 rounded-xl border-slate-100 bg-white/80 shadow-sm transition-all focus:ring-2 focus:ring-indigo-100">
-              <SelectValue placeholder="Danh mục" />
-            </SelectTrigger>
-            <SelectContent className="rounded-xl border-slate-100 shadow-xl">
-              <SelectItem value="all">Tất cả danh mục</SelectItem>
-              {categories.map((category) => (
-                <SelectItem
-                  key={category._id || category.ID}
-                  value={category.slug}
-                >
-                  {category.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <PremiumCombobox
+            options={categoryOptions}
+            value={categoryFilter}
+            onValueChange={onCategoryChange}
+            placeholder="Danh mục"
+            searchPlaceholder="Tìm danh mục..."
+          />
 
           <Select value={sortFilter} onValueChange={onSortChange}>
-            <SelectTrigger className="h-12 rounded-xl border-slate-100 bg-white/80 shadow-sm transition-all focus:ring-2 focus:ring-indigo-100">
+            <SelectTrigger className="select-premium-trigger">
               <SelectValue placeholder="Sắp xếp" />
             </SelectTrigger>
-            <SelectContent className="rounded-xl border-slate-100 shadow-xl">
+            <SelectContent className="select-premium-content">
               {ADMIN_SORT_OPTIONS.map((option) => (
-                <SelectItem key={option.value} value={option.value}>
+                <SelectItem key={option.value} value={option.value} className="select-premium-item">
                   {option.label}
                 </SelectItem>
               ))}
@@ -149,7 +151,7 @@ export default function ProductTable({
 
           <button
             type="submit"
-            className="flex h-12 items-center justify-center rounded-xl bg-slate-900 px-8 font-bold text-white transition-all hover:bg-black active:scale-95"
+            className="btn-premium-primary h-10 px-8"
           >
             Áp dụng
           </button>
@@ -157,7 +159,7 @@ export default function ProductTable({
           <button
             type="button"
             onClick={onResetFilters}
-            className="flex h-12 w-12 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-500 transition-all hover:bg-slate-50 hover:text-slate-900 active:scale-95"
+            className="icon-box-premium h-10 w-10 text-slate-500 hover:text-slate-900"
           >
             <RotateCcw className="h-4 w-4" />
           </button>
@@ -184,8 +186,8 @@ export default function ProductTable({
               <PremiumTableRow>
                 <PremiumTableCell colSpan={6} className="h-64 text-center">
                   <div className="flex flex-col items-center justify-center gap-2">
-                    <Loader2 className="text-primary h-8 w-8 animate-spin" />
-                    <p className="text-muted-foreground">Đang tải dữ liệu...</p>
+                    <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
+                    <p className="text-slate-500 font-medium">Đang tải dữ liệu...</p>
                   </div>
                 </PremiumTableCell>
               </PremiumTableRow>
@@ -194,7 +196,7 @@ export default function ProductTable({
                 <PremiumTableRow key={product._id}>
                   <PremiumTableCell>
                     <div className="flex items-center gap-4">
-                      <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-2xl border border-slate-100 shadow-sm">
+                      <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-2xl border border-slate-100 shadow-sm dark:border-white/5">
                         <ProductImage
                           src={product.images?.[0]}
                           alt={product.name}
@@ -204,7 +206,7 @@ export default function ProductTable({
                       </div>
                       <div className="max-w-64 space-y-1">
                         <p
-                          className="truncate text-sm font-bold text-slate-900"
+                          className="truncate text-sm font-bold text-slate-900 dark:text-white"
                           title={product.name}
                         >
                           {product.name}
@@ -221,7 +223,7 @@ export default function ProductTable({
                     </span>
                   </PremiumTableCell>
                   <PremiumTableCell className="text-right">
-                    <p className="text-sm font-bold text-slate-900">
+                    <p className="font-mono text-sm font-bold text-slate-900 dark:text-white">
                       {product.basePrice.toLocaleString()}đ
                     </p>
                   </PremiumTableCell>
@@ -232,11 +234,11 @@ export default function ProductTable({
                           className="fill-amber-400 text-amber-400"
                           size={12}
                         />
-                        <span className="text-xs font-bold text-slate-700">
+                        <span className="text-xs font-black text-slate-700 dark:text-slate-300">
                           {product.avgRating}
                         </span>
                       </div>
-                      <p className="text-[10px] font-medium text-slate-400">
+                      <p className="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">
                         {product.totalSold} đã bán • {product.totalReviews} HV
                       </p>
                     </div>
@@ -245,20 +247,20 @@ export default function ProductTable({
                     <div className="flex justify-end gap-2">
                       <button
                         onClick={() => onEdit(product)}
-                        className="icon-box-premium h-9 w-9 hover:border-indigo-100 hover:bg-indigo-50 hover:text-indigo-600 active:scale-90"
+                        className="icon-box-premium h-9 w-9 hover:border-blue-100 hover:bg-blue-50 hover:text-blue-600 dark:hover:border-blue-900/30 dark:hover:bg-blue-900/20"
                       >
                         <Edit2 size={16} />
                       </button>
 
                       <AlertDialog>
                         <AlertDialogTrigger asChild>
-                          <button className="icon-box-premium h-9 w-9 text-slate-400 hover:border-red-100 hover:bg-red-50 hover:text-red-500 active:scale-90">
+                          <button className="icon-box-premium h-9 w-9 text-slate-400 hover:border-red-100 hover:bg-red-50 hover:text-red-500 dark:hover:border-red-900/30 dark:hover:bg-red-900/20">
                             <Trash2 size={16} />
                           </button>
                         </AlertDialogTrigger>
-                        <AlertDialogContent className="rounded-3xl border-none shadow-2xl">
+                        <AlertDialogContent className="rounded-3xl border-none shadow-2xl dark:bg-slate-900">
                           <AlertDialogHeader>
-                            <AlertDialogTitle className="text-xl font-bold">
+                            <AlertDialogTitle className="text-xl font-bold dark:text-white">
                               Ngừng kinh doanh sản phẩm?
                             </AlertDialogTitle>
                             <AlertDialogDescription className="text-slate-500">
@@ -268,7 +270,7 @@ export default function ProductTable({
                             </AlertDialogDescription>
                           </AlertDialogHeader>
                           <AlertDialogFooter className="mt-4">
-                            <AlertDialogCancel className="rounded-xl border-slate-200">
+                            <AlertDialogCancel className="rounded-xl border-slate-200 dark:border-white/10 dark:bg-slate-800">
                               Hủy bỏ
                             </AlertDialogCancel>
                             <AlertDialogAction
@@ -287,9 +289,9 @@ export default function ProductTable({
             ) : (
               <PremiumTableRow>
                 <PremiumTableCell colSpan={6} className="py-20 text-center">
-                  <div className="flex flex-col items-center justify-center">
-                    <Box className="mb-4 h-12 w-12 opacity-20" />
-                    <p className="text-muted-foreground">
+                  <div className="flex flex-col items-center justify-center opacity-40">
+                    <Box className="mb-4 h-12 w-12 text-slate-300" />
+                    <p className="font-bold text-slate-400">
                       Không tìm thấy sản phẩm nào trong kho
                     </p>
                   </div>
@@ -299,7 +301,7 @@ export default function ProductTable({
           </tbody>
         </PremiumTable>
 
-        <div className="border-t border-slate-100 bg-slate-50/30 px-8 py-5">
+        <div className="mt-8">
           {pagination && pagination.totalPages > 1 && (
             <DataPagination
               variant="minimal"
@@ -312,6 +314,6 @@ export default function ProductTable({
           )}
         </div>
       </div>
-    </div>
+    </PremiumTableContainer>
   )
 }

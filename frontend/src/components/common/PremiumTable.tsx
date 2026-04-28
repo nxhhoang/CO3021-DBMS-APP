@@ -15,21 +15,55 @@ interface PremiumTableProps extends React.HTMLAttributes<HTMLDivElement> {
   children: React.ReactNode
 }
 
+/**
+ * PremiumTableContainer provides a unified wrapper with a glass effect,
+ * header area (title/subtitle/actions), and proper overflow handling.
+ */
+export const PremiumTableContainer = ({
+  children,
+  className,
+  title,
+  subtitle,
+  actions,
+  ...props
+}: PremiumTableProps & {
+  title?: string
+  subtitle?: string
+  actions?: React.ReactNode
+}) => {
+  return (
+    <div className={cn('table-container-premium', className)} {...props}>
+      {(title || subtitle || actions) && (
+        <div className="flex flex-col gap-4 border-b border-slate-100 bg-slate-50/30 px-8 py-6 md:flex-row md:items-center md:justify-between dark:border-white/5 dark:bg-white/5">
+          <div className="space-y-1">
+            {title && (
+              <h2 className="font-display text-lg font-black tracking-tight text-slate-900 dark:text-white">
+                {title}
+              </h2>
+            )}
+            {subtitle && (
+              <p className="font-sans text-xs font-medium text-slate-500 dark:text-slate-400">
+                {subtitle}
+              </p>
+            )}
+          </div>
+          {actions && <div className="flex items-center gap-3">{actions}</div>}
+        </div>
+      )}
+      <div className="overflow-x-auto">{children}</div>
+    </div>
+  )
+}
+
 export const PremiumTable = ({
   children,
   className,
   ...props
 }: PremiumTableProps) => {
   return (
-    <div
-      className={cn(
-        'overflow-hidden rounded-2xl border border-slate-100 bg-white/50 shadow-sm backdrop-blur-md',
-        className,
-      )}
-      {...props}
-    >
-      <Table>{children}</Table>
-    </div>
+    <Table className={cn('w-full', className)} {...props}>
+      {children}
+    </Table>
   )
 }
 
@@ -39,7 +73,7 @@ export const PremiumTableHeader = ({
   ...props
 }: React.HTMLAttributes<HTMLTableSectionElement>) => {
   return (
-    <TableHeader className={cn('bg-slate-50/50', className)} {...props}>
+    <TableHeader className={cn('bg-slate-50/50 dark:bg-white/5', className)} {...props}>
       {children}
     </TableHeader>
   )
@@ -52,10 +86,7 @@ export const PremiumTableHead = ({
 }: React.ThHTMLAttributes<HTMLTableCellElement>) => {
   return (
     <TableHead
-      className={cn(
-        'h-14 px-6 text-left text-[10px] font-black tracking-widest text-slate-400 uppercase',
-        className,
-      )}
+      className={cn('table-header-premium', className)}
       {...props}
     >
       {children}
@@ -70,10 +101,7 @@ export const PremiumTableRow = ({
 }: React.HTMLAttributes<HTMLTableRowElement>) => {
   return (
     <TableRow
-      className={cn(
-        'border-b border-slate-50 transition-colors hover:bg-slate-50/50',
-        className,
-      )}
+      className={cn('table-row-premium', className)}
       {...props}
     >
       {children}
@@ -87,7 +115,7 @@ export const PremiumTableCell = ({
   ...props
 }: React.TdHTMLAttributes<HTMLTableCellElement>) => {
   return (
-    <TableCell className={cn('px-6 py-5', className)} {...props}>
+    <TableCell className={cn('table-cell-premium', className)} {...props}>
       {children}
     </TableCell>
   )

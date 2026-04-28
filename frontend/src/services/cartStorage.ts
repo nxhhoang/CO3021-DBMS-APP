@@ -17,7 +17,7 @@ export const cartStorage = {
   getItems(): StoredCartItem[] {
     if (typeof window === 'undefined') return []
     try {
-      const rawData = sessionStorage.getItem(CART_STORAGE_KEY)
+      const rawData = localStorage.getItem(CART_STORAGE_KEY)
       if (!rawData) return []
 
       const parsed = JSON.parse(rawData)
@@ -37,11 +37,11 @@ export const cartStorage = {
 
   setItems(items: StoredCartItem[]): void {
     if (typeof window === 'undefined') return
-    sessionStorage.setItem(CART_STORAGE_KEY, JSON.stringify({ items }))
+    localStorage.setItem(CART_STORAGE_KEY, JSON.stringify({ items }))
   },
 
   clear(): void {
     if (typeof window === 'undefined') return
-    sessionStorage.removeItem(CART_STORAGE_KEY)
+    localStorage.removeItem(CART_STORAGE_KEY)
   },
 }

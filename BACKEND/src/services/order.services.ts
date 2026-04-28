@@ -226,6 +226,16 @@ class OrderService {
     const countParams = params.slice(0, paramIndex - 1)
     const countResult = await query(countQuery, countParams)
     const totalOrders = parseInt(countResult.rows[0].count)
+    // 3. Lấy thống kê trạng thái & doanh thu (cho SummaryCard)
+    const statsQuery = `SELECT status, COUNT(*) FROM ORDERS GROUP BY status`
+    const statsResult = await query(statsQuery)
+    const statusCounts = statsResult.rows.reduce((acc: any, row: any) => {
+      acc[row.status] = parseInt(row.count)
+      return acc
+    }, {})
+
+    const revenueResult = await query(`SELECT SUM(totalamount) as "totalRevenue" FROM ORDERS`)
+    const totalRevenue = parseFloat(revenueResult.rows[0].totalRevenue || 0)
 
     return {
       orders: result.rows,
@@ -234,6 +244,10 @@ class OrderService {
         page,
         limit,
         totalPages: Math.ceil(totalOrders / limit)
+      },
+      stats: {
+        statusCounts,
+        totalRevenue
       }
     }
   }

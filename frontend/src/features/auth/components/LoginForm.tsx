@@ -13,7 +13,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import Link from 'next/link'
 import { useLogin } from '@/features/auth'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 
 export function LoginForm() {
   const [email, setEmail] = useState<string>('')
@@ -23,6 +23,8 @@ export function LoginForm() {
 
   const { login } = useLogin()
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const redirectPath = searchParams.get('redirect') || '/'
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -36,7 +38,7 @@ export function LoginForm() {
     setLoading(true)
     try {
       await login({ email, password })
-      router.push('/')
+      router.replace(redirectPath)
     } catch (err: any) {
       setError(err.message)
     } finally {

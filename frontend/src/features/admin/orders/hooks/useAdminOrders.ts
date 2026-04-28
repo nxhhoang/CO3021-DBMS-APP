@@ -26,6 +26,8 @@ export function useAdminOrders() {
   const debouncedSearchQuery = useDebounce(searchQuery, 500)
 
   const [pagination, setPagination] = useState<Pagination | null>(null)
+  const [statusStats, setStatusStats] = useState<Record<string, number>>({})
+  const [totalRevenue, setTotalRevenue] = useState<number>(0)
   const [currentPage, setCurrentPage] = useState(1)
   const LIMIT = 10
 
@@ -44,6 +46,8 @@ export function useAdminOrders() {
         if (response.data) {
           setOrders(response.data.orders)
           setPagination(response.data.pagination)
+          setStatusStats(response.data.stats?.statusCounts || {})
+          setTotalRevenue(response.data.stats?.totalRevenue || 0)
           setCurrentPage(page)
         }
       } catch (error) {
@@ -95,7 +99,7 @@ export function useAdminOrders() {
 
     const statusCounts = Object.keys(ORDER_STATUS).map((status) => ({
       status,
-      count: orders.filter((order) => order.status === status).length,
+      count: statusStats[status] || 0,
       accentClass:
         status === 'PENDING'
           ? 'border-l-amber-500'
@@ -109,8 +113,8 @@ export function useAdminOrders() {
       ...getOrderStatusStyle(status),
     }))
 
-    return { totalOrders, statusCounts }
-  }, [orders, pagination?.total])
+    return { totalOrders, statusCounts, totalRevenue }
+  }, [orders, pagination?.total, statusStats, totalRevenue])
 
   const handleStatusUpdate = async () => {
     if (

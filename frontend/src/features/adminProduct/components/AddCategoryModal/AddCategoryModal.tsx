@@ -12,7 +12,7 @@ import {
   DialogClose,
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
-import { FolderPlus } from 'lucide-react'
+import { FolderPlus, X, Loader2 } from 'lucide-react'
 
 import categoryService from '@/services/category.service'
 import {
@@ -137,18 +137,29 @@ export default function AddCategoryModal({
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogOverlay className="bg-slate-900/40 backdrop-blur-md" />
-      <DialogContent className="glass-surface flex h-[90vh] max-h-[850px] flex-col overflow-hidden p-0 sm:max-w-175 lg:max-w-250">
+      <DialogContent
+        showCloseButton={false}
+        className="modal-premium-content flex h-[90vh] max-h-[850px] flex-col overflow-hidden sm:max-w-175 lg:max-w-250"
+      >
+        <button
+          type="button"
+          onClick={onClose}
+          className="modal-close-btn-premium"
+        >
+          <X size={20} strokeWidth={2.5} />
+        </button>
+
         {/* Header */}
-        <DialogHeader className="shrink-0 border-b border-slate-100 px-8 py-6">
+        <DialogHeader className="modal-premium-header">
           <div className="flex items-center gap-4">
             <div className="icon-box-premium h-12 w-12 border-blue-100 bg-blue-50 text-blue-600">
               <FolderPlus size={24} />
             </div>
             <div>
-              <DialogTitle className="font-display text-2xl font-black text-slate-900">
+              <DialogTitle className="modal-premium-title">
                 {category ? 'Cập nhật danh mục' : 'Thêm danh mục mới'}
               </DialogTitle>
-              <DialogDescription className="text-sm font-medium text-slate-500">
+              <DialogDescription className="modal-premium-subtitle">
                 {category
                   ? 'Chỉnh sửa thông tin và cấu trúc danh mục sản phẩm'
                   : 'Tạo một danh mục sản phẩm mới với các thuộc tính tùy chỉnh'}
@@ -158,7 +169,7 @@ export default function AddCategoryModal({
         </DialogHeader>
 
         {/* Body - Single Scrollable Area */}
-        <div className="scrollbar-premium min-h-0 flex-1 overflow-y-auto px-8 py-6">
+        <div className="modal-premium-body scrollbar-premium">
           <div className="flex flex-col gap-12">
             <GeneralInformation
               name={name}
@@ -184,7 +195,7 @@ export default function AddCategoryModal({
         </div>
 
         {/* Footer */}
-        <DialogFooter className="shrink-0 border-t border-slate-100 bg-slate-50 px-8 py-5">
+        <DialogFooter className="modal-premium-footer">
           <DialogClose asChild>
             <Button
               type="button"
@@ -198,9 +209,19 @@ export default function AddCategoryModal({
           <Button
             onClick={handleSave}
             disabled={saving}
-            className="btn-premium-primary h-11 px-10 shadow-lg shadow-slate-900/10"
+            className="btn-premium-primary group relative h-12 min-w-[160px] overflow-hidden px-8 shadow-xl"
           >
-            {saving ? 'Đang lưu...' : 'Lưu danh mục'}
+            <span className="relative z-10 flex items-center justify-center gap-2">
+              {saving ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  Đang lưu...
+                </>
+              ) : (
+                'Lưu danh mục'
+              )}
+            </span>
+            <div className="absolute inset-0 -translate-x-full bg-linear-to-r from-blue-600 to-cyan-500 transition-transform duration-500 group-hover:translate-x-0" />
           </Button>
         </DialogFooter>
       </DialogContent>

@@ -87,20 +87,26 @@ export const OrderDetailModal = ({ orderId, isOpen, onClose }: Props) => {
           showCloseButton={false}
           className="flex max-h-[90vh] max-w-xl flex-col overflow-hidden border-none bg-white/95 p-0 shadow-2xl backdrop-blur-3xl sm:rounded-3xl dark:bg-slate-900/95"
         >
+          <button
+            type="button"
+            onClick={onClose}
+            className="modal-close-btn-premium"
+          >
+            <X size={20} strokeWidth={2.5} />
+          </button>
+
           <DialogHeader className="shrink-0 border-b border-slate-100 p-6 dark:border-white/5">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-4">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-900 text-white shadow-lg">
-                  <Package className="h-5 w-5" />
-                </div>
-                <div>
-                  <DialogTitle className="font-display text-xl font-bold tracking-tight text-slate-900 dark:text-white">
-                    Chi tiết đơn hàng
-                  </DialogTitle>
-                  <p className="font-mono text-xs font-bold text-blue-600">
-                    #{orderId}
-                  </p>
-                </div>
+            <div className="flex items-center gap-4">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-900 text-white shadow-lg">
+                <Package className="h-5 w-5" />
+              </div>
+              <div>
+                <DialogTitle className="font-display text-xl font-bold tracking-tight text-slate-900 dark:text-white">
+                  Chi tiết đơn hàng
+                </DialogTitle>
+                <p className="font-mono text-xs font-bold text-blue-600">
+                  #{orderId}
+                </p>
               </div>
             </div>
           </DialogHeader>

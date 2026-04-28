@@ -73,10 +73,10 @@ privateApi.interceptors.response.use(
       return Promise.reject(error)
     }
 
-    const refreshToken = tokenStorage.getRefreshToken()
     if (!refreshToken) {
       tokenStorage.clear()
-      window.location.href = '/login'
+      const currentPath = window.location.pathname
+      window.location.href = `/login?redirect=${encodeURIComponent(currentPath)}`
       return Promise.reject(error)
     }
 
@@ -94,7 +94,8 @@ privateApi.interceptors.response.use(
           })
           .catch((err) => {
             tokenStorage.clear()
-            window.location.href = '/login'
+            const currentPath = window.location.pathname
+            window.location.href = `/login?redirect=${encodeURIComponent(currentPath)}`
             throw err
           })
           .finally(() => {
@@ -110,7 +111,8 @@ privateApi.interceptors.response.use(
       return privateApi(originalRequest)
     } catch (refreshError) {
       tokenStorage.clear()
-      window.location.href = '/login'
+      const currentPath = window.location.pathname
+      window.location.href = `/login?redirect=${encodeURIComponent(currentPath)}`
       return Promise.reject(refreshError)
     }
   },

@@ -42,100 +42,96 @@ export default function AdminProductsPage() {
   } = useAdminProducts()
 
   return (
-    <div className="relative isolate min-h-screen">
-      <div className="mx-auto max-w-7xl px-4 py-4 md:px-6 md:py-8">
-        {/* HEADER */}
-        <div className="animate-in fade-in slide-in-from-top-4 mb-8 flex flex-col gap-6 duration-700 lg:flex-row lg:items-end lg:justify-between">
-          <div className="space-y-3">
-            <div className="inline-flex items-center gap-2 rounded-full border border-blue-100 bg-blue-50/50 px-4 py-1.5 text-[11px] font-black tracking-widest text-blue-600 uppercase backdrop-blur-sm dark:border-blue-900/30 dark:bg-blue-900/20 dark:text-blue-400">
-              Quản lý kho hàng
-            </div>
-            <h1 className="font-display text-3xl font-black tracking-tight text-slate-900 sm:text-4xl dark:text-white">
-              Sản phẩm &{' '}
-              <span className="bg-linear-to-r from-blue-600 to-cyan-500 bg-clip-text text-transparent">
-                Tồn kho
-              </span>
+    <div className="animate-in fade-in slide-in-from-top-4 duration-700">
+      {/* HEADER */}
+      <div className="mb-8 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+        <div className="space-y-1.5">
+          <div className="flex items-center gap-3">
+            <h1 className="font-display text-4xl font-black tracking-tight text-slate-900 dark:text-white">
+              Sản phẩm
             </h1>
-
-            <p className="font-sans text-base text-slate-500 dark:text-slate-400">
-              {params.keyword
-                ? `Tìm thấy ${pagination?.totalItems || 0} kết quả cho "${params.keyword}"`
-                : `Tổng số sản phẩm: ${pagination?.totalItems || 0}`}
-            </p>
+            <span className="flex h-5 items-center rounded-full bg-blue-50 px-2.5 text-[10px] font-black tracking-widest text-blue-600 uppercase ring-1 ring-blue-100 dark:bg-blue-900/20 dark:text-blue-400 dark:ring-blue-900/30">
+              Quản lý kho hàng
+            </span>
           </div>
-
-          {/* ACTION BUTTONS */}
-          <div className="flex flex-wrap gap-3">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => setIsCategoryModalOpen(true)}
-              className="btn-premium-secondary rounded-full px-6"
-            >
-              <FolderPlus size={18} />
-              Thêm danh mục
-            </Button>
-
-            <Button
-              type="button"
-              onClick={() => setIsProductModalOpen(true)}
-              className="btn-premium-primary rounded-full px-8 shadow-lg shadow-blue-500/20"
-            >
-              <Plus size={18} />
-              Thêm sản phẩm
-            </Button>
-          </div>
-        </div>
-
-        {error && (
-          <p className="mb-4 rounded-xl border border-red-100 bg-red-50 p-3 text-sm text-red-500">
-            Không thể tải danh sách sản phẩm: {error}
+          <p className="text-sm font-bold text-slate-500 dark:text-slate-400">
+            {params.keyword
+              ? `Tìm thấy ${pagination?.totalItems || 0} kết quả cho "${params.keyword}"`
+              : `Tổng số sản phẩm trong hệ thống: ${pagination?.totalItems || 0}`}
           </p>
-        )}
-
-        {/* MAIN CONTENT */}
-        <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
-          <ProductTable
-            products={products}
-            loading={loading}
-            pagination={pagination}
-            categories={categories || []}
-            keywordInput={keywordInput}
-            categoryFilter={categoryFilter}
-            sortFilter={sortFilter}
-            onKeywordChange={setKeywordInput}
-            onSearchSubmit={handleSearchSubmit}
-            onCategoryChange={handleCategoryChange}
-            onSortChange={handleSortChange}
-            onResetFilters={handleResetFilters}
-            onRefresh={refetch}
-            onEdit={handleEditProduct}
-            onPageChange={handlePageChange}
-          />
         </div>
 
-        {/* MODALS */}
-        <AddProductModal
-          isOpen={isProductModalOpen}
-          onClose={() => setIsProductModalOpen(false)}
-          categories={categories || []}
-          onSuccess={refetch}
-        />
+        {/* ACTION BUTTONS */}
+        <div className="flex flex-wrap gap-3">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => setIsCategoryModalOpen(true)}
+            className="btn-premium-secondary rounded-full px-6"
+          >
+            <FolderPlus size={18} />
+            Thêm danh mục
+          </Button>
 
-        <EditProductModal
-          isOpen={isEditModalOpen}
-          onClose={handleCloseEditModal}
-          product={selectedProduct}
-          categories={categories || []}
-          onSuccess={refetch}
-        />
+          <Button
+            type="button"
+            onClick={() => setIsProductModalOpen(true)}
+            className="btn-premium-primary rounded-full px-8 shadow-lg shadow-blue-500/20"
+          >
+            <Plus size={18} />
+            Thêm sản phẩm
+          </Button>
+        </div>
+      </div>
 
-        <AddCategoryModal
-          isOpen={isCategoryModalOpen}
-          onClose={() => setIsCategoryModalOpen(false)}
-          onSaved={refetchCategories}
+      {error && (
+        <p className="mb-4 rounded-xl border border-red-100 bg-red-50 p-3 text-sm text-red-500">
+          Không thể tải danh sách sản phẩm: {error}
+        </p>
+      )}
+
+      {/* MAIN CONTENT */}
+      <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
+        <ProductTable
+          products={products}
+          loading={loading}
+          pagination={pagination}
+          categories={categories || []}
+          keywordInput={keywordInput}
+          categoryFilter={categoryFilter}
+          sortFilter={sortFilter}
+          onKeywordChange={setKeywordInput}
+          onSearchSubmit={handleSearchSubmit}
+          onCategoryChange={handleCategoryChange}
+          onSortChange={handleSortChange}
+          onResetFilters={handleResetFilters}
+          onRefresh={refetch}
+          onEdit={handleEditProduct}
+          onPageChange={handlePageChange}
         />
       </div>
+
+      {/* MODALS */}
+      <AddProductModal
+        isOpen={isProductModalOpen}
+        onClose={() => setIsProductModalOpen(false)}
+        categories={categories || []}
+        onSuccess={refetch}
+      />
+
+      <EditProductModal
+        isOpen={isEditModalOpen}
+        onClose={handleCloseEditModal}
+        product={selectedProduct}
+        categories={categories || []}
+        onSuccess={refetch}
+      />
+
+      <AddCategoryModal
+        isOpen={isCategoryModalOpen}
+        onClose={() => setIsCategoryModalOpen(false)}
+        onSaved={refetchCategories}
+      />
     </div>
   )
 }

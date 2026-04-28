@@ -8,6 +8,7 @@ import { CartItem } from '@/types/cart.types'
 import { Address, PaymentMethod } from '@/types'
 import { useCartStore } from '@/store/cartStore'
 import { cartStorage } from '@/services/cartStorage'
+import { useAuthContext } from '@/features/auth'
 
 type CheckoutApiError = {
   message?: string
@@ -18,6 +19,7 @@ type CheckoutApiError = {
 }
 
 export const useCheckout = (selectedItems: CartItem[]) => {
+  const { isAuthenticated } = useAuthContext()
   const items = useCartStore((s) => s.items)
   const removeMultipleItemsStore = useCartStore((s) => s.removeMultipleItems)
 
@@ -51,11 +53,20 @@ export const useCheckout = (selectedItems: CartItem[]) => {
   }, [])
 
   useEffect(() => {
-    fetchDefaultAddress()
-  }, [fetchDefaultAddress])
+    if (isAuthenticated) {
+      fetchDefaultAddress()
+    }
+  }, [fetchDefaultAddress, isAuthenticated])
 
   // Xử lý thanh toán
   const handleCheckout = useCallback(async () => {
+    if (!isAuthenticated) {
+      toast.error('Vui lòng đăng nhập để thanh toán')
+      const currentPath = window.location.pathname
+      window.location.href = `/login?redirect=${encodeURIComponent(currentPath)}`
+      return
+    }
+
     if (!defaultAddress) return toast.error('Vui lòng chọn địa chỉ giao hàng')
     setCheckoutError(null)
 

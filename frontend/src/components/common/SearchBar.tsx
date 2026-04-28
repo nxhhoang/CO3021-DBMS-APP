@@ -47,7 +47,7 @@ export function SearchBar({
           variant === 'header' &&
             'h-12 rounded-full border border-slate-200 bg-slate-100/50 px-14 text-sm group-hover:border-slate-300 group-hover:bg-slate-100/80 placeholder:text-slate-400 focus:border-blue-400 focus:bg-white focus:ring-4 focus:ring-blue-500/10',
           variant === 'admin' &&
-            'h-12 rounded-xl border border-slate-100 bg-white/80 pr-4 pl-12 shadow-sm focus:bg-white focus:ring-4 focus:ring-blue-500/10 dark:border-white/10 dark:bg-slate-900/40',
+            'h-10 rounded-xl border border-slate-100 bg-white/80 pr-4 pl-12 shadow-sm focus:bg-white focus:ring-4 focus:ring-blue-500/10 dark:border-white/10 dark:bg-slate-900/40',
           variant === 'filter' &&
             'h-11 rounded-xl border border-slate-200/60 bg-white/60 pr-4 pl-11 text-sm focus:border-blue-400 focus:bg-white focus:ring-4 focus:ring-blue-500/10',
         )}

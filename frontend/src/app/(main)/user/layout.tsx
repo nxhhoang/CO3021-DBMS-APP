@@ -19,7 +19,7 @@ export default function ProfileLayout({
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
-      router.push('/login')
+      router.replace('/login')
     }
   }, [isAuthenticated, isLoading, router])
 

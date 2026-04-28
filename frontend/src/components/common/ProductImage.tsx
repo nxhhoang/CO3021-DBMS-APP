@@ -13,17 +13,23 @@ export const ProductImage = ({
   sizes,
   ...props
 }: ProductImageProps) => {
-  const [imgSrc, setImgSrc] = useState<string>(src || DEFAULT_IMAGE)
-
+  const [error, setError] = useState(false)
   const resolvedSizes = sizes ?? (props.fill ? '100vw' : undefined)
+
+  // Reset error state when src changes
+  const [prevSrc, setPrevSrc] = useState(src)
+  if (src !== prevSrc) {
+    setPrevSrc(src)
+    setError(false)
+  }
 
   return (
     <Image
       {...props}
-      src={imgSrc}
+      src={error || !src ? DEFAULT_IMAGE : src}
       alt={alt}
       sizes={resolvedSizes}
-      onError={() => setImgSrc(DEFAULT_IMAGE)}
+      onError={() => setError(true)}
     />
   )
 }

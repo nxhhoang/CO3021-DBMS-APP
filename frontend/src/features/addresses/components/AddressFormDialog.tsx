@@ -46,9 +46,9 @@ export function AddressFormDialog({
         {/* Custom Close Button */}
         <button
           onClick={() => onOpenChange(false)}
-          className="absolute top-6 right-6 z-10 rounded-full bg-slate-100 p-2 text-slate-400 transition-all hover:bg-slate-200 hover:text-slate-600 active:scale-90"
+          className="modal-close-btn-premium"
         >
-          <X size={16} strokeWidth={3} />
+          <X size={20} strokeWidth={2.5} />
         </button>
 
         <div className="relative overflow-hidden p-8 pt-10">

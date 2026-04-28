@@ -30,6 +30,7 @@ import { cn } from '@/lib/utils'
 import {
   PremiumTable,
   PremiumTableCell,
+  PremiumTableContainer,
   PremiumTableHead,
   PremiumTableHeader,
   PremiumTableRow,
@@ -126,19 +127,20 @@ export default function DashboardPage() {
   }, [])
 
   return (
-    <div className="animate-in fade-in slide-in-from-top-4 space-y-8 duration-1000">
+    <div className="animate-in fade-in slide-in-from-top-4 space-y-6 duration-1000">
       {/* HEADER SECTION */}
-      <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-        <div className="space-y-3">
-          <div className="inline-flex items-center gap-2 rounded-full border border-blue-100 bg-blue-50/50 px-4 py-1.5 text-[11px] font-black tracking-widest text-blue-600 uppercase backdrop-blur-sm">
-            Hệ thống quản lý
+      <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+        <div className="space-y-1.5">
+          <div className="flex items-center gap-3">
+            <h1 className="font-display text-4xl font-black tracking-tight text-slate-900 dark:text-white">
+              Bảng điều khiển
+            </h1>
+            <span className="flex h-5 items-center rounded-full bg-blue-50 px-2.5 text-[10px] font-black tracking-widest text-blue-600 uppercase ring-1 ring-blue-100 dark:bg-blue-900/20 dark:text-blue-400 dark:ring-blue-900/30">
+              Hệ thống quản lý
+            </span>
           </div>
-          <h1 className="font-display text-4xl font-black tracking-tight text-slate-900 sm:text-5xl">
-            Bảng <span className="text-gradient-primary">Điều khiển</span>
-          </h1>
-          <p className="font-sans text-lg font-medium text-slate-500">
-            Tổng quan tình hình kinh doanh và phân tích doanh thu thời gian
-            thực.
+          <p className="text-sm font-bold text-slate-500 dark:text-slate-400">
+            Tổng quan kinh doanh và phân tích doanh thu thời gian thực.
           </p>
         </div>
 
@@ -146,12 +148,12 @@ export default function DashboardPage() {
           onClick={fetchData}
           variant="outline"
           disabled={loading}
-          className="btn-premium-secondary h-12 px-6 shadow-sm"
+          className="btn-premium-secondary h-11 px-5 shadow-sm"
         >
           <RefreshCw
             className={cn('mr-2 h-4 w-4', loading && 'animate-spin')}
           />
-          Làm mới dữ liệu
+          Làm mới
         </Button>
       </div>
 
@@ -162,42 +164,42 @@ export default function DashboardPage() {
         </div>
       )}
 
-      {/* FILTER & SUMMARY */}
-      <div className="grid gap-8">
-        <FilterSection
-          startDate={startDate}
-          endDate={endDate}
-          currentDate={currentDate}
-          type={type}
-          loading={loading}
-          hasFilterChanges={hasFilterChanges}
-          onStartDateChange={setStartDate}
-          onEndDateChange={setEndDate}
-          onTypeChange={setType}
-          onApply={fetchData}
-        />
-
-        <SummaryCard
-          totalRevenue={summaryTotals.totalRevenue}
-          totalOrders={summaryTotals.totalOrders}
-          startDateLabel={format(appliedStartDate, 'dd/MM/yyyy')}
-          endDateLabel={format(appliedEndDate, 'dd/MM/yyyy')}
-        />
-      </div>
+      {/* SUMMARY SECTION */}
+      <SummaryCard
+        totalRevenue={summaryTotals.totalRevenue}
+        totalOrders={summaryTotals.totalOrders}
+        startDateLabel={format(appliedStartDate, 'dd/MM/yyyy')}
+        endDateLabel={format(appliedEndDate, 'dd/MM/yyyy')}
+      />
 
       {/* CHART SECTION */}
       <Card className="card-premium border-none bg-white shadow-xl shadow-slate-200/40">
-        <CardHeader className="border-b border-slate-100 p-8">
-          <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600">
-              <BarChart3 size={20} strokeWidth={2.5} />
+        <CardHeader className="border-b border-slate-100 p-4 lg:p-6">
+          <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+            <div className="flex items-center gap-3">
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600">
+                <BarChart3 size={18} strokeWidth={2.5} />
+              </div>
+              <CardTitle className="font-display text-lg font-black tracking-tight text-slate-900">
+                Biến động doanh thu & Đơn hàng
+              </CardTitle>
             </div>
-            <CardTitle className="font-display text-xl font-black tracking-tight text-slate-900">
-              Biến động doanh thu & Đơn hàng
-            </CardTitle>
+
+            <FilterSection
+              startDate={startDate}
+              endDate={endDate}
+              currentDate={currentDate}
+              type={type}
+              loading={loading}
+              hasFilterChanges={hasFilterChanges}
+              onStartDateChange={setStartDate}
+              onEndDateChange={setEndDate}
+              onTypeChange={setType}
+              onApply={fetchData}
+            />
           </div>
         </CardHeader>
-        <CardContent className="p-8">
+        <CardContent className="p-4 lg:p-6">
           <div className="h-[400px] w-full">
             <ResponsiveContainer width="100%" height="100%">
               <ComposedChart
@@ -301,16 +303,10 @@ export default function DashboardPage() {
       </Card>
 
       {/* TABLE SECTION */}
-      <div className="space-y-4">
-        <div className="flex items-center gap-3 px-2">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-slate-100 text-slate-500">
-            <TableIcon size={18} strokeWidth={2.5} />
-          </div>
-          <h2 className="font-display text-xl font-black tracking-tight text-slate-900">
-            Chi tiết dữ liệu
-          </h2>
-        </div>
-
+      <PremiumTableContainer
+        title="Chi tiết dữ liệu"
+        subtitle="Thống kê chi tiết doanh thu và đơn hàng theo mốc thời gian."
+      >
         <PremiumTable>
           <PremiumTableHeader>
             <PremiumTableRow>
@@ -327,10 +323,10 @@ export default function DashboardPage() {
             {data.length > 0 ? (
               data.map((item) => (
                 <PremiumTableRow key={item.date}>
-                  <PremiumTableCell className="font-bold text-slate-900">
+                  <PremiumTableCell className="font-bold text-slate-900 dark:text-white">
                     {formatRevenueDate(item.date, appliedType)}
                   </PremiumTableCell>
-                  <PremiumTableCell className="text-right font-mono text-base font-black tracking-tighter text-emerald-600">
+                  <PremiumTableCell className="text-right font-mono text-base font-black tracking-tighter text-emerald-600 dark:text-emerald-400">
                     {item.totalRevenue.toLocaleString()}
                     <span className="ml-1 text-[10px] font-bold text-slate-400">
                       đ
@@ -360,7 +356,7 @@ export default function DashboardPage() {
             )}
           </tbody>
         </PremiumTable>
-      </div>
+      </PremiumTableContainer>
     </div>
   )
 }

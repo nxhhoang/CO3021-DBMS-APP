@@ -6,6 +6,8 @@ import { Loader2, ShoppingBag } from 'lucide-react'
 import Link from 'next/link'
 import { ItemsList, OrderSummary, useCart } from '@/features/cart'
 import PageBackground from '@/components/layout/PageBackground'
+import { useAuthContext } from '@/features/auth'
+import { useRouter } from 'next/navigation'
 
 export default function CartPage() {
   const {
@@ -21,14 +23,25 @@ export default function CartPage() {
     removeMultipleItems,
     loadCartWithDetails,
   } = useCart()
+  const { isAuthenticated, isLoading: isAuthLoading } = useAuthContext()
+  const router = useRouter()
 
   useEffect(() => {
-    loadCartWithDetails()
-  }, [loadCartWithDetails])
+    if (!isAuthLoading && !isAuthenticated) {
+      const currentPath = window.location.pathname
+      router.replace(`/login?redirect=${encodeURIComponent(currentPath)}`)
+    }
+  }, [isAuthenticated, isAuthLoading, router])
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      loadCartWithDetails()
+    }
+  }, [loadCartWithDetails, isAuthenticated])
 
   const totalItems = items.reduce((sum, i) => sum + i.quantity, 0)
 
-  if (loading) {
+  if (isAuthLoading || (!isAuthenticated && !isAuthLoading) || loading) {
     return (
       <div className="loading-container">
         <Loader2 className="text-primary h-12 w-12 animate-spin stroke-[1.5]" />

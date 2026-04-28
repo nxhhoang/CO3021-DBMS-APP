@@ -72,30 +72,28 @@ export const ReviewSubmitModal = ({
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && handleClose()}>
       <DialogContent className="max-w-md overflow-hidden border-none bg-white/95 p-0 shadow-2xl backdrop-blur-3xl sm:rounded-[2rem] dark:bg-slate-900/95">
+        <button
+          type="button"
+          onClick={handleClose}
+          className="modal-close-btn-premium"
+          disabled={isSubmitting}
+        >
+          <X size={20} strokeWidth={2.5} />
+        </button>
+
         <DialogHeader className="shrink-0 border-b border-slate-100 p-6 dark:border-white/5">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-600 text-white shadow-lg">
-                <MessageSquarePlus size={20} />
-              </div>
-              <div>
-                <DialogTitle className="font-display text-lg font-bold tracking-tight text-slate-900 dark:text-white">
-                  Đánh giá sản phẩm
-                </DialogTitle>
-                <p className="max-w-[200px] truncate text-[10px] font-bold tracking-widest text-slate-400 uppercase">
-                  {productName}
-                </p>
-              </div>
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-600 text-white shadow-lg">
+              <MessageSquarePlus size={20} />
             </div>
-            <Button
-              variant="ghost"
-              size="icon"
-              disabled={isSubmitting}
-              onClick={handleClose}
-              className="rounded-full hover:bg-slate-100 dark:hover:bg-white/5"
-            >
-              <X className="h-4 w-4" />
-            </Button>
+            <div>
+              <DialogTitle className="font-display text-lg font-bold tracking-tight text-slate-900 dark:text-white">
+                Đánh giá sản phẩm
+              </DialogTitle>
+              <p className="max-w-[200px] truncate text-[10px] font-bold tracking-widest text-slate-400 uppercase">
+                {productName}
+              </p>
+            </div>
           </div>
         </DialogHeader>
 

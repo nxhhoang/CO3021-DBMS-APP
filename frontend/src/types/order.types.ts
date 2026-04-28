@@ -74,6 +74,10 @@ export interface AdminOrder extends Order {
 export type GetAdminOrdersResponse = ApiResponse<{
   orders: AdminOrder[]
   pagination: Pagination
+  stats: {
+    statusCounts: Record<string, number>
+    totalRevenue: number
+  }
 }>
 
 // Params khi gọi API (Query string)

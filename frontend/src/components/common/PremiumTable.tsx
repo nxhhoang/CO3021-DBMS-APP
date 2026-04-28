@@ -32,9 +32,9 @@ export const PremiumTableContainer = ({
   actions?: React.ReactNode
 }) => {
   return (
-    <div className={cn('table-container-premium', className)} {...props}>
+    <div className={cn('table-container-premium bg-white dark:bg-slate-900', className)} {...props}>
       {(title || subtitle || actions) && (
-        <div className="flex flex-col gap-4 border-b border-slate-100 bg-slate-50/30 px-8 py-6 md:flex-row md:items-center md:justify-between dark:border-white/5 dark:bg-white/5">
+        <div className="flex flex-col gap-4 border-b border-slate-100 bg-slate-50 px-8 py-6 md:flex-row md:items-center md:justify-between dark:border-white/5 dark:bg-slate-800/50">
           <div className="space-y-1">
             {title && (
               <h2 className="font-display text-lg font-black tracking-tight text-slate-900 dark:text-white">

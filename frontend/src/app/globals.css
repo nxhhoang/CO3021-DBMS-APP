@@ -304,6 +304,7 @@ body {
 
   .card-premium {
     @apply overflow-hidden rounded-[2rem] border border-slate-100 bg-white transition-all duration-500 hover:-translate-y-1 hover:shadow-2xl hover:shadow-slate-200/60;
+    background-color: white;
   }
 
   .icon-box-premium {
@@ -369,7 +370,7 @@ body {
 
   /* --- Table Styles --- */
   .table-container-premium {
-    @apply overflow-hidden rounded-3xl border border-white/40 bg-white shadow-xl ring-1 ring-black/5 transition-all duration-300 ease-in-out dark:border-white/10 dark:bg-slate-900;
+    @apply overflow-hidden rounded-3xl border border-slate-200/60 bg-white shadow-xl ring-1 ring-black/5 transition-all duration-300 ease-in-out dark:border-white/10 dark:bg-slate-900;
   }
 
   .table-header-premium {

@@ -73,6 +73,9 @@ privateApi.interceptors.response.use(
       return Promise.reject(error)
     }
 
+    const refreshToken =
+      typeof window !== 'undefined' ? tokenStorage.getRefreshToken() : null
+
     if (!refreshToken) {
       tokenStorage.clear()
       const currentPath = window.location.pathname

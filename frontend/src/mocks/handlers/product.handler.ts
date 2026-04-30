@@ -1,10 +1,9 @@
 import { http, HttpResponse } from 'msw'
 import { BASE_URL } from '@/constants/api'
-import { MOCK_PRODUCTS, MOCK_PRODUCT_DETAILS } from '../data/products'
-import { MOCK_CATEGORIES } from '../data/categories'
+import { MOCK_PRODUCT_DETAILS } from '../data/products'
+import { isAdmin, mockDb, requireSession, newId } from '../data/mockDb'
 import {
   ProductResponse,
-  GetProductsRequest,
   GetProductsResponse,
   GetProductDetailResponse,
   CreateProductRequest,
@@ -15,7 +14,7 @@ import {
 } from '@/types/product.types'
 
 // Biến tạm để lưu trữ state sản phẩm (giả lập database thay vì dùng hằng số MOCK trực tiếp)
-const dynamicProducts = [...MOCK_PRODUCTS]
+const dynamicProducts = mockDb.products
 
 const SORT_MAP: Record<string, (a: Product, b: Product) => number> = {
   priceASC: (a, b) => a.basePrice - b.basePrice,
@@ -40,10 +39,11 @@ export const productHandlers = [
     )
     const page = Number(url.searchParams.get('page') || 1)
     const limit = Number(url.searchParams.get('limit') || 10)
+    const sort = url.searchParams.get('sort') || ''
     // Filter
     const filtered = dynamicProducts.filter((p) => {
       const matchesKeyword = p.name.toLowerCase().includes(keyword)
-      const cat = MOCK_CATEGORIES.find((c) => c.slug === categorySlug)
+      const cat = mockDb.categories.find((c) => c.slug === categorySlug)
       const matchesCategory = categorySlug ? p.categoryID === cat?._id : true
       const matchesPrice = p.basePrice >= priceMin && p.basePrice <= priceMax
       // Chỉ lấy sản phẩm đang hoạt động (isActive !== false)
@@ -54,7 +54,7 @@ export const productHandlers = [
 
     // Map Response
     const mapped: ProductResponse[] = filtered.map((p) => {
-      const cat = MOCK_CATEGORIES.find((c) => c._id === p.categoryID)
+      const cat = mockDb.categories.find((c) => c._id === p.categoryID)
       const { categoryID, ...rest } = p
       void categoryID
       return {
@@ -68,7 +68,17 @@ export const productHandlers = [
     })
 
     const totalItems = mapped.length
-    const data = mapped.slice((page - 1) * limit, page * limit)
+    const sorted = [...mapped]
+    if (sort && SORT_MAP[sort]) {
+      if (sort.startsWith('price')) {
+        sorted.sort((a, b) => (sort === 'priceASC' ? a.basePrice - b.basePrice : b.basePrice - a.basePrice))
+      } else if (sort.startsWith('rating')) {
+        sorted.sort((a, b) => (sort === 'ratingASC' ? a.avgRating - b.avgRating : b.avgRating - a.avgRating))
+      } else if (sort.startsWith('sold')) {
+        sorted.sort((a, b) => (sort === 'soldASC' ? a.totalSold - b.totalSold : b.totalSold - a.totalSold))
+      }
+    }
+    const data = sorted.slice((page - 1) * limit, page * limit)
 
     return HttpResponse.json({
       message:
@@ -106,24 +116,40 @@ export const productHandlers = [
     const product = dynamicProducts.find((p) => p._id === id)
     if (!product) {
       return HttpResponse.json(
-        { message: 'Không tìm thấy sản phẩm' },
+        { message: 'Không tìm thấy sản phẩm', data: null },
         { status: 404 },
       )
     }
 
-    const cat = MOCK_CATEGORIES.find((c) => c._id === product.categoryID)
+    const cat = mockDb.categories.find((c) => c._id === product.categoryID)
     const { categoryID, ...rest } = product
     void categoryID
+
+    const skus = mockDb.inventory
+      .filter((inv) => {
+        const sku = inv.sku
+        if (id === 'product-1') return sku.startsWith('MBP')
+        if (id === 'product-3') return sku.startsWith('IP15PM')
+        if (id === 'product-6') return sku.startsWith('AJ1L')
+        return false
+      })
+      .map((inv) => ({
+        sku: inv.sku,
+        skuPrice: inv.skuPrice ?? inv.sku_price ?? product.basePrice,
+        sku_price: inv.sku_price ?? inv.skuPrice ?? product.basePrice,
+        attributes: inv.attributes ?? {},
+        stockQuantity: inv.stockQuantity ?? 0,
+      }))
 
     const detail = {
       ...rest,
       category: cat ? { _id: cat._id, name: cat.name, slug: cat.slug } : null,
-      inventory: [
+      inventory: skus.length > 0 ? skus : [
         {
-          sku: `${id}-default`,
+          sku: `${id}-DEFAULT`,
           skuPrice: product.basePrice,
           sku_price: product.basePrice,
-          attributes: product.attributes,
+          attributes: {},
           stockQuantity: 10,
         },
       ],
@@ -137,11 +163,17 @@ export const productHandlers = [
 
   // 3. POST /admin/products (Admin: Thêm sản phẩm)
   http.post(`${BASE_URL}/admin/products`, async ({ request }) => {
+    const auth = requireSession(request.headers.get('Authorization'))
+    if (!auth.ok) return HttpResponse.json(auth.response, { status: auth.status })
+    if (!isAdmin(auth.session.userId)) {
+      return HttpResponse.json({ message: 'Forbidden', data: null }, { status: 403 })
+    }
+
     const body = (await request.json()) as CreateProductRequest
 
     if (!body.name || !body.categoryID || !body.basePrice) {
       return HttpResponse.json(
-        { message: 'Thiếu trường bắt buộc' },
+        { message: 'Thiếu trường bắt buộc', data: null },
         { status: 400 },
       )
     }
@@ -157,6 +189,19 @@ export const productHandlers = [
 
     dynamicProducts.push(newProduct)
 
+    // Optional: create SKUs
+    if (body.skus?.length) {
+      for (const sku of body.skus) {
+        mockDb.inventory.push({
+          sku: sku.sku,
+          skuPrice: sku.skuPrice,
+          sku_price: sku.skuPrice,
+          stockQuantity: sku.stockQuantity,
+          attributes: sku.attributes ?? {},
+        })
+      }
+    }
+
     return HttpResponse.json(
       { message: 'Tạo sản phẩm thành công', data: { _id: newProduct._id } },
       { status: 201 },
@@ -165,13 +210,19 @@ export const productHandlers = [
 
   // 3. PUT /admin/products/:id (Admin: Sửa sản phẩm)
   http.put(`${BASE_URL}/admin/products/:id`, async ({ params, request }) => {
+    const auth = requireSession(request.headers.get('Authorization'))
+    if (!auth.ok) return HttpResponse.json(auth.response, { status: auth.status })
+    if (!isAdmin(auth.session.userId)) {
+      return HttpResponse.json({ message: 'Forbidden', data: null }, { status: 403 })
+    }
+
     const { id } = params
     const body = (await request.json()) as UpdateProductRequest
 
     const index = dynamicProducts.findIndex((p) => p._id === id)
     if (index === -1) {
       return HttpResponse.json(
-        { message: 'Không tìm thấy sản phẩm' },
+        { message: 'Không tìm thấy sản phẩm', data: null },
         { status: 404 },
       )
     }
@@ -193,13 +244,19 @@ export const productHandlers = [
   }),
 
   // 4. DELETE /admin/products/:id (Admin: Xóa mềm)
-  http.delete(`${BASE_URL}/admin/products/:id`, ({ params }) => {
+  http.delete(`${BASE_URL}/admin/products/:id`, ({ params, request }) => {
+    const auth = requireSession(request.headers.get('Authorization'))
+    if (!auth.ok) return HttpResponse.json(auth.response, { status: auth.status })
+    if (!isAdmin(auth.session.userId)) {
+      return HttpResponse.json({ message: 'Forbidden', data: null }, { status: 403 })
+    }
+
     const { id } = params
     const index = dynamicProducts.findIndex((p) => p._id === id)
 
     if (index === -1) {
       return HttpResponse.json(
-        { message: 'Không tìm thấy sản phẩm' },
+        { message: 'Không tìm thấy sản phẩm', data: null },
         { status: 404 },
       )
     }
@@ -219,25 +276,60 @@ export const productHandlers = [
   // 5 GET /products/:id/reviews (Danh sách đánh giá)
   http.get(`${BASE_URL}/products/:id/reviews`, ({ params }) => {
     const { id } = params
-    // Trả về dữ liệu giả lập (có thể mở rộng thêm logic để tạo review động nếu cần)
+    const productId = id as string
+    const seed = mockDb.reviewsByProduct.get(productId)
+    const data =
+      seed ??
+      [
+        {
+          _id: `review-${productId}-1`,
+          productID: productId,
+          userID: 'user-customer-001',
+          userName: 'Customer',
+          rating: 5,
+          comment: 'Sản phẩm rất tốt!',
+          images: [],
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        },
+      ]
     return HttpResponse.json({
       message: 'Lấy danh sách đánh giá thành công',
-      data: [
-        {
-          _id: `review-${id}-1`,
-          productId: id as string,
-          rating: 4,
-          comment: 'Sản phẩm tốt, đáng tiền!',
-          reviewerName: 'Nguyen Van A',
-        },
-        {
-          _id: `review-${id}-2`,
-          productId: id as string,
-          rating: 5,
-          comment: 'Tuyệt vời, sẽ mua lại!',
-          reviewerName: 'Tran Thi B',
-        },
-      ],
+      data,
     })
+  }),
+
+  // 6 POST /products/:id/reviews (Create review)
+  http.post(`${BASE_URL}/products/:id/reviews`, async ({ request, params }) => {
+    const auth = requireSession(request.headers.get('Authorization'))
+    if (!auth.ok) return HttpResponse.json(auth.response, { status: auth.status })
+
+    const { id } = params
+    const body = (await request.json()) as { rating: number; comment: string; images?: string[] }
+    const productId = id as string
+
+    const existing = mockDb.reviewsByProduct.get(productId) ?? []
+    const newReviewId = newId('review')
+    existing.unshift({
+      _id: newReviewId,
+      productID: productId,
+      userID: auth.session.userId,
+      userName: mockDb.users.find((u) => u.userId === auth.session.userId)?.fullName ?? 'User',
+      rating: body.rating,
+      comment: body.comment,
+      images: body.images ?? [],
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    })
+    mockDb.reviewsByProduct.set(productId, existing)
+
+    // Update product aggregates (basic)
+    const prod = dynamicProducts.find((p) => p._id === productId)
+    if (prod) {
+      prod.totalReviews += 1
+      prod.avgRating = Math.min(5, Math.max(0, (prod.avgRating * (prod.totalReviews - 1) + body.rating) / prod.totalReviews))
+    }
+
+    return HttpResponse.json({ message: 'Tạo đánh giá thành công', data: { _id: newReviewId } }, { status: 201 })
   }),
 ]

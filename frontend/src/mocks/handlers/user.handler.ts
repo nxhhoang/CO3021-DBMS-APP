@@ -1,52 +1,25 @@
 import { http, HttpResponse } from 'msw'
 import { BASE_URL } from '@/constants/api'
-import { MOCK_USERS, MOCK_SESSIONS } from '../data/users'
+import { findUserById, mockDb, requireSession } from '../data/mockDb'
 import {
   GetProfileResponse,
   UpdateProfileRequest,
   UpdateProfileResponse,
 } from '@/types/user.types'
-import { api } from '@/lib/axios'
 
 export const userHandlers = [
   // GET /users/profile
-  http.get<{}, never, GetProfileResponse>(
+  http.get<Record<string, never>, never, GetProfileResponse>(
     `${BASE_URL}/users/profile`,
     ({ request }) => {
-      // 1. Lấy Token từ Header (Chuẩn Bearer Token)
-      const authHeader = request.headers.get('Authorization')
-      const token = authHeader?.split(' ')[1]
+      const auth = requireSession(request.headers.get('Authorization'))
+      if (!auth.ok) return HttpResponse.json(auth.response, { status: auth.status })
 
-      // 2. Kiểm tra tính hợp lệ của Token
-      if (!token) {
-        return HttpResponse.json(
-          { message: 'Bạn chưa đăng nhập', data: null },
-          { status: 401 },
-        )
-      }
-
-      // 3. Giả lập logic tìm đúng User dựa trên Token
-      // Trong thực tế, Token sẽ chứa userId. Ở đây ta giả lập logic map token -> user
-      // 1️⃣ Tìm session từ token
-      const session = MOCK_SESSIONS.find((s) => s.accessToken === token)
-
-      if (!session) {
-        return HttpResponse.json(
-          { message: 'Token không hợp lệ', data: null },
-          { status: 403 },
-        )
-      }
-
-      // 2️⃣ Tìm user từ userId
-      const user = MOCK_USERS.find((u) => u.userId === session.userId)
-
+      const user = findUserById(auth.session.userId)
       if (!user) {
         return HttpResponse.json(
-          {
-            message: 'Token không hợp lệ hoặc người dùng không tồn tại',
-            data: null,
-          },
-          { status: 403 },
+          { message: 'Người dùng không tồn tại', data: null },
+          { status: 404 },
         )
       }
 
@@ -68,39 +41,21 @@ export const userHandlers = [
   ),
 
   // PUT /users/profile
-  http.put<{}, UpdateProfileRequest, any>(
+  http.put<Record<string, never>, UpdateProfileRequest, UpdateProfileResponse>(
     `${BASE_URL}/users/profile`,
     async ({ request }) => {
-      // 1. Lấy Token từ Header
-      const authHeader = request.headers.get('Authorization')
-      const token = authHeader?.split(' ')[1]
+      const auth = requireSession(request.headers.get('Authorization'))
+      if (!auth.ok) return HttpResponse.json(auth.response, { status: auth.status })
 
-      // 2. Kiểm tra token có tồn tại trong "Bảng Sessions" không
-      const session = MOCK_SESSIONS.find((s) => s.accessToken === token)
-
-      if (!session || token === 'expired-token') {
-        return HttpResponse.json(
-          { message: 'Phiên đăng nhập hết hạn hoặc không hợp lệ', data: null },
-          { status: 401 },
-        )
-      }
-
-      // 3. Tìm User dựa trên userId từ session vừa tìm được
-      const userIndex = MOCK_USERS.findIndex((u) => u.userId === session.userId)
-      const user = MOCK_USERS[userIndex]
-
-      if (!user) {
-        return HttpResponse.json(
-          { message: 'Người dùng không tồn tại', data: null },
-          { status: 404 },
-        )
-      }
+      const userIndex = mockDb.users.findIndex((u) => u.userId === auth.session.userId)
+      const user = mockDb.users[userIndex]
+      if (!user) return HttpResponse.json({ message: 'Người dùng không tồn tại', data: null }, { status: 404 })
 
       // 4. Update logic
       const body = await request.json()
 
       // Cập nhật vào mảng mock (lưu ý: cách này chỉ lưu vào bộ nhớ tạm của trình duyệt)
-      MOCK_USERS[userIndex] = {
+      mockDb.users[userIndex] = {
         ...user,
         fullName: body.fullName ?? user.fullName,
         phoneNum: body.phoneNum ?? user.phoneNum,
@@ -109,8 +64,8 @@ export const userHandlers = [
       return HttpResponse.json({
         message: 'Cập nhật thành công',
         data: {
-          userId: MOCK_USERS[userIndex].userId,
-          fullName: MOCK_USERS[userIndex].fullName,
+          userId: mockDb.users[userIndex].userId,
+          fullName: mockDb.users[userIndex].fullName,
         },
       })
     },

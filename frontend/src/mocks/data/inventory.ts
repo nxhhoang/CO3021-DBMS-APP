@@ -1,72 +1,59 @@
 import { SKU, Inventory } from '@/types/product.types'
-import { Battery } from 'lucide-react'
 
-const MOCK_SKU: SKU[] = [
+/**
+ * IMPORTANT:
+ * - `SKU` in frontend types uses `skuPrice` (camelCase)
+ * - Some backend payloads use `sku_price`, but frontend normalizes it in service layer.
+ * - Keep mock consistent with other mock modules (products/cart/orders).
+ */
+export const MOCK_SKU: SKU[] = [
+  // product-1 (MacBook Pro M3)
   {
     sku: 'MBP-M3-16-512',
     productID: 'product-1',
-    sku_price: 25000000,
-    attributes: { ram: '16GB', storage: '512GB' },
+    skuPrice: 45990000,
+    attributes: { color: 'Silver', ram: '16GB', storage: '512GB' },
   },
   {
     sku: 'MBP-M3-32-1TB',
     productID: 'product-1',
-    sku_price: 30000000,
-    attributes: { ram: '32GB', storage: '1TB' },
+    skuPrice: 52990000,
+    attributes: { color: 'Space Gray', ram: '32GB', storage: '1TB' },
   },
+
+  // product-3 (iPhone 15 Pro Max)
   {
-    sku: 'IP14P-128-SILVER',
-    productID: 'product-2',
-    sku_price: 16000000,
-    attributes: { ram: '6GB', storage: '128GB', color: 'Silver' },
-  },
-  {
-    sku: 'IP14P-256-BLACK',
-    productID: 'product-2',
-    sku_price: 20000000,
-    attributes: { ram: '6GB', storage: '256GB', color: 'Black' },
-  },
-  {
-    sku: 'SHIRT-M-BLUE',
+    sku: 'IP15PM-256-BLACK',
     productID: 'product-3',
-    sku_price: 200,
-    attributes: { size: 'M', color: 'Blue' },
+    skuPrice: 33990000,
+    attributes: { color: 'Black', storage: '256GB' },
   },
   {
-    sku: 'SHIRT-L-WHITE',
+    sku: 'IP15PM-512-NATURAL',
     productID: 'product-3',
-    sku_price: 220,
-    attributes: { size: 'L', color: 'White' },
+    skuPrice: 36990000,
+    attributes: { color: 'Natural', storage: '512GB' },
+  },
+
+  // product-6 (Nike Air Jordan 1 Low)
+  {
+    sku: 'AJ1L-40-BLACK',
+    productID: 'product-6',
+    skuPrice: 3990000,
+    attributes: { color: 'Black', size: 40 },
   },
   {
-    sku: 'SNKRS-9-WHITE',
-    productID: 'product-4',
-    sku_price: 1000,
-    attributes: { size: '9', color: 'White' },
-  },
-  {
-    sku: 'SNKRS-10-BLACK',
-    productID: 'product-4',
-    sku_price: 1100,
-    attributes: { size: '10', color: 'Black' },
-  },
-  {
-    sku: 'HPHN-001',
-    productID: 'product-5',
-    sku_price: 1100,
-    attributes: { color: 'Black', type: 'Wireless' },
-  },
-  {
-    sku: 'HPHN-002',
-    productID: 'product-5',
-    sku_price: 1200,
-    attributes: { color: 'White', type: 'Wired' },
+    sku: 'AJ1L-41-WHITE',
+    productID: 'product-6',
+    skuPrice: 3990000,
+    attributes: { color: 'White', size: 41 },
   },
 ]
 
-const MOCK_INVENTORY: Inventory[] = MOCK_SKU.map((sku) => ({
-  ...sku,
-  stockQuantity: Math.floor(Math.random() * 20) + 1, // Random stock between 1 and 20
+export const MOCK_INVENTORY: Inventory[] = MOCK_SKU.map((sku) => ({
+  sku: sku.sku,
+  skuPrice: sku.skuPrice,
+  sku_price: sku.skuPrice,
+  attributes: sku.attributes,
+  stockQuantity: sku.sku.startsWith('MBP') ? 12 : sku.sku.startsWith('IP15') ? 18 : 20,
 }))
-
-export { MOCK_SKU, MOCK_INVENTORY }

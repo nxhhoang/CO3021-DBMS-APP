@@ -4,38 +4,50 @@ import {
   UpdateAddressesRequest,
 } from '@/types/address.types'
 import { BASE_URL } from '@/constants/api'
-import { MOCK_ADDRESSES } from '../data/addresses'
+import { mockDb, requireSession } from '../data/mockDb'
 
 export const addressHandlers = [
   // 1. GET /users/addresses - Lấy danh sách địa chỉ
-  http.get(`${BASE_URL}/users/addresses`, () => {
+  http.get(`${BASE_URL}/users/addresses`, ({ request }) => {
+    const auth = requireSession(request.headers.get('Authorization'))
+    if (!auth.ok) return HttpResponse.json(auth.response, { status: auth.status })
+
     return HttpResponse.json({
       message: 'Lấy danh sách địa chỉ thành công',
-      data: MOCK_ADDRESSES,
+      data: mockDb.addresses,
     })
   }),
 
   // 2. POST /users/addresses - Thêm mới địa chỉ
   http.post(`${BASE_URL}/users/addresses`, async ({ request }) => {
+    const auth = requireSession(request.headers.get('Authorization'))
+    if (!auth.ok) return HttpResponse.json(auth.response, { status: auth.status })
+
     // QUAN TRỌNG: Phải có async/await ở đây
     const body = (await request.json()) as CreateAddressRequest
     const { addressName, addressLine, city, district, isDefault } = body
 
     const newAddress = {
-      addressID: Math.floor(Math.random() * 1000) + 3,
+      addressID: Math.max(0, ...mockDb.addresses.map((a) => a.addressID)) + 1,
       addressName,
       addressLine,
       city,
       district,
-      isDefault: MOCK_ADDRESSES.length === 0 ? true : isDefault,
+      isDefault: mockDb.addresses.length === 0 ? true : !!isDefault,
     }
     // Giả lập thêm địa chỉ mới
-    MOCK_ADDRESSES.push(newAddress)
+    if (newAddress.isDefault) {
+      mockDb.addresses.forEach((a) => (a.isDefault = false))
+    }
+    mockDb.addresses.push(newAddress)
 
     return HttpResponse.json(
       {
         message: 'Thêm địa chỉ thành công',
-        data: newAddress,
+        data: {
+          addressID: newAddress.addressID,
+          addressLine: newAddress.addressLine,
+        },
       },
       { status: 201 },
     )
@@ -45,19 +57,22 @@ export const addressHandlers = [
   http.put<{ addressID: string }>(
     `${BASE_URL}/users/addresses/:addressID`,
     async ({ request, params }) => {
+      const auth = requireSession(request.headers.get('Authorization'))
+      if (!auth.ok) return HttpResponse.json(auth.response, { status: auth.status })
+
       const { addressID } = params
-      const body = (await request.json()) as CreateAddressRequest
+      const body = (await request.json()) as UpdateAddressesRequest
       const { addressName, addressLine, city, district, isDefault } = body
 
       // 1. Tìm vị trí của địa chỉ trong mảng giả lập
-      const addressIndex = MOCK_ADDRESSES.findIndex(
+      const addressIndex = mockDb.addresses.findIndex(
         (addr) => addr.addressID === Number(addressID),
       )
 
       // 2. Nếu không tìm thấy, trả về lỗi 404
       if (addressIndex === -1) {
         return HttpResponse.json(
-          { message: 'Không tìm thấy địa chỉ để cập nhật' },
+          { message: 'Không tìm thấy địa chỉ để cập nhật', data: null },
           { status: 404 },
         )
       }
@@ -66,22 +81,22 @@ export const addressHandlers = [
       // Nếu bản ghi này được sửa thành mặc định (true),
       // thì tất cả các bản ghi khác phải thành false.
       if (isDefault) {
-        MOCK_ADDRESSES.forEach((addr) => {
+        mockDb.addresses.forEach((addr) => {
           addr.isDefault = false
         })
       }
 
       // 4. Cập nhật dữ liệu mới vào mảng
       const updatedAddress = {
-        ...MOCK_ADDRESSES[addressIndex], // Giữ lại các field cũ nếu có (vd: createdAt)
-        addressName,
-        addressLine,
-        city,
-        district,
-        isDefault,
+        ...mockDb.addresses[addressIndex],
+        addressName: addressName ?? mockDb.addresses[addressIndex].addressName,
+        addressLine: addressLine ?? mockDb.addresses[addressIndex].addressLine,
+        city: city ?? mockDb.addresses[addressIndex].city,
+        district: district ?? mockDb.addresses[addressIndex].district,
+        isDefault: isDefault ?? mockDb.addresses[addressIndex].isDefault,
       }
 
-      MOCK_ADDRESSES[addressIndex] = updatedAddress
+      mockDb.addresses[addressIndex] = updatedAddress
 
       return HttpResponse.json({
         message: 'Cập nhật địa chỉ thành công',
@@ -90,41 +105,52 @@ export const addressHandlers = [
     },
   ),
   // 4. DELETE /users/addresses/:addressID - Xóa địa chỉ
-  http.delete(`${BASE_URL}/users/addresses/:addressID`, ({ params }) => {
+  http.delete(`${BASE_URL}/users/addresses/:addressID`, ({ params, request }) => {
+    const auth = requireSession(request.headers.get('Authorization'))
+    if (!auth.ok) return HttpResponse.json(auth.response, { status: auth.status })
+
     const { addressID } = params
 
     // Giả lập xóa địa chỉ
-    const addressIndex = MOCK_ADDRESSES.findIndex(
+    const addressIndex = mockDb.addresses.findIndex(
       (addr) => addr.addressID === Number(addressID),
     )
 
     if (addressIndex === -1) {
       return HttpResponse.json(
-        { message: 'Không tìm thấy địa chỉ để xóa' },
+        { message: 'Không tìm thấy địa chỉ để xóa', data: null },
         { status: 404 },
       )
     }
 
-    MOCK_ADDRESSES.splice(addressIndex, 1)
+    const wasDefault = mockDb.addresses[addressIndex].isDefault
+    mockDb.addresses.splice(addressIndex, 1)
+    if (wasDefault && mockDb.addresses.length > 0) {
+      mockDb.addresses[0].isDefault = true
+    }
     return HttpResponse.json({
       message: `Đã xóa địa chỉ có ID ${addressID}`,
+      data: null,
     })
   }),
 
   // 5. PATCH /users/addresses/:addressID/set-default - Thiết lập địa chỉ mặc định
   http.patch(
     `${BASE_URL}/users/addresses/:addressID/set-default`,
-    ({ params }) => {
+    ({ params, request }) => {
+      const auth = requireSession(request.headers.get('Authorization'))
+      if (!auth.ok) return HttpResponse.json(auth.response, { status: auth.status })
+
       const { addressID } = params
 
       // Giả lập thiết lập địa chỉ mặc định
-      const addressIndex = MOCK_ADDRESSES.findIndex(
+      const addressIndex = mockDb.addresses.findIndex(
         (addr) => addr.addressID === Number(addressID),
       )
 
       if (addressIndex === -1) {
         return HttpResponse.json(
-          { message: 'Không tìm thấy địa chỉ để thiết lập mặc định' },
+          { message: 'Không tìm thấy địa chỉ để thiết lập mặc định', data: null },
           { status: 404 },
         )
       }
@@ -132,11 +158,12 @@ export const addressHandlers = [
       // Logic xử lý isDefault:
       // Khi thiết lập một địa chỉ thành mặc định (true),
       // thì tất cả các địa chỉ khác phải thành false.
-      MOCK_ADDRESSES.forEach((addr, index) => {
+      mockDb.addresses.forEach((addr, index) => {
         addr.isDefault = index === addressIndex
       })
       return HttpResponse.json({
         message: `Đã thiết lập địa chỉ có ID ${addressID} làm mặc định`,
+        data: null,
       })
     },
   ),

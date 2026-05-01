@@ -27,10 +27,13 @@ const nextConfig: NextConfig = {
 
   /* Giữ nguyên phần cấu hình rewrites hiện tại của bạn */
   async rewrites() {
+    const backendBaseUrl =
+      process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:4000/api/v1'
+
     return [
       {
         source: '/api/v1/:path*',
-        destination: '/api/:path*',
+        destination: `${backendBaseUrl}/:path*`,
       },
     ]
   },

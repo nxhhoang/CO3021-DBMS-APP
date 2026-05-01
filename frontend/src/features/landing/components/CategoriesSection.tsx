@@ -51,7 +51,7 @@ const categoryMetadata: Record<
 export function CategoriesSection() {
   return (
     <section
-      className="section-padding container mx-auto px-4"
+      className="section-padding container mx-auto max-w-7xl px-4"
       id="featured-categories"
     >
       {/* HEADER */}
@@ -142,9 +142,9 @@ export function CategoriesSection() {
                 <div className="mt-10">
                   <Link
                     href={`/products?category=${cat.slug}`}
-                    className="block"
+                    className="inline-block w-fit"
                   >
-                    <Button className="btn-premium-primary group/btn relative w-full justify-between rounded-2xl py-7 text-xs tracking-wide uppercase">
+                    <Button className="btn-premium-primary group/btn relative h-12 w-fit gap-6 rounded-full px-8 text-xs tracking-wide uppercase shadow-lg shadow-slate-200/50">
                       Khám phá ngay
                       <ChevronRight
                         size={18}

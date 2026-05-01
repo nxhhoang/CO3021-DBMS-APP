@@ -17,9 +17,9 @@ export default function LandingPage() {
       <HeroSection />
       <HotDeals />
       <CategoriesSection />
+      <BrandLogos />
       <PromoBanners />
       <FeaturedProducts />
-      <BrandLogos />
     </PageBackground>
   )
 }

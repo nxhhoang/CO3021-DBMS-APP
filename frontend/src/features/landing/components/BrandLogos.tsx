@@ -1,6 +1,8 @@
 'use client'
 
 import React from 'react'
+import { motion } from 'framer-motion'
+
 
 const BRANDS = [
   {
@@ -31,22 +33,41 @@ const BRANDS = [
 
 export function BrandLogos() {
   return (
-    <section className="container mx-auto border-t border-slate-50 px-4 py-20">
+    <section className="container mx-auto max-w-7xl border-t border-slate-50 px-4 py-20">
       <div className="mb-12 text-center">
         <p className="text-xs font-bold tracking-[0.2em] text-slate-400 uppercase">
           Thương hiệu đồng hành
         </p>
       </div>
-      <div className="flex flex-wrap items-center justify-center gap-12 opacity-40 grayscale transition-all md:gap-20">
+      <motion.div
+        initial="hidden"
+        whileInView="show"
+        viewport={{ once: true, margin: '-100px' }}
+        variants={{
+          hidden: { opacity: 0 },
+          show: {
+            opacity: 1,
+            transition: {
+              staggerChildren: 0.1,
+            },
+          },
+        }}
+        className="flex flex-wrap items-center justify-center gap-12 opacity-40 grayscale transition-all md:gap-20"
+      >
         {BRANDS.map((brand) => (
-          <img
+          <motion.img
             key={brand.name}
+            variants={{
+              hidden: { opacity: 0, y: 20, scale: 0.8 },
+              show: { opacity: 1, y: 0, scale: 1 },
+            }}
+            transition={{ type: 'spring', stiffness: 300, damping: 20 }}
             src={brand.logo}
             alt={brand.name}
             className="h-8 w-auto object-contain transition-all hover:opacity-100 hover:grayscale-0"
           />
         ))}
-      </div>
+      </motion.div>
     </section>
   )
 }

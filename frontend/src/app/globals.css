@@ -113,6 +113,10 @@ body {
   --color-info: var(--color-status-info);
   --color-border: var(--border);
   --color-ring: var(--ring);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
 
   --font-sans: var(--font-inter);
   --font-display: var(--font-jakarta);

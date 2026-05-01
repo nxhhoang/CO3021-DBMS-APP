@@ -42,7 +42,7 @@ export function FeaturedProducts() {
   const { products } = getProducts()
 
   return (
-    <section className="section-padding container mx-auto px-4">
+    <section className="section-padding container mx-auto max-w-7xl px-4">
       <div className="mb-12 text-center">
         <h2 className="text-4xl font-bold tracking-tight text-slate-900">
           Sản phẩm <span className="text-gradient-primary">Đặc sắc</span>

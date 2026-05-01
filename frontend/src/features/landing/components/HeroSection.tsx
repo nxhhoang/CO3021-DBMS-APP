@@ -123,9 +123,9 @@ export function HeroSection() {
   }, [heroSlideDuration, isHeroPaused])
 
   return (
-    <section className="relative container mx-auto px-4 py-8 sm:py-12 lg:py-20">
-      <div className="glass-card overflow-hidden lg:flex lg:items-stretch">
-        <div className="relative z-10 border-b border-white/20 bg-linear-to-br from-white/10 via-white/5 to-transparent px-6 py-8 sm:px-8 sm:py-10 lg:flex lg:w-1/2 lg:items-center lg:border-r lg:border-b-0 lg:px-10 lg:py-12 xl:px-12">
+    <section className="relative container mx-auto px-4 py-4 sm:py-6 lg:py-6">
+      <div className="glass-card mx-auto max-w-7xl overflow-hidden lg:flex lg:items-stretch">
+        <div className="relative z-10 border-b border-white/20 bg-linear-to-br from-white/10 via-white/5 to-transparent px-6 py-5 sm:px-8 sm:py-6 lg:flex lg:w-[45%] lg:items-center lg:border-r lg:border-b-0 lg:px-8 lg:py-12 xl:px-10">
           <div className="pointer-events-none absolute inset-0 -z-10">
             <div className="absolute -top-28 left-14 h-64 w-64 rounded-full bg-blue-100/40 blur-3xl" />
             <div className="absolute top-1/2 -right-10 h-48 w-48 rounded-full bg-cyan-100/30 blur-3xl" />
@@ -134,25 +134,25 @@ export function HeroSection() {
           <div className="animate-in fade-in slide-in-from-left-8 relative duration-1000">
             <span className="glass-badge-blue">Danh mục nổi bật</span>
 
-            <h1 className="font-display animate-in fade-in slide-in-from-left-12 mt-5 text-4xl leading-[1.1] font-bold tracking-tight text-slate-900 delay-150 duration-1000 sm:text-5xl lg:mt-6 lg:text-6xl xl:text-[3.8rem]">
+            <h1 className="font-display animate-in fade-in slide-in-from-left-12 mt-3 text-2xl leading-[1.1] font-bold tracking-tight text-slate-900 delay-150 duration-1000 sm:text-3xl lg:mt-4 lg:text-4xl xl:text-5xl">
               Nâng tầm phong cách <br />
               <span className="text-gradient-primary">Sống hiện đại</span>
             </h1>
 
-            <p className="animate-in fade-in slide-in-from-left-16 mt-5 max-w-xl text-sm leading-7 text-slate-600 delay-300 duration-1000 sm:text-base lg:mt-6 lg:text-lg lg:leading-8">
+            <p className="animate-in fade-in slide-in-from-left-16 mt-3 max-w-xl text-xs leading-6 text-slate-600 delay-300 duration-1000 sm:text-sm lg:mt-4 lg:text-base lg:leading-7">
               Từ công nghệ đột phá đến thời trang đẳng cấp — Khám phá hệ sinh
               thái sản phẩm cao cấp được tuyển chọn dành riêng cho bạn.
             </p>
 
-            <div className="animate-in fade-in slide-in-from-bottom-8 mt-8 flex flex-wrap gap-4 delay-500 duration-1000 lg:mt-10">
+            <div className="animate-in fade-in slide-in-from-bottom-8 mt-5 flex flex-wrap gap-3 delay-500 duration-1000 lg:mt-6">
               <Button
                 onClick={handleExploreProducts}
-                className="btn-premium-primary group relative h-12 px-8 text-sm sm:h-14 sm:px-10"
+                className="btn-premium-primary group relative h-10 overflow-hidden px-6 text-xs sm:h-11 sm:px-8"
               >
                 <span className="relative z-10 flex items-center gap-2">
                   Khám phá ngay
                   <ChevronRight
-                    size={18}
+                    size={16}
                     className="transition-transform group-hover:translate-x-1"
                   />
                 </span>
@@ -162,7 +162,7 @@ export function HeroSection() {
               <Button
                 variant="outline"
                 onClick={handleViewAllCategories}
-                className="btn-premium-secondary h-12 px-8 text-sm sm:h-14 sm:px-10"
+                className="btn-premium-secondary h-10 px-6 text-xs sm:h-11 sm:px-8"
               >
                 Xem các sản phẩm nổi bật
               </Button>
@@ -171,7 +171,7 @@ export function HeroSection() {
         </div>
 
         <div
-          className="group/hero relative h-96 overflow-hidden bg-slate-200 sm:h-112 lg:h-auto lg:min-h-144 lg:w-1/2"
+          className="group/hero relative h-64 overflow-hidden bg-slate-200 sm:h-72 lg:h-auto lg:min-h-[32rem] lg:w-[55%]"
           onMouseEnter={() => setIsHeroPaused(true)}
           onMouseLeave={() => setIsHeroPaused(false)}
         >
@@ -180,8 +180,10 @@ export function HeroSection() {
               key={slide.src}
               src={slide.src}
               alt={slide.alt}
-              className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-700 ease-in-out ${
-                index === activeHeroSlide ? 'opacity-100' : 'opacity-0'
+              className={`absolute inset-0 h-full w-full object-cover transition-all duration-1000 ease-in-out ${
+                index === activeHeroSlide
+                  ? 'scale-105 opacity-100'
+                  : 'scale-100 opacity-0'
               }`}
             />
           ))}
@@ -237,7 +239,7 @@ export function HeroSection() {
       </div>
 
       {/* QUICK CATEGORY NAV */}
-      <div className="mt-20 grid grid-cols-2 gap-8 md:grid-cols-5">
+      <div className="mt-10 grid grid-cols-2 gap-10 md:grid-cols-5 md:gap-12 lg:gap-16">
         {[
           {
             label: 'Laptops',
@@ -282,14 +284,14 @@ export function HeroSection() {
               index === 4 && 'delay-500',
             )}
           >
-            <div className="icon-box-premium mb-4 flex h-16 w-16 items-center justify-center rounded-2xl border border-slate-100 bg-white text-slate-600 shadow-sm transition-all duration-300 group-hover:border-transparent group-hover:bg-blue-600 group-hover:text-white group-hover:shadow-xl group-hover:shadow-blue-500/20">
+            <div className="icon-box-premium mb-4 flex h-20 w-20 items-center justify-center rounded-2xl border border-slate-100 bg-white text-slate-600 shadow-sm transition-all duration-300 group-hover:border-transparent group-hover:bg-blue-600 group-hover:text-white group-hover:shadow-xl group-hover:shadow-blue-500/20">
               <item.icon
-                size={28}
+                size={32}
                 strokeWidth={2}
                 className="transition-transform group-hover:scale-110"
               />
             </div>
-            <h3 className="text-[13px] font-bold text-slate-800 transition-colors group-hover:text-blue-600">
+            <h3 className="text-sm font-bold text-slate-800 transition-colors group-hover:text-blue-600">
               {item.label}
             </h3>
             <p className="mt-1.5 translate-y-2 text-[10px] font-medium text-slate-500 opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100">

@@ -1,21 +1,78 @@
 'use client'
 
-import React from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { ChevronRight } from 'lucide-react'
 import Link from 'next/link'
 import { ProductCard, useProducts } from '@/features/products'
 import { ProductResponse } from '@/types/product.types'
 import { SORT_BY } from '@/constants/enum'
+import { cn } from '@/lib/utils'
+
 
 export function HotDeals() {
+  const scrollRef = useRef<HTMLDivElement>(null)
+  const [isPaused, setIsPaused] = useState(false)
+  const [showScrollbar, setShowScrollbar] = useState(false)
+
   // Just pick some products as "Hot Deals"
   const hotProducts = useProducts({
     sort: SORT_BY.SOLD_DESC,
-    limit: 5,
+    limit: 10,
   }).products
 
+  const productsToDisplay = [...hotProducts, ...hotProducts]
+
+  useEffect(() => {
+    const scrollContainer = scrollRef.current
+    if (!scrollContainer) return
+
+    let animationId: number
+
+    const scroll = () => {
+      if (isPaused) return
+
+      // Smooth increment
+      scrollContainer.scrollLeft += 0.8 // Slightly faster for infinite loop feel
+      
+      // Seamless jump: if we've scrolled past the first half (the original set)
+      // we jump back to the start. The user won't notice because the items are identical.
+      if (scrollContainer.scrollLeft >= scrollContainer.scrollWidth / 2) {
+        scrollContainer.scrollLeft = 0
+      }
+      
+      animationId = requestAnimationFrame(scroll)
+    }
+
+    if (!isPaused) {
+      animationId = requestAnimationFrame(scroll)
+    }
+
+    return () => {
+      if (animationId) cancelAnimationFrame(animationId)
+    }
+  }, [isPaused])
+
+  useEffect(() => {
+    const container = scrollRef.current
+    if (!container) return
+
+    const handleWheel = (e: WheelEvent) => {
+      // Lock vertical scroll and only allow horizontal
+      if (e.deltaY !== 0) {
+        e.preventDefault()
+        container.scrollLeft += e.deltaY
+      }
+    }
+
+    container.addEventListener('wheel', handleWheel, { passive: false })
+
+    return () => {
+      container.removeEventListener('wheel', handleWheel)
+    }
+  }, [])
+
   return (
-    <section className="section-padding container mx-auto px-4">
+    <section className="section-padding container mx-auto max-w-7xl px-4">
       {/* Section: Hot Deals */}
       <div className="mb-10 flex flex-col items-center justify-between gap-4 sm:flex-row">
         <div className="animate-in fade-in slide-in-from-left-8 duration-1000">
@@ -39,16 +96,38 @@ export function HotDeals() {
         </Link>
       </div>
 
-      <div className="scrollbar-hide animate-in fade-in slide-in-from-bottom-12 flex gap-6 overflow-x-auto pb-8 delay-300 duration-1000">
-        {hotProducts.map((product) => (
-          <ProductCard
-            key={product._id}
-            product={product as unknown as ProductResponse}
-            showDiscount={true}
-            discountPercent={20}
-            className="min-w-[280px] md:min-w-[320px]"
-          />
-        ))}
+      <div className="relative">
+        <div
+          ref={scrollRef}
+          onMouseEnter={() => {
+            setIsPaused(true)
+            setShowScrollbar(true)
+          }}
+          onMouseLeave={() => {
+            setIsPaused(false)
+            setShowScrollbar(false)
+          }}
+          style={{
+            maskImage: 'linear-gradient(to right, transparent, black 10%, black 90%, transparent)',
+            WebkitMaskImage: 'linear-gradient(to right, transparent, black 10%, black 90%, transparent)',
+            scrollbarWidth: showScrollbar ? 'thin' : 'none',
+            msOverflowStyle: showScrollbar ? 'auto' : 'none',
+          }}
+          className={cn(
+            'scrollbar-hide animate-in fade-in slide-in-from-bottom-12 flex gap-5 overflow-x-auto pb-8 delay-300 duration-1000',
+            showScrollbar && 'scrollbar-default',
+          )}
+        >
+          {productsToDisplay.map((product, index) => (
+            <ProductCard
+              key={`${product._id}-${index}`}
+              product={product as unknown as ProductResponse}
+              showDiscount={true}
+              discountPercent={20}
+              className="min-w-[220px] md:min-w-[260px]"
+            />
+          ))}
+        </div>
       </div>
     </section>
   )

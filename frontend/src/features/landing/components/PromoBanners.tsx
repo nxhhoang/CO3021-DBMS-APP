@@ -6,7 +6,7 @@ import Link from 'next/link'
 
 export function PromoBanners() {
   return (
-    <section className="section-padding container mx-auto px-4">
+    <section className="section-padding container mx-auto max-w-7xl px-4">
       <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
         {/* BANNER 1 */}
         <div className="group relative h-[400px] overflow-hidden rounded-[2.5rem] bg-slate-900">

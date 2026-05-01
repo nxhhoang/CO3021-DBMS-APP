@@ -44,7 +44,10 @@ export default function AttributeInformation({
     setAttributes(newAttrs)
   }
 
-  const handleDataTypeChange = (idx: number, dataType: string) => {
+  const handleDataTypeChange = (
+    idx: number,
+    dataType: DynamicAttributeInput['dataType'],
+  ) => {
     const newAttrs = [...attributes]
     newAttrs[idx] = {
       ...newAttrs[idx],
@@ -107,7 +110,12 @@ export default function AttributeInformation({
             <div className="col-span-2">
               <Select
                 value={attr.dataType}
-                onValueChange={(value) => handleDataTypeChange(idx, value)}
+                onValueChange={(value) =>
+                  handleDataTypeChange(
+                    idx,
+                    value as DynamicAttributeInput['dataType'],
+                  )
+                }
               >
                 <SelectTrigger className="select-premium-trigger h-11 rounded-xl px-4 text-xs">
                   <SelectValue />

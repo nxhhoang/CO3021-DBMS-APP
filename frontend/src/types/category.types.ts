@@ -5,6 +5,7 @@ export interface DynamicAttribute {
   label: string
   dataType: 'string' | 'number' | 'boolean'
   options: string[]
+  isRequired?: boolean
 }
 
 export interface DynamicAttributeInput {
@@ -12,6 +13,7 @@ export interface DynamicAttributeInput {
   label: string
   dataType: 'string' | 'number' | 'boolean'
   options?: string[]
+  isRequired?: boolean
 }
 
 export interface Category {

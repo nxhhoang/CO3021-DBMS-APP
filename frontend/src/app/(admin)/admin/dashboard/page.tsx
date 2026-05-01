@@ -254,13 +254,13 @@ export default function DashboardPage() {
                     fontSize: '10px',
                     textTransform: 'uppercase',
                   }}
-                  formatter={(value: number | string, name: string) => {
+                  formatter={(value, name) => {
                     const label =
                       name === 'totalRevenue' ? 'Doanh thu' : 'Số đơn'
                     const formattedValue =
                       name === 'totalRevenue'
-                        ? `${Number(value).toLocaleString()}đ`
-                        : `${value} đơn`
+                        ? `${Number(value ?? 0).toLocaleString()}đ`
+                        : `${value ?? 0} đơn`
                     return [formattedValue, label]
                   }}
                 />

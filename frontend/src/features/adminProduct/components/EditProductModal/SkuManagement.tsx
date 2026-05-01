@@ -8,11 +8,11 @@ import { Plus, Package, Trash2, Loader2 } from 'lucide-react'
 import { toast } from 'sonner'
 import { inventoryService } from '@/services/inventory.service'
 import { Category } from '@/types/category.types'
-import { ProductResponse } from '@/types/product.types'
+import { ProductDetail } from '@/types/product.types'
 import { Badge } from '@/components/ui/badge'
 
 interface SkuManagementProps {
-  product: ProductResponse
+  product: ProductDetail
   categories: Category[]
   onRefresh: () => void
 }

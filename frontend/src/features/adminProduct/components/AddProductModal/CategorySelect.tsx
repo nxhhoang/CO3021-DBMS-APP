@@ -157,7 +157,6 @@ export default function CategorySelect({
               <Field key={attr.key}>
                 <label className="mb-2 block text-[11px] font-medium text-slate-500">
                   {attr.label || attr.key}
-                  {attr.isRequired ? ' *' : ''}
                 </label>
 
                 <Controller

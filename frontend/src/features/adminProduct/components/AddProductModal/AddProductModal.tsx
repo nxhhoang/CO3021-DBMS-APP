@@ -60,7 +60,7 @@ export default function AddProductModal({
   })
 
   const selectedCategoryId = watch('categoryID')
-  const basePrice = watch('basePrice')
+  const basePrice = Number(watch('basePrice') ?? 0)
 
   useEffect(() => {
     if (isOpen) {

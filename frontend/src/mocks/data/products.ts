@@ -6,6 +6,7 @@ import { Product, ProductDetail } from '@/types'
  * - Keep the canonical product ids as `product-<n>` so other mock modules can reference safely.
  */
 const MOCK_PRODUCTS: Product[] = [
+  // LAPTOPS
   {
     _id: 'product-1',
     categoryID: 'cat-laptop',
@@ -39,6 +40,36 @@ const MOCK_PRODUCTS: Product[] = [
     totalSold: 41,
   },
   {
+    _id: 'product-7',
+    categoryID: 'cat-laptop',
+    name: 'ASUS ROG Zephyrus G14',
+    slug: 'asus-rog-zephyrus-g14',
+    basePrice: 38990000,
+    description: 'Laptop gaming nhỏ gọn nhưng cực kỳ mạnh mẽ.',
+    images: ['https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?auto=format&fit=crop&q=80&w=1200'],
+    attributes: { brand: 'ASUS', cpu: 'Ryzen 9', screenSize: 14, os: 'Windows 11' },
+    isActive: true,
+    avgRating: 4.6,
+    totalReviews: 75,
+    totalSold: 53,
+  },
+  {
+    _id: 'product-8',
+    categoryID: 'cat-laptop',
+    name: 'Lenovo ThinkPad X1 Carbon Gen 12',
+    slug: 'thinkpad-x1-carbon-gen-12',
+    basePrice: 49990000,
+    description: 'Biểu tượng của laptop doanh nhân, bền bỉ và bàn phím tuyệt vời.',
+    images: ['https://images.unsplash.com/photo-1541807084-5c52b6b3adef?auto=format&fit=crop&q=80&w=1200'],
+    attributes: { brand: 'Lenovo', cpu: 'Core i7', screenSize: 14, os: 'Windows 11' },
+    isActive: true,
+    avgRating: 4.9,
+    totalReviews: 120,
+    totalSold: 88,
+  },
+
+  // PHONES
+  {
     _id: 'product-3',
     categoryID: 'cat-dien-thoai',
     name: 'iPhone 15 Pro Max',
@@ -46,7 +77,7 @@ const MOCK_PRODUCTS: Product[] = [
     basePrice: 33990000,
     description: 'Khung titan, camera mạnh, trải nghiệm iOS mượt.',
     images: [
-      'https://images.unsplash.com/photo-1696446701796-da61225697cc?auto=format&fit=crop&q=80&w=1200',
+      'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&q=80&w=1200',
     ],
     attributes: { brand: 'Apple', os: 'iOS', battery: 4500 },
     isActive: true,
@@ -71,6 +102,22 @@ const MOCK_PRODUCTS: Product[] = [
     totalSold: 101,
   },
   {
+    _id: 'product-9',
+    categoryID: 'cat-dien-thoai',
+    name: 'Xiaomi 14 Ultra',
+    slug: 'xiaomi-14-ultra',
+    basePrice: 26990000,
+    description: 'Ống kính Leica, cảm biến 1 inch, đỉnh cao nhiếp ảnh di động.',
+    images: ['https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&q=80&w=1200'],
+    attributes: { brand: 'Xiaomi', os: 'Android', battery: 5000 },
+    isActive: true,
+    avgRating: 4.7,
+    totalReviews: 85,
+    totalSold: 42,
+  },
+
+  // WATCHES
+  {
     _id: 'product-5',
     categoryID: 'cat-dong-ho',
     name: 'Apple Watch Ultra 2',
@@ -87,6 +134,36 @@ const MOCK_PRODUCTS: Product[] = [
     totalSold: 28,
   },
   {
+    _id: 'product-10',
+    categoryID: 'cat-dong-ho',
+    name: 'Samsung Galaxy Watch 6 Classic',
+    slug: 'galaxy-watch-6-classic',
+    basePrice: 8990000,
+    description: 'Vòng xoay bezel vật lý, thiết kế cổ điển sang trọng.',
+    images: ['https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&q=80&w=1200'],
+    attributes: { brand: 'Samsung', material: 'Thép không gỉ', waterResistance: 50 },
+    isActive: true,
+    avgRating: 4.5,
+    totalReviews: 140,
+    totalSold: 95,
+  },
+  {
+    _id: 'product-11',
+    categoryID: 'cat-dong-ho',
+    name: 'Garmin Fenix 7 Pro',
+    slug: 'garmin-fenix-7-pro',
+    basePrice: 18990000,
+    description: 'Đồng hồ GPS đa môn thể thao cao cấp với sạc năng lượng mặt trời.',
+    images: ['https://images.unsplash.com/photo-1508685096489-7aacd43bd3b1?auto=format&fit=crop&q=80&w=1200'],
+    attributes: { brand: 'Garmin', material: 'Titan', waterResistance: 100 },
+    isActive: true,
+    avgRating: 4.9,
+    totalReviews: 50,
+    totalSold: 22,
+  },
+
+  // SHOES
+  {
     _id: 'product-6',
     categoryID: 'cat-giay',
     name: 'Nike Air Jordan 1 Low',
@@ -102,6 +179,50 @@ const MOCK_PRODUCTS: Product[] = [
     totalReviews: 88,
     totalSold: 72,
   },
+  {
+    _id: 'product-12',
+    categoryID: 'cat-giay',
+    name: 'Adidas Ultraboost Light',
+    slug: 'adidas-ultraboost-light',
+    basePrice: 4500000,
+    description: 'Công nghệ Boost êm ái nhất của Adidas dành cho chạy bộ.',
+    images: ['https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&q=80&w=1200'],
+    attributes: { brand: 'Adidas', gender: 'Unisex', sportType: 'Running' },
+    isActive: true,
+    avgRating: 4.8,
+    totalReviews: 210,
+    totalSold: 156,
+  },
+
+  // CAMERAS
+  {
+    _id: 'product-13',
+    categoryID: 'cat-camera',
+    name: 'Sony A7 IV',
+    slug: 'sony-a7-iv',
+    basePrice: 58990000,
+    description: 'Máy ảnh full-frame hybrid hoàn hảo cho cả chụp và quay.',
+    images: ['https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&q=80&w=1200'],
+    attributes: { brand: 'Sony', resolution: '33MP', sensorType: 'CMOS', videoQuality: '4K' },
+    isActive: true,
+    avgRating: 4.9,
+    totalReviews: 45,
+    totalSold: 19,
+  },
+  {
+    _id: 'product-14',
+    categoryID: 'cat-camera',
+    name: 'Fujifilm X-T5',
+    slug: 'fujifilm-x-t5',
+    basePrice: 43990000,
+    description: 'Thiết kế retro, giả lập màu phim tuyệt đẹp.',
+    images: ['https://images.unsplash.com/photo-1502920917128-1aa500764cbd?auto=format&fit=crop&q=80&w=1200'],
+    attributes: { brand: 'Fujifilm', resolution: '40MP', sensorType: 'CMOS', videoQuality: '4K' },
+    isActive: true,
+    avgRating: 4.8,
+    totalReviews: 32,
+    totalSold: 14,
+  },
 ]
 
 /**
@@ -114,12 +235,14 @@ export const MOCK_PRODUCT_DETAILS: Record<string, ProductDetail> = {
     inventory: [
       {
         sku: 'MBP-M3-16-512',
+        productID: 'product-1',
         skuPrice: 45990000,
         stockQuantity: 12,
         attributes: { color: 'Silver', ram: '16GB', storage: '512GB' },
       },
       {
         sku: 'MBP-M3-32-1TB',
+        productID: 'product-1',
         skuPrice: 52990000,
         stockQuantity: 5,
         attributes: { color: 'Space Gray', ram: '32GB', storage: '1TB' },
@@ -132,12 +255,14 @@ export const MOCK_PRODUCT_DETAILS: Record<string, ProductDetail> = {
     inventory: [
       {
         sku: 'IP15PM-256-BLACK',
+        productID: 'product-3',
         skuPrice: 33990000,
         stockQuantity: 18,
         attributes: { color: 'Black', storage: '256GB' },
       },
       {
         sku: 'IP15PM-512-NATURAL',
+        productID: 'product-3',
         skuPrice: 36990000,
         stockQuantity: 9,
         attributes: { color: 'Natural', storage: '512GB' },

@@ -26,6 +26,7 @@ export interface SKU {
 
 export interface Inventory {
   sku: string
+  productID?: string
   skuPrice?: number
   sku_price?: number
   attributes: Record<string, string | number | boolean>

@@ -47,6 +47,7 @@ export const inventoryHandlers = [
 
     mockDb.inventory.push({
       sku: body.sku,
+      productID: body.productID,
       skuPrice: body.skuPrice,
       sku_price: body.skuPrice,
       stockQuantity: body.stockQuantity,

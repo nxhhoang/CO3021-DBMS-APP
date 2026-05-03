@@ -126,13 +126,7 @@ export const productHandlers = [
     void categoryID
 
     const skus = mockDb.inventory
-      .filter((inv) => {
-        const sku = inv.sku
-        if (id === 'product-1') return sku.startsWith('MBP')
-        if (id === 'product-3') return sku.startsWith('IP15PM')
-        if (id === 'product-6') return sku.startsWith('AJ1L')
-        return false
-      })
+      .filter((inv) => inv.productID === id)
       .map((inv) => ({
         sku: inv.sku,
         skuPrice: inv.skuPrice ?? inv.sku_price ?? product.basePrice,
@@ -147,6 +141,7 @@ export const productHandlers = [
       inventory: skus.length > 0 ? skus : [
         {
           sku: `${id}-DEFAULT`,
+          productID: id,
           skuPrice: product.basePrice,
           sku_price: product.basePrice,
           attributes: {},
@@ -194,6 +189,7 @@ export const productHandlers = [
       for (const sku of body.skus) {
         mockDb.inventory.push({
           sku: sku.sku,
+          productID: newProduct._id,
           skuPrice: sku.skuPrice,
           sku_price: sku.skuPrice,
           stockQuantity: sku.stockQuantity,

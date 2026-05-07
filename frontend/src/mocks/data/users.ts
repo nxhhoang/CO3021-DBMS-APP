@@ -1,4 +1,4 @@
-import { UserWithCredentials, TokenPayload } from '@/types';
+import { TokenPayload, UserWithCredentials } from '@/types'
 
 export const MOCK_USERS: UserWithCredentials[] = [
   {
@@ -7,7 +7,6 @@ export const MOCK_USERS: UserWithCredentials[] = [
     email: 'admin@example.com',
     phoneNum: '0900000000',
     role: 'ADMIN',
-    avatar: '',
     password: '123',
   },
   {
@@ -16,10 +15,9 @@ export const MOCK_USERS: UserWithCredentials[] = [
     email: 'customer@example.com',
     phoneNum: '0911111111',
     role: 'CUSTOMER',
-    avatar: '',
     password: '123',
   },
-];
+]
 
 // Giả lập bảng Sessions/Tokens
 export const MOCK_SESSIONS: (TokenPayload & { userId: string })[] = [
@@ -33,4 +31,4 @@ export const MOCK_SESSIONS: (TokenPayload & { userId: string })[] = [
     refreshToken: 'refresh-token-customer',
     userId: 'user-customer-001',
   },
-];
+]

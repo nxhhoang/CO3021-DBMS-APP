@@ -16,20 +16,32 @@ class ReviewService {
     return await this.collection.find({ productID: new ObjectId(productId) }).toArray()
   }
 
-  async createReview(productId: string, body: CreateReviewReqBody, userId: string, userName: string) {
-    // Verified Purchase check: user must have a DELIVERED order containing this productId
-    const purchaseCheck = await query(
-      `SELECT 1
-       FROM ORDERS o
-       JOIN ITEMS oi ON oi.orderID = o.orderID
-       WHERE o.userID = $1
-         AND oi.productID = $2
-         AND o.status = 'DELIVERED'
-       LIMIT 1`,
+  async createReview(productId: string, body: CreateReviewReqBody, userId: string) {
+    // Verified Purchase check AND Get User Name
+    const userCheck = await query(
+      `SELECT u.fullname AS "fullName", (
+         SELECT 1 FROM ORDERS o 
+         JOIN ITEMS oi ON oi.orderID = o.orderID 
+         WHERE o.userID = u.userID 
+           AND oi.productID = $2 
+           AND o.status = 'DELIVERED' 
+         LIMIT 1
+       ) as "hasPurchased"
+       FROM USERS u 
+       WHERE u.userID = $1`,
       [userId, productId]
     )
 
-    if (purchaseCheck.rows.length === 0) {
+    if (userCheck.rows.length === 0) {
+      throw new ErrorWithStatus({
+        message: 'User not found.',
+        status: HTTP_STATUS.NOT_FOUND
+      })
+    }
+
+    const { fullName, hasPurchased } = userCheck.rows[0]
+
+    if (!hasPurchased) {
       throw new ErrorWithStatus({
         message: 'You can only review products you have purchased and received.',
         status: HTTP_STATUS.FORBIDDEN
@@ -39,7 +51,7 @@ class ReviewService {
     const newReview = new Review({
       productID: new ObjectId(productId),
       userID: userId,
-      userName: userName,
+      userName: fullName,
       rating: body.rating,
       comment: body.comment,
       images: body.images || []
@@ -48,17 +60,19 @@ class ReviewService {
     const result = await this.collection.insertOne(newReview)
 
     // Wait for the query to ensure accurate aggregation
-    const stats = await this.collection.aggregate([
-      { $match: { productID: new ObjectId(productId) } },
-      { $group: { _id: null, avgRating: { $avg: '$rating' }, totalReviews: { $sum: 1 } } }
-    ]).toArray()
+    const stats = await this.collection
+      .aggregate([
+        { $match: { productID: new ObjectId(productId) } },
+        { $group: { _id: null, avgRating: { $avg: '$rating' }, totalReviews: { $sum: 1 } } }
+      ])
+      .toArray()
 
     const totalReviews = stats[0]?.totalReviews || 0
     let avgRating = stats[0]?.avgRating || 0
     avgRating = Math.round(avgRating * 10) / 10
 
     // Trigger update asynchronously
-    productService.updateProductRating(productId, avgRating, totalReviews).catch(err => {
+    productService.updateProductRating(productId, avgRating, totalReviews).catch((err) => {
       console.error('[ReviewService] Failed to update product rating:', err)
     })
 

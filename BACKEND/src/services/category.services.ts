@@ -41,6 +41,10 @@ class CategoryService {
       dynamicAttributes: body.dynamicAttributes?.map((attr) => ({
         ...attr,
         options: attr.options ?? []
+      })),
+      variantAttributes: body.variantAttributes?.map((attr) => ({
+        ...attr,
+        options: attr.options ?? []
       }))
     })
 
@@ -75,6 +79,12 @@ class CategoryService {
     if (body.isActive !== undefined) updateData.isActive = body.isActive
     if (body.dynamicAttributes !== undefined) {
       updateData.dynamicAttributes = body.dynamicAttributes.map((attr) => ({
+        ...attr,
+        options: attr.options ?? []
+      }))
+    }
+    if (body.variantAttributes !== undefined) {
+      updateData.variantAttributes = body.variantAttributes.map((attr) => ({
         ...attr,
         options: attr.options ?? []
       }))

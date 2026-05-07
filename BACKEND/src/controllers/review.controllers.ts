@@ -20,8 +20,7 @@ export const createReviewController = async (
 ) => {
   const { productId } = req.params
   const { userId } = req.decoded_authorization as TokenPayload
-  const userName = userId
-  const result = await reviewService.createReview(productId, req.body, userId, userName)
+  const result = await reviewService.createReview(productId, req.body, userId)
 
   res.status(HTTP_STATUS.CREATED).json({
     message: REVIEW_MESSAGES.REVIEW_CREATED,

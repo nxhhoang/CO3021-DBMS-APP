@@ -21,6 +21,7 @@ export interface CreateCategoryReqBody {
   description?: string
   isActive?: boolean
   dynamicAttributes?: DynamicAttributeInput[]
+  variantAttributes?: DynamicAttributeInput[]
 }
 
 export interface UpdateCategoryReqBody {
@@ -29,4 +30,5 @@ export interface UpdateCategoryReqBody {
   description?: string
   isActive?: boolean
   dynamicAttributes?: DynamicAttributeInput[]
+  variantAttributes?: DynamicAttributeInput[]
 }

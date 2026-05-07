@@ -1,25 +1,18 @@
-'use client';
+'use client'
 
-import { useEffect, useState } from 'react';
-import { enableMocking } from '@/mocks';
+import { useEffect, useState } from 'react'
+import { enableMocking } from '@/mocks'
 
 export default function MockProvider({
   children,
 }: {
-  children: React.ReactNode;
+  children: React.ReactNode
 }) {
-  const [isReady, setIsReady] = useState(false);
+  const [isReady, setIsReady] = useState<boolean>(false)
 
   useEffect(() => {
-    const init = async () => {
-      await enableMocking();
-      setIsReady(true);
-    };
-
-    if (!isReady) {
-      init();
-    }
-  }, [isReady]);
+    enableMocking().then(() => setIsReady(true))
+  }, [])
 
   // Trong khi chờ MSW khởi động, không render con để tránh gọi API hụt
   if (!isReady && process.env.NEXT_PUBLIC_API_MOCKING === 'true') {
@@ -29,8 +22,8 @@ export default function MockProvider({
           Initializing Mock Environment...
         </p>
       </div>
-    );
+    )
   }
 
-  return <>{children}</>;
+  return <>{children}</>
 }

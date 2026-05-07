@@ -132,11 +132,3 @@ chmod +x init.sh clean.sh
 ```bash
 ./init.sh
 ```
-
-### Tóm gọn
-- Chạy postgre_seeder.py tạo users, addresses
-- Chạy docker tạo server database
-- Chờ 10 phút dùng lệnh để xem docker logs -f postgres_db, khi nào thấy có chữ chấp nhận connections là xong
-- Trong lúc chờ có thể chạy mongo_seeder.py
-- Chạy sync_inventory.py chỉ khi postgreSQL hoàn tất thêm users và addresses
-- Chạy order_seeder.py để tạo orders, items, payments, lưu ý shippingAddr lưu ở dạng BJSON để phục vụ snapshot

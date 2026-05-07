@@ -1,5 +1,5 @@
-import { cva, type VariantProps } from 'class-variance-authority';
-import { cn } from '@/lib/utils';
+import { cva, type VariantProps } from 'class-variance-authority'
+import { cn } from '@/lib/utils'
 
 const wireframeVariants = cva(
   'relative rounded-lg border-2 border-dashed p-4',
@@ -14,13 +14,13 @@ const wireframeVariants = cva(
       tone: 'default',
     },
   },
-);
+)
 
 export interface WireframeProps
   extends
     React.HTMLAttributes<HTMLDivElement>,
     VariantProps<typeof wireframeVariants> {
-  label?: string;
+  label?: string
 }
 
 export function Wireframe({
@@ -31,7 +31,7 @@ export function Wireframe({
   ...props
 }: WireframeProps) {
   if (process.env.NODE_ENV === 'production') {
-    return null;
+    return null
   }
 
   return (
@@ -44,5 +44,5 @@ export function Wireframe({
 
       {children}
     </div>
-  );
+  )
 }

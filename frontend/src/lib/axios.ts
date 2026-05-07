@@ -1,63 +1,122 @@
-import axios from 'axios';
-import { BASE_URL } from '@/constants/api';
+import axios, {
+  AxiosError,
+  AxiosHeaders,
+  InternalAxiosRequestConfig,
+} from 'axios'
+import { BASE_URL } from '@/constants/api'
+import { tokenStorage } from '@/services/tokenStorage'
 
 declare global {
   interface Window {
-    api: typeof api;
-    privateApi: typeof privateApi;
+    api: typeof api
+    privateApi: typeof privateApi
   }
 }
 
 export const api = axios.create({
   baseURL: BASE_URL,
-});
+  headers: {
+    'Content-Type': 'application/json',
+  },
+})
 
 export const privateApi = axios.create({
   baseURL: BASE_URL,
-});
-
-// Thêm interceptor để tự động đính kèm token vào header của privateApi
-privateApi.interceptors.request.use(
-  (config) => {
-    const token =
-      typeof window !== 'undefined'
-        ? window.localStorage.getItem('accessToken')
-        : null;
-    if (token) {
-      config.headers['Authorization'] = `Bearer ${token}`;
-    }
-    return config;
+  headers: {
+    'Content-Type': 'application/json',
   },
-  (error) => {
-    return Promise.reject(error);
-  },
-);
+})
 
-// Để tiện sử dụng trong các file khác mà không cần import lại
-if (typeof window !== 'undefined') {
-  window.api = api;
-  window.privateApi = privateApi;
+interface AxiosRequestConfigWithRetry extends InternalAxiosRequestConfig {
+  _retry?: boolean
 }
 
-// privateApi.interceptors.response.use(
-//   (response) => response,
-//   async (error) => {
-//     const originalRequest = error.config;
+let refreshPromise: Promise<string> | null = null
 
-//     if (error.response?.status === 401 && !originalRequest._retry) {
-//       originalRequest._retry = true;
+privateApi.interceptors.request.use(
+  (config: InternalAxiosRequestConfig) => {
+    const token =
+      typeof window !== 'undefined' ? tokenStorage.getAccessToken() : null
 
-//       const res = await api.post('auth/refresh-token');
+    if (token) {
+      config.headers = new AxiosHeaders(config.headers)
+      config.headers.set('Authorization', `Bearer ${token}`)
+    }
+    return config
+  },
+  (error: AxiosError) => {
+    return Promise.reject(error)
+  },
+)
 
-//       const newAccessToken = res.data.data.accessToken;
+if (typeof window !== 'undefined' && process.env.NODE_ENV === 'development') {
+  window.api = api
+  window.privateApi = privateApi
+}
 
-//       localStorage.setItem('accessToken', newAccessToken);
+privateApi.interceptors.response.use(
+  (response) => response,
+  async (error: AxiosError) => {
+    const originalRequest = error.config as
+      | AxiosRequestConfigWithRetry
+      | undefined
 
-//       originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+    if (error.response?.status !== 401) {
+      return Promise.reject(error)
+    }
 
-//       return privateApi(originalRequest);
-//     }
+    if (!originalRequest) {
+      return Promise.reject(error)
+    }
 
-//     return Promise.reject(error);
-//   },
-// );
+    if (originalRequest._retry) {
+      return Promise.reject(error)
+    }
+
+    const refreshToken =
+      typeof window !== 'undefined' ? tokenStorage.getRefreshToken() : null
+
+    if (!refreshToken) {
+      tokenStorage.clear()
+      const currentPath = window.location.pathname
+      window.location.href = `/login?redirect=${encodeURIComponent(currentPath)}`
+      return Promise.reject(error)
+    }
+
+    originalRequest._retry = true
+    try {
+      if (!refreshPromise) {
+        refreshPromise = api
+          .post('auth/refresh-token', { refreshToken })
+          .then((res) => {
+            const { accessToken: newAccessToken, refreshToken: newRefreshToken } = res.data.data
+            tokenStorage.setAccessToken(newAccessToken)
+            tokenStorage.setRefreshToken(newRefreshToken)
+            privateApi.defaults.headers.common.Authorization = `Bearer ${newAccessToken}`
+            return newAccessToken
+          })
+          .catch((err) => {
+            tokenStorage.clear()
+            const currentPath = window.location.pathname
+            window.location.href = `/login?redirect=${encodeURIComponent(currentPath)}`
+            throw err
+          })
+          .finally(() => {
+            refreshPromise = null
+          })
+      }
+
+      const newAccessToken = await refreshPromise
+
+      originalRequest.headers = new AxiosHeaders(originalRequest.headers)
+      originalRequest.headers.set('Authorization', `Bearer ${newAccessToken}`)
+
+      return privateApi(originalRequest)
+    } catch (refreshError) {
+      tokenStorage.clear()
+      const currentPath = window.location.pathname
+      window.location.href = `/login?redirect=${encodeURIComponent(currentPath)}`
+      return Promise.reject(refreshError)
+    }
+  },
+)

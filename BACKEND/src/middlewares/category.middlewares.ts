@@ -5,17 +5,17 @@ import { CATEGORY_MESSAGES } from '~/constants/messages'
 const OBJECT_ID_REGEX = /^[a-fA-F0-9]{24}$/
 const SLUG_REGEX = /^[a-z0-9]+(?:-[a-z0-9]+)*$/
 
-const dynamicAttributeSchema = {
+const attributesSchema = (fieldName: string) => ({
   optional: true,
   isArray: {
-    errorMessage: 'dynamicAttributes must be an array'
+    errorMessage: `${fieldName} must be an array`
   },
   custom: {
     options: (attrs: unknown[]) => {
       if (!Array.isArray(attrs)) return true
       const keys = attrs.map((a: any) => a?.key)
       if (new Set(keys).size !== keys.length) {
-        throw new Error('dynamicAttributes keys must be unique')
+        throw new Error(`${fieldName} keys must be unique`)
       }
       for (const attr of attrs as Record<string, unknown>[]) {
         if (!attr['key'] || typeof attr['key'] !== 'string') throw new Error('Each attribute must have a valid key')
@@ -23,7 +23,6 @@ const dynamicAttributeSchema = {
         if (!['string', 'number', 'boolean'].includes(attr['dataType'] as string)) {
           throw new Error("Each attribute dataType must be 'string', 'number', or 'boolean'")
         }
-        // if (typeof attr['isRequired'] !== 'boolean') throw new Error('Each attribute isRequired must be a boolean')
         if (attr['options'] !== undefined && !Array.isArray(attr['options'])) {
           throw new Error('Each attribute options must be an array')
         }
@@ -31,7 +30,7 @@ const dynamicAttributeSchema = {
       return true
     }
   }
-}
+})
 
 export const createCategoryValidator = validate(
   checkSchema(
@@ -60,7 +59,8 @@ export const createCategoryValidator = validate(
         optional: true,
         isBoolean: { errorMessage: 'isActive must be a boolean' }
       },
-      dynamicAttributes: dynamicAttributeSchema
+      dynamicAttributes: attributesSchema('dynamicAttributes'),
+      variantAttributes: attributesSchema('variantAttributes')
     },
     ['body']
   )
@@ -93,7 +93,8 @@ export const updateCategoryValidator = validate(
         optional: true,
         isBoolean: { errorMessage: 'isActive must be a boolean' }
       },
-      dynamicAttributes: dynamicAttributeSchema
+      dynamicAttributes: attributesSchema('dynamicAttributes'),
+      variantAttributes: attributesSchema('variantAttributes')
     },
     ['body']
   )

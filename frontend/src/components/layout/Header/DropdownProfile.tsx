@@ -20,7 +20,7 @@ const NAV_ITEMS = [
 ]
 
 export const DropdownProfile = () => {
-  const { logout, isAuthenticated, isLoading } = useAuthContext()
+  const { user, logout, isAuthenticated, isLoading } = useAuthContext()
 
   if (isLoading) return null
 
@@ -38,12 +38,14 @@ export const DropdownProfile = () => {
     <div className="hidden md:block">
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="icon">
+          <Button variant="ghost" size="icon" className="header-action-btn">
             <User className="h-5 w-5" />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-52 glass-dropdown">
-          <DropdownMenuLabel>Tài khoản của tôi</DropdownMenuLabel>
+          <DropdownMenuLabel className="font-bold">
+            Tài khoản của tôi
+          </DropdownMenuLabel>
           <DropdownMenuSeparator />
           {NAV_ITEMS.map((item) => (
             <DropdownMenuItem key={item.href} asChild>
@@ -53,7 +55,8 @@ export const DropdownProfile = () => {
           <DropdownMenuSeparator />
           <DropdownMenuItem
             onClick={logout}
-            className="text-destructive cursor-pointer"
+            variant="destructive"
+            className="cursor-pointer font-medium"
           >
             <LogOut className="mr-2 h-4 w-4" />
             Đăng xuất

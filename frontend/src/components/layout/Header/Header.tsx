@@ -3,6 +3,8 @@
 import Logo from '@/components/common/Logo'
 import { ProductSearch } from '@/features/products'
 import { DropdownProfile } from './DropdownProfile'
+import { useAuthContext } from '@/features/auth'
+import { Badge } from '@/components/ui/badge'
 import { useCartStore } from '@/store/cartStore'
 import { CartButton } from './CartButton'
 import { MobileMenu } from './MobileMenu'
@@ -16,6 +18,7 @@ const Header = () => {
   const setCartItems = useCartStore((state) => state.setItems)
 
   const cartCount = cartItems.reduce((sum, item) => sum + item.quantity, 0)
+  const { user, isAuthenticated } = useAuthContext()
 
   // Populate store from storage on mount so the badge is correct on any page.
   useEffect(() => {
@@ -44,10 +47,10 @@ const Header = () => {
   }, [])
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-white/40 bg-white/70 shadow-sm backdrop-blur-xl transition-all duration-300">
+    <header className="header-glass">
       <div className="container mx-auto flex h-16 items-center justify-between px-6 lg:px-8">
         {/* Logo */}
-        <div className="shrink-0 transition-all duration-300 hover:scale-105 active:scale-95">
+        <div className="shrink-0">
           <Logo />
         </div>
 
@@ -57,22 +60,23 @@ const Header = () => {
         </div>
 
         {/* Actions */}
-        <div className="flex items-center gap-4 lg:gap-8">
-          <div className="relative transform transition-all active:scale-95">
-            <CartButton count={cartCount} animate={isCartBumping} />
-          </div>
+        <div className="flex items-center gap-3 md:gap-4 lg:gap-6">
+          <CartButton count={cartCount} animate={isCartBumping} />
 
           <div
             className="hidden h-6 w-px bg-slate-200/60 md:block"
             aria-hidden="true"
           />
 
-          <div className="flex items-center gap-2">
-            <div className="hidden md:block">
-              <DropdownProfile />
+          <DropdownProfile />
+
+          {isAuthenticated && user?.email && (
+            <div className="header-email-badge">
+              <span className="max-w-[250px] truncate">{user.email}</span>
             </div>
-            <MobileMenu />
-          </div>
+          )}
+
+          <MobileMenu />
         </div>
       </div>
     </header>

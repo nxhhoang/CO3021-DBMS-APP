@@ -36,7 +36,7 @@ const GUEST_ITEMS = [
 
 export const MobileMenu = () => {
   const [isOpen, setIsOpen] = useState(false)
-  const { logout, isAuthenticated } = useAuthContext()
+  const { user, logout, isAuthenticated } = useAuthContext()
 
   const handleLogout = async () => {
     setIsOpen(false)
@@ -80,9 +80,16 @@ export const MobileMenu = () => {
 
             {/* Nav Links */}
             <nav className="flex flex-col gap-2">
-              <span className="mb-2 text-[10px] font-black tracking-widest text-slate-400 uppercase">
-                {isAuthenticated ? 'Tài khoản' : 'Truy cập'}
-              </span>
+              <div className="mb-2 flex items-center justify-between">
+                <span className="text-[10px] font-black tracking-widest text-slate-400 uppercase">
+                  {isAuthenticated ? 'Tài khoản' : 'Truy cập'}
+                </span>
+                {isAuthenticated && user?.email && (
+                  <span className="text-[10px] font-medium text-slate-400">
+                    {user.email}
+                  </span>
+                )}
+              </div>
               {(isAuthenticated ? NAV_ITEMS : GUEST_ITEMS).map((item) => {
                 const Icon = item.icon
                 return (

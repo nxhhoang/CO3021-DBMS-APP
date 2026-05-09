@@ -66,7 +66,7 @@ export function SearchBar({
         <button
           type="button"
           onClick={() => onSubmit?.(value || '')}
-          className="absolute top-1/2 right-2 -translate-y-1/2 rounded-full bg-slate-900 px-5 py-2 text-xs font-bold text-white opacity-0 transition-all duration-300 group-focus-within:opacity-100 hover:bg-blue-600 active:scale-95"
+          className="absolute top-1/2 right-2 -translate-y-1/2 pointer-events-none translate-x-2 rounded-full bg-slate-900 px-5 py-2 text-xs font-bold text-white opacity-0 transition-all duration-200 ease-out group-hover:pointer-events-auto group-hover:opacity-100 group-hover:translate-x-0 group-focus-within:pointer-events-auto group-focus-within:opacity-100 group-focus-within:translate-x-0 hover:bg-blue-600 active:scale-95"
         >
           Tìm
         </button>

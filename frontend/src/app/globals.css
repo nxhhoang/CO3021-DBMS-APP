@@ -55,6 +55,7 @@ body {
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.145 0 0);
   --destructive: oklch(0.577 0.245 27.325);
+  --destructive-foreground: oklch(0.985 0 0);
   --input: oklch(0.922 0 0);
 
   /* Transitions */
@@ -117,6 +118,8 @@ body {
   --color-popover-foreground: var(--popover-foreground);
   --color-card: var(--card);
   --color-card-foreground: var(--card-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
 
   --font-sans: var(--font-inter);
   --font-display: var(--font-jakarta);
@@ -281,6 +284,18 @@ body {
     background-color: var(--badge-bg);
     border-color: var(--badge-border);
     color: var(--badge-text);
+  }
+
+  .header-email-badge {
+    @apply hidden items-center rounded-full border border-slate-200 bg-slate-50/50 px-3 py-1 text-[13px] font-semibold text-slate-600 transition-colors hover:bg-slate-100 md:flex;
+  }
+
+  .header-glass {
+    @apply sticky top-0 z-50 w-full border-b border-white/40 bg-white/70 shadow-sm backdrop-blur-xl transition-all duration-300;
+  }
+
+  .header-action-btn {
+    @apply relative flex h-10 w-10 items-center justify-center rounded-xl transition-all duration-200 hover:bg-slate-100 active:scale-[0.98] md:h-11 md:w-11;
   }
 
   /* --- Premium Components --- */

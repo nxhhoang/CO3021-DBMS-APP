@@ -21,7 +21,7 @@ export const CartButton = ({
       variant="ghost"
       size="icon"
       asChild
-      className="relative transition-all duration-300 hover:bg-blue-50 hover:text-blue-600 active:scale-90"
+      className="header-action-btn"
     >
       <Link href={href} aria-label="Giỏ hàng">
         <ShoppingCart

@@ -5,10 +5,10 @@ export default function Logo() {
   return (
     <Link
       href="/"
-      className="group flex items-center gap-2 transition-all duration-300 active:scale-95"
+      className="group flex items-center gap-2 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
     >
       <div className="relative flex h-9 w-9 items-center justify-center">
-        <div className="absolute inset-0 rounded-xl bg-blue-600/10 transition-colors group-hover:bg-blue-600/20" />
+        <div className="absolute inset-0 rounded-xl bg-blue-600/10 transition-colors duration-200 group-hover:bg-blue-600/20" />
         <Store
           className="relative z-10 text-blue-600"
           size={20}

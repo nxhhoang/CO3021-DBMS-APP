@@ -8,9 +8,7 @@ import { tokenStorage } from '@/services/tokenStorage'
 import { useRouter } from 'next/navigation'
 
 export const useAuth = () => {
-  const [user, setUser] = useState<Pick<User, 'userId' | 'role'> | null>(
-    tokenStorage.getUser(),
-  )
+  const [user, setUser] = useState<User | null>(tokenStorage.getUser())
   const [isLoading, setIsLoading] = useState<boolean>(true)
   const router = useRouter()
 

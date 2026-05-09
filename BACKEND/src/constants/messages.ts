@@ -22,7 +22,7 @@ export const AUTH_MESSAGES = {
     'Mật khẩu phải từ 6-50 ký tự và có ít nhất 1 chữ thường, 1 chữ hoa, 1 số và 1 ký tự đặc biệt',
   FULL_NAME_IS_REQUIRED: 'Họ tên là bắt buộc',
   PHONE_NUM_IS_REQUIRED: 'Số điện thoại là bắt buộc',
-  PHONE_NUM_IS_INVALID: 'Số điện thoại không hợp lệ'
+  PHONE_NUM_IS_INVALID: 'Số điện thoại phải từ 9 đến 15 chữ số'
 } as const
 
 export const USER_MESSAGES = {

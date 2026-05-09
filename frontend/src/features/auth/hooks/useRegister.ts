@@ -7,7 +7,10 @@ export const useRegister = () => {
   const register = async (payload: RegisterRequest) => {
     try {
       return await authService.register(payload)
-    } catch (error: unknown) {
+    } catch (error: any) {
+      if (error.response?.data?.errors) {
+        throw error
+      }
       throw new Error(getErrorMessage(error, 'Registration failed'))
     }
   }

@@ -1,5 +1,6 @@
 'use client'
 import { useState } from 'react'
+import { Loader2 } from 'lucide-react'
 import {
   Card,
   CardHeader,
@@ -19,6 +20,7 @@ export function LoginForm() {
   const [email, setEmail] = useState<string>('')
   const [password, setPassword] = useState<string>('')
   const [error, setError] = useState<string>('')
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({})
   const [loading, setLoading] = useState<boolean>(false)
 
   const { login } = useLogin()
@@ -29,25 +31,30 @@ export function LoginForm() {
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
 
-    if (!email || !password) {
-      setError('Please enter both email and password')
-      return
-    }
-
     setError('')
+    setFieldErrors({})
     setLoading(true)
     try {
       await login({ email, password })
       router.replace(redirectPath)
     } catch (err: any) {
-      setError(err.message)
+      if (err.response?.data?.errors) {
+        const backendErrors = err.response.data.errors
+        const formattedErrors: Record<string, string> = {}
+        Object.keys(backendErrors).forEach((key) => {
+          formattedErrors[key] = backendErrors[key].msg
+        })
+        setFieldErrors(formattedErrors)
+      } else {
+        setError(err.message || 'Đăng nhập thất bại')
+      }
     } finally {
       setLoading(false)
     }
   }
 
   return (
-    <form onSubmit={handleLogin}>
+    <form onSubmit={handleLogin} noValidate>
       <Card className="w-full border-white/60 bg-white/80 shadow-xl shadow-slate-900/5 backdrop-blur-sm">
         <CardHeader className="space-y-1">
           <CardTitle className="font-display text-3xl font-black tracking-tight text-slate-900">
@@ -75,6 +82,11 @@ export function LoginForm() {
               onChange={(e) => setEmail(e.target.value)}
               autoComplete="email"
             />
+            {fieldErrors.email && (
+              <p className="text-red-600 text-xs font-medium">
+                {fieldErrors.email}
+              </p>
+            )}
           </div>
 
           <div className="grid gap-2">
@@ -93,17 +105,29 @@ export function LoginForm() {
               onChange={(e) => setPassword(e.target.value)}
               autoComplete="current-password"
             />
+            {fieldErrors.password && (
+              <p className="text-red-600 text-xs font-medium">
+                {fieldErrors.password}
+              </p>
+            )}
           </div>
         </CardContent>
 
         <CardFooter className="flex flex-col gap-3">
           {error && (
-            <p className="text-destructive w-full text-sm" role="alert">
+            <p className="text-red-600 w-full text-sm font-medium" role="alert">
               {error}
             </p>
           )}
           <Button className="w-full" type="submit" disabled={loading} size="lg">
-            {loading ? 'Đang đăng nhập...' : 'Đăng nhập'}
+            {loading ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Đang xử lý...
+              </>
+            ) : (
+              'Đăng nhập'
+            )}
           </Button>
 
           <p className="text-muted-foreground text-center text-sm">

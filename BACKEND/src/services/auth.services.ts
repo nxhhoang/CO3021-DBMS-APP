@@ -4,7 +4,7 @@ import { signToken, verifyToken } from '~/utils/jwt'
 import { envConfig } from '~/constants/config'
 import { TokenType, UserRole } from '~/constants/enums'
 import { RegisterReqBody, LoginReqBody } from '~/models/requests/Auth.requests'
-import { ErrorWithStatus } from '~/models/Errors'
+import { ErrorWithStatus, EntityError } from '~/models/Errors'
 import HTTP_STATUS from '~/constants/httpStatus'
 import { AUTH_MESSAGES } from '~/constants/messages'
 import crypto from 'crypto' // Cần sinh unique ID cho bảng USERS
@@ -48,12 +48,6 @@ class AuthService {
 
   async register(payload: RegisterReqBody) {
     const { email, password, fullName, phoneNum } = payload
-
-    // Check duplicate email
-    const existing = await query('SELECT userID FROM USERS WHERE email = $1', [email])
-    if (existing.rows.length > 0) {
-      throw new ErrorWithStatus({ message: AUTH_MESSAGES.EMAIL_ALREADY_EXISTS, status: HTTP_STATUS.BAD_REQUEST })
-    }
 
     const hashedPassword = hashPassword(password)
     const newUserId = crypto.randomUUID() // Generate ID for Postgres

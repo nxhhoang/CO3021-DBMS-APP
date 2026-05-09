@@ -1,6 +1,8 @@
 'use client'
 import { Button } from '@/components/ui/button'
 import { useState } from 'react'
+import { cn } from '@/lib/utils'
+import { Loader2, CheckCircle2 } from 'lucide-react'
 import {
   Card,
   CardHeader,
@@ -70,6 +72,8 @@ const REGISTER_FIELDS: RegisterFormFields[] = [
 export function RegisterForm() {
   const [loading, setLoading] = useState<boolean>(false)
   const [error, setError] = useState<string>('')
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({})
+  const [isSuccess, setIsSuccess] = useState<boolean>(false)
 
   const router = useRouter()
   const { values, handleChange } = useForm<RegisterFormValues>({
@@ -85,35 +89,67 @@ export function RegisterForm() {
   const handleRegister = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setError('')
-
-    if (
-      !values.email ||
-      !values.password ||
-      !values.fullName ||
-      !values.phoneNum
-    ) {
-      setError('Vui lòng điền đầy đủ thông tin')
-      return
-    }
+    setFieldErrors({})
 
     if (values.password !== values.confirmPassword) {
-      setError('Mật khẩu xác nhận không khớp')
+      setFieldErrors((prev) => ({
+        ...prev,
+        confirmPassword: 'Mật khẩu xác nhận không khớp',
+      }))
       return
     }
 
     try {
       setLoading(true)
       await register(values)
-      router.push('/login')
+      setIsSuccess(true)
     } catch (err: any) {
-      setError(err.message)
+      if (err.response?.data?.errors) {
+        const backendErrors = err.response.data.errors
+        const formattedErrors: Record<string, string> = {}
+        Object.keys(backendErrors).forEach((key) => {
+          formattedErrors[key] = backendErrors[key].msg
+        })
+        setFieldErrors(formattedErrors)
+      } else {
+        setError(err.message || 'Đăng ký thất bại')
+      }
     } finally {
       setLoading(false)
     }
   }
 
+  if (isSuccess) {
+    return (
+      <Card className="w-full border-white/60 bg-white/80 shadow-xl shadow-slate-900/5 backdrop-blur-sm">
+        <CardHeader className="text-center space-y-2">
+          <div className="flex justify-center mb-2">
+            <div className="rounded-full bg-green-100 p-3">
+              <CheckCircle2 className="h-10 w-10 text-green-600" />
+            </div>
+          </div>
+          <CardTitle className="font-display text-3xl font-black tracking-tight text-slate-900">
+            Đăng ký thành công!
+          </CardTitle>
+          <CardDescription className="text-slate-600 text-base">
+            Tài khoản của bạn đã được tạo thành công. Bây giờ bạn có thể đăng
+            nhập để bắt đầu trải nghiệm.
+          </CardDescription>
+        </CardHeader>
+        <CardFooter className="flex flex-col gap-4">
+          <Button asChild className="w-full" size="lg">
+            <Link href="/login">Đăng nhập ngay</Link>
+          </Button>
+          <p className="text-muted-foreground text-center text-sm">
+            Cảm ơn bạn đã tham gia cùng chúng tôi.
+          </p>
+        </CardFooter>
+      </Card>
+    )
+  }
+
   return (
-    <form onSubmit={handleRegister}>
+    <form onSubmit={handleRegister} noValidate>
       <Card className="w-full border-white/60 bg-white/80 shadow-xl shadow-slate-900/5 backdrop-blur-sm">
         <CardHeader className="space-y-1">
           <CardTitle className="font-display text-3xl font-black tracking-tight text-slate-900">
@@ -139,20 +175,33 @@ export function RegisterForm() {
                 placeholder={field.placeholder}
                 value={values[field.name]}
                 onChange={handleChange}
+                disabled={loading}
                 className="text-slate-900 placeholder:text-slate-400"
               />
+              {fieldErrors[field.name] && (
+                <p className="text-red-600 text-xs font-medium">
+                  {fieldErrors[field.name]}
+                </p>
+              )}
             </div>
           ))}
         </CardContent>
 
         <CardFooter className="flex flex-col gap-3">
           {error && (
-            <p className="text-destructive w-full text-sm" role="alert">
+            <p className="text-red-600 w-full text-sm font-medium" role="alert">
               {error}
             </p>
           )}
           <Button type="submit" className="w-full" disabled={loading} size="lg">
-            {loading ? 'Đang tạo tài khoản...' : 'Tạo tài khoản'}
+            {loading ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Đang xử lý...
+              </>
+            ) : (
+              'Tạo tài khoản'
+            )}
           </Button>
 
           <p className="text-muted-foreground text-center text-sm">

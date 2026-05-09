@@ -12,7 +12,15 @@ export function getErrorMessage(
 ): string {
   if (axios.isAxiosError(error)) {
     if (error.response) {
-      return error.response.data?.message || defaultMessage
+      const data = error.response.data
+      // If there are specific validation errors, return the first one
+      if (data?.errors) {
+        const firstErrorKey = Object.keys(data.errors)[0]
+        if (firstErrorKey) {
+          return data.errors[firstErrorKey].msg || defaultMessage
+        }
+      }
+      return data?.message || defaultMessage
     }
   } else if (error instanceof Error) {
     return error.message

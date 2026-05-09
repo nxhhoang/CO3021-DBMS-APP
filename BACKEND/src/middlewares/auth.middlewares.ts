@@ -1,5 +1,6 @@
 import { checkSchema } from 'express-validator'
 import { Request, Response, NextFunction } from 'express'
+import { query } from '~/utils/postgres'
 import { validate } from '~/utils/validation'
 import { verifyToken } from '~/utils/jwt'
 import { ErrorWithStatus } from '~/models/Errors'
@@ -9,14 +10,23 @@ import { envConfig } from '~/constants/config'
 import { UserRole } from '~/constants/enums'
 import { TokenPayload } from '~/models/requests/Auth.requests'
 
-//  Register Validator
-
 export const registerValidator = validate(
   checkSchema(
     {
       email: {
+        notEmpty: { errorMessage: AUTH_MESSAGES.EMAIL_IS_REQUIRED },
         isEmail: { errorMessage: AUTH_MESSAGES.EMAIL_IS_INVALID },
-        normalizeEmail: true
+        trim: true,
+        normalizeEmail: true,
+        custom: {
+          options: async (value) => {
+            const result = await query('SELECT userID FROM USERS WHERE email = $1', [value])
+            if (result.rows.length > 0) {
+              throw new Error(AUTH_MESSAGES.EMAIL_ALREADY_EXISTS)
+            }
+            return true
+          }
+        }
       },
       password: {
         isLength: { options: { min: 6, max: 50 }, errorMessage: AUTH_MESSAGES.PASSWORD_MUST_BE_STRONG },
@@ -51,6 +61,7 @@ export const loginValidator = validate(
   checkSchema(
     {
       email: {
+        notEmpty: { errorMessage: AUTH_MESSAGES.EMAIL_IS_REQUIRED },
         isEmail: { errorMessage: AUTH_MESSAGES.EMAIL_IS_INVALID }
       },
       password: {

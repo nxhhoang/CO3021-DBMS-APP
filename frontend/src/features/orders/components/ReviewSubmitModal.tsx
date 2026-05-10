@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import {
   Dialog,
   DialogContent,
@@ -10,7 +10,7 @@ import {
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
-import { Star, Loader2, MessageSquarePlus, X } from 'lucide-react'
+import { Star, Loader2, MessageSquarePlus, X, Eye } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import reviewService from '@/services/review.service'
 import { toast } from 'sonner'
@@ -33,11 +33,38 @@ export const ReviewSubmitModal = ({
   const [rating, setRating] = useState(5)
   const [comment, setComment] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isReadOnly, setIsReadOnly] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
+
+  useEffect(() => {
+    if (isOpen && productId) {
+      fetchExistingReview()
+    } else {
+      setRating(5)
+      setComment('')
+      setIsReadOnly(false)
+    }
+  }, [isOpen, productId])
+
+  const fetchExistingReview = async () => {
+    if (!productId) return
+    setIsLoading(true)
+    try {
+      const response = await reviewService.getUserReview(productId)
+      if (response.data) {
+        setRating(response.data.rating)
+        setComment(response.data.comment)
+        setIsReadOnly(true)
+      }
+    } catch (error) {
+      console.error('Failed to fetch existing review:', error)
+    } finally {
+      setIsLoading(false)
+    }
+  }
 
   const handleClose = () => {
     if (isSubmitting) return
-    setRating(5)
-    setComment('')
     onClose()
   }
 
@@ -71,7 +98,7 @@ export const ReviewSubmitModal = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && handleClose()}>
-      <DialogContent className="max-w-md overflow-hidden border-none bg-white/95 p-0 shadow-2xl backdrop-blur-3xl sm:rounded-[2rem] dark:bg-slate-900/95">
+      <DialogContent className="max-w-md overflow-hidden border border-slate-200 bg-white p-0 shadow-2xl sm:rounded-[2rem] dark:bg-slate-900">
         <button
           type="button"
           onClick={handleClose}
@@ -88,7 +115,7 @@ export const ReviewSubmitModal = ({
             </div>
             <div>
               <DialogTitle className="font-display text-lg font-bold tracking-tight text-slate-900 dark:text-white">
-                Đánh giá sản phẩm
+                {isReadOnly ? 'Đánh giá của bạn' : 'Đánh giá sản phẩm'}
               </DialogTitle>
               <p className="max-w-[200px] truncate text-[10px] font-bold tracking-widest text-slate-400 uppercase">
                 {productName}
@@ -108,9 +135,9 @@ export const ReviewSubmitModal = ({
                   <button
                     key={`star-${value}`}
                     type="button"
-                    disabled={isSubmitting}
+                    disabled={isSubmitting || isReadOnly}
                     onClick={() => setRating(value)}
-                    className="transition-all hover:scale-110 active:scale-90 disabled:opacity-50"
+                    className="transition-all hover:scale-110 active:scale-90 disabled:opacity-100"
                   >
                     <Star
                       className={cn(
@@ -142,39 +169,47 @@ export const ReviewSubmitModal = ({
             <Textarea
               value={comment}
               onChange={(e) => setComment(e.target.value)}
-              disabled={isSubmitting}
-              placeholder="Chia sẻ trải nghiệm của bạn về sản phẩm này..."
-              className="min-h-[150px] resize-none rounded-2xl border-slate-100 bg-slate-50/50 p-4 text-sm font-medium transition-all focus:ring-2 focus:ring-blue-600/20 dark:border-white/5 dark:bg-white/5"
+              disabled={isSubmitting || isReadOnly}
+              placeholder={
+                isReadOnly
+                  ? ''
+                  : 'Chia sẻ trải nghiệm của bạn về sản phẩm này...'
+              }
+              className="min-h-[150px] resize-none rounded-2xl border-slate-100 bg-slate-50/50 p-4 text-sm font-medium transition-all focus:ring-2 focus:ring-blue-600/20 disabled:opacity-100 dark:border-white/5 dark:bg-white/5"
               maxLength={500}
             />
-            <div className="flex justify-between text-[10px] font-bold tracking-widest text-slate-400 uppercase">
-              <span>Tối thiểu 10 ký tự</span>
-              <span>{comment.length}/500</span>
-            </div>
+            {!isReadOnly && (
+              <div className="flex justify-between text-[10px] font-bold tracking-widest text-slate-400 uppercase">
+                <span>Tối thiểu 10 ký tự</span>
+                <span>{comment.length}/500</span>
+              </div>
+            )}
           </div>
         </div>
 
         <DialogFooter className="bg-slate-50/50 p-6 dark:bg-slate-800/50">
           <div className="flex w-full gap-3">
             <Button
-              variant="ghost"
+              variant="outline"
               disabled={isSubmitting}
               onClick={handleClose}
-              className="font-display h-12 flex-1 rounded-xl text-[10px] font-bold tracking-widest text-slate-500 uppercase"
+              className="font-display h-12 flex-1 rounded-xl border border-slate-200 bg-white text-[10px] font-bold tracking-widest text-slate-500 uppercase transition-all hover:bg-slate-50"
             >
-              Hủy bỏ
+              {isReadOnly ? 'Đóng' : 'Hủy bỏ'}
             </Button>
-            <Button
-              disabled={isSubmitting || comment.trim().length < 10}
-              onClick={handleSubmit}
-              className="btn-premium-primary h-12 flex-2 rounded-xl"
-            >
-              {isSubmitting ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
-              ) : (
-                'Gửi đánh giá'
-              )}
-            </Button>
+            {!isReadOnly && (
+              <Button
+                disabled={isSubmitting || comment.trim().length < 10}
+                onClick={handleSubmit}
+                className="btn-premium-primary h-12 flex-2 rounded-xl"
+              >
+                {isSubmitting ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  'Gửi đánh giá'
+                )}
+              </Button>
+            )}
           </div>
         </DialogFooter>
       </DialogContent>

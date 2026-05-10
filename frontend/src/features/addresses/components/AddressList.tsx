@@ -16,7 +16,7 @@ export function AddressList({
   onSetDefault,
 }: Props) {
   return (
-    <div className="grid gap-4">
+    <div className="grid gap-6 md:grid-cols-2">
       {addresses.map((addr) => (
         <AddressCard
           key={addr.addressID}

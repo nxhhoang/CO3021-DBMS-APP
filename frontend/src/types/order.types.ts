@@ -10,6 +10,7 @@ export interface OrderItem {
   sku: string
   quantity: number
   unitPrice: number
+  isReviewed?: boolean
 }
 
 export interface Order {

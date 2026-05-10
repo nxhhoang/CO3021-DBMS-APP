@@ -23,8 +23,14 @@ interface ProductDetailPageProps {
   productId: string
 }
 
+import { useAddresses } from '@/features/addresses'
+import { MapPin, ArrowRight } from 'lucide-react'
+
 export const ProductDetailPage = ({ productId }: ProductDetailPageProps) => {
   const { addItem } = useCart()
+  const { addresses, isLoading: isAddressLoading } = useAddresses()
+  const defaultAddress = addresses.find((a) => a.isDefault)
+
   const [product, setProduct] = useState<ProductDetail | null>(null)
   const [loading, setLoading] = useState<boolean>(false)
   const [selectedSku, setSelectedSku] = useState<Inventory | null>(null)
@@ -171,6 +177,47 @@ export const ProductDetailPage = ({ productId }: ProductDetailPageProps) => {
                   displayPrice={getSkuDisplayPrice(selectedSku)}
                   stockQuantity={selectedSku?.stockQuantity || 0}
                 />
+
+                {/* Delivery Address Section */}
+                <div className="animate-in fade-in slide-in-from-right-6 h-fit rounded-2xl border border-slate-100 bg-white/40 p-4 backdrop-blur-sm dark:border-white/5 dark:bg-slate-900/40">
+                  <div className="flex items-center justify-between gap-4">
+                    <div className="flex items-center gap-3 min-w-0">
+                      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-blue-600 dark:bg-blue-500/10">
+                        <MapPin size={16} strokeWidth={2.5} />
+                      </div>
+                      <div className="min-w-0">
+                        <h3 className="font-display text-[10px] font-black tracking-widest text-slate-400 uppercase">
+                          Giao đến
+                        </h3>
+                        {isAddressLoading ? (
+                          <div className="h-4 w-32 animate-pulse rounded bg-slate-100" />
+                        ) : defaultAddress ? (
+                          <p className="truncate text-sm font-bold text-slate-900 dark:text-white">
+                            {defaultAddress.addressName} •{' '}
+                            <span className="font-medium text-slate-500">
+                              {defaultAddress.addressLine}
+                            </span>
+                          </p>
+                        ) : (
+                          <p className="text-sm font-medium text-slate-400">
+                            Chưa có địa chỉ
+                          </p>
+                        )}
+                      </div>
+                    </div>
+
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-8 shrink-0 rounded-lg px-3 font-display text-[10px] font-black tracking-widest text-blue-600 uppercase transition-all hover:bg-blue-50 hover:text-blue-700"
+                      asChild
+                    >
+                      <Link href="/user/addresses">
+                        {defaultAddress ? 'Đổi' : 'Thiết lập'}
+                      </Link>
+                    </Button>
+                  </div>
+                </div>
 
                 {/* Tabs */}
                 <div className="rounded-3xl border border-slate-100 bg-white/60 backdrop-blur-sm">

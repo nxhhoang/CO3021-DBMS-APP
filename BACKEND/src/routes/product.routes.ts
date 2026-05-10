@@ -8,7 +8,8 @@ import {
 } from '~/controllers/product.controllers'
 import {
   getReviewsController,
-  createReviewController
+  createReviewController,
+  getUserReviewController
 } from '~/controllers/review.controllers'
 import {
   searchProductValidator,
@@ -102,6 +103,20 @@ productRouter.post(
   productIdParamValidator,
   createReviewValidator,
   wrapRequestHandler(createReviewController)
+)
+
+/**
+ * Description: Get current user's review for a product
+ * Path: /:productId/reviews/me
+ * Method: GET
+ * Header: Authorization: Bearer <access_token>
+ * Params: productId (MongoDB ObjectId)
+ */
+productRouter.get(
+  '/:productId/reviews/me',
+  accessTokenValidator,
+  productIdParamValidator,
+  wrapRequestHandler(getUserReviewController)
 )
 
 export { productRouter, adminProductRouter }

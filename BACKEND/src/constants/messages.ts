@@ -107,6 +107,7 @@ export const PRODUCT_MESSAGES = {
 export const REVIEW_MESSAGES = {
   REVIEWS_FETCHED: 'Get reviews successfully',
   REVIEW_CREATED: 'Review submitted successfully',
+  ALREADY_REVIEWED: 'You have already reviewed this product',
   REVIEW_RATING_INVALID: 'Rating must be an integer between 1 and 5',
   REVIEW_COMMENT_REQUIRED: 'Comment is required',
   TARGET_ID_REQUIRED: 'Target ID is required'

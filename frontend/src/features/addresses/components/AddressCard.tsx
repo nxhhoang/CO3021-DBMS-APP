@@ -36,82 +36,69 @@ export function AddressCard({
   return (
     <Card
       className={cn(
-        'hover:shadow-3xl overflow-hidden rounded-[2.5rem] border-white/40 bg-white/40 shadow-2xl shadow-slate-200/50 backdrop-blur-3xl transition-all duration-500 hover:shadow-slate-200/60',
-        address.isDefault && 'ring-2 ring-blue-600/50',
+        'group relative overflow-hidden rounded-2xl border-slate-200 bg-white shadow-sm transition-all duration-200 hover:border-blue-400 hover:shadow-md active:scale-[0.99] dark:border-slate-800 dark:bg-slate-900',
+        address.isDefault && 'border-blue-600/50 ring-1 ring-blue-600/10',
       )}
     >
-      <CardContent className="flex flex-col items-start justify-between gap-6 p-8 sm:flex-row sm:items-center">
-        <div className="flex gap-6">
-          <div
-            className={cn(
-              'flex h-14 w-14 shrink-0 items-center justify-center rounded-3xl shadow-xl transition-all duration-500',
-              address.isDefault
-                ? 'bg-slate-900 text-white'
-                : 'bg-white text-slate-400 group-hover:bg-blue-50',
-            )}
-          >
-            <MapPin size={24} strokeWidth={2.5} />
-          </div>
-
-          <div className="space-y-2">
-            <div className="flex items-center gap-3">
-              <span className="font-display text-lg font-black tracking-tight text-slate-900">
-                {address.addressName}
-              </span>
-              {address.isDefault && (
-                <div className="flex items-center gap-1.5 rounded-full bg-blue-50 px-3 py-1 ring-1 ring-blue-200/50">
-                  <CheckCircle2 size={12} className="text-blue-600" />
-                  <span className="font-display text-[9px] font-black tracking-widest text-blue-600 uppercase">
-                    Mặc định
-                  </span>
-                </div>
+      <CardContent className="flex flex-col gap-5 p-5">
+        {/* Header Section */}
+        <div className="flex items-start justify-between gap-4">
+          <div className="flex items-start gap-4">
+            <div
+              className={cn(
+                'flex h-10 w-10 shrink-0 items-center justify-center rounded-xl transition-colors duration-200',
+                address.isDefault
+                  ? 'bg-slate-900 text-white'
+                  : 'bg-slate-100 text-slate-400 group-hover:bg-blue-600 group-hover:text-white dark:bg-slate-800',
               )}
+            >
+              <MapPin size={18} strokeWidth={2.5} />
             </div>
 
-            <p className="font-medium text-slate-500">{address.addressLine}</p>
-            <p className="font-display text-[11px] font-black tracking-widest text-slate-400 uppercase">
-              Quận {address.district}, {address.city}
-            </p>
+            <div className="space-y-1">
+              <div className="flex flex-wrap items-center gap-2">
+                <h3 className="font-display text-base font-black tracking-tight text-slate-900 dark:text-white">
+                  {address.addressName}
+                </h3>
+                {address.isDefault && (
+                  <div className="flex items-center gap-1.5 rounded-full bg-blue-50 px-2.5 py-0.5 ring-1 ring-blue-600/20 dark:bg-blue-500/10 dark:ring-blue-500/30">
+                    <span className="font-display text-[9px] font-black tracking-widest text-blue-600 uppercase">
+                      Mặc định
+                    </span>
+                  </div>
+                )}
+              </div>
+              <p className="font-display text-[10px] font-black tracking-widest text-slate-400 uppercase">
+                {address.district}, {address.city}
+              </p>
+            </div>
           </div>
-        </div>
-
-        <div className="flex w-full items-center justify-end gap-3 sm:w-auto">
-          {!address.isDefault && (
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => onSetDefault(address.addressID)}
-              className="font-display h-10 rounded-full border-slate-200 px-6 text-[10px] font-black tracking-widest uppercase transition-all hover:bg-slate-900 hover:text-white"
-            >
-              Đặt mặc định
-            </Button>
-          )}
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button
                 variant="ghost"
                 size="icon"
-                className="h-12 w-12 rounded-2xl hover:bg-white/60"
+                className="h-8 w-8 rounded-lg text-slate-400 hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-slate-800"
               >
-                <MoreVertical className="h-5 w-5 text-slate-400" />
+                <MoreVertical className="h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
 
             <DropdownMenuContent
               align="end"
-              className="rounded-2xl border-white/40 bg-white/80 p-2 backdrop-blur-xl"
+              className="w-48 rounded-xl border-slate-200 bg-white p-1 shadow-lg dark:border-slate-800 dark:bg-slate-900"
             >
               <DropdownMenuItem
                 onClick={() => onEdit(address)}
-                className="font-display rounded-xl px-4 py-3 text-[11px] font-bold tracking-wider uppercase"
+                className="font-display cursor-pointer rounded-lg px-3 py-2 text-[11px] font-bold tracking-wider uppercase transition-colors"
               >
                 <Edit2 className="mr-3 h-4 w-4" strokeWidth={2.5} />
                 Chỉnh sửa
               </DropdownMenuItem>
 
               <DropdownMenuItem
-                className="font-display rounded-xl px-4 py-3 text-[11px] font-bold tracking-wider text-rose-600 uppercase focus:bg-rose-50 focus:text-rose-600"
+                className="font-display cursor-pointer rounded-lg px-3 py-2 text-[11px] font-bold tracking-wider text-rose-600 uppercase transition-colors focus:bg-rose-50 focus:text-rose-600 dark:focus:bg-rose-500/10"
                 onClick={() => onDelete(address.addressID)}
               >
                 <Trash2 className="mr-3 h-4 w-4" strokeWidth={2.5} />
@@ -120,6 +107,23 @@ export function AddressCard({
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
+
+        {/* Address Detail Section */}
+        <div className="rounded-xl border border-slate-100 bg-slate-50/50 p-4 dark:border-slate-800/50 dark:bg-slate-800/30">
+          <p className="text-sm font-semibold leading-relaxed text-slate-600 dark:text-slate-400">
+            {address.addressLine}
+          </p>
+        </div>
+
+        {/* Footer Actions */}
+        {!address.isDefault && (
+          <Button
+            onClick={() => onSetDefault(address.addressID)}
+            className="font-display h-10 w-full rounded-xl bg-slate-900 text-[10px] font-black tracking-widest text-white uppercase transition-all hover:bg-blue-600 dark:bg-slate-800 dark:hover:bg-blue-600"
+          >
+            Đặt làm địa chỉ mặc định
+          </Button>
+        )}
       </CardContent>
     </Card>
   )

@@ -29,3 +29,5 @@ export interface CreateReviewRequest {
 
 export type CreateReviewParams = ReviewPathParams
 export type CreateReviewResponse = ApiResponse<{ _id: string }>
+
+export type GetReviewResponse = ApiResponse<Review | null>

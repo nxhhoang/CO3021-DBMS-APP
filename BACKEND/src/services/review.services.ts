@@ -5,6 +5,7 @@ import productService from '~/services/product.services'
 import { getMongoDB } from '~/utils/mongodb'
 import { query } from '~/utils/postgres'
 import { ErrorWithStatus } from '~/models/Errors'
+import { REVIEW_MESSAGES } from '~/constants/messages'
 import HTTP_STATUS from '~/constants/httpStatus'
 
 class ReviewService {
@@ -14,6 +15,24 @@ class ReviewService {
 
   async getReviews(productId: string) {
     return await this.collection.find({ productID: new ObjectId(productId) }).toArray()
+  }
+
+  async getReviewByUserAndProduct(userId: string, productId: string) {
+    return await this.collection.findOne({
+      userID: userId,
+      productID: new ObjectId(productId)
+    })
+  }
+
+  async getReviewedProductIds(userId: string, productIds: string[]) {
+    const reviews = await this.collection
+      .find({
+        userID: userId,
+        productID: { $in: productIds.map((id) => new ObjectId(id)) }
+      })
+      .project({ productID: 1 })
+      .toArray()
+    return reviews.map((r) => r.productID.toString())
   }
 
   async createReview(productId: string, body: CreateReviewReqBody, userId: string) {
@@ -45,6 +64,15 @@ class ReviewService {
       throw new ErrorWithStatus({
         message: 'You can only review products you have purchased and received.',
         status: HTTP_STATUS.FORBIDDEN
+      })
+    }
+
+    // Check for existing review
+    const existingReview = await this.getReviewByUserAndProduct(userId, productId)
+    if (existingReview) {
+      throw new ErrorWithStatus({
+        message: REVIEW_MESSAGES.ALREADY_REVIEWED,
+        status: HTTP_STATUS.CONFLICT
       })
     }
 

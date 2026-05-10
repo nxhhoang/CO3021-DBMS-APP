@@ -42,7 +42,10 @@ export function AddressFormDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-[500px] overflow-hidden border-none bg-white/80 p-0 shadow-2xl backdrop-blur-3xl sm:rounded-[2.5rem]">
+      <DialogContent
+        showCloseButton={false}
+        className="max-w-[550px] overflow-hidden border border-slate-200 bg-white p-0 shadow-2xl sm:rounded-3xl"
+      >
         {/* Custom Close Button */}
         <button
           onClick={() => onOpenChange(false)}
@@ -51,42 +54,42 @@ export function AddressFormDialog({
           <X size={20} strokeWidth={2.5} />
         </button>
 
-        <div className="relative overflow-hidden p-8 pt-10">
-          {/* Header Section */}
-          <div className="mb-8 flex flex-col items-center text-center">
+        <div className="relative overflow-hidden p-6 pt-12 sm:p-10">
+          {/* Header Section - Compact */}
+          <div className="mb-6 flex items-center gap-4 border-b border-slate-50 pb-6">
             <div
               className={cn(
-                'mb-4 flex h-16 w-16 items-center justify-center rounded-3xl shadow-xl transition-all duration-500',
-                isEditing
-                  ? 'bg-slate-900 text-white'
-                  : 'bg-blue-600 text-white',
+                'flex h-12 w-12 shrink-0 items-center justify-center rounded-xl shadow-md transition-all duration-500',
+                isEditing ? 'bg-slate-900 text-white' : 'bg-blue-600 text-white',
               )}
             >
-              {isEditing ? <Building2 size={28} /> : <MapPin size={28} />}
+              {isEditing ? <Building2 size={20} /> : <MapPin size={20} />}
             </div>
 
-            <DialogTitle className="font-display text-2xl font-black tracking-tight text-slate-900">
-              {isEditing ? 'Chỉnh sửa địa chỉ' : 'Thêm địa chỉ mới'}
-            </DialogTitle>
-            <p className="mt-2 text-sm font-medium text-slate-500">
-              {isEditing
-                ? 'Cập nhật thông tin nhận hàng của bạn'
-                : 'Cung cấp thông tin giao hàng chính xác'}
-            </p>
+            <div>
+              <DialogTitle className="font-display text-xl font-black tracking-tight text-slate-900">
+                {isEditing ? 'Chỉnh sửa địa chỉ' : 'Thêm địa chỉ mới'}
+              </DialogTitle>
+              <p className="mt-0.5 text-xs font-medium text-slate-400">
+                {isEditing
+                  ? 'Cập nhật thông tin nhận hàng'
+                  : 'Cung cấp thông tin giao hàng'}
+              </p>
+            </div>
           </div>
 
-          <div className="grid gap-6">
+          <div className="grid gap-5">
             {/* Address Name */}
-            <div className="space-y-2">
+            <div className="space-y-1.5">
               <div className="flex items-center gap-2 px-1">
-                <Home size={14} className="text-slate-400" />
-                <Label className="font-display text-[11px] font-black tracking-widest text-slate-400 uppercase">
+                <Home size={12} className="text-slate-400" />
+                <Label className="font-display text-[10px] font-black tracking-widest text-slate-400 uppercase">
                   Tên địa chỉ (Ví dụ: Nhà riêng, Công ty)
                 </Label>
               </div>
               <Input
                 placeholder="Nhập tên gợi nhớ..."
-                className="input-premium h-12 px-5"
+                className="h-11 rounded-xl border-slate-100 bg-slate-50/50 px-5 text-sm font-medium transition-all placeholder:text-slate-300 focus:ring-2 focus:ring-blue-600/20"
                 value={formData.addressName}
                 onChange={(e) =>
                   setFormData({ ...formData, addressName: e.target.value })
@@ -95,16 +98,16 @@ export function AddressFormDialog({
             </div>
 
             {/* Address Line */}
-            <div className="space-y-2">
+            <div className="space-y-1.5">
               <div className="flex items-center gap-2 px-1">
-                <MapPin size={14} className="text-slate-400" />
-                <Label className="font-display text-[11px] font-black tracking-widest text-slate-400 uppercase">
+                <MapPin size={12} className="text-slate-400" />
+                <Label className="font-display text-[10px] font-black tracking-widest text-slate-400 uppercase">
                   Địa chỉ cụ thể
                 </Label>
               </div>
               <Input
                 placeholder="Số nhà, tên đường..."
-                className="input-premium h-12 px-5"
+                className="h-11 rounded-xl border-slate-100 bg-slate-50/50 px-5 text-sm font-medium transition-all placeholder:text-slate-300 focus:ring-2 focus:ring-blue-600/20"
                 value={formData.addressLine}
                 onChange={(e) =>
                   setFormData({ ...formData, addressLine: e.target.value })
@@ -114,16 +117,16 @@ export function AddressFormDialog({
 
             <div className="grid grid-cols-2 gap-4">
               {/* District */}
-              <div className="space-y-2">
+              <div className="space-y-1.5">
                 <div className="flex items-center gap-2 px-1">
-                  <Building2 size={14} className="text-slate-400" />
-                  <Label className="font-display text-[11px] font-black tracking-widest text-slate-400 uppercase">
+                  <Building2 size={12} className="text-slate-400" />
+                  <Label className="font-display text-[10px] font-black tracking-widest text-slate-400 uppercase">
                     Quận/Huyện
                   </Label>
                 </div>
                 <Input
                   placeholder="Quận..."
-                  className="input-premium h-12 px-5"
+                  className="h-11 rounded-xl border-slate-100 bg-slate-50/50 px-5 text-sm font-medium transition-all placeholder:text-slate-300 focus:ring-2 focus:ring-blue-600/20"
                   value={formData.district}
                   onChange={(e) =>
                     setFormData({ ...formData, district: e.target.value })
@@ -132,16 +135,16 @@ export function AddressFormDialog({
               </div>
 
               {/* City */}
-              <div className="space-y-2">
+              <div className="space-y-1.5">
                 <div className="flex items-center gap-2 px-1">
-                  <Landmark size={14} className="text-slate-400" />
-                  <Label className="font-display text-[11px] font-black tracking-widest text-slate-400 uppercase">
+                  <Landmark size={12} className="text-slate-400" />
+                  <Label className="font-display text-[10px] font-black tracking-widest text-slate-400 uppercase">
                     Thành phố
                   </Label>
                 </div>
                 <Input
                   placeholder="Thành phố..."
-                  className="input-premium h-12 px-5"
+                  className="h-11 rounded-xl border-slate-100 bg-slate-50/50 px-5 text-sm font-medium transition-all placeholder:text-slate-300 focus:ring-2 focus:ring-blue-600/20"
                   value={formData.city}
                   onChange={(e) =>
                     setFormData({ ...formData, city: e.target.value })
@@ -155,15 +158,15 @@ export function AddressFormDialog({
             <Button
               variant="outline"
               onClick={() => onOpenChange(false)}
-              className="font-display h-14 flex-1 rounded-full border-slate-200 text-[11px] font-black tracking-widest uppercase transition-all hover:bg-slate-50"
+              className="font-display h-12 flex-1 rounded-full border border-slate-200 bg-white text-[10px] font-black tracking-widest uppercase transition-all hover:bg-slate-50"
             >
               Hủy
             </Button>
             <Button
               onClick={onSubmit}
-              className="btn-premium-primary h-14 flex-1 shadow-xl shadow-blue-200/50"
+              className="btn-premium-primary h-12 flex-1 shadow-lg shadow-blue-500/10"
             >
-              <CheckCircle2 size={18} className="mr-2" />
+              <CheckCircle2 size={16} className="mr-2" />
               {isEditing ? 'Cập nhật' : 'Lưu địa chỉ'}
             </Button>
           </div>

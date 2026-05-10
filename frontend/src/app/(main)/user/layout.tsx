@@ -48,25 +48,25 @@ export default function ProfileLayout({
       {/* Premium Background System */}
       <MeshBackground />
 
-      <div className="relative z-10 container mx-auto px-4 py-12 md:py-20 lg:px-8">
+      <div className="relative z-10 container mx-auto px-4 py-6 md:py-8 lg:px-8">
         {/* Header Section */}
-        <div className="mb-12 space-y-4">
+        <div className="mb-6 space-y-3">
           <div className="flex items-center gap-3">
             <div className="h-1 w-6 rounded-full bg-blue-600" />
             <span className="font-display text-[11px] font-black tracking-[0.2em] text-blue-600 uppercase">
               Khu vực khách hàng
             </span>
           </div>
-          <h1 className="font-display text-4xl font-black tracking-tight text-slate-900 sm:text-5xl">
+          <h1 className="font-display text-3xl font-black tracking-tight text-slate-900 sm:text-4xl">
             Tài khoản <span className="text-gradient-primary">của bạn</span>
           </h1>
-          <p className="max-w-2xl text-lg leading-relaxed font-medium text-slate-500">
+          <p className="max-w-2xl text-base leading-relaxed font-medium text-slate-500">
             Quản lý thông tin cá nhân, địa chỉ giao hàng và theo dõi hành trình
             đơn hàng của bạn một cách dễ dàng.
           </p>
         </div>
 
-        <div className="flex flex-col gap-10 lg:flex-row">
+        <div className="flex flex-col gap-8 lg:flex-row">
           {/* Sidebar */}
           <aside className="shrink-0 lg:w-80">
             <nav className="flex flex-col gap-3">
@@ -77,7 +77,7 @@ export default function ProfileLayout({
                     key={item.href}
                     href={item.href}
                     className={cn(
-                      'group flex items-center justify-between rounded-2xl border p-4 transition-all duration-300',
+                      'group flex items-center justify-between rounded-2xl border p-3 transition-all duration-300',
                       isActive
                         ? 'border-blue-100 bg-white shadow-xl ring-1 shadow-blue-100/20 ring-blue-50'
                         : 'border-transparent hover:border-slate-100 hover:bg-white/50',
@@ -86,7 +86,7 @@ export default function ProfileLayout({
                     <div className="flex items-center gap-4">
                       <div
                         className={cn(
-                          'flex h-12 w-12 items-center justify-center rounded-xl transition-all duration-300',
+                          'flex h-10 w-10 items-center justify-center rounded-xl transition-all duration-300',
                           isActive
                             ? 'bg-slate-900 text-white shadow-lg shadow-slate-900/20'
                             : 'bg-slate-100 text-slate-400 group-hover:bg-blue-50 group-hover:text-blue-600',

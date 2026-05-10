@@ -101,11 +101,18 @@ class UserService {
     let idx = 1
 
     // Dynamic fields build
-    const updatableFields = ['addressline', 'addressname', 'city', 'district']
-    updatableFields.forEach((field) => {
-      if (payload[field as keyof UpdateAddressReqBody] !== undefined) {
-        fields.push(`"${field}" = $${idx++}`) // Dùng ngoặc kép để tránh lỗi case-sensitive trong Postgres
-        values.push(payload[field as keyof UpdateAddressReqBody])
+    const fieldMapping: Record<string, string> = {
+      addressLine: 'addressline',
+      addressName: 'addressname',
+      city: 'city',
+      district: 'district'
+    }
+
+    Object.entries(fieldMapping).forEach(([payloadKey, dbColumn]) => {
+      const value = payload[payloadKey as keyof UpdateAddressReqBody]
+      if (value !== undefined) {
+        fields.push(`"${dbColumn}" = $${idx++}`)
+        values.push(value)
       }
     })
 

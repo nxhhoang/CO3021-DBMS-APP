@@ -4,6 +4,7 @@ import HTTP_STATUS from '~/constants/httpStatus'
 import { ORDER_MESSAGES } from '~/constants/messages'
 import { CheckoutReqBody } from '~/models/requests/Order.requests'
 import { OrderStatus, PaymentMethod, PaymentStatus } from '~/constants/enums'
+import reviewService from './review.services'
 
 export class OutOfStockError extends ErrorWithStatus {
   sku: string
@@ -141,11 +142,21 @@ class OrderService {
     )
 
     const paymentResult = await query(`SELECT method, status FROM PAYMENTS WHERE orderID = $1 LIMIT 1`, [orderId])
+    const payment = paymentResult.rows[0] || null
+
+    // Check review status for each item
+    const productIds = itemsResult.rows.map((item: any) => item.productId)
+    const reviewedProductIds = await reviewService.getReviewedProductIds(userId, productIds)
+
+    const items = itemsResult.rows.map((item: any) => ({
+      ...item,
+      isReviewed: reviewedProductIds.includes(item.productId)
+    }))
 
     return {
       ...orderResult.rows[0],
-      items: itemsResult.rows,
-      payment: paymentResult.rows[0] || null
+      items,
+      payment
     }
   }
 

@@ -5,6 +5,7 @@ import {
   CreateReviewResponse,
   GetReviewsRequest,
   GetReviewsResponse,
+  GetReviewResponse,
 } from '@/types'
 
 const reviewService = {
@@ -22,6 +23,12 @@ const reviewService = {
     const response = await privateApi.post<CreateReviewResponse>(
       `products/${productId}/reviews`,
       data,
+    )
+    return response.data
+  },
+  async getUserReview(productId: string) {
+    const response = await privateApi.get<GetReviewResponse>(
+      `products/${productId}/reviews/me`,
     )
     return response.data
   },

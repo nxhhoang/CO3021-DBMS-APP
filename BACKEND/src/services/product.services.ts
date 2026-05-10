@@ -168,7 +168,7 @@ class ProductService {
       category: cat ? { _id: cat._id.toHexString(), name: cat.name, slug: cat.slug } : null
     }
 
-    const { rows } = await query('SELECT sku, stockQuantity AS "stockQuantity" FROM INVENTORY WHERE productID = $1', [
+    const { rows } = await query('SELECT inventoryID AS "inventoryID", sku, stockQuantity AS "stockQuantity" FROM INVENTORY WHERE productID = $1', [
       id
     ])
 
@@ -190,6 +190,7 @@ class ProductService {
     const inventory = rows.map((row: any) => {
       const skuDetail = skuDetailMap.get(row.sku)
       return {
+        inventoryID: row.inventoryID,
         sku: row.sku,
         sku_price: skuDetail?.skuPrice ?? null,
         skuPrice: skuDetail?.skuPrice ?? null,

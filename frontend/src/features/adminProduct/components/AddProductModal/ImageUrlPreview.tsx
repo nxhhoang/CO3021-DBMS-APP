@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { Trash2, X, Link as LinkIcon } from 'lucide-react'
+import { Trash2, X, Link as LinkIcon, Loader2 } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { FieldError } from '@/components/ui/field'
@@ -107,89 +107,88 @@ export default function ImageUrlPreview({
   }
 
   return (
-    // 1. Container chính phải có chiều cao xác định (ví dụ h-[600px] hoặc h-full nếu cha đã có h)
-    <div className="flex h-[550px] w-full min-w-0 flex-col gap-4 overflow-hidden p-1">
-      {/* 2. Phần Preview ảnh lớn: flex-1 giúp nó chiếm toàn bộ diện tích còn lại */}
-      <div className="relative min-h-0 flex-1 overflow-hidden rounded-[28px] bg-[#ECEFF1] shadow-sm ring-1 ring-slate-100">
+    <div className="flex h-[550px] w-full min-w-0 flex-col gap-5 overflow-hidden">
+      {/* 2. Preview Area */}
+      <div className="relative min-h-0 flex-1 overflow-hidden rounded-2xl bg-slate-50 shadow-xs ring-1 ring-slate-100 dark:bg-white/5 dark:ring-white/5">
         {selectedImage ? (
           <div className="h-full w-full">
             <img
               src={selectedImage}
               alt="Selected preview"
-              className="h-full w-full object-cover"
+              className="h-full w-full object-cover transition-transform duration-700 hover:scale-105"
             />
             <button
               type="button"
               onClick={() => removeImage(images.indexOf(selectedImage))}
-              className="absolute top-4 right-4 z-10 flex h-8 w-8 items-center justify-center rounded-full bg-white/90 shadow-sm backdrop-blur-sm transition-colors hover:bg-red-50"
+              className="absolute top-4 right-4 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-white/90 text-slate-900 shadow-xl backdrop-blur-sm transition-all hover:bg-rose-50 hover:text-rose-600 hover:scale-110 active:scale-95 dark:bg-slate-900/90 dark:text-white"
             >
-              <X className="h-4 w-4 text-red-500" />
+              <X className="h-4 w-4" />
             </button>
           </div>
         ) : (
-          <div className="flex h-full flex-col items-center justify-center px-6 text-center text-slate-400">
-            <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-200">
-              <LinkIcon className="h-5 w-5 rotate-45 text-slate-500" />
+          <div className="flex h-full flex-col items-center justify-center px-8 text-center">
+            <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-white shadow-sm ring-1 ring-slate-100 dark:bg-white/5 dark:ring-white/5">
+              <LinkIcon className="h-6 w-6 rotate-45 text-blue-600" />
             </div>
-            <p className="text-sm font-medium text-slate-500">
-              No image selected yet
-            </p>
-            <p className="mt-1 text-xs leading-5 text-slate-400">
-              Paste a direct image URL below to populate the gallery.
+            <h4 className="text-xs font-black tracking-widest text-slate-900 uppercase dark:text-white">
+              No images yet
+            </h4>
+            <p className="mt-2 text-[11px] leading-relaxed text-slate-400">
+              Paste a direct image URL below to build your product gallery.
             </p>
           </div>
         )}
       </div>
 
-      {/* 3. Danh sách Thumbnails: Cố định chiều cao, chỉ cho phép scroll ngang */}
-      <div
-        ref={thumbnailsRef}
-        onWheel={handleThumbnailWheel}
-        className="flex h-24 w-full flex-none snap-x flex-nowrap items-center gap-3 overflow-x-auto overflow-y-hidden pb-2 [scrollbar-width:thin]"
-      >
-        {images.map((url, index) => (
-          <div
-            key={index}
-            onClick={() => setSelectedImage(url)}
-            className={`group relative h-20 w-20 flex-none cursor-pointer snap-center overflow-hidden rounded-2xl transition-all duration-200 ${
-              selectedImage === url
-                ? 'scale-95 ring-2 ring-slate-800 ring-offset-2'
-                : 'hover:opacity-80'
-            }`}
-          >
-            <img
-              src={url}
-              alt={`Thumbnail ${index}`}
-              className="h-full w-full object-cover"
-            />
-          </div>
-        ))}
-      </div>
+      {/* 3. Thumbnails Strip */}
+      {images.length > 0 && (
+        <div
+          ref={thumbnailsRef}
+          onWheel={handleThumbnailWheel}
+          className="scrollbar-premium flex h-24 w-full flex-none snap-x flex-nowrap items-center gap-3 overflow-x-auto overflow-y-hidden pb-2"
+        >
+          {images.map((url, index) => (
+            <div
+              key={index}
+              onClick={() => setSelectedImage(url)}
+              className={`group relative h-20 w-20 flex-none cursor-pointer snap-center overflow-hidden rounded-xl transition-all duration-300 ${
+                selectedImage === url
+                  ? 'ring-2 ring-blue-600 ring-offset-2 dark:ring-offset-slate-900'
+                  : 'opacity-60 hover:opacity-100'
+              }`}
+            >
+              <img
+                src={url}
+                alt={`Thumbnail ${index}`}
+                className="h-full w-full object-cover"
+              />
+              <div className="absolute inset-0 bg-blue-600/0 transition-colors group-hover:bg-blue-600/10" />
+            </div>
+          ))}
+        </div>
+      )}
 
-      {/* 4. Phần Input: flex-none để không bị co giãn */}
-      <div className="flex-none space-y-3">
-        <div className="flex items-center justify-between gap-3">
-          <label className="text-[10px] font-bold tracking-widest text-slate-400 uppercase">
-            Remote URL
+      {/* 4. Input Section */}
+      <div className="flex-none space-y-4">
+        <div className="flex items-center justify-between">
+          <label className="text-[10px] font-black tracking-widest text-slate-400 uppercase">
+            Image URL
           </label>
           {images.length > 0 && (
-            <Button
+            <button
               type="button"
-              variant="ghost"
-              size="sm"
               onClick={clearAllImages}
-              className="h-8 gap-2 rounded-full px-3 text-[11px] font-semibold text-slate-500 transition-colors hover:bg-red-50 hover:text-red-600"
+              className="text-[9px] font-black tracking-widest text-slate-400 uppercase transition-colors hover:text-rose-600"
             >
-              <Trash2 className="h-3.5 w-3.5" />
-              Delete all
-            </Button>
+              Clear Gallery
+            </button>
           )}
         </div>
 
-        <div className="group relative">
+        <div className="relative">
           <Input
             ref={inputRef}
-            placeholder="https://image-source.com/asset.jpg"
+            placeholder="https://images.unsplash.com/photo-..."
             value={inputValue}
             onChange={(e) => {
               setInputValue(e.target.value)
@@ -202,24 +201,21 @@ export default function ImageUrlPreview({
               }
             }}
             disabled={checking}
-            className="h-12 rounded-2xl border-none bg-white pr-10 pl-4 text-sm shadow-sm ring-1 ring-slate-100 transition-all focus-visible:ring-1 focus-visible:ring-slate-300"
+            className="input-premium h-12 pr-12 text-xs"
           />
-          <div className="absolute top-1/2 right-3 -translate-y-1/2 text-blue-500">
-            <LinkIcon className="h-4 w-4 rotate-45" />
+          <div className="absolute top-1/2 right-4 -translate-y-1/2">
+            {checking ? (
+              <Loader2 className="h-4 w-4 animate-spin text-blue-600" />
+            ) : (
+              <LinkIcon className="h-4 w-4 rotate-45 text-slate-300" />
+            )}
           </div>
         </div>
 
-        <div className="min-h-[20px]">
-          {' '}
-          {/* Giữ chỗ cho error để tránh nhảy layout */}
+        <div className="min-h-[16px]">
           {error && (
-            <FieldError className="text-[11px] text-red-500">
+            <p className="animate-in fade-in slide-in-from-top-1 text-[10px] font-bold text-rose-500 uppercase tracking-widest">
               {error}
-            </FieldError>
-          )}
-          {checking && (
-            <p className="animate-pulse text-[11px] text-slate-400">
-              Verifying image source...
             </p>
           )}
         </div>

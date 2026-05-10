@@ -69,11 +69,16 @@ export default function SkuFormSection({
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <Package className="h-5 w-5 text-slate-400" />
-          <h3 className="text-lg font-semibold text-slate-900">
-            Biến thể sản phẩm (SKU)
-          </h3>
+        <div className="space-y-1">
+          <div className="flex items-center gap-2">
+            <Package className="h-4 w-4 text-blue-600" />
+            <h3 className="font-display text-sm font-bold tracking-tight text-slate-900 dark:text-white">
+              Biến thể sản phẩm (SKU)
+            </h3>
+          </div>
+          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+            Define product variations
+          </p>
         </div>
         {!isAdding && selectedCategoryId && (
           <Button
@@ -83,10 +88,10 @@ export default function SkuFormSection({
               setIsAdding(true)
               setSkuPrice(basePrice)
             }}
-            className="rounded-xl border-dashed border-slate-300 px-4 py-2 text-xs font-bold transition-all hover:border-indigo-300 hover:bg-indigo-50 hover:text-indigo-600"
+            className="h-9 rounded-xl border-slate-200 bg-white px-4 text-[10px] font-black tracking-widest uppercase transition-all hover:border-blue-400 hover:bg-blue-50/50 hover:text-blue-600 dark:border-white/10 dark:bg-slate-900"
           >
-            <Plus className="mr-2 h-4 w-4" />
-            Thêm biến thể
+            <Plus className="mr-2 h-3.5 w-3.5" />
+            Thêm mới
           </Button>
         )}
       </div>
@@ -98,9 +103,9 @@ export default function SkuFormSection({
       )}
 
       {isAdding && (
-        <div className="animate-in fade-in slide-in-from-top-2 rounded-3xl border border-indigo-100 bg-indigo-50/30 p-6 duration-300">
-          <div className="mb-4 flex items-center justify-between">
-            <h4 className="text-sm font-bold text-indigo-900">
+        <div className="animate-in fade-in slide-in-from-top-2 rounded-2xl border border-blue-100 bg-blue-50/20 p-6 duration-300 dark:border-blue-500/10 dark:bg-blue-500/5">
+          <div className="mb-6 flex items-center justify-between">
+            <h4 className="font-display text-sm font-bold tracking-tight text-blue-900 dark:text-blue-400">
               Cấu hình biến thể mới
             </h4>
             <Button
@@ -108,7 +113,7 @@ export default function SkuFormSection({
               variant="ghost"
               size="sm"
               onClick={() => setIsAdding(false)}
-              className="h-8 w-8 rounded-full p-0 text-indigo-400 hover:bg-indigo-100 hover:text-indigo-600"
+              className="h-8 w-8 rounded-full p-0 text-blue-400 hover:bg-blue-100 hover:text-blue-600 dark:hover:bg-blue-500/20"
             >
               <X className="h-4 w-4" />
             </Button>
@@ -123,7 +128,7 @@ export default function SkuFormSection({
                 value={sku}
                 onChange={(e) => setSku(e.target.value)}
                 placeholder="Ví dụ: SKU-001"
-                className="h-11 rounded-xl border-none bg-white shadow-sm ring-1 ring-slate-200"
+                className="input-premium h-10 text-xs"
               />
             </div>
             <div className="space-y-2">
@@ -134,7 +139,7 @@ export default function SkuFormSection({
                 type="number"
                 value={skuPrice}
                 onChange={(e) => setSkuPrice(Number(e.target.value))}
-                className="h-11 rounded-xl border-none bg-white shadow-sm ring-1 ring-slate-200"
+                className="input-premium h-10 text-xs"
               />
             </div>
             <div className="space-y-2">
@@ -145,7 +150,7 @@ export default function SkuFormSection({
                 type="number"
                 value={stockQuantity}
                 onChange={(e) => setStockQuantity(Number(e.target.value))}
-                className="h-11 rounded-xl border-none bg-white shadow-sm ring-1 ring-slate-200"
+                className="input-premium h-10 text-xs"
               />
             </div>
 
@@ -158,7 +163,7 @@ export default function SkuFormSection({
                   <select
                     value={attributes[attr.key] || ''}
                     onChange={(e) => handleAttrChange(attr.key, e.target.value)}
-                    className="flex h-11 w-full rounded-xl border-none bg-white px-3 py-2 text-sm shadow-sm ring-1 ring-slate-200 focus:ring-2 focus:ring-indigo-500 focus:outline-hidden"
+                    className="flex h-10 w-full rounded-xl border border-slate-200/60 bg-white px-3 py-2 text-xs transition-all focus:border-blue-400 focus:ring-4 focus:ring-blue-500/10 focus:outline-hidden dark:border-white/10 dark:bg-slate-900"
                   >
                     <option value="">Chọn {attr.label}</option>
                     {attr.options.map((opt) => (
@@ -172,18 +177,18 @@ export default function SkuFormSection({
                     value={attributes[attr.key] || ''}
                     onChange={(e) => handleAttrChange(attr.key, e.target.value)}
                     placeholder={`Nhập ${attr.label}`}
-                    className="h-11 rounded-xl border-none bg-white shadow-sm ring-1 ring-slate-200"
+                    className="input-premium h-10 text-xs"
                   />
                 )}
               </div>
             ))}
           </div>
 
-          <div className="mt-6 flex justify-end">
+          <div className="mt-8 flex justify-end">
             <Button
               type="button"
               onClick={handleAddLocalSku}
-              className="rounded-xl bg-indigo-600 px-6 font-bold text-white transition-all hover:bg-indigo-700 active:scale-95"
+              className="h-10 rounded-xl bg-blue-600 px-8 text-[10px] font-black tracking-widest uppercase text-white transition-all hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-500/20 active:scale-95"
             >
               Lưu biến thể này
             </Button>
@@ -198,38 +203,40 @@ export default function SkuFormSection({
             {skus.map((item, idx) => (
               <div
                 key={idx}
-                className="group relative rounded-2xl border border-slate-100 bg-white p-4 transition-all hover:border-indigo-100 hover:shadow-md"
+                className="group relative flex flex-col justify-between rounded-2xl border border-slate-100 bg-white p-5 transition-all hover:border-blue-200 hover:shadow-sm dark:border-white/5 dark:bg-white/5"
               >
                 <button
                   type="button"
                   onClick={() => removeSku(idx)}
-                  className="absolute -top-2 -right-2 z-10 flex h-6 w-6 items-center justify-center rounded-full bg-red-500 text-white opacity-0 shadow-lg transition-opacity group-hover:opacity-100"
+                  className="absolute -top-1 -right-1 z-20 flex h-6 w-6 items-center justify-center rounded-full bg-slate-900 text-white opacity-0 shadow-lg transition-all hover:scale-110 group-hover:opacity-100 dark:bg-white dark:text-slate-900"
                 >
                   <Trash2 size={12} />
                 </button>
-                <div className="flex items-start justify-between">
-                  <div className="space-y-1">
-                    <p className="text-sm font-bold text-slate-900">
-                      {item.sku}
-                    </p>
-                    <div className="flex flex-wrap gap-1">
-                      {Object.entries(item.attributes).map(([k, v]) => (
-                        <Badge
-                          key={k}
-                          variant="secondary"
-                          className="bg-slate-50 px-2 py-0 text-[10px] text-slate-500"
-                        >
-                          {k}: {v}
-                        </Badge>
-                      ))}
+                <div className="flex items-start justify-between gap-4">
+                  <div className="min-w-0 flex-1 space-y-3">
+                    <div className="space-y-1">
+                      <p className="truncate text-sm font-black tracking-tight text-slate-900 dark:text-white">
+                        {item.sku}
+                      </p>
+                      <div className="flex flex-wrap gap-1.5">
+                        {Object.entries(item.attributes).map(([k, v]) => (
+                          <div
+                            key={k}
+                            className="flex items-center rounded-lg bg-slate-50 px-2 py-0.5 text-[9px] font-bold text-slate-500 dark:bg-white/5"
+                          >
+                            <span className="mr-1 opacity-60">{k}:</span>
+                            <span className="text-slate-700 dark:text-slate-300">{v}</span>
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   </div>
-                  <div className="text-right">
-                    <p className="text-sm font-black text-indigo-600">
+                  <div className="text-right shrink-0">
+                    <p className="font-mono text-sm font-black text-blue-600 dark:text-blue-400">
                       {item.skuPrice.toLocaleString()}đ
                     </p>
-                    <p className="text-[10px] font-medium text-slate-400">
-                      Kho: {item.stockQuantity}
+                    <p className="mt-1 font-mono text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                      Kho: <span className="font-black text-slate-900 dark:text-white">{item.stockQuantity}</span>
                     </p>
                   </div>
                 </div>

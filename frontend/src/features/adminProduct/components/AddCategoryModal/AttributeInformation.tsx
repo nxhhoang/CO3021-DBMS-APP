@@ -62,10 +62,10 @@ export default function AttributeInformation({
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="icon-box-premium h-10 w-10 border-slate-100 bg-slate-50 text-slate-400">
+          <div className="icon-box-premium h-10 w-10 border-blue-100 bg-blue-50 text-blue-600">
             <SlidersHorizontal size={20} />
           </div>
-          <h2 className="font-display text-lg font-black tracking-tight text-slate-800">
+          <h2 className="font-display text-lg font-black tracking-tight text-slate-900 dark:text-white">
             {title}
           </h2>
         </div>

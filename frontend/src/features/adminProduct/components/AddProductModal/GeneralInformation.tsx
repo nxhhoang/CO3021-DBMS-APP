@@ -16,18 +16,17 @@ export default function GeneralInformation({
   errors,
 }: GeneralInformationProps) {
   const labelStyles =
-    'text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-2 block'
-  const inputStyles =
-    'rounded-xl h-12 bg-white shadow-sm ring-1 ring-slate-100 focus-visible:ring-1 focus-visible:ring-slate-300 transition-all'
+    'text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2 block'
+  const inputStyles = 'input-premium h-11'
 
   return (
     <div className="space-y-8">
       {/* Tên sản phẩm */}
       <Field>
-        <label className={labelStyles}>Product Name</label>
+        <label className={labelStyles}>Tên sản phẩm</label>
         <Input
           className={inputStyles}
-          placeholder="Ethereal Silk Gown"
+          placeholder="VD: iPhone 15 Pro Max 256GB"
           autoComplete="off"
           {...register('name')}
         />
@@ -39,14 +38,14 @@ export default function GeneralInformation({
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
         {/* Slug */}
         <Field>
-          <label className={labelStyles}>Slug</label>
+          <label className={labelStyles}>Đường dẫn (Slug)</label>
           <div className="relative">
             <span className="absolute top-1/2 left-4 -translate-y-1/2 text-sm text-slate-400">
               /
             </span>
             <Input
               className={`${inputStyles} pl-8`}
-              placeholder="silk-gown-01"
+              placeholder="iphone-15-pro-max"
               autoComplete="off"
               {...register('slug')}
             />
@@ -58,18 +57,18 @@ export default function GeneralInformation({
 
         {/* Base Price */}
         <Field>
-          <label className={labelStyles}>Base Price</label>
+          <label className={labelStyles}>Giá bán cơ bản</label>
           <div className="relative">
-            <span className="absolute top-1/2 left-4 -translate-y-1/2 text-sm text-slate-400">
-              $
-            </span>
             <Input
               type="number"
               inputMode="decimal"
-              className={`${inputStyles} pl-8`}
-              placeholder="0.00"
+              className={`${inputStyles} pr-12`}
+              placeholder="0"
               {...register('basePrice', { valueAsNumber: true })}
             />
+            <span className="absolute top-1/2 right-4 -translate-y-1/2 text-sm font-bold text-slate-400">
+              ₫
+            </span>
           </div>
           {errors.basePrice && (
             <FieldError className="text-xs">
@@ -81,11 +80,11 @@ export default function GeneralInformation({
 
       {/* Mô tả */}
       <Field>
-        <label className={labelStyles}>Description</label>
+        <label className={labelStyles}>Mô tả chi tiết</label>
         <Textarea
           {...register('description')}
-          className={`${inputStyles} min-h-30 resize-none py-4`}
-          placeholder="Describe the tactile sensation and craftsmanship..."
+          className={`${inputStyles} min-h-32 resize-none py-4`}
+          placeholder="Nhập mô tả chi tiết về sản phẩm, tính năng, và thông số kỹ thuật..."
         />
         {errors.description && (
           <FieldError className="text-xs">

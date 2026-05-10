@@ -25,6 +25,7 @@ export interface SKU {
 }
 
 export interface Inventory {
+  inventoryID?: string
   sku: string
   productID?: string
   skuPrice?: number

@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Plus, Package, Trash2, Loader2 } from 'lucide-react'
+import { Plus, Package, Trash2, Loader2, X } from 'lucide-react'
 import { toast } from 'sonner'
 import { inventoryService } from '@/services/inventory.service'
 import { Category } from '@/types/category.types'
@@ -24,6 +24,9 @@ export default function SkuManagement({
 }: SkuManagementProps) {
   const [isAdding, setIsAdding] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [editingInventoryId, setEditingInventoryId] = useState<string | null>(null)
+  const [tempStockQuantity, setTempStockQuantity] = useState<number>(0)
+  const [isUpdating, setIsUpdating] = useState(false)
 
   // Form states
   const [sku, setSku] = useState('')
@@ -67,39 +70,64 @@ export default function SkuManagement({
     setAttributes((prev) => ({ ...prev, [key]: value }))
   }
 
+  const handleUpdateStock = async (inventoryId: string) => {
+    if (!inventoryId) return
+    setIsUpdating(true)
+    try {
+      await inventoryService.updateStock(inventoryId, tempStockQuantity)
+      toast.success('Cập nhật tồn kho thành công!')
+      setEditingInventoryId(null)
+      onRefresh()
+    } catch (error: any) {
+      toast.error(error.response?.data?.message || 'Có lỗi xảy ra khi cập nhật tồn kho')
+    } finally {
+      setIsUpdating(false)
+    }
+  }
+
+  const startEditing = (item: any) => {
+    setEditingInventoryId(item.inventoryID)
+    setTempStockQuantity(item.stockQuantity)
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <Package className="h-5 w-5 text-slate-400" />
-          <h3 className="text-lg font-semibold text-slate-900">
-            Quản lý biến thể (SKU)
-          </h3>
+        <div className="space-y-1">
+          <div className="flex items-center gap-2">
+            <Package className="h-4 w-4 text-blue-600" />
+            <h3 className="font-display text-sm font-bold tracking-tight text-slate-900 dark:text-white">
+              Quản lý biến thể (SKU)
+            </h3>
+          </div>
+          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+            Inventory variations
+          </p>
         </div>
         {!isAdding && (
           <Button
             type="button"
             variant="outline"
             onClick={() => setIsAdding(true)}
-            className="rounded-xl border-dashed border-slate-300 px-4 py-2 text-xs font-bold transition-all hover:border-indigo-300 hover:bg-indigo-50 hover:text-indigo-600"
+            className="h-9 rounded-xl border-slate-200 bg-white px-4 text-[10px] font-black tracking-widest uppercase transition-all hover:border-blue-400 hover:bg-blue-50/50 hover:text-blue-600 dark:border-white/10 dark:bg-slate-900"
           >
-            <Plus className="mr-2 h-4 w-4" />
-            Thêm biến thể mới
+            <Plus className="mr-2 h-3.5 w-3.5" />
+            Thêm mới
           </Button>
         )}
       </div>
 
       {isAdding && (
-        <div className="animate-in fade-in slide-in-from-top-2 rounded-3xl border border-indigo-100 bg-indigo-50/30 p-6 duration-300">
-          <div className="mb-4 flex items-center justify-between">
-            <h4 className="text-sm font-bold text-indigo-900">Tạo SKU mới</h4>
+        <div className="animate-in fade-in slide-in-from-top-2 rounded-2xl border border-blue-100 bg-blue-50/20 p-6 duration-300 dark:border-blue-500/10 dark:bg-blue-500/5">
+          <div className="mb-6 flex items-center justify-between">
+            <h4 className="font-display text-sm font-bold tracking-tight text-blue-900 dark:text-blue-400">Tạo SKU mới</h4>
             <Button
               variant="ghost"
               size="sm"
               onClick={() => setIsAdding(false)}
-              className="h-8 w-8 rounded-full p-0 text-indigo-400 hover:bg-indigo-100 hover:text-indigo-600"
+              className="h-8 w-8 rounded-full p-0 text-blue-400 hover:bg-blue-100 hover:text-blue-600 dark:hover:bg-blue-500/20"
             >
-              <Plus className="h-4 w-4 rotate-45" />
+              <X className="h-4 w-4" />
             </Button>
           </div>
 
@@ -112,7 +140,7 @@ export default function SkuManagement({
                 value={sku}
                 onChange={(e) => setSku(e.target.value)}
                 placeholder="Ví dụ: IP15-BLU-128"
-                className="h-11 rounded-xl border-none bg-white shadow-sm ring-1 ring-slate-200"
+                className="input-premium h-10 text-xs"
               />
             </div>
             <div className="space-y-2">
@@ -123,7 +151,7 @@ export default function SkuManagement({
                 type="number"
                 value={skuPrice}
                 onChange={(e) => setSkuPrice(Number(e.target.value))}
-                className="h-11 rounded-xl border-none bg-white shadow-sm ring-1 ring-slate-200"
+                className="input-premium h-10 text-xs"
               />
             </div>
             <div className="space-y-2">
@@ -134,7 +162,7 @@ export default function SkuManagement({
                 type="number"
                 value={stockQuantity}
                 onChange={(e) => setStockQuantity(Number(e.target.value))}
-                className="h-11 rounded-xl border-none bg-white shadow-sm ring-1 ring-slate-200"
+                className="input-premium h-10 text-xs"
               />
             </div>
 
@@ -147,7 +175,7 @@ export default function SkuManagement({
                   <select
                     value={attributes[attr.key] || ''}
                     onChange={(e) => handleAttrChange(attr.key, e.target.value)}
-                    className="flex h-11 w-full rounded-xl border-none bg-white px-3 py-2 text-sm shadow-sm ring-1 ring-slate-200 focus:ring-2 focus:ring-indigo-500 focus:outline-hidden"
+                    className="flex h-10 w-full rounded-xl border border-slate-200/60 bg-white px-3 py-2 text-xs transition-all focus:border-blue-400 focus:ring-4 focus:ring-blue-500/10 focus:outline-hidden dark:border-white/10 dark:bg-slate-900"
                   >
                     <option value="">Chọn {attr.label}</option>
                     {attr.options.map((opt) => (
@@ -161,22 +189,22 @@ export default function SkuManagement({
                     value={attributes[attr.key] || ''}
                     onChange={(e) => handleAttrChange(attr.key, e.target.value)}
                     placeholder={`Nhập ${attr.label}`}
-                    className="h-11 rounded-xl border-none bg-white shadow-sm ring-1 ring-slate-200"
+                    className="input-premium h-10 text-xs"
                   />
                 )}
               </div>
             ))}
           </div>
 
-          <div className="mt-6 flex justify-end">
+          <div className="mt-8 flex justify-end">
             <Button
               onClick={handleAddSku}
               disabled={loading}
-              className="rounded-xl bg-indigo-600 px-6 font-bold text-white transition-all hover:bg-indigo-700 active:scale-95"
+              className="h-10 rounded-xl bg-blue-600 px-8 text-[10px] font-black tracking-widest uppercase text-white transition-all hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-500/20 active:scale-95"
             >
               {loading ? (
                 <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  <Loader2 className="mr-2 h-3.5 w-3.5 animate-spin" />
                   Đang tạo...
                 </>
               ) : (
@@ -193,35 +221,88 @@ export default function SkuManagement({
             {product.inventory.map((item: any, idx: number) => (
               <div
                 key={item.sku || idx}
-                className="group relative rounded-2xl border border-slate-100 bg-white p-4 transition-all hover:border-indigo-100 hover:shadow-md"
+                className="group relative flex flex-col justify-between rounded-2xl border border-slate-100 bg-white p-5 transition-all hover:border-blue-200 hover:shadow-sm dark:border-white/5 dark:bg-white/5"
               >
-                <div className="flex items-start justify-between">
-                  <div className="space-y-1">
-                    <p className="text-sm font-bold text-slate-900">
-                      {item.sku}
-                    </p>
-                    <div className="flex flex-wrap gap-1">
-                      {Object.entries(item.attributes || {}).map(
-                        ([k, v]: [any, any]) => (
-                          <Badge
-                            key={k}
-                            variant="secondary"
-                            className="bg-slate-50 px-2 py-0 text-[10px] text-slate-500"
-                          >
-                            {k}: {v}
-                          </Badge>
-                        ),
-                      )}
+                <div className="flex items-start justify-between gap-4">
+                  <div className="min-w-0 flex-1 space-y-3">
+                    <div className="space-y-1">
+                      <p className="truncate text-sm font-black tracking-tight text-slate-900 dark:text-white">
+                        {item.sku}
+                      </p>
+                      <div className="flex flex-wrap gap-1.5">
+                        {Object.entries(item.attributes || {}).map(
+                          ([k, v]: [any, any]) => (
+                            <div
+                              key={k}
+                              className="flex items-center rounded-lg bg-slate-50 px-2 py-0.5 text-[9px] font-bold text-slate-500 dark:bg-white/5"
+                            >
+                              <span className="mr-1 opacity-60">{k}:</span>
+                              <span className="text-slate-700 dark:text-slate-300">{v}</span>
+                            </div>
+                          ),
+                        )}
+                      </div>
                     </div>
                   </div>
-                  <div className="text-right">
-                    <p className="text-sm font-black text-indigo-600">
+                  <div className="text-right shrink-0">
+                    <p className="font-mono text-sm font-black text-blue-600 dark:text-blue-400">
                       {item.skuPrice?.toLocaleString()}đ
                     </p>
-                    <p className="text-[10px] font-medium text-slate-400">
-                      Kho: {item.stockQuantity}
-                    </p>
                   </div>
+                </div>
+
+                <div className="mt-6 border-t border-slate-50 pt-4 dark:border-white/5">
+                  {editingInventoryId === item.inventoryID ? (
+                    <div className="flex items-center justify-between animate-in fade-in slide-in-from-bottom-2">
+                      <div className="flex items-center gap-2">
+                        <Label className="text-[9px] font-black tracking-widest text-slate-400 uppercase">
+                          Số lượng:
+                        </Label>
+                        <Input
+                          type="number"
+                          value={tempStockQuantity}
+                          onChange={(e) => setTempStockQuantity(Number(e.target.value))}
+                          className="h-8 w-24 rounded-lg bg-slate-50 text-center font-mono text-xs font-bold ring-blue-500/20 transition-all focus:bg-white focus:ring-4 dark:bg-white/5"
+                          autoFocus
+                        />
+                      </div>
+                      <div className="flex gap-2">
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => setEditingInventoryId(null)}
+                          className="h-8 rounded-lg px-3 text-[10px] font-bold uppercase tracking-widest text-slate-400"
+                        >
+                          Hủy
+                        </Button>
+                        <Button
+                          size="sm"
+                          onClick={() => handleUpdateStock(item.inventoryID)}
+                          disabled={isUpdating}
+                          className="h-8 rounded-lg bg-blue-600 px-4 text-[10px] font-black uppercase tracking-widest text-white hover:bg-blue-700"
+                        >
+                          {isUpdating ? <Loader2 className="h-3 w-3 animate-spin" /> : 'Lưu'}
+                        </Button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-1.5">
+                        <div className="h-1.5 w-1.5 rounded-full bg-blue-500" />
+                        <p className="font-mono text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                          Kho: <span className="font-black text-slate-900 dark:text-white">{item.stockQuantity}</span>
+                        </p>
+                      </div>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => startEditing(item)}
+                        className="h-7 rounded-lg px-3 text-[9px] font-black uppercase tracking-widest text-blue-600 transition-all hover:bg-blue-50 dark:hover:bg-blue-500/10"
+                      >
+                        Chỉnh sửa
+                      </Button>
+                    </div>
+                  )}
                 </div>
               </div>
             ))}

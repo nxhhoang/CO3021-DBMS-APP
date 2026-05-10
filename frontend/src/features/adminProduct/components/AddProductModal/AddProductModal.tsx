@@ -111,36 +111,35 @@ export default function AddProductModal({
     >
       <DialogContent
         showCloseButton={false}
-        className="modal-premium-content max-h-[calc(100dvh-2rem)] max-w-[98vw] overflow-hidden lg:max-w-352"
+        className="modal-premium-content h-[min(90dvh,850px)] w-full max-w-[98vw] overflow-hidden border border-slate-200 shadow-2xl sm:rounded-[32px] lg:max-w-6xl dark:border-white/5 dark:bg-slate-900"
       >
         <button
           type="button"
           onClick={handleClose}
           className="modal-close-btn-premium"
         >
-          <X size={20} strokeWidth={2.5} />
+          <X size={18} strokeWidth={3} />
         </button>
 
-        <div className="relative flex h-[min(90dvh,920px)] min-h-0 flex-col bg-white dark:bg-slate-900 lg:flex-row">
+        <div className="flex h-full min-h-0 flex-col overflow-hidden lg:flex-row">
           {/* LEFT COLUMN - Visuals */}
-          <section className="flex min-h-0 min-w-0 flex-1 flex-col gap-8 border-b border-slate-100 bg-linear-to-b from-slate-50 to-white p-6 sm:p-8 dark:border-white/10 dark:from-slate-800/50 dark:to-slate-900 lg:max-w-[40%] lg:border-r lg:border-b-0 lg:p-10">
-            <header className="space-y-4">
-              <div className="flex flex-col gap-2">
-                <p className="text-[10px] font-black tracking-[0.24em] text-slate-400 uppercase">
+          <section className="flex min-h-0 flex-col border-b border-slate-100 bg-slate-50/50 p-6 sm:p-8 dark:border-white/5 dark:bg-white/5 lg:w-[380px] lg:border-r lg:border-b-0 lg:p-8">
+            <header className="mb-6 flex items-center gap-4">
+              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-900 text-white shadow-lg dark:bg-blue-600">
+                <Package className="h-6 w-6" />
+              </div>
+              <div>
+                <h2 className="font-display text-xl font-bold tracking-tight text-slate-900 dark:text-white">
+                  Hình ảnh
+                </h2>
+                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
                   Product Visuals
                 </p>
-                <h2 className="font-display text-4xl font-black tracking-tight text-slate-900 dark:text-white">
-                  Visual-first setup
-                </h2>
               </div>
-              <p className="modal-premium-subtitle text-base leading-relaxed">
-                Add the primary image first so the rest of the form feels
-                anchored and easier to review.
-              </p>
             </header>
 
             <div className="scrollbar-premium flex-1 overflow-y-auto pr-2">
-              <div className="space-y-6">
+              <div className="space-y-4">
                 <Controller
                   control={control}
                   name="images"
@@ -152,7 +151,7 @@ export default function AddProductModal({
                   )}
                 />
                 {errors.images && (
-                  <p className="text-xs font-bold text-rose-500">
+                  <p className="text-[10px] font-bold text-rose-500 uppercase tracking-widest">
                     {errors.images.message}
                   </p>
                 )}
@@ -161,72 +160,97 @@ export default function AddProductModal({
           </section>
 
           {/* RIGHT COLUMN - Form & SKU Creation */}
-          <section className="scrollbar-premium flex min-h-0 min-w-0 flex-[1.5] flex-col overflow-y-auto p-6 sm:p-8 lg:p-10">
-            <div className="mb-10 flex flex-wrap items-center justify-between gap-4">
-              <div className="space-y-2">
-                <p className="text-[10px] font-black tracking-[0.24em] text-slate-400 uppercase">
-                  Product Details
-                </p>
-                <h2 className="font-display text-4xl font-black tracking-tight text-slate-900 dark:text-white">
-                  Create Product
+          <section className="flex min-h-0 flex-1 flex-col bg-white dark:bg-slate-900">
+            <div className="shrink-0 flex items-center justify-between border-b border-slate-50 bg-white px-8 py-6 dark:border-white/5 dark:bg-slate-900 sm:px-10">
+              <div className="space-y-1">
+                <h2 className="font-display text-2xl font-black tracking-tight text-slate-900 dark:text-white">
+                  Tạo sản phẩm mới
                 </h2>
+                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                  Add new entry to inventory
+                </p>
               </div>
-              <Badge className="glass-badge-blue border-none px-4 py-2 text-[10px] font-black tracking-widest uppercase">
-                New Entry
-              </Badge>
             </div>
 
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-12">
-              <div className="space-y-8">
-                <div className="rounded-3xl border border-slate-100 bg-white/60 p-6 backdrop-blur-sm dark:border-white/5 dark:bg-slate-800/40">
-                  <GeneralInformation register={register} errors={errors} />
+            <div className="scrollbar-premium flex-1 overflow-y-auto">
+              <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col p-8 sm:p-10">
+                <div className="flex-1 space-y-10">
+                  <div className="space-y-6">
+                    <div className="flex items-center gap-3">
+                      <div className="h-px w-6 bg-blue-600" />
+                      <p className="text-[10px] font-black tracking-widest text-slate-400 uppercase">
+                        Thông tin cơ bản
+                      </p>
+                    </div>
+                    <div className="rounded-2xl border border-slate-100 bg-white p-6 shadow-xs dark:border-white/5 dark:bg-white/5">
+                      <GeneralInformation register={register} errors={errors} />
+                    </div>
+                  </div>
+
+                  <div className="space-y-6">
+                    <div className="flex items-center gap-3">
+                      <div className="h-px w-6 bg-blue-600" />
+                      <p className="text-[10px] font-black tracking-widest text-slate-400 uppercase">
+                        Phân loại & Thuộc tính
+                      </p>
+                    </div>
+                    <div className="rounded-2xl border border-slate-100 bg-white p-6 shadow-xs dark:border-white/5 dark:bg-white/5">
+                      <CategorySelect
+                        control={control}
+                        errors={errors}
+                        categories={categories}
+                        setValue={setValue}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-6">
+                    <div className="flex items-center gap-3">
+                      <div className="h-px w-6 bg-blue-600" />
+                      <p className="text-[10px] font-black tracking-widest text-slate-400 uppercase">
+                        Biến thể & Tồn kho
+                      </p>
+                    </div>
+                    <div className="rounded-2xl border border-slate-100 bg-white p-6 shadow-xs dark:border-white/5 dark:bg-white/5">
+                      <SkuFormSection
+                        skus={skus}
+                        setSkus={setSkus}
+                        categories={categories}
+                        selectedCategoryId={selectedCategoryId}
+                        basePrice={basePrice}
+                      />
+                    </div>
+                  </div>
                 </div>
 
-                <div className="rounded-3xl border border-slate-100 bg-white/60 p-6 backdrop-blur-sm dark:border-white/5 dark:bg-slate-800/40">
-                  <CategorySelect
-                    control={control}
-                    errors={errors}
-                    categories={categories}
-                    setValue={setValue}
-                  />
-                </div>
-
-                <div className="rounded-3xl border border-slate-100 bg-white/60 p-8 backdrop-blur-sm dark:border-white/5 dark:bg-slate-800/40">
-                  <SkuFormSection
-                    skus={skus}
-                    setSkus={setSkus}
-                    categories={categories}
-                    selectedCategoryId={selectedCategoryId}
-                    basePrice={basePrice}
-                  />
-                </div>
-              </div>
-
-              <div className="flex flex-col gap-6 border-t border-slate-100 pt-8 dark:border-white/10 sm:flex-row sm:items-center sm:justify-between">
-                <p className="max-w-xs text-sm font-medium text-slate-500">
-                  Review all fields and SKU variations before publishing.
-                </p>
-                <div className="flex items-center gap-3">
-                  <Button
-                    type="submit"
-                    disabled={loading}
-                    className="btn-premium-primary group relative h-14 min-w-[200px] overflow-hidden px-8 text-base shadow-xl"
-                  >
-                    <span className="relative z-10 flex items-center justify-center gap-2">
+                <div className="mt-12 flex items-center justify-between border-t border-slate-100 pt-8 dark:border-white/10">
+                  <p className="max-w-[200px] text-[11px] font-medium leading-relaxed text-slate-400">
+                    Kiểm tra kỹ các thuộc tính và SKU trước khi xuất bản.
+                  </p>
+                  <div className="flex items-center gap-4">
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      onClick={handleClose}
+                      className="h-12 rounded-xl px-6 text-[10px] font-black tracking-widest text-slate-400 uppercase hover:bg-slate-100 dark:hover:bg-white/5"
+                    >
+                      Hủy
+                    </Button>
+                    <Button
+                      type="submit"
+                      disabled={loading}
+                      className="h-12 min-w-[180px] rounded-xl bg-blue-600 px-8 text-[10px] font-black tracking-widest text-white uppercase shadow-lg shadow-blue-500/20 transition-all hover:bg-blue-700 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50"
+                    >
                       {loading ? (
-                        <>
-                          <Loader2 className="h-4 w-4 animate-spin" />
-                          Publishing...
-                        </>
+                        <Loader2 className="h-4 w-4 animate-spin" />
                       ) : (
-                        'Confirm and Publish'
+                        'Xuất bản sản phẩm'
                       )}
-                    </span>
-                    <div className="absolute inset-0 -translate-x-full bg-linear-to-r from-blue-600 to-cyan-500 transition-transform duration-500 group-hover:translate-x-0" />
-                  </Button>
+                    </Button>
+                  </div>
                 </div>
-              </div>
-            </form>
+              </form>
+            </div>
           </section>
         </div>
       </DialogContent>

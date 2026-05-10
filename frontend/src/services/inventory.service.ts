@@ -13,4 +13,9 @@ export const inventoryService = {
     const res = await privateApi.post('admin/inventories/sku', data)
     return res.data
   },
+
+  async updateStock(inventoryId: string, stockQuantity: number) {
+    const res = await privateApi.put(`admin/inventories/${inventoryId}`, { stockQuantity })
+    return res.data
+  },
 }

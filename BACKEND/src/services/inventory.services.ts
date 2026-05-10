@@ -43,7 +43,7 @@ class InventoryService {
   async updateInventoryQuantity(inventoryId: string, quantity: number) {
     const result = await pool.query(
       `UPDATE INVENTORY 
-       SET stockQuantity = $1, updated_at = NOW() 
+       SET stockQuantity = $1, lastUpdated = NOW() 
        WHERE inventoryID = $2 RETURNING *`,
       [quantity, inventoryId]
     )

@@ -60,15 +60,12 @@ class OrderService {
           [item.quantity, item.sku]
         )
 
-        // Use server-side unit price from request (BE2 will inject verified price here)
+        // Use server-side unit price from request
         totalAmount += item.unitPrice * item.quantity
       }
 
       //  Step 3: Create order
-      //  Assuming the frontend sends a string for shippingAddressId, we will store it inside JSONB if shippingAddr requires JSONB,
-      //  but since pg automatically converts object to JSONB, we wrap it in an object, or just pass it directly if it accepts string
       const shippingAddrObj = { id: shippingAddressId }
-
       const orderResult = await client.query(
         `INSERT INTO ORDERS (userID, shippingAddr, totalAmount, status)
          VALUES ($1, $2, $3, $4)
@@ -169,7 +166,7 @@ class OrderService {
     }
 
     const result = await query(
-      `UPDATE ORDERS SET status = $1
+      `UPDATE ORDERS SET status = $1, createdAt = NOW()
        WHERE orderID = $2
        RETURNING orderID AS "orderID", status, NOW() AS "updatedAt"`,
       [newStatus, orderId]
@@ -180,7 +177,6 @@ class OrderService {
     }
 
     // When DELIVERED → call BE2 stub to update total_sold in MongoDB
-    // BE2 will provide: updateTotalSold(productIds: { productId: string; quantity: number }[])
     if (newStatus === OrderStatus.DELIVERED) {
       // TODO: import & call BE2's updateTotalSold when available
     }
@@ -200,7 +196,7 @@ class OrderService {
     let paramIndex = 1
 
     if (searchPattern) {
-      whereClauses.push(`CAST(orderid AS TEXT) LIKE $${paramIndex}`)
+      whereClauses.push(`CAST(orderID AS TEXT) LIKE $${paramIndex}`)
       params.push(searchPattern)
       paramIndex++
     }
@@ -216,15 +212,15 @@ class OrderService {
     // 1. Lấy danh sách orders
     const queryStr = `
       SELECT 
-        orderid AS "orderID", 
-        userid AS "userID", 
+        orderID AS "orderID", 
+        userID AS "userID", 
         status, 
-        totalamount AS "totalAmount", 
-        createdat AS "createdAt",
-        shippingaddr AS "shippingAddr"
+        totalAmount AS "totalAmount", 
+        createdAt AS "createdAt",
+        shippingAddr AS "shippingAddr"
       FROM ORDERS
       ${whereClause}
-      ORDER BY createdat ${sortOrder}
+      ORDER BY createdAt ${sortOrder}
       LIMIT $${paramIndex}
       OFFSET $${paramIndex + 1}
     `
@@ -245,7 +241,7 @@ class OrderService {
       return acc
     }, {})
 
-    const revenueResult = await query(`SELECT SUM(totalamount) as "totalRevenue" FROM ORDERS`)
+    const revenueResult = await query(`SELECT SUM(totalAmount) as "totalRevenue" FROM ORDERS`)
     const totalRevenue = parseFloat(revenueResult.rows[0].totalRevenue || 0)
 
     return {
@@ -262,6 +258,8 @@ class OrderService {
       }
     }
   }
+
+
 }
 
 const orderService = new OrderService()

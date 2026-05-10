@@ -16,16 +16,16 @@ class ProductService {
 
   // ── Queries ───────────────────────────────────────────────────────────────────
 
-  async searchProducts(query: SearchProductQuery) {
-    const page = Math.max(1, parseInt(query.page as string) || 1)
-    const limit = Math.min(100, Math.max(1, parseInt(query.limit as string) || 10))
+  async searchProducts(searchQuery: SearchProductQuery) {
+    const page = Math.max(1, parseInt(searchQuery.page as string) || 1)
+    const limit = Math.min(100, Math.max(1, parseInt(searchQuery.limit as string) || 10))
     const skip = (page - 1) * limit
 
     const matchQuery: Filter<Product> = { isActive: true }
 
     // If category slug is provided, we must find the category ID first
-    if (query.category) {
-      const cat = await getMongoDB().collection<Category>('categories').findOne({ slug: query.category })
+    if (searchQuery.category) {
+      const cat = await getMongoDB().collection<Category>('categories').findOne({ slug: searchQuery.category })
       if (!cat) {
         return {
           products: [],
@@ -44,30 +44,30 @@ class ProductService {
       matchQuery.categoryID = cat._id
     }
 
-    // if (query.keyword) {
+    // if (searchQuery.keyword) {
     //   matchQuery.$or = [
-    //     { name: { $regex: query.keyword, $options: 'i' } },
-    //     { description: { $regex: query.keyword, $options: 'i' } }
+    //     { name: { $regex: searchQuery.keyword, $options: 'i' } },
+    //     { description: { $regex: searchQuery.keyword, $options: 'i' } }
     //   ]
     // }
-    if (query.keyword) {
-      matchQuery.$text = { $search: query.keyword as string }
+    if (searchQuery.keyword) {
+      matchQuery.$text = { $search: searchQuery.keyword as string }
     }
 
-    if (query.priceMin !== undefined || query.priceMax !== undefined) {
+    if (searchQuery.priceMin !== undefined || searchQuery.priceMax !== undefined) {
       matchQuery.basePrice = {}
-      if (query.priceMin !== undefined) matchQuery.basePrice.$gte = parseFloat(query.priceMin as string)
-      if (query.priceMax !== undefined) matchQuery.basePrice.$lte = parseFloat(query.priceMax as string)
+      if (searchQuery.priceMin !== undefined) matchQuery.basePrice.$gte = parseFloat(searchQuery.priceMin as string)
+      if (searchQuery.priceMax !== undefined) matchQuery.basePrice.$lte = parseFloat(searchQuery.priceMax as string)
     }
 
-    if (query.attrs && typeof query.attrs === 'object') {
-      for (const [key, value] of Object.entries(query.attrs as Record<string, string>)) {
+    if (searchQuery.attrs && typeof searchQuery.attrs === 'object') {
+      for (const [key, value] of Object.entries(searchQuery.attrs as Record<string, string>)) {
         matchQuery[`attributes.${key}`] = value
       }
     }
 
     const sortObject: any = {}
-    if (query.sort) {
+    if (searchQuery.sort) {
       const sortMap: Record<string, any> = {
         priceASC: { basePrice: 1 },
         priceDESC: { basePrice: -1 },
@@ -76,7 +76,7 @@ class ProductService {
         soldASC: { totalSold: 1 },
         soldDESC: { totalSold: -1 }
       }
-      Object.assign(sortObject, sortMap[query.sort as string] || { totalSold: -1 })
+      Object.assign(sortObject, sortMap[searchQuery.sort as string] || { totalSold: -1 })
     } else {
       sortObject.totalSold = -1
     }
@@ -84,19 +84,30 @@ class ProductService {
     const total = await this.collection.countDocuments(matchQuery)
     const results = await this.collection.find(matchQuery).sort(sortObject).skip(skip).limit(limit).toArray()
 
-    // Populate category info
-    const categoryIDs = [...new Set(results.map((p) => p.categoryID))]
-    const categories = await getMongoDB()
-      .collection<Category>('categories')
-      .find({ _id: { $in: categoryIDs } })
-      .toArray()
+    // Populate category info and first SKU info
+    const categoryIDs = results
+      .map((p) => p.categoryID)
+      .filter((id): id is ObjectId => id instanceof ObjectId)
+    const productIDs = results.map((p) => p._id.toHexString())
+
+    const [categories, inventoryRows] = await Promise.all([
+      getMongoDB()
+        .collection<Category>('categories')
+        .find({ _id: { $in: categoryIDs } })
+        .toArray(),
+      query('SELECT productID AS "productID", sku, stockQuantity FROM INVENTORY WHERE productID = ANY($1)', [productIDs])
+    ])
 
     const mappedResults = results.map((p) => {
-      const cat = categories.find((c) => c._id.toHexString() === p.categoryID.toHexString())
+      const pCatId = p.categoryID?.toString()
+      const cat = categories.find((c: any) => c._id.toString() === pCatId)
+      const inv = inventoryRows.rows.find((row: any) => row.productID === p._id.toHexString())
       const { categoryID, ...rest } = p as any
       return {
         ...rest,
-        category: cat ? { _id: cat._id.toHexString(), name: cat.name, slug: cat.slug } : null
+        category: cat ? { _id: cat._id.toString(), name: cat.name, slug: cat.slug } : null,
+        sku: inv?.sku ?? null,
+        stockQuantity: inv?.stockQuantity
       }
     })
 
@@ -148,14 +159,16 @@ class ProductService {
       })
     }
 
-    const cat = await getMongoDB().collection<Category>('categories').findOne({ _id: product.categoryID })
+    const cat = await getMongoDB()
+      .collection<Category>('categories')
+      .findOne({ _id: product.categoryID instanceof ObjectId ? product.categoryID : new ObjectId(product.categoryID) })
     const { categoryID, ...rest } = product as any
     const mappedProduct = {
       ...rest,
       category: cat ? { _id: cat._id.toHexString(), name: cat.name, slug: cat.slug } : null
     }
 
-    const { rows } = await query('SELECT sku, stockQuantity AS "stockQuantity" FROM inventory WHERE productID = $1', [
+    const { rows } = await query('SELECT sku, stockQuantity AS "stockQuantity" FROM INVENTORY WHERE productID = $1', [
       id
     ])
 

@@ -89,7 +89,14 @@ export const useCart = () => {
         const product = res?.data
         if (!product) return []
 
-        const inv = product.inventory?.find((i) => i.sku === storedItem.sku)
+        let inv = product.inventory?.find((i) => i.sku === storedItem.sku)
+
+        // Repair logic: if sku is just the productId, try to use the first available SKU
+        if (!inv && storedItem.sku === storedItem.productId && product.inventory?.length > 0) {
+          inv = product.inventory[0]
+          storedItem.sku = inv.sku // Update for persistence later
+        }
+
         return [
           {
             productId: storedItem.productId,
@@ -107,8 +114,9 @@ export const useCart = () => {
 
       setItems(enriched)
 
-      // Clean up storage if some products were deleted from the DB
-      if (enriched.length !== stored.length) {
+      // Clean up storage if some products were deleted or SKUs were repaired
+      const isRepaired = enriched.some((e, idx) => e.sku !== stored[idx]?.sku)
+      if (enriched.length !== stored.length || isRepaired) {
         const minimal: StoredCartItem[] = enriched.map((i) => ({
           productId: i.productId,
           sku: i.sku,

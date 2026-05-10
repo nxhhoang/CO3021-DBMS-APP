@@ -110,6 +110,7 @@ export function ProductCard({
             <Button
               size="icon"
               className="h-10 w-10 rounded-xl bg-slate-900 transition-all hover:bg-blue-600 active:scale-90"
+              disabled={product.stockQuantity === 0 && !!product.sku}
               onClick={(e) => {
                 e.stopPropagation()
                 addItem({

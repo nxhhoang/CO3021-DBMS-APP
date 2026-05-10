@@ -44,8 +44,8 @@ const ItemCard = ({
             : 'hover:border-slate-200 dark:hover:border-white/10',
         )}
       >
-        <CardContent className="p-4 sm:p-5">
-          <div className="flex gap-4 sm:gap-6">
+        <CardContent className="p-3 sm:p-4">
+          <div className="flex gap-3 sm:gap-4">
             {/* Checkbox */}
             <div className="flex items-center">
               <Checkbox
@@ -58,7 +58,7 @@ const ItemCard = ({
             </div>
 
             {/* Product Image */}
-            <div className="image-container-premium h-24 w-24 shrink-0 sm:h-28 sm:w-28">
+            <div className="image-container-premium h-20 w-20 shrink-0 sm:h-24 sm:w-24">
               <ProductImage
                 src={item.image}
                 alt={item.productName}
@@ -72,10 +72,10 @@ const ItemCard = ({
             <div className="flex min-w-0 flex-1 flex-col">
               <div className="flex items-start justify-between gap-2">
                 <div className="min-w-0 flex-1">
-                  <h2 className="font-display truncate text-lg font-bold text-slate-900 sm:text-xl dark:text-white">
+                  <h2 className="font-display truncate text-base font-bold text-slate-900 sm:text-lg dark:text-white">
                     {item.productName}
                   </h2>
-                  <p className="mt-1 font-mono text-[10px] font-medium tracking-tight text-slate-400 uppercase">
+                  <p className="mt-0.5 font-mono text-[9px] font-medium tracking-tight text-slate-400 uppercase">
                     {item.sku}
                   </p>
                 </div>
@@ -83,26 +83,26 @@ const ItemCard = ({
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="h-8 w-8 shrink-0 rounded-full text-slate-300 hover:bg-rose-50 hover:text-rose-500 dark:hover:bg-rose-900/20"
+                  className="h-7 w-7 shrink-0 rounded-full text-slate-300 hover:bg-rose-50 hover:text-rose-500 dark:hover:bg-rose-900/20"
                   onClick={(e) => {
                     e.stopPropagation()
                     removeItem(item.sku)
                   }}
                 >
-                  <Trash className="h-4 w-4" />
+                  <Trash className="h-3.5 w-3.5" />
                 </Button>
               </div>
 
-              <div className="mt-auto flex items-end justify-between pt-4">
-                <div className="space-y-1.5">
-                  <p className="font-mono text-xl font-bold tracking-tighter text-blue-600 sm:text-2xl dark:text-blue-400">
+              <div className="mt-auto flex items-end justify-between pt-3">
+                <div className="space-y-1">
+                  <p className="font-mono text-lg font-bold tracking-tighter text-blue-600 sm:text-xl dark:text-blue-400">
                     {formatPrice(item.skuPrice)}
                   </p>
 
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-1.5">
                     <div
                       className={cn(
-                        'h-1.5 w-1.5 rounded-full',
+                        'h-1 w-1 rounded-full',
                         isOutOfStock
                           ? 'bg-rose-600'
                           : stockQuantity <= 3
@@ -112,7 +112,7 @@ const ItemCard = ({
                     />
                     <span
                       className={cn(
-                        'text-[10px] font-bold tracking-wide uppercase',
+                        'text-[9px] font-bold tracking-wide uppercase',
                         isOutOfStock
                           ? 'text-rose-600'
                           : stockQuantity <= 3

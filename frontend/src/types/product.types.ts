@@ -37,6 +37,7 @@ export interface ProductResponse extends Omit<Product, 'categoryID'> {
   category: Pick<Category, '_id' | 'name' | 'slug'> | null
   sku?: string // Thêm sku mặc định (tùy chọn)
   skuPrice?: number // Giá theo SKU, nếu khác basePrice
+  stockQuantity?: number
 }
 
 export interface ProductDetail extends ProductResponse {

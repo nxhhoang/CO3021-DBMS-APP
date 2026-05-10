@@ -18,11 +18,12 @@ const OPTIONS: PaymentOption[] = [
 interface Props {
   selected: PaymentMethod
   onChange: (method: PaymentMethod) => void
+  disabled?: boolean
 }
 
-export const PaymentMethodSelector = ({ selected, onChange }: Props) => {
+export const PaymentMethodSelector = ({ selected, onChange, disabled }: Props) => {
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       <div className="flex items-center gap-3">
         <div className="h-1 w-4 rounded-full bg-slate-200" />
         <p className="font-display text-[10px] font-black tracking-widest text-slate-400 uppercase">
@@ -36,26 +37,27 @@ export const PaymentMethodSelector = ({ selected, onChange }: Props) => {
           return (
             <button
               key={method.value}
+              disabled={disabled}
               onClick={() => onChange(method.value)}
-              className={`group relative flex flex-col items-center justify-center gap-4 rounded-3xl border-2 p-6 transition-all duration-300 ${
+              className={`group relative flex flex-col items-center justify-center gap-2.5 rounded-2xl border-2 p-3 transition-all duration-300 ${
                 isSelected
-                  ? 'border-slate-900 bg-slate-900 text-white shadow-2xl dark:border-white dark:bg-white dark:text-slate-900'
+                  ? 'border-slate-900 bg-slate-900 text-white shadow-lg dark:border-white dark:bg-white dark:text-slate-900'
                   : 'border-slate-100 bg-white hover:border-slate-200 dark:border-white/5 dark:bg-slate-800/40 dark:hover:border-white/20'
-              }`}
+              } ${disabled ? 'cursor-not-allowed opacity-50' : ''}`}
             >
               <div
-                className={`flex h-12 w-12 items-center justify-center rounded-2xl transition-colors ${
+                className={`flex h-9 w-9 items-center justify-center rounded-xl transition-colors ${
                   isSelected
                     ? 'bg-white/10 dark:bg-slate-900/10'
                     : 'bg-slate-50 dark:bg-slate-800'
                 }`}
               >
                 <Icon
-                  className={`h-6 w-6 ${isSelected ? 'text-white dark:text-slate-900' : 'text-slate-400'}`}
+                  className={`h-4.5 w-4.5 ${isSelected ? 'text-white dark:text-slate-900' : 'text-slate-400'}`}
                   strokeWidth={2.5}
                 />
               </div>
-              <span className="font-display text-[11px] font-black tracking-widest uppercase">
+              <span className="font-display text-[9px] font-black tracking-widest uppercase">
                 {method.label}
               </span>
 

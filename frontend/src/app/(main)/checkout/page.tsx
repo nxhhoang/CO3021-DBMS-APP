@@ -34,7 +34,13 @@ export default function CheckoutPage() {
     dialogState,
     setDialogState,
     handleCheckout,
-    defaultAddress,
+    selectedAddress,
+    isPaymentProcessing,
+    setIsPaymentProcessing,
+    handleConfirmPayment,
+    setSelectedAddress,
+    checkoutError,
+    setCheckoutError,
   } = useCheckout(selectedItems)
 
   if (selectedItems.length === 0 && !dialogState.success) {
@@ -123,11 +129,11 @@ export default function CheckoutPage() {
                       Đang tải thông tin địa chỉ...
                     </p>
                   </div>
-                ) : defaultAddress ? (
+                ) : selectedAddress ? (
                   <div className="space-y-6">
                     <div className="flex items-center justify-between">
                       <p className="font-display text-2xl font-black text-slate-900 dark:text-white">
-                        {defaultAddress.addressName}
+                        {selectedAddress.addressName}
                       </p>
                       <div className="flex items-center gap-2 rounded-full bg-blue-50 px-4 py-1.5 ring-1 ring-blue-100 dark:bg-blue-900/30 dark:ring-blue-500/20">
                         <span className="h-1.5 w-1.5 rounded-full bg-blue-500" />
@@ -137,7 +143,7 @@ export default function CheckoutPage() {
                       </div>
                     </div>
                     <p className="max-w-2xl text-lg leading-relaxed font-medium text-slate-500 dark:text-slate-400">
-                      {`${defaultAddress.addressLine}, ${defaultAddress.district}, ${defaultAddress.city}`}
+                      {`${selectedAddress.addressLine}, ${selectedAddress.district}, ${selectedAddress.city}`}
                     </p>
                     <div className="pt-4">
                       <Button
@@ -271,7 +277,7 @@ export default function CheckoutPage() {
 
                 <Button
                   size="lg"
-                  disabled={isLoading || !defaultAddress}
+                  disabled={isLoading || !selectedAddress}
                   onClick={handleCheckout}
                   className="group relative h-20 w-full overflow-hidden rounded-full bg-white text-base font-black tracking-[0.2em] text-slate-900 uppercase transition-all hover:scale-[1.03] active:scale-[0.97]"
                 >
@@ -316,7 +322,6 @@ export default function CheckoutPage() {
         setState={setDialogState}
         isLoading={isLoading}
         isAddressLoading={isAddressLoading}
-        address={defaultAddress}
         onConfirm={handleCheckout}
         paymentMethod={paymentMethod}
         setPaymentMethod={setPaymentMethod}
@@ -324,6 +329,13 @@ export default function CheckoutPage() {
         totalPrice={totalPrice}
         orderID={orderID}
         setOrderID={setOrderID}
+        isPaymentProcessing={isPaymentProcessing}
+        setIsPaymentProcessing={setIsPaymentProcessing}
+        onConfirmPayment={handleConfirmPayment}
+        address={selectedAddress}
+        setAddress={setSelectedAddress}
+        checkoutError={checkoutError}
+        onClearError={() => setCheckoutError(null)}
       />
     </PageBackground>
   )

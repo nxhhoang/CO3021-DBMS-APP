@@ -5,7 +5,8 @@ import {
   getOrderByIdController,
   updateOrderStatusController,
   processPaymentController,
-  getRevenueStatsController
+  getRevenueStatsController,
+  getAllOrdersAdminController
 } from '~/controllers/order.controllers'
 import { accessTokenValidator, verifyRoleMiddleware } from '~/middlewares/auth.middlewares'
 import { checkoutValidator, updateOrderStatusValidator, revenueStatsValidator } from '~/middlewares/order.middlewares'
@@ -62,6 +63,15 @@ adminRouter.get(
   verifyRoleMiddleware(UserRole.ADMIN),
   revenueStatsValidator,
   wrapRequestHandler(getRevenueStatsController)
+)
+/**
+ * GET /api/v1/admin/orders — Admin get all orders (Pagination)
+ */
+adminRouter.get(
+  '/orders',
+  accessTokenValidator,
+  verifyRoleMiddleware(UserRole.ADMIN),
+  wrapRequestHandler(getAllOrdersAdminController)
 )
 
 export { orderRouter, paymentRouter, adminRouter }

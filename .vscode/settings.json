@@ -1,0 +1,18 @@
+{
+  "editor.formatOnSave": true,
+  "editor.formatOnSaveMode": "modificationsIfAvailable",
+  "prettier.requireConfig": true,
+  "sqltools.connections": [
+    {
+      "ssh": "Disabled",
+      "previewLimit": 50,
+      "server": "localhost",
+      "port": 5432,
+      "askForPassword": true,
+      "driver": "PostgreSQL",
+      "database": "hybrid_db",
+      "username": "postgres",
+      "name": "DBMS"
+    }
+  ]
+}

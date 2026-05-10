@@ -10,7 +10,7 @@ FRONTEND/package-lock.json
 DATABASE/addresses.csv
 DATABASE/scenario testing/storage and data management/product_test.csv
 DATABASE/users.csv
-DATABASE/venv
+DATABASE/.venv
 DATABASE/migration.sql
 DATABASE/seed.sql
 

@@ -1,4 +1,4 @@
-'use client';
+'use client'
 
 import {
   DropdownMenu,
@@ -7,41 +7,33 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuLabel,
-} from '@/components/ui/dropdown-menu';
-import { Button } from '@/components/ui/button';
-import { User, LogOut } from 'lucide-react';
-import Link from 'next/link';
-import { authService } from '@/services/auth.service';
-import { useRouter } from 'next/navigation';
+} from '@/components/ui/dropdown-menu'
+import { Button } from '@/components/ui/button'
+import { User, LogOut } from 'lucide-react'
+import Link from 'next/link'
+import { useAuthContext } from '@/features/auth'
 
 const NAV_ITEMS = [
-  { label: 'Profile', href: '/user/profile' },
-  { label: 'Addresses', href: '/user/addresses' },
-  { label: 'Orders', href: '/user/orders' },
-];
+  { label: 'Hồ sơ cá nhân', href: '/user/profile' },
+  { label: 'Sổ địa chỉ', href: '/user/addresses' },
+  { label: 'Đơn hàng', href: '/user/orders' },
+]
 
 export const DropdownProfile = () => {
-  const router = useRouter();
-  const handleLogout = async () => {
-    const refreshToken = localStorage.getItem('refreshToken');
+  const { logout, isAuthenticated, isLoading } = useAuthContext()
 
-    if (!refreshToken) {
-      router.push('/login');
-      return;
-    }
+  if (isLoading) return null
 
-    try {
-      await authService.logout({ refreshToken });
-    } catch (error) {
-      console.error(error);
-    } finally {
-      localStorage.removeItem('accessToken');
-      localStorage.removeItem('refreshToken');
+  if (!isAuthenticated) {
+    return (
+      <div className="hidden md:block">
+        <Button variant="ghost" size="sm" asChild>
+          <Link href="/login">Đăng nhập</Link>
+        </Button>
+      </div>
+    )
+  }
 
-      router.push('/login');
-      router.refresh();
-    }
-  };
   return (
     <div className="hidden md:block">
       <DropdownMenu>
@@ -50,8 +42,8 @@ export const DropdownProfile = () => {
             <User className="h-5 w-5" />
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-52">
-          <DropdownMenuLabel>My Account</DropdownMenuLabel>
+        <DropdownMenuContent align="end" className="w-52 glass-dropdown">
+          <DropdownMenuLabel>Tài khoản của tôi</DropdownMenuLabel>
           <DropdownMenuSeparator />
           {NAV_ITEMS.map((item) => (
             <DropdownMenuItem key={item.href} asChild>
@@ -60,14 +52,14 @@ export const DropdownProfile = () => {
           ))}
           <DropdownMenuSeparator />
           <DropdownMenuItem
-            onClick={handleLogout}
-            className="cursor-pointer text-red-500 focus:text-red-500"
+            onClick={logout}
+            className="text-destructive cursor-pointer"
           >
             <LogOut className="mr-2 h-4 w-4" />
-            Log out
+            Đăng xuất
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
     </div>
-  );
-};
+  )
+}

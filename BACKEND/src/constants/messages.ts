@@ -132,3 +132,11 @@ export const INVENTORY_MESSAGES = {
   INVENTORY_NOT_FOUND: 'Inventory record not found',
   INSUFFICIENT_STOCK: 'Insufficient stock for the requested item'
 } as const
+
+export const SKU_MESSAGES = {
+  CREATE_SKU_SUCCESS: 'Create SKU successfully',
+  SKU_PRICE_IS_REQUIRED: 'SKU price is required',
+  SKU_PRICE_MUST_BE_A_POSITIVE_NUMBER: 'SKU price must be a positive number',
+  ATTRIBUTES_MUST_BE_AN_OBJECT: 'Attributes must be an object',
+  SKU_NOT_FOUND: 'SKU not found'
+} as const

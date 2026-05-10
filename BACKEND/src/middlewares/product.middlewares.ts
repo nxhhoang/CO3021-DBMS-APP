@@ -96,6 +96,25 @@ export const createProductValidator = validate(
       attributes: {
         optional: true,
         isObject: { errorMessage: 'attributes must be an object' }
+      },
+      skus: {
+        optional: true,
+        isArray: { errorMessage: 'skus must be an array' },
+        custom: {
+          options: (value: any) => {
+            if (value && value.length > 0) {
+              for (const s of value) {
+                if (!s.sku || typeof s.sku !== 'string')
+                  throw new Error('Each SKU must have a valid string identifier')
+                if (typeof s.skuPrice !== 'number' || s.skuPrice < 0)
+                  throw new Error('Each SKU must have a valid non-negative price')
+                if (typeof s.stockQuantity !== 'number' || s.stockQuantity < 0)
+                  throw new Error('Each SKU must have a valid non-negative stock quantity')
+              }
+            }
+            return true
+          }
+        }
       }
     },
     ['body']

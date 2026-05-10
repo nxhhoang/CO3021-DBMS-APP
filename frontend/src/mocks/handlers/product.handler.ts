@@ -1,52 +1,62 @@
-import { http, HttpResponse } from 'msw';
-import { BASE_URL } from '@/constants/api';
-import { MOCK_PRODUCTS, MOCK_PRODUCT_DETAILS } from '../data/products';
-import { MOCK_CATEGORIES } from '../data/categories';
+import { http, HttpResponse } from 'msw'
+import { BASE_URL } from '@/constants/api'
+import { MOCK_PRODUCT_DETAILS } from '../data/products'
+import { isAdmin, mockDb, requireSession, newId } from '../data/mockDb'
 import {
   ProductResponse,
   GetProductsResponse,
-  GetProductDetailRequest,
   GetProductDetailResponse,
-  ProductDetail,
   CreateProductRequest,
-  CreateProductResponse,
   UpdateProductRequest,
   UpdateProductResponse,
-} from '@/types/product.types';
+  DeleteProductResponse,
+  Product,
+} from '@/types/product.types'
+
+// Biến tạm để lưu trữ state sản phẩm (giả lập database thay vì dùng hằng số MOCK trực tiếp)
+const dynamicProducts = mockDb.products
+
+const SORT_MAP: Record<string, (a: Product, b: Product) => number> = {
+  priceASC: (a, b) => a.basePrice - b.basePrice,
+  priceDESC: (a, b) => b.basePrice - a.basePrice,
+
+  ratingASC: (a, b) => a.avgRating - b.avgRating,
+  ratingDESC: (a, b) => b.avgRating - a.avgRating,
+
+  soldASC: (a, b) => a.totalSold - b.totalSold,
+  soldDESC: (a, b) => b.totalSold - a.totalSold,
+}
 
 export const productHandlers = [
-  // GET /products
-  http.get(`${BASE_URL}/products`, (req) => {
-    const url = new URL(req.request.url);
-    const keyword = url.searchParams.get('keyword') || '';
-    const categorySlug = url.searchParams.get('category') || '';
-    const price_min = parseFloat(url.searchParams.get('price_min') || '0');
-    const price_max = parseFloat(
-      url.searchParams.get('price_max') || 'Infinity',
-    );
-    const page = parseInt(url.searchParams.get('page') || '1');
-    const limit = parseInt(url.searchParams.get('limit') || '10');
-    const sort = url.searchParams.get('sort') || '';
+  // 1. GET /products (Giữ nguyên logic filter cũ nhưng dùng dynamicProducts)
+  http.get(`${BASE_URL}/products`, ({ request }) => {
+    const url = new URL(request.url)
+    const keyword = url.searchParams.get('keyword')?.toLowerCase() || ''
+    const categorySlug = url.searchParams.get('category') || ''
+    const priceMin = Number(url.searchParams.get('priceMin') || 0)
+    const priceMax = Number(
+      url.searchParams.get('priceMax') || Number.MAX_SAFE_INTEGER,
+    )
+    const page = Number(url.searchParams.get('page') || 1)
+    const limit = Number(url.searchParams.get('limit') || 10)
+    const sort = url.searchParams.get('sort') || ''
+    // Filter
+    const filtered = dynamicProducts.filter((p) => {
+      const matchesKeyword = p.name.toLowerCase().includes(keyword)
+      const cat = mockDb.categories.find((c) => c.slug === categorySlug)
+      const matchesCategory = categorySlug ? p.categoryID === cat?._id : true
+      const matchesPrice = p.basePrice >= priceMin && p.basePrice <= priceMax
+      // Chỉ lấy sản phẩm đang hoạt động (isActive !== false)
+      const isActive = p.isActive !== false
 
-    let filteredProducts = MOCK_PRODUCTS.filter((product) => {
-      const categoryObj = MOCK_CATEGORIES.find(
-        (c) => c._id === product.categoryId,
-      );
-      return (
-        product.name.toLowerCase().includes(keyword.toLowerCase()) &&
-        (categorySlug ? categoryObj?.slug === categorySlug : true) &&
-        product.base_price >= price_min &&
-        product.base_price <= price_max
-      );
-    });
-    if (sort === 'price_desc')
-      filteredProducts.sort((a, b) => b.base_price - a.base_price);
-    if (sort === 'price_asc')
-      filteredProducts.sort((a, b) => a.base_price - b.base_price);
+      return matchesKeyword && matchesCategory && matchesPrice && isActive
+    })
 
-    const productData: ProductResponse[] = filteredProducts.map((p) => {
-      const cat = MOCK_CATEGORIES.find((c) => c._id === p.categoryId);
-      const { categoryId, ...rest } = p; // Loại bỏ categoryId, thay bằng object category
+    // Map Response
+    const mapped: ProductResponse[] = filtered.map((p) => {
+      const cat = mockDb.categories.find((c) => c._id === p.categoryID)
+      const { categoryID, ...rest } = p
+      void categoryID
       return {
         ...rest,
         category: {
@@ -54,28 +64,268 @@ export const productHandlers = [
           name: cat?.name || '',
           slug: cat?.slug || '',
         },
-      };
-    });
+      }
+    })
 
-    const totalItems = productData.length;
-    const totalPages = Math.ceil(totalItems / limit);
-    const paginatedData = productData.slice((page - 1) * limit, page * limit);
+    const totalItems = mapped.length
+    const sorted = [...mapped]
+    if (sort && SORT_MAP[sort]) {
+      if (sort.startsWith('price')) {
+        sorted.sort((a, b) => (sort === 'priceASC' ? a.basePrice - b.basePrice : b.basePrice - a.basePrice))
+      } else if (sort.startsWith('rating')) {
+        sorted.sort((a, b) => (sort === 'ratingASC' ? a.avgRating - b.avgRating : b.avgRating - a.avgRating))
+      } else if (sort.startsWith('sold')) {
+        sorted.sort((a, b) => (sort === 'soldASC' ? a.totalSold - b.totalSold : b.totalSold - a.totalSold))
+      }
+    }
+    const data = sorted.slice((page - 1) * limit, page * limit)
 
     return HttpResponse.json({
-      message: `Tìm thấy ${totalItems} sản phẩm`,
-      data: paginatedData,
-      pagination: {
-        totalItems,
-        itemCount: paginatedData.length,
-        itemsPerPage: limit,
-        totalPages,
-        currentPage: page,
-        nextPage: page < totalPages ? page + 1 : null,
-        hasPrevPage: page > 1,
-        hasNextPage: page < totalPages,
+      message:
+        totalItems > 0
+          ? `Tìm thấy ${totalItems} sản phẩm`
+          : 'Không tìm thấy sản phẩm nào',
+      data: {
+        products: data,
+        pagination: {
+          totalItems,
+          itemCount: data.length,
+          itemsPerPage: limit,
+          totalPages: Math.ceil(totalItems / limit) || 1,
+          currentPage: page,
+          nextPage: page < Math.ceil(totalItems / limit) ? page + 1 : null,
+          hasPrevPage: page > 1,
+          hasNextPage: page < Math.ceil(totalItems / limit),
+        },
       },
-    });
+    } as GetProductsResponse)
   }),
-];
-// Example of GET /products/:id using fetch:
-// fetch('http://localhost:3000/api/v1/products?keyword=mac')
+
+  // 2. GET /products/:id (Chi tiết sản phẩm)
+  http.get(`${BASE_URL}/products/:id`, ({ params }) => {
+    const { id } = params as { id: string }
+
+    // Use pre-populated detail data if available
+    if (MOCK_PRODUCT_DETAILS[id]) {
+      return HttpResponse.json({
+        message: 'Lấy thông tin sản phẩm thành công',
+        data: MOCK_PRODUCT_DETAILS[id],
+      } as GetProductDetailResponse)
+    }
+
+    const product = dynamicProducts.find((p) => p._id === id)
+    if (!product) {
+      return HttpResponse.json(
+        { message: 'Không tìm thấy sản phẩm', data: null },
+        { status: 404 },
+      )
+    }
+
+    const cat = mockDb.categories.find((c) => c._id === product.categoryID)
+    const { categoryID, ...rest } = product
+    void categoryID
+
+    const skus = mockDb.inventory
+      .filter((inv) => inv.productID === id)
+      .map((inv) => ({
+        sku: inv.sku,
+        skuPrice: inv.skuPrice ?? inv.sku_price ?? product.basePrice,
+        sku_price: inv.sku_price ?? inv.skuPrice ?? product.basePrice,
+        attributes: inv.attributes ?? {},
+        stockQuantity: inv.stockQuantity ?? 0,
+      }))
+
+    const detail = {
+      ...rest,
+      category: cat ? { _id: cat._id, name: cat.name, slug: cat.slug } : null,
+      inventory: skus.length > 0 ? skus : [
+        {
+          sku: `${id}-DEFAULT`,
+          productID: id,
+          skuPrice: product.basePrice,
+          sku_price: product.basePrice,
+          attributes: {},
+          stockQuantity: 10,
+        },
+      ],
+    }
+
+    return HttpResponse.json({
+      message: 'Lấy thông tin sản phẩm thành công',
+      data: detail,
+    } as GetProductDetailResponse)
+  }),
+
+  // 3. POST /admin/products (Admin: Thêm sản phẩm)
+  http.post(`${BASE_URL}/admin/products`, async ({ request }) => {
+    const auth = requireSession(request.headers.get('Authorization'))
+    if (!auth.ok) return HttpResponse.json(auth.response, { status: auth.status })
+    if (!isAdmin(auth.session.userId)) {
+      return HttpResponse.json({ message: 'Forbidden', data: null }, { status: 403 })
+    }
+
+    const body = (await request.json()) as CreateProductRequest
+
+    if (!body.name || !body.categoryID || !body.basePrice) {
+      return HttpResponse.json(
+        { message: 'Thiếu trường bắt buộc', data: null },
+        { status: 400 },
+      )
+    }
+
+    const newProduct = {
+      ...body,
+      _id: `product-${Date.now()}`,
+      isActive: true,
+      avgRating: 0,
+      totalReviews: 0,
+      totalSold: 0,
+    }
+
+    dynamicProducts.push(newProduct)
+
+    // Optional: create SKUs
+    if (body.skus?.length) {
+      for (const sku of body.skus) {
+        mockDb.inventory.push({
+          sku: sku.sku,
+          productID: newProduct._id,
+          skuPrice: sku.skuPrice,
+          sku_price: sku.skuPrice,
+          stockQuantity: sku.stockQuantity,
+          attributes: sku.attributes ?? {},
+        })
+      }
+    }
+
+    return HttpResponse.json(
+      { message: 'Tạo sản phẩm thành công', data: { _id: newProduct._id } },
+      { status: 201 },
+    )
+  }),
+
+  // 3. PUT /admin/products/:id (Admin: Sửa sản phẩm)
+  http.put(`${BASE_URL}/admin/products/:id`, async ({ params, request }) => {
+    const auth = requireSession(request.headers.get('Authorization'))
+    if (!auth.ok) return HttpResponse.json(auth.response, { status: auth.status })
+    if (!isAdmin(auth.session.userId)) {
+      return HttpResponse.json({ message: 'Forbidden', data: null }, { status: 403 })
+    }
+
+    const { id } = params
+    const body = (await request.json()) as UpdateProductRequest
+
+    const index = dynamicProducts.findIndex((p) => p._id === id)
+    if (index === -1) {
+      return HttpResponse.json(
+        { message: 'Không tìm thấy sản phẩm', data: null },
+        { status: 404 },
+      )
+    }
+
+    // Cập nhật dữ liệu
+    dynamicProducts[index] = {
+      ...dynamicProducts[index],
+      ...body,
+    }
+
+    return HttpResponse.json({
+      message: 'Cập nhật sản phẩm thành công',
+      data: {
+        _id: dynamicProducts[index]._id,
+        name: dynamicProducts[index].name,
+        basePrice: dynamicProducts[index].basePrice,
+      },
+    } as UpdateProductResponse)
+  }),
+
+  // 4. DELETE /admin/products/:id (Admin: Xóa mềm)
+  http.delete(`${BASE_URL}/admin/products/:id`, ({ params, request }) => {
+    const auth = requireSession(request.headers.get('Authorization'))
+    if (!auth.ok) return HttpResponse.json(auth.response, { status: auth.status })
+    if (!isAdmin(auth.session.userId)) {
+      return HttpResponse.json({ message: 'Forbidden', data: null }, { status: 403 })
+    }
+
+    const { id } = params
+    const index = dynamicProducts.findIndex((p) => p._id === id)
+
+    if (index === -1) {
+      return HttpResponse.json(
+        { message: 'Không tìm thấy sản phẩm', data: null },
+        { status: 404 },
+      )
+    }
+
+    // Thực hiện Soft Delete
+    dynamicProducts[index].isActive = false
+
+    return HttpResponse.json({
+      message: 'Xóa sản phẩm thành công (Đã ngừng bán)',
+      data: {
+        _id: id as string,
+        isActive: false,
+      },
+    } as DeleteProductResponse)
+  }),
+
+  // 5 GET /products/:id/reviews (Danh sách đánh giá)
+  http.get(`${BASE_URL}/products/:id/reviews`, ({ params }) => {
+    const { id } = params
+    const productId = id as string
+    const seed = mockDb.reviewsByProduct.get(productId)
+    const data =
+      seed ??
+      [
+        {
+          _id: `review-${productId}-1`,
+          productID: productId,
+          userID: 'user-customer-001',
+          userName: 'Customer',
+          rating: 5,
+          comment: 'Sản phẩm rất tốt!',
+          images: [],
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        },
+      ]
+    return HttpResponse.json({
+      message: 'Lấy danh sách đánh giá thành công',
+      data,
+    })
+  }),
+
+  // 6 POST /products/:id/reviews (Create review)
+  http.post(`${BASE_URL}/products/:id/reviews`, async ({ request, params }) => {
+    const auth = requireSession(request.headers.get('Authorization'))
+    if (!auth.ok) return HttpResponse.json(auth.response, { status: auth.status })
+
+    const { id } = params
+    const body = (await request.json()) as { rating: number; comment: string; images?: string[] }
+    const productId = id as string
+
+    const existing = mockDb.reviewsByProduct.get(productId) ?? []
+    const newReviewId = newId('review')
+    existing.unshift({
+      _id: newReviewId,
+      productID: productId,
+      userID: auth.session.userId,
+      userName: mockDb.users.find((u) => u.userId === auth.session.userId)?.fullName ?? 'User',
+      rating: body.rating,
+      comment: body.comment,
+      images: body.images ?? [],
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    })
+    mockDb.reviewsByProduct.set(productId, existing)
+
+    // Update product aggregates (basic)
+    const prod = dynamicProducts.find((p) => p._id === productId)
+    if (prod) {
+      prod.totalReviews += 1
+      prod.avgRating = Math.min(5, Math.max(0, (prod.avgRating * (prod.totalReviews - 1) + body.rating) / prod.totalReviews))
+    }
+
+    return HttpResponse.json({ message: 'Tạo đánh giá thành công', data: { _id: newReviewId } }, { status: 201 })
+  }),
+]

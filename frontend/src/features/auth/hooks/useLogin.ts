@@ -26,6 +26,8 @@ export const useLogin = () => {
       tokenStorage.setAccessToken(accessToken)
       tokenStorage.setRefreshToken(refreshToken)
       tokenStorage.setUser(result.user)
+
+      return result
     } catch (error: any) {
       if (error.response?.data?.errors) {
         throw error

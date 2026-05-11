@@ -1,7 +1,6 @@
 'use client'
 
 import React, { useEffect, useState } from 'react'
-import { getUserRole } from '@/utils/getUserRole'
 import { useAuthContext } from '@/features/auth'
 import '@/lib/axios'
 
@@ -10,7 +9,6 @@ import {
   Package,
   Folder,
   ShoppingBag,
-  ArrowLeft,
   ChevronRight,
   LogOut,
 } from 'lucide-react'
@@ -24,22 +22,18 @@ export default function AdminLayout({
 }: {
   children: React.ReactNode
 }) {
-  const { logout } = useAuthContext()
+  const { user, isLoading, logout } = useAuthContext()
   const [mounted, setMounted] = useState(false)
-  const [role, setRole] = useState<string | null>(null)
 
   const pathname = usePathname()
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true)
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setRole(getUserRole())
   }, [])
 
-  if (!mounted) return null
+  if (!mounted || isLoading) return null
 
-  if (role !== 'ADMIN') {
+  if (user?.role !== 'ADMIN') {
     return (
       <div className="flex min-h-screen items-center justify-center bg-slate-50">
         <div className="space-y-4 text-center">
@@ -149,15 +143,6 @@ export default function AdminLayout({
 
           {/* FOOTER SECTION */}
           <div className="mt-auto space-y-2 border-t border-slate-100 p-2 pt-6">
-            <Link
-              href="/"
-              className="group flex items-center gap-3.5 rounded-2xl px-4 py-3.5 text-sm font-bold text-slate-500 transition-all hover:bg-blue-50 hover:text-blue-600"
-            >
-              <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-slate-100 transition-colors group-hover:bg-blue-100 group-hover:text-blue-600">
-                <ArrowLeft size={18} strokeWidth={2.5} />
-              </div>
-              Về cửa hàng
-            </Link>
             <button
               onClick={logout}
               className="group flex w-full items-center gap-3.5 rounded-2xl px-4 py-3.5 text-sm font-bold text-rose-500 transition-all hover:bg-rose-50 hover:text-rose-600"

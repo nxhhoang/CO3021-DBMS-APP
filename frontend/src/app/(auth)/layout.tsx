@@ -1,15 +1,33 @@
 'use client'
 
-import { ReactNode } from 'react'
+import { ReactNode, useEffect } from 'react'
 import { MeshBackground } from '@/components/common/MeshBackground'
 import Link from 'next/link'
 import { ChevronLeft } from 'lucide-react'
+import { useAuthContext } from '@/features/auth'
+import { useRouter } from 'next/navigation'
 
 type AuthLayoutProps = {
   children: ReactNode
 }
 
 export default function AuthLayout({ children }: AuthLayoutProps) {
+  const { user, isLoading, isAuthenticated } = useAuthContext()
+  const router = useRouter()
+
+  useEffect(() => {
+    if (!isLoading && isAuthenticated) {
+      if (user?.role === 'ADMIN') {
+        router.replace('/admin/dashboard')
+      } else {
+        router.replace('/')
+      }
+    }
+  }, [isLoading, isAuthenticated, user, router])
+
+  if (isLoading || isAuthenticated) {
+    return null
+  }
   return (
     <div className="relative isolate min-h-screen overflow-hidden bg-white">
       {/* BACKGROUND SYSTEM */}

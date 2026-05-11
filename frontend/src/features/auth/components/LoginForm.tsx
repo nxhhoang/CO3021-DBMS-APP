@@ -35,8 +35,12 @@ export function LoginForm() {
     setFieldErrors({})
     setLoading(true)
     try {
-      await login({ email, password })
-      router.replace(redirectPath)
+      const result = await login({ email, password })
+      if (result?.user.role === 'ADMIN') {
+        router.replace('/admin/dashboard')
+      } else {
+        router.replace(redirectPath)
+      }
     } catch (err: any) {
       if (err.response?.data?.errors) {
         const backendErrors = err.response.data.errors

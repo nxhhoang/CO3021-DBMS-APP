@@ -38,7 +38,7 @@ export function SearchBar({
     >
       <input
         type="text"
-        value={value}
+        value={value || ''}
         placeholder={placeholder}
         onChange={(e) => onChange?.(e.target.value)}
         onKeyDown={handleKeyDown}

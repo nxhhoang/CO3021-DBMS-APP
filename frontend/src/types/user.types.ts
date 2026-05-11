@@ -3,9 +3,9 @@ import { ROLE } from '@/constants/enum'
 
 export interface User {
   userId: string
-  fullName: string
-  email: string
-  phoneNum: string
+  fullName?: string
+  email?: string
+  phoneNum?: string
   role: keyof typeof ROLE
 }
 

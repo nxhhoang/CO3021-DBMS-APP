@@ -7,7 +7,9 @@ export type TokenPayload = {
 }
 
 //POST /auth/register
-export type RegisterRequest = Pick<User, 'fullName' | 'email' | 'phoneNum'> & {
+export type RegisterRequest = Required<
+  Pick<User, 'fullName' | 'email' | 'phoneNum'>
+> & {
   password: string
 }
 

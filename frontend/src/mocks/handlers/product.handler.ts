@@ -38,13 +38,20 @@ export const productHandlers = [
       url.searchParams.get('priceMax') || Number.MAX_SAFE_INTEGER,
     )
     const page = Number(url.searchParams.get('page') || 1)
-    const limit = Number(url.searchParams.get('limit') || 10)
+    const limit = Number(url.searchParams.get('limit') || 12)
     const sort = url.searchParams.get('sort') || ''
     // Filter
     const filtered = dynamicProducts.filter((p) => {
-      const matchesKeyword = p.name.toLowerCase().includes(keyword)
-      const cat = mockDb.categories.find((c) => c.slug === categorySlug)
-      const matchesCategory = categorySlug ? p.categoryID === cat?._id : true
+      const cat = mockDb.categories.find((c) => c._id === p.categoryID)
+      
+      const matchesKeyword = 
+        p.name.toLowerCase().includes(keyword) || 
+        p.description.toLowerCase().includes(keyword) ||
+        (cat?.name.toLowerCase().includes(keyword) ?? false)
+
+      const categorySlug = url.searchParams.get('category') || ''
+      const filterCat = mockDb.categories.find((c) => c.slug === categorySlug)
+      const matchesCategory = categorySlug ? p.categoryID === filterCat?._id : true
       const matchesPrice = p.basePrice >= priceMin && p.basePrice <= priceMax
       // Chỉ lấy sản phẩm đang hoạt động (isActive !== false)
       const isActive = p.isActive !== false
